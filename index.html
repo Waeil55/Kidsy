@@ -16,88 +16,88 @@
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 :root {
-  /* Default Theme Variables - Vibrant & Colorful */
-  --bg-gradient: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); /* Light Blue/Cyan */
-  --text-primary: #1f3a61; /* Dark Blue Text */
-  --card-bg: rgba(255, 255, 255, 0.98); /* Slightly more opaque */
-  --accent-primary: #6e45e2; /* Vibrant Purple */
-  --accent-secondary: #88d3ce; /* Teal Accent */
-  --shadow-color: rgba(110, 69, 226, 0.18);
-  --border-color: rgba(110, 69, 226, 0.1);
-  --glow-color: rgba(136, 211, 206, 0.5);
+  /* Default Theme Variables - Vibrant & Colorful v2 */
+  --bg-gradient: linear-gradient(135deg, #a6c0fe 0%, #f68084 100%); /* Light Blue/Coral */
+  --text-primary: #3d336b; /* Dark Purple Text */
+  --card-bg: rgba(255, 255, 255, 0.98);
+  --accent-primary: #8e44ad; /* Purple */
+  --accent-secondary: #f39c12; /* Orange */
+  --shadow-color: rgba(142, 68, 173, 0.18);
+  --border-color: rgba(142, 68, 173, 0.09);
+  --glow-color: rgba(243, 156, 18, 0.5);
 
-  --word-font-size: 4em;
+  --word-font-size: 5em; /* Keep increased word size */
   --base-font-size: 17px;
 }
 
-/* --- Theme Definitions - Vibrant & Colorful --- */
+/* --- Theme Definitions - Vibrant & Colorful v2 --- */
 body.theme-ocean {
-  --bg-gradient: linear-gradient(135deg, #2af598 0%, #009efd 100%); /* Green/Blue */
+  --bg-gradient: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%); /* Blue/Indigo */
   --text-primary: #00394f;
   --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #1cb5e0; /* Bright Blue */
-  --accent-secondary: #00c6bb; /* Bright Teal */
-  --shadow-color: rgba(28, 181, 224, 0.2);
-  --border-color: rgba(28, 181, 224, 0.1);
-  --glow-color: rgba(0, 198, 187, 0.6);
+  --accent-primary: #36d1dc; /* Bright Cyan */
+  --accent-secondary: #5b86e5; /* Royal Blue */
+  --shadow-color: rgba(54, 209, 220, 0.2);
+  --border-color: rgba(54, 209, 220, 0.1);
+  --glow-color: rgba(91, 134, 229, 0.6);
 }
 
 body.theme-sunset {
-  --bg-gradient: linear-gradient(135deg, #fce38a 0%, #f38181 100%); /* Yellow/Red */
-  --text-primary: #852d00; /* Dark Orange */
+  --bg-gradient: linear-gradient(135deg, #fe8c00 0%, #f83600 100%); /* Bright Orange/Red */
+  --text-primary: #611e00; /* Dark Brown */
   --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #ff416c; /* Bright Pink/Red */
-  --accent-secondary: #ff4b2b; /* Bright Orange/Red */
-  --shadow-color: rgba(255, 65, 108, 0.2);
-  --border-color: rgba(255, 65, 108, 0.1);
-  --glow-color: rgba(255, 75, 43, 0.6);
+  --accent-primary: #fc4a1a; /* Orange-Red */
+  --accent-secondary: #f7b733; /* Yellow */
+  --shadow-color: rgba(252, 74, 26, 0.2);
+  --border-color: rgba(252, 74, 26, 0.1);
+  --glow-color: rgba(247, 183, 51, 0.6);
 }
 
 body.theme-forest {
- --bg-gradient: linear-gradient(135deg, #c1dfc4 0%, #deecdd 100%); /* Soft Green */
+ --bg-gradient: linear-gradient(135deg, #9ef5a5 0%, #5bb964 100%); /* Mint/Green */
   --text-primary: #1b5e20;
   --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #81c784; /* Light Green */
-  --accent-secondary: #4caf50; /* Standard Green */
-  --shadow-color: rgba(129, 199, 132, 0.2);
-  --border-color: rgba(129, 199, 132, 0.1);
-  --glow-color: rgba(76, 175, 80, 0.6);
+  --accent-primary: #76b852; /* Muted Green */
+  --accent-secondary: #f7b733; /* Yellow accent */
+  --shadow-color: rgba(118, 184, 82, 0.2);
+  --border-color: rgba(118, 184, 82, 0.1);
+  --glow-color: rgba(247, 183, 51, 0.6);
 }
 
 body.theme-pink {
-  --bg-gradient: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%); /* Light Pink */
-  --text-primary: #880e4f;
-  --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #ff4081; /* Hot Pink */
-  --accent-secondary: #f8bbd0; /* Soft Pink Accent */
-  --shadow-color: rgba(255, 64, 129, 0.2);
-  --border-color: rgba(255, 64, 129, 0.1);
-  --glow-color: rgba(248, 187, 208, 0.6);
+  --bg-gradient: linear-gradient(135deg, #f43b47 0%, #453a94 100%); /* Red/Indigo */
+  --text-primary: #f8f8f8; /* Light text for contrast */
+  --card-bg: rgba(255, 255, 255, 0.98); /* Keep light card */
+  --accent-primary: #ff7eb9; /* Pink */
+  --accent-secondary: #fed95f; /* Yellow */
+  --shadow-color: rgba(244, 59, 71, 0.2);
+  --border-color: rgba(244, 59, 71, 0.1);
+  --glow-color: rgba(254, 217, 95, 0.6);
 }
 body.theme-purple {
-  --bg-gradient: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Lavender/Blue */
+  --bg-gradient: linear-gradient(135deg, #9face6 0%, #74ebd5 100%); /* Light Blue/Mint */
   --text-primary: #4a148c;
   --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #9b59b6; /* Purple */
-  --accent-secondary: #8e44ad; /* Darker Purple */
-  --shadow-color: rgba(155, 89, 182, 0.2);
-  --border-color: rgba(155, 89, 182, 0.1);
-  --glow-color: rgba(142, 68, 173, 0.6);
+  --accent-primary: #b06ab3; /* Muted Purple */
+  --accent-secondary: #4568dc; /* Indigo */
+  --shadow-color: rgba(176, 106, 179, 0.2);
+  --border-color: rgba(176, 106, 179, 0.1);
+  --glow-color: rgba(69, 104, 220, 0.6);
 }
 body.theme-skyblue {
-    --bg-gradient: linear-gradient(135deg, #abecd6 0%, #fbed96 100%); /* Mint/Yellow */
+    --bg-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); /* Vibrant Blue */
     --text-primary: #0d47a1;
     --card-bg: rgba(255, 255, 255, 0.98);
-    --accent-primary: #87ceeb; /* Sky Blue */
-    --accent-secondary: #ffccdd; /* Soft Pink Accent */
-    --shadow-color: rgba(135, 206, 235, 0.2);
-    --border-color: rgba(135, 206, 235, 0.1);
-    --glow-color: rgba(255, 204, 221, 0.6);
+    --accent-primary: #64b5f6; /* Lighter Blue */
+    --accent-secondary: #ffb74d; /* Light Orange accent */
+    --shadow-color: rgba(100, 181, 246, 0.2);
+    --border-color: rgba(100, 181, 246, 0.1);
+    --glow-color: rgba(255, 183, 77, 0.6);
 }
 
 
 
-/* --- Dark Mode Overrides (Applied AFTER theme selection) - Vibrant --- */
+/* --- Dark Mode Overrides - Vibrant --- */
 body.dark {
   --text-primary: #e0e0e0;
   --card-bg: rgba(44, 62, 80, 0.97); 
@@ -106,37 +106,37 @@ body.dark {
   --glow-color: var(--accent-secondary); 
 }
 body.dark.theme-default { 
-  --bg-gradient: linear-gradient(145deg, #485461 0%, #2c3e50 100%); 
+  --bg-gradient: linear-gradient(135deg, #1f4037 0%, #99f2c8 100%); 
   --accent-primary: #6ab0de; 
   --accent-secondary: #c39bd3; 
 }
 body.dark.theme-ocean {
-  --bg-gradient: linear-gradient(145deg, #004e92 0%, #000428 100%); 
+  --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); 
   --accent-primary: #64c8bc; 
   --accent-secondary: #4dd0e1; 
 }
 body.dark.theme-sunset {
-  --bg-gradient: linear-gradient(145deg, #ff512f 0%, #dd2476 100%); 
+  --bg-gradient: linear-gradient(135deg, #cb2d3e 0%, #ef473a 100%); 
   --accent-primary: #ffa88c; 
   --accent-secondary: #ffc9ba; 
 }
 body.dark.theme-forest {
-  --bg-gradient: linear-gradient(145deg, #134e5e 0%, #71b280 100%); 
+  --bg-gradient: linear-gradient(135deg, #134e5e 0%, #71b280 100%); 
   --accent-primary: #a5d6a7; 
   --accent-secondary: #c8e6c9; 
 }
 body.dark.theme-pink {
-  --bg-gradient: linear-gradient(145deg, #6a0031 0%, #880e4f 100%); 
+  --bg-gradient: linear-gradient(135deg, #cc2b5e 0%, #753a88 100%); 
   --accent-primary: #f48fb1; 
   --accent-secondary: #f8bbd0; 
 }
 body.dark.theme-purple {
-  --bg-gradient: linear-gradient(145deg, #4a148c 0%, #311b92 100%); 
+  --bg-gradient: linear-gradient(135deg, #4776e6 0%, #8e54e9 100%); 
   --accent-primary: #b39ddb; 
   --accent-secondary: #e6ceff; 
 }
 body.dark.theme-skyblue {
-    --bg-gradient: linear-gradient(145deg, #0d47a1 0%, #06316e 100%); 
+    --bg-gradient: linear-gradient(135deg, #1fa2ff 0%, #12d8fa 50%, #a6ffcb 100%); 
     --accent-primary: #6ec6ff; 
     --accent-secondary: #b3e5fc; 
 }
@@ -637,7 +637,7 @@ body.dark .word-display {
 
 
 .stat-number { 
-  font-size: 2.5rem; /* Increased size */
+  font-size: 3rem; /* Further Increased size */
   font-weight: 700; 
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); /* Use variables */
   -webkit-background-clip: text;
@@ -821,13 +821,13 @@ body.dark .bottom-bar button:hover {
     transform: scale(1.1); /* Slightly enlarge selected */
 }
 /* Theme previews matching new gradients */
-.theme-option[data-theme="default"] { background: linear-gradient(145deg, #a1c4fd , #c2e9fb); }
-.theme-option[data-theme="ocean"] { background: linear-gradient(145deg, #2af598, #009efd); }
-.theme-option[data-theme="sunset"] { background: linear-gradient(145deg, #fbc2eb, #a6c1ee); }
-.theme-option[data-theme="forest"] { background: linear-gradient(145deg, #96e6a1, #d4fc79); }
-.theme-option[data-theme="pink"] { background: linear-gradient(145deg, #ff9a9e, #fad0c4); }
-.theme-option[data-theme="purple"] { background: linear-gradient(145deg, #d299c2, #fef9d7); }
-.theme-option[data-theme="skyblue"] { background: linear-gradient(145deg, #abecd6, #fbed96); }
+.theme-option[data-theme="default"] { background: linear-gradient(135deg, #a18cd1 , #fbc2eb); }
+.theme-option[data-theme="ocean"] { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.theme-option[data-theme="sunset"] { background: linear-gradient(135deg, #fce38a, #f38181); }
+.theme-option[data-theme="forest"] { background: linear-gradient(135deg, #76b852, #8dc26f); }
+.theme-option[data-theme="pink"] { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.theme-option[data-theme="purple"] { background: linear-gradient(135deg, #6a11cb, #2575fc); }
+.theme-option[data-theme="skyblue"] { background: linear-gradient(135deg, #81FFEF, #F067B4); }
 
 
 /* Add outline for better visibility on light backgrounds */
@@ -1007,10 +1007,11 @@ body.dark #ai-buttons button {
     .bottom-bar button { font-size: 0.8rem; padding: 8px 6px; gap: 3px; }
     .bottom-bar i { width: 14px; height: 14px; }
     .icon-btn { width: 36px; height: 36px; }
-    .timer-section { font-size: 1.0rem; }
+    /* .timer-section { font-size: 1.0rem; } REMOVED */
      #settings-modal, #ai-helper-modal { padding: 15px; } /* Reduce modal padding */
      .settings-header h2, .ai-helper-header h2 { font-size: 1.4rem; }
      .setting-label { font-size: 0.85rem; }
+     .stat-number { font-size: 2.5rem; } /* Adjust stat number size */
 }
 
 /* Landscape adjustments */
