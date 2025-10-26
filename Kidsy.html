@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Native App Meta Tags -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Removed user-scalable=no -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kidsy">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="https://placehold.co/180x180/764ba2/ffffff?text=Kidsy">
+
+<title>Kidsy</title>
+<script src="https://cdn.jsdelivr.net/npm/tone@14.8.39/build/Tone.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+:root {
+  --bg-light: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --text-light: #1a1a2e;
+  --bg-dark: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  --text-dark: #ffffff;
+  --card-light: rgba(255, 255, 255, 0.98);
+  --card-dark: rgba(20, 20, 30, 0.95);
+  --accent: #667eea;
+  --accent-dark: #764ba2;
+  --neon-glow: 0 0 20px rgba(102, 126, 234, 0.6);
+  /* Global font size variable for word display */
+  --word-font-size: 3.5em; 
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Reverted Layout --- */
+html, body {
+    /* Removed fixed height and overflow:hidden */
+    overflow-x: hidden; /* Only prevent horizontal scroll */
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  background: var(--bg-light);
+  color: var(--text-light);
+  transition: background 0.3s ease, color 0.3s ease; 
+  position: relative;
+  display: flex; 
+  flex-direction: column;
+  align-items: center; 
+  justify-content: flex-start; 
+  padding: 15px 0; /* Reverted padding */
+  min-height: 100vh; /* Ensure body takes at least full viewport height */
+}
+/* --- End Reverted Layout --- */
+
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.2) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.dark {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+.main-wrapper {
+  max-width: 600px;
+  width: 100%; 
+  padding: 0 15px; 
+  /* Removed flex properties */
+}
+
+.grade-section {
+  display: none;
+  /* Removed flex properties */
+}
+
+.grade-section.active {
+  display: block; /* Changed back to block */
+  animation: slideIn 0.3s ease-out;
+}
+
+.container {
+  padding: 25px 35px; /* Reverted padding */
+  background: var(--card-light);
+  border-radius: 28px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.4);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  /* Removed overflow, flex-shrink etc. */
+  margin-bottom: 15px; /* Reverted margin */
+}
+
+
+.nav-tabs-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px; /* Reverted margin */
+  position: relative;
+  /* Removed flex-shrink */
+}
+
+.nav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: var(--card-light);
+  border-radius: 28px;
+  padding: 10px; /* Reverted padding */
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 2;
+}
+
+body.dark .nav-tabs {
+  background: var(--card-dark);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6), var(--neon-glow);
+}
+
+.nav-tab {
+  padding: 10px 15px; /* Reverted padding */
+  margin: 5px; /* Reverted margin */
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 14px; /* Reverted font size */
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--text-light);
+}
+
+body.dark .nav-tab {
+  background: rgba(102, 126, 234, 0.15);
+  color: var(--text-dark);
+}
+
+.nav-tab:hover {
+  background: rgba(102, 126, 234, 0.25);
+  transform: translateY(-2px);
+}
+
+.nav-tab.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+
+body.dark .container {
+  background: var(--card-dark);
+  box-shadow: 0 25px 70px rgba(0,0,0,0.8), var(--neon-glow);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* --- Challenge Header --- */
+.challenge-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the h1 */
+    margin-bottom: 20px; /* Reverted margin */
+}
+.challenge-header .icon-btn {
+    position: absolute; /* Take it out of flow */
+    left: 0; /* Align to the left of the container */
+    width: 40px; /* Reverted size */
+    height: 40px;
+}
+.challenge-header h1 {
+  font-size: 2.0em; /* Reverted font size */
+  font-weight: 800;
+  margin: 0; /* Removed margin */
+  padding: 0 50px; /* Add padding to prevent overlap with button */
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fadeIn 0.4s ease-out;
+  text-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+  letter-spacing: -1px;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.settings-section {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 15px; /* Reverted padding */
+  border-radius: 16px;
+  margin-bottom: 20px; /* Reverted margin */
+}
+
+label {
+  font-weight: 600;
+  font-size: 1em; /* Reverted font size */
+  display: block;
+  margin-bottom: 10px; /* Reverted margin */
+}
+
+.timer-input { 
+  width: 120px; /* Reverted size */
+  padding: 10px; /* Reverted padding */
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  font-size: 16px; /* Reverted font size */
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  background: var(--card-light);
+  color: var(--text-light);
+}
+
+body.dark .timer-input {
+  background: var(--card-dark);
+  color: var(--text-dark);
+  border-color: var(--accent-dark);
+}
+
+
+.timer-input:focus {
+  outline: none;
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+  transform: scale(1.05);
+}
+
+button {
+  padding: 12px 24px; /* Reverted padding */
+  margin: 6px; /* Reverted margin */
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px; /* Reverted font size */
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.15s ease;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+}
+
+button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.start-btn { 
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  font-size: 16px; /* Reverted size */
+  padding: 14px 35px; /* Reverted padding */
+}
+
+.speak-btn { 
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+  color: white;
+  display: none; 
+  animation: pulse 2s infinite;
+  padding: 10px 18px; /* Reverted padding */
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* --- Speak Controls Container --- */
+.speak-controls {
+    display: none; /* Will be shown by JS */
+    align-items: center;
+    justify-content: center;
+    gap: 10px; 
+    margin: 15px 0; /* Reverted margin */
+}
+.speak-controls .speak-btn {
+    margin: 0; 
+}
+
+/* Style for speed indicator text */
+.speech-rate-indicator-inline {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--accent-dark);
+    min-width: 35px; 
+    text-align: right;
+}
+body.dark .speech-rate-indicator-inline {
+    color: var(--accent);
+}
+
+
+/* Base style for circular icon buttons */
+.icon-btn {
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: 50%;
+  width: 45px; /* Reverted size */
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 0;
+  margin: 0;
+  color: var(--text-light);
+  flex-shrink: 0; 
+}
+
+body.dark .icon-btn {
+  color: var(--text-dark); 
+}
+
+.icon-btn:hover {
+  background: rgba(102, 126, 234, 0.3);
+  transform: rotate(15deg);
+}
+
+
+.word-display { 
+  font-size: var(--word-font-size); 
+  font-weight: 800;
+  margin: 20px 0; /* Reverted margin */
+  color: var(--accent);
+  text-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  animation: wordPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-height: 100px; /* Reverted height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+body.dark .word-display {
+  color: #ffffff;
+  text-shadow: 0 0 40px rgba(102, 126, 234, 0.8),
+               0 0 20px rgba(118, 75, 162, 0.6);
+}
+
+@keyframes wordPop {
+  0% { transform: scale(0.7) rotateX(90deg); opacity: 0; }
+  50% { transform: scale(1.08) rotateX(0deg); }
+  100% { transform: scale(1) rotateX(0deg); opacity: 1; }
+}
+
+.timer-section {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+  padding: 10px 15px; /* Reverted padding */
+  border-radius: 16px;
+  margin: 15px 0; /* Reverted margin */
+  font-size: 1.2em; /* Reverted size */
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px; /* Reverted gap */
+}
+
+
+.score-display { 
+  font-size: 1.2em; /* Reverted size */
+  margin-top: 10px; /* Reverted margin */
+  font-weight: 600;
+  color: var(--accent-dark);
+  line-height: 1.6;
+}
+
+body.dark .score-display {
+    color: var(--accent);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px; /* Reverted bar height */
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: 20px;
+  margin: 15px 0; /* Reverted margin */
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.progress-fill { 
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  transition: width 0.2s ease;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.stats-grid { 
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px; /* Reverted gap */
+  margin-top: 15px; /* Reverted margin */
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12), rgba(118, 75, 162, 0.12));
+  padding: 15px; /* Reverted padding */
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+body.dark .stat-card {
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px) scale(1.03); /* Reverted hover */
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); /* Reverted shadow */
+}
+
+.stat-number { 
+  font-size: 2em; /* Reverted size */
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+  font-size: 0.8em; /* Reverted size */
+  opacity: 0.8;
+  margin-top: 3px; /* Reverted margin */
+}
+
+/* Bottom Nav Bar */
+.bottom-bar { 
+  height: auto; 
+  background: var(--card-light);
+  display: flex;
+  justify-content: space-evenly; 
+  align-items: center;
+  flex-wrap: nowrap; 
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+  transition: all 0.3s ease;
+  border-radius: 28px; 
+  padding: 10px 5px; 
+  border: 1px solid rgba(255, 255, 255, 0.3); 
+  /* Removed margin-top: auto */
+  margin-top: 15px; /* Reverted margin */
+  margin-bottom: 15px; 
+  /* Removed flex-shrink: 0 */
+}
+
+body.dark .bottom-bar {
+  background: var(--card-dark);
+  border: 1px solid rgba(102, 126, 234, 0.3); 
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6), var(--neon-glow); 
+}
+
+
+.bottom-bar button {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px; /* Reverted font size */
+  padding: 12px 20px; /* Reverted padding */
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Reverted gap */
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  letter-spacing: 0.5px; /* Reverted letter spacing */
+  flex-shrink: 0; 
+  margin: 0 3px; /* Reverted margin */
+}
+
+.bottom-bar button:hover {
+  transform: scale(1.08); /* Reverted hover effect */
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+.bottom-bar i {
+  display: inline;
+  width: 22px; /* Reverted icon size */
+  height: 22px;
+}
+
+.keyboard-hint { 
+  font-size: 0.8em; /* Reverted size */
+  opacity: 0.7;
+  margin-top: 8px; /* Reverted margin */
+}
+
+
+/* --- SETTINGS MODAL --- */
+#settings-backdrop, #ai-helper-backdrop { /* Added AI backdrop */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#settings-backdrop.visible, #ai-helper-backdrop.visible { /* Added AI backdrop */
+  opacity: 1;
+  pointer-events: all;
+}
+
+#settings-modal, #ai-helper-modal { /* Added AI modal */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 90%;
+  max-width: 450px;
+  background: var(--card-light);
+  border-radius: 28px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 100;
+  text-align: left;
+  padding: 25px; /* Reverted padding */
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+#settings-backdrop.visible #settings-modal,
+#ai-helper-backdrop.visible #ai-helper-modal { /* Added AI modal */
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+body.dark #settings-modal, body.dark #ai-helper-modal { /* Added AI modal */
+  background: var(--card-dark);
+  box-shadow: 0 25px 70px rgba(0,0,0,0.8), var(--neon-glow);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.settings-header, .ai-helper-header { /* Added AI header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px; /* Reverted margin */
+}
+
+.settings-header h2, .ai-helper-header h2 { /* Added AI header */
+  font-size: 1.8em; /* Reverted size */
+  font-weight: 700;
+  margin: 0;
+}
+
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* Reverted margin */
+  padding-bottom: 20px; /* Reverted padding */
+  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+.setting-item:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.setting-label {
+  font-weight: 600;
+  font-size: 1em; /* Reverted size */
+}
+.setting-label small {
+  display: block;
+  font-weight: 400;
+  opacity: 0.7;
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px; /* Reverted */
+  height: 28px; /* Reverted */
+  flex-shrink: 0;
+}
+.toggle-switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(102, 126, 234, 0.3);
+  transition: .4s;
+  border-radius: 28px; /* Reverted */
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; /* Reverted */
+  width: 20px; /* Reverted */
+  left: 4px; /* Reverted */
+  bottom: 4px; /* Reverted */
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: var(--accent);
+}
+input:checked + .slider:before {
+  transform: translateX(22px); /* Reverted */
+}
+
+/* Range Slider Styles */
+.range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px; /* Reverted */
+  height: 8px; /* Reverted */
+  background: rgba(102, 126, 234, 0.3);
+  outline: none;
+  border-radius: 8px; /* Reverted */
+  cursor: pointer;
+}
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px; /* Reverted */
+  height: 20px; /* Reverted */
+  background: var(--accent);
+  cursor: pointer;
+  border-radius: 50%;
+}
+.range-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  cursor: pointer;
+  border-radius: 50%;
+}
+.setting-item .value-indicator {
+  font-weight: 600;
+  font-size: 0.9em; /* Reverted */
+  margin-right: 10px; /* Reverted */
+  width: 45px; /* Reverted */
+  text-align: right;
+}
+/* Specific style for speak controls slider */
+.speak-controls .range-slider {
+    background: rgba(255, 152, 0, 0.3); 
+    width: 100px; /* Reverted */
+}
+.speak-controls .range-slider::-webkit-slider-thumb {
+    background: #FF9800; 
+}
+.speak-controls .range-slider::-moz-range-thumb {
+    background: #FF9800; 
+}
+
+
+.setting-item select,
+.setting-item .number-input {
+  width: 120px; /* Reverted */
+  padding: 8px; /* Reverted */
+  border: 2px solid var(--accent);
+  border-radius: 12px; /* Reverted */
+  font-size: 14px; /* Reverted */
+  font-weight: 600;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  background: var(--card-light);
+  color: var(--text-light);
+}
+body.dark .setting-item select,
+body.dark .setting-item .number-input {
+  background: var(--card-dark);
+  color: var(--text-dark);
+  border-color: var(--accent-dark);
+}
+#reset-settings-btn {
+  background: linear-gradient(135deg, #e53935, #b71c1c);
+  color: white;
+  width: 100%;
+  margin-top: 20px; /* Reverted */
+  padding: 14px; /* Reverted */
+  font-size: 16px; /* Reverted */
+}
+
+/* --- AI Helper Modal Styles --- */
+#ai-helper-content {
+    margin-bottom: 20px; /* Reverted */
+}
+#ai-helper-content p {
+    margin-bottom: 15px; /* Reverted */
+    line-height: 1.6; /* Reverted */
+    font-size: 0.95em; /* Reverted */
+}
+#ai-helper-content strong {
+    font-weight: 700;
+    color: var(--accent);
+}
+body.dark #ai-helper-content strong {
+    color: var(--accent-dark);
+}
+
+#ai-buttons {
+    display: flex;
+    gap: 10px; /* Reverted */
+    margin-bottom: 15px; /* Reverted */
+}
+#ai-buttons button {
+    flex-grow: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white;
+    font-size: 14px; /* Reverted */
+    padding: 12px 15px; /* Reverted */
+}
+
+#ai-result {
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 16px; /* Reverted */
+    padding: 15px; /* Reverted */
+    min-height: 80px; /* Reverted */
+    line-height: 1.7; /* Reverted */
+    font-size: 0.95em; /* Reverted */
+    overflow-wrap: break-word;
+}
+body.dark #ai-result {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+#ai-loading {
+    display: none; 
+    text-align: center;
+    font-style: italic;
+    opacity: 0.8;
+    margin-top: 10px; /* Reverted */
+    font-size: 0.95em; /* Reverted */
+}
+
+/* --- RESPONSIVE STYLES (Keep existing ones, ensure bottom bar adjusts) --- */
+
+.game-wrapper-landscape {
+  display: block; /* Revert */
+}
+
+
+/* Portrait mode for phones */
+@media (max-width: 480px) {
+  .main-wrapper {
+      margin: 10px auto;
+      padding: 5px;
+  }
+  .nav-tabs-container {
+      padding: 0 5px; 
+  }
+  .nav-tabs {
+      padding: 5px;
+  }
+  .nav-tab {
+      font-size: 12px;
+      padding: 8px 10px;
+      margin: 3px;
+      border-radius: 14px;
+  }
+
+  .container {
+    margin: 0 auto;
+    width: 100%;
+    padding: 20px 15px;
+  }
+
+  .challenge-header h1 {
+    font-size: 1.6em; 
+    padding: 0 40px; 
+  }
+  .challenge-header .icon-btn {
+    width: 35px;
+    height: 35px;
+  }
+
+
+  .word-display {
+    min-height: 80px;
+    margin: 15px 0;
+     font-size: calc(var(--word-font-size) * 0.9); /* Slightly reduce font on small screens */
+  }
+  .timer-input {
+    width: 100px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  button {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+  .start-btn {
+    padding: 14px 30px;
+    font-size: 16px;
+  }
+  .bottom-bar {
+    height: auto; 
+    padding: 8px 3px; 
+  }
+  .bottom-bar button {
+    padding: 8px 8px; 
+    font-size: 11px; 
+    gap: 3px; 
+    margin: 0 2px; 
+  }
+  .bottom-bar i {
+    width: 16px; 
+    height: 16px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .stat-card {
+    padding: 15px;
+  }
+  .stat-number {
+    font-size: 1.8em;
+  }
+  .icon-btn { 
+    width: 40px;
+    height: 40px;
+  }
+  .timer-section {
+    padding: 8px 12px;
+    font-size: 1.1em; 
+  }
+  .timer-controls {
+    gap: 8px;
+  }
+  .speak-controls .range-slider {
+      width: 80px; 
+  }
+  .speak-controls .speak-btn {
+      padding: 10px 15px;
+      font-size: 14px;
+  }
+
+  /* Settings & AI Modal Responsive */
+  #settings-modal, #ai-helper-modal {
+      padding: 20px;
+  }
+  .settings-header h2, .ai-helper-header h2 {
+      font-size: 1.5em;
+  }
+  .setting-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+  }
+  .setting-item > div:last-child {
+      margin-left: auto; 
+  }
+  .setting-item .range-slider,
+  .setting-item select,
+  .setting-item .number-input {
+      width: 150px; 
+  }
+  #ai-buttons {
+      flex-direction: column;
+  }
+}
+
+/* Landscape mode for phones/devices with short height */
+/* Keep the landscape styles from the version you liked */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    /* Removed fixed display properties */
+    padding-bottom: 15px; /* Add some padding */
+  }
+  
+  .main-wrapper {
+      max-width: 98vw;
+      margin: 10px auto;
+      padding: 10px;
+  }
+  .nav-tabs-container {
+      margin-bottom: 10px;
+  }
+  .nav-tab {
+      font-size: 12px;
+      padding: 8px 12px;
+  }
+
+  .container {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 95vw;
+    /* Removed overflow-y: auto */
+  }
+
+ .game-wrapper-landscape {
+    display: flex; /* Keep flex for landscape */
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .game-main {
+    flex-basis: 50%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .game-sidebar {
+    flex-basis: 50%;
+    flex-grow: 1;
+  }
+
+  .challenge-header h1 {
+    font-size: 1.6em; 
+    margin-bottom: 10px; 
+    padding: 0 40px; 
+  }
+  .challenge-header .icon-btn {
+    width: 35px;
+    height: 35px;
+  }
+
+
+  .word-display {
+    min-height: 80px;
+    margin: 10px 0;
+    font-size: calc(var(--word-font-size) * 0.9); /* Scale down word size */
+  }
+
+  .settings-section {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .timer-input {
+    width: 100px;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  label {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+  }
+
+  button {
+    padding: 10px 18px;
+    font-size: 14px;
+    margin: 5px;
+  }
+
+  .start-btn, .speak-btn {
+    padding: 12px 25px;
+    font-size: 15px;
+  }
+
+  .timer-section {
+    padding: 8px 12px;
+    font-size: 1em;
+    margin: 10px 0;
+  }
+
+  .progress-bar {
+    margin: 10px 0;
+  }
+
+  .stats-grid {
+    margin-top: 10px;
+    gap: 5px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-card {
+    padding: 10px;
+  }
+
+  .stat-number {
+    font-size: 1.5em;
+  }
+
+  .stat-label {
+    font-size: 0.7em;
+  }
+
+  .score-display {
+    font-size: 1em;
+    margin-top: 5px;
+  }
+
+  .keyboard-hint {
+    font-size: 0.7em;
+    margin-top: 5px;
+  }
+
+  .bottom-bar {
+    height: auto; 
+     padding: 8px 5px; /* Consistent padding */
+  }
+
+  .bottom-bar button {
+    padding: 8px 10px; /* Adjusted padding */
+    font-size: 12px; /* Consistent font size */
+    gap: 4px; /* Consistent gap */
+     margin: 0 3px; /* Consistent margin */
+  }
+   .bottom-bar i {
+     width: 16px; /* Consistent icon size */
+     height: 16px;
+   }
+  
+  .icon-btn { /* Mute/Theme/AI in-game */
+    width: 40px;
+    height: 40px;
+    margin: 0;
+  }
+  .timer-controls {
+    gap: 8px;
+  }
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="main-wrapper">
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs-container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-target="pre-k">Pre-K</button>
+            <button class="nav-tab" data-target="kindergarten">Kindergarten</button>
+            <button class="nav-tab" data-target="first-grade">First Grade</button>
+            <button class="nav-tab" data-target="second-grade">Second Grade</button>
+            <button class="nav-tab" data-target="third-grade">Third Grade</button>
+            <button class="nav-tab" data-target="fourth-grade">Fourth Grade</button>
+            <button class="nav-tab" data-target="fifth-grade">Fifth Grade</button>
+            <button class="nav-tab" data-target="more-grades">More Grades (6+)</button>
+        </div>
+    </div>
+
+    <!-- Pre-K Section -->
+    <div class="grade-section active" id="pre-k">
+        <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                    <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 Pre-K Challenge</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-prek">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-prek">Press Start</div>
+                    <div class="speak-controls" id="speak-controls-prek">
+                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-prek">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-prek" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-prek">🔊 Speak</button> 
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-prek">
+                        <label for="timer-input-prek">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-prek" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-prek"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-prek">60</span>s</span>
+                        <div class="timer-controls">
+                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-prek"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-prek"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-prek"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-prek" style="display:none;">
+                        <div class="stat-card" id="words-read-card-prek"> 
+                            <div class="stat-number" id="words-read-prek">0</div>
+                            <div class="stat-label">Letters Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-prek"> 
+                            <div class="stat-number" id="wpm-prek">0</div>
+                            <div class="stat-label">Letters/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-prek"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-prek" style="display:none;">
+                        ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-prek" style="display:none;">
+            <button id="home-btn-prek"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-prek"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-prek"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-prek"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+
+    <!-- Kindergarten Section -->
+    <div class="grade-section" id="kindergarten">
+         <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                    <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 Kindergarten Challenge</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-k">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-k">Press Start</div>
+                    <div class="speak-controls" id="speak-controls-k">
+                        <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-k">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-k" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-k">🔊 Speak</button>
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-k">
+                        <label for="timer-input-k">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-k" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-k"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-k">60</span>s</span>
+                        <div class="timer-controls">
+                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-k"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-k"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-k"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-k" style="display:none;">
+                        <div class="stat-card" id="words-read-card-k"> 
+                            <div class="stat-number" id="words-read-k">0</div>
+                            <div class="stat-label">Words Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-k"> 
+                            <div class="stat-number" id="wpm-k">0</div>
+                            <div class="stat-label">Words/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-k"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-k" style="display:none;">
+                        ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-k" style="display:none;">
+            <button id="home-btn-k"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-k"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-k"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-k"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+
+    <!-- First Grade Section -->
+    <div class="grade-section" id="first-grade">
+         <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                    <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 First Grade Challenge</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-first">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-first">Press Start</div>
+                     <div class="speak-controls" id="speak-controls-first">
+                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-first">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-first" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-first">🔊 Speak</button>
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-first">
+                        <label for="timer-input-first">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-first" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-first"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-first">60</span>s</span>
+                        <div class="timer-controls">
+                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-first"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-first"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-first"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-first" style="display:none;">
+                        <div class="stat-card" id="words-read-card-first"> 
+                            <div class="stat-number" id="words-read-first">0</div>
+                            <div class="stat-label">Words Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-first"> 
+                            <div class="stat-number" id="wpm-first">0</div>
+                            <div class="stat-label">Words/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-first"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-first" style="display:none;">
+                        ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-first" style="display:none;">
+            <button id="home-btn-first"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-first"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-first"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-first"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+
+    <!-- Second Grade Section -->
+    <div class="grade-section" id="second-grade">
+         <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                    <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 Second Grade Challenge</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-second">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-second">Press Start</div>
+                     <div class="speak-controls" id="speak-controls-second">
+                        <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-second">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-second" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-second">🔊 Speak</button>
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-second">
+                        <label for="timer-input-second">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-second" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-second"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-second">60</span>s</span>
+                        <div class="timer-controls">
+                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-second"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-second"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-second"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-second" style="display:none;">
+                        <div class="stat-card" id="words-read-card-second"> 
+                            <div class="stat-number" id="words-read-second">0</div>
+                            <div class="stat-label">Words Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-second"> 
+                            <div class="stat-number" id="wpm-second">0</div>
+                            <div class="stat-label">Words/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-second"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-second" style="display:none;">
+                         ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-second" style="display:none;">
+             <button id="home-btn-second"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-second"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-second"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-second"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+
+    <!-- Third Grade Section -->
+    <div class="grade-section" id="third-grade">
+         <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                    <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 Third Grade Challenge</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-third">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-third">Press Start</div>
+                     <div class="speak-controls" id="speak-controls-third">
+                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-third">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-third" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-third">🔊 Speak</button>
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-third">
+                        <label for="timer-input-third">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-third" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-third"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-third">60</span>s</span>
+                        <div class="timer-controls">
+                             <button class="icon-btn ai-helper-btn" id="ai-helper-btn-third"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-third"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-third"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-third" style="display:none;">
+                        <div class="stat-card" id="words-read-card-third"> 
+                            <div class="stat-number" id="words-read-third">0</div>
+                            <div class="stat-label">Words Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-third"> 
+                            <div class="stat-number" id="wpm-third">0</div>
+                            <div class="stat-label">Words/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-third"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-third" style="display:none;">
+                         ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-third" style="display:none;">
+            <button id="home-btn-third"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-third"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-third"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-third"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+
+    <!-- Fourth Grade Section -->
+     <div class="grade-section" id="fourth-grade">
+         <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                    <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 Fourth Grade Challenge</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-fourth">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-fourth">Press Start</div>
+                     <div class="speak-controls" id="speak-controls-fourth">
+                        <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-fourth">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-fourth" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-fourth">🔊 Speak</button>
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-fourth">
+                        <label for="timer-input-fourth">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-fourth" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-fourth"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-fourth">60</span>s</span>
+                        <div class="timer-controls">
+                             <button class="icon-btn ai-helper-btn" id="ai-helper-btn-fourth"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-fourth"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-fourth"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-fourth" style="display:none;">
+                        <div class="stat-card" id="words-read-card-fourth"> 
+                            <div class="stat-number" id="words-read-fourth">0</div>
+                            <div class="stat-label">Words Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-fourth"> 
+                            <div class="stat-number" id="wpm-fourth">0</div>
+                            <div class="stat-label">Words/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-fourth"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-fourth" style="display:none;">
+                         ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-fourth" style="display:none;">
+            <button id="home-btn-fourth"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-fourth"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-fourth"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-fourth"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+
+    <!-- Fifth Grade Section -->
+     <div class="grade-section" id="fifth-grade">
+         <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                    <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 Fifth Grade Challenge</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-fifth">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-fifth">Press Start</div>
+                     <div class="speak-controls" id="speak-controls-fifth">
+                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-fifth">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-fifth" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-fifth">🔊 Speak</button>
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-fifth">
+                        <label for="timer-input-fifth">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-fifth" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-fifth"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-fifth">60</span>s</span>
+                        <div class="timer-controls">
+                             <button class="icon-btn ai-helper-btn" id="ai-helper-btn-fifth"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-fifth"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-fifth"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-fifth" style="display:none;">
+                        <div class="stat-card" id="words-read-card-fifth"> 
+                            <div class="stat-number" id="words-read-fifth">0</div>
+                            <div class="stat-label">Words Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-fifth"> 
+                            <div class="stat-number" id="wpm-fifth">0</div>
+                            <div class="stat-label">Words/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-fifth"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-fifth" style="display:none;">
+                         ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-fifth" style="display:none;">
+            <button id="home-btn-fifth"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-fifth"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-fifth"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-fifth"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+
+    <!-- More Grades Section -->
+     <div class="grade-section" id="more-grades">
+         <div class="container">
+            <div class="game-wrapper-landscape">
+                <div class="game-main">
+                     <div class="challenge-header">
+                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+                            <i data-lucide="settings"></i>
+                        </button>
+                        <h1>🎯 More Grades (6+)</h1>
+                    </div>
+                    <button class="start-btn" id="start-btn-more">🚀 Start Challenge</button>
+                    <div class="word-display" id="word-display-more">Press Start</div>
+                     <div class="speak-controls" id="speak-controls-more">
+                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-more">0.9x</span>
+                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-more" min="0.5" max="1.5" step="0.1">
+                        <button class="speak-btn" id="speak-btn-more">🔊 Speak</button>
+                    </div>
+                </div>
+                <div class="game-sidebar">
+                    <div class="settings-section" id="settings-section-more">
+                        <label for="timer-input-more">⏱️ Set Time (seconds):</label>
+                        <input class="timer-input" id="timer-input-more" type="number" min="10" value="60">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-more"></div>
+                    </div>
+                    <div class="timer-section">
+                        <span>⏱️ Time: <span id="timer-more">60</span>s</span>
+                        <div class="timer-controls">
+                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-more"><i data-lucide="brain"></i></button>
+                            <button class="icon-btn mute-toggle" id="mute-toggle-more"><i data-lucide="volume-2"></i></button>
+                            <button class="icon-btn theme-toggle" id="theme-toggle-more"><i data-lucide="moon"></i></button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-grid-more" style="display:none;">
+                        <div class="stat-card" id="words-read-card-more"> 
+                            <div class="stat-number" id="words-read-more">0</div>
+                            <div class="stat-label">Words Read</div>
+                        </div>
+                        <div class="stat-card" id="wpm-card-more"> 
+                            <div class="stat-number" id="wpm-more">0</div>
+                            <div class="stat-label">Words/Min</div>
+                        </div>
+                    </div>
+                    <p class="score-display" id="score-display-more"></p>
+                    <p class="keyboard-hint" id="keyboard-hint-more" style="display:none;">
+                         ⌨️ Arrow Keys or Space • S to speak
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar" id="bottom-bar-more" style="display:none;">
+            <button id="home-btn-more"><i data-lucide="home"></i> Home</button>
+            <button id="restart-btn-more"><i data-lucide="rotate-cw"></i> Restart</button>
+            <button id="back-btn-more"><i data-lucide="arrow-left-circle"></i> Back</button>
+            <button id="next-btn-more"><i data-lucide="arrow-right-circle"></i> Next</button>
+        </div>
+    </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-backdrop">
+    <div id="settings-modal">
+        <div class="settings-header">
+            <h2>Settings</h2>
+            <button class="icon-btn" id="settings-close-btn" aria-label="Close Settings">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-label">Dark Mode</div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="settings-theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">Sound</div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="settings-sound-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">
+                Default Time <small>Challenge timer (seconds)</small>
+            </div>
+            <input type="number" class="number-input" id="settings-default-time" min="10" step="5">
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">
+                Word Font Size <small>Size of the challenge word</small>
+            </div>
+            <div>
+                <span class="value-indicator" id="font-size-indicator">3.5em</span>
+                <input type="range" class="range-slider" id="settings-font-size" min="2" max="6" step="0.1">
+            </div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">
+                Auto-Speak Word <small>Speak new word automatically</small>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="settings-autospeak-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">Voice Speed</div>
+             <div>
+                <span class="value-indicator" id="speech-rate-indicator">0.9x</span>
+                <input type="range" class="range-slider" id="settings-speech-rate" min="0.5" max="1.5" step="0.1">
+            </div>
+        </div>
+        
+        <button id="reset-settings-btn">
+            <i data-lucide="trash-2" style="width:18px; height:18px; margin-right: 8px;"></i>
+            Reset to Defaults
+        </button>
+    </div>
+</div>
+
+<!-- AI HELPER MODAL -->
+<div id="ai-helper-backdrop">
+    <div id="ai-helper-modal">
+        <div class="ai-helper-header">
+            <h2><i data-lucide="brain" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: bottom;"></i> AI Helper</h2>
+            <button class="icon-btn" id="ai-helper-close-btn" aria-label="Close AI Helper">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div id="ai-helper-content">
+            <p style="display: block;">Get help with the word: <strong id="ai-word">...</strong></p> <!-- Ensure p tag is always block -->
+             <p id="ai-welcome-message" style="display:none; font-style: italic; opacity: 0.8;">Hi! I'm your AI helper. Start the challenge, and I can help you define words or use them in sentences!</p> 
+            <div id="ai-buttons">
+                 <button id="ai-define-btn">Define</button>
+                 <button id="ai-sentence-btn">Use in Sentence</button>
+            </div>
+            <div id="ai-result">Tap a button above...</div>
+            <div id="ai-loading">Generating response...</div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// --- GLOBAL STATE & SETTINGS ---
+const globalSynth = window.speechSynthesis;
+const SETTINGS_KEY = 'kidsySettings';
+
+const defaultSettings = {
+    theme: 'light',
+    sound: true,
+    defaultTime: 60,
+    fontSize: 3.5,
+    autoSpeak: false,
+    speechRate: 0.9
+};
+
+let globalSettings = { ...defaultSettings };
+let activeGameInstance = null; // To track the currently active game
+let currentWordForAI = ''; // To pass the word to the AI modal
+let currentGradeForAI = ''; // To pass the grade level to the AI modal
+
+function saveSettings() {
+    try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings));
+    } catch (e) {
+        console.error("Could not save settings to localStorage", e);
+    }
+}
+
+function loadSettings() {
+    let loaded = {};
+    try {
+        const stored = localStorage.getItem(SETTINGS_KEY);
+        if (stored) {
+            loaded = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Could not parse settings from localStorage", e);
+    }
+    globalSettings = { ...defaultSettings, ...loaded };
+    applySettings();
+    updateSettingsUI();
+}
+
+function applySettings() {
+    // Apply Theme
+    document.body.classList.toggle('dark', globalSettings.theme === 'dark');
+    // Apply Font Size
+    document.documentElement.style.setProperty('--word-font-size', `${globalSettings.fontSize}em`);
+    
+    // Apply Default Time to all inputs & displays that are NOT currently in a game
+    document.querySelectorAll('.timer-input').forEach(input => {
+        const gradeSection = input.closest('.grade-section');
+        if (!gradeSection || !gradeSection.classList.contains('active-game')) { // Check if game is NOT active
+             input.value = globalSettings.defaultTime;
+        }
+    });
+     document.querySelectorAll('.timer-section span:first-child span').forEach(span => {
+         const gradeSection = span.closest('.grade-section');
+         if (!gradeSection || !gradeSection.classList.contains('active-game')) {
+             span.textContent = globalSettings.defaultTime;
+         }
+    });
+}
+
+function updateSettingsUI() {
+    // --- Update Modal UI ---
+    document.getElementById('settings-theme-toggle').checked = globalSettings.theme === 'dark';
+    document.getElementById('settings-sound-toggle').checked = globalSettings.sound;
+    document.getElementById('settings-default-time').value = globalSettings.defaultTime;
+    
+    const fontSizeSlider = document.getElementById('settings-font-size');
+    fontSizeSlider.value = globalSettings.fontSize;
+    document.getElementById('font-size-indicator').textContent = `${globalSettings.fontSize}em`;
+
+    document.getElementById('settings-autospeak-toggle').checked = globalSettings.autoSpeak;
+
+    const speechRateSlider = document.getElementById('settings-speech-rate');
+    speechRateSlider.value = globalSettings.speechRate;
+    document.getElementById('speech-rate-indicator').textContent = `${globalSettings.speechRate}x`;
+    
+    // --- Update In-Game UI Elements (like sliders, icons) ---
+    // Update all speech rate sliders
+    document.querySelectorAll('.speech-rate-slider').forEach(slider => {
+        slider.value = globalSettings.speechRate;
+    });
+    // Update all inline speed indicators
+     document.querySelectorAll('.speech-rate-indicator-inline').forEach(span => {
+        span.textContent = `${globalSettings.speechRate}x`;
+     });
+
+
+    // Update Theme Icons
+    const isDark = globalSettings.theme === 'dark';
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+        btn.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+    });
+    
+    // Update Mute Icons
+    const isMuted = !globalSettings.sound;
+    document.querySelectorAll('.mute-toggle').forEach(btn => {
+        btn.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>';
+    });
+    
+    lucide.createIcons(); // Re-render icons after changing innerHTML
+}
+
+function resetSettings() {
+    if (confirm("Are you sure you want to reset all settings to their defaults?")) {
+        localStorage.removeItem(SETTINGS_KEY);
+        globalSettings = { ...defaultSettings };
+        applySettings();
+        updateSettingsUI();
+        // Force update timer inputs only if game is not active
+         document.querySelectorAll('.timer-input').forEach(input => {
+            const gradeSection = input.closest('.grade-section');
+             if (!gradeSection || !gradeSection.classList.contains('active-game')) {
+                 input.value = globalSettings.defaultTime;
+             }
+        });
+        document.querySelectorAll('.timer-section span:first-child span').forEach(span => {
+            const gradeSection = span.closest('.grade-section');
+             if (!gradeSection || !gradeSection.classList.contains('active-game')) {
+                 span.textContent = globalSettings.defaultTime;
+             }
+        });
+    }
+}
+
+
+// --- GLOBAL SOUND FUNCTIONS ---
+function playClickSound() {
+  if (!globalSettings.sound) return;
+  try {
+    const synth = new Tone.Synth({
+      oscillator: { type: 'sine' },
+      envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+    }).toDestination();
+    synth.triggerAttackRelease('C5', '0.1');
+  } catch(e) { console.error("Tone.js click sound failed:", e); }
+}
+
+function playNavigationSound() {
+  if (!globalSettings.sound) return;
+  try {
+    const synth = new Tone.Synth({
+      oscillator: { type: 'triangle' },
+      envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }
+    }).toDestination();
+    synth.triggerAttackRelease('E5', '0.08');
+  } catch(e) { console.error("Tone.js nav sound failed:", e); }
+}
+
+function playStartSound() {
+  if (!globalSettings.sound) return;
+  try {
+    const synth = new Tone.Synth().toDestination();
+    synth.triggerAttackRelease("G4", "8n");
+    setTimeout(() => synth.triggerAttackRelease("C5", "8n"), 100);
+    setTimeout(() => synth.triggerAttackRelease("E5", "8n"), 200);
+  } catch(e) { console.error("Tone.js start sound failed:", e); }
+}
+
+function playYaaySound() {
+  if (!globalSettings.sound) return;
+  try {
+    const synth = new Tone.Synth().toDestination();
+    synth.triggerAttackRelease("C5", "8n");
+    setTimeout(() => synth.triggerAttackRelease("E5", "8n"), 200);
+    setTimeout(() => synth.triggerAttackRelease("G5", "8n"), 400);
+    setTimeout(() => synth.triggerAttackRelease("C6", "8n"), 600);
+  } catch(e) { console.error("Tone.js end sound failed:", e); }
+}
+
+function speakWord(text) {
+  if (!globalSynth || !text) return; // Added check for text
+  globalSynth.cancel(); // Cancel any previous speech
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US'; // Defaulting to US English as language setting removed
+  utterance.rate = globalSettings.speechRate;
+  globalSynth.speak(utterance);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// --- AI Helper Function ---
+async function callGeminiApi(prompt, retries = 3, delay = 1000) {
+    // IMPORTANT: The AI feature relies on the execution environment (like Canvas) 
+    // to provide a valid API key. 
+    // If you run this HTML file directly in a browser or another application, 
+    // the `apiKey` will be empty, and the AI call will fail.
+    const apiKey = ""; // Leave empty for Canvas environment
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+    const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            if (response.status === 429 && retries > 0) { // Throttling
+                // console.warn(`API throttled. Retrying in ${delay / 1000}s... (${retries} retries left)`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return callGeminiApi(prompt, retries - 1, delay * 2); // Exponential backoff
+            }
+             // Provide a more user-friendly error if it's likely an API key issue
+             if (!apiKey && response.status >= 400 && response.status < 500) {
+                 throw new Error(`API Error: ${response.status}. This might be due to a missing API key when run outside the intended environment.`);
+             }
+            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (!text) {
+             throw new Error("No content received from API.");
+        }
+        return text;
+
+    } catch (error) {
+        console.error("Error calling Gemini API:", error);
+        // Don't retry generic errors indefinitely, only throttling
+        // if (retries > 0 && error.message.includes('API Error: 429')) { ... } // Keep this if needed, but the outer catch handles general errors
+        // Return the specific error message to the user
+        return `Sorry, I couldn't get information right now. Error: ${error.message}`;
+    }
+}
+
+
+function getGradeLevelString(gradePrefix) {
+    switch (gradePrefix) {
+        case 'prek': return 'Pre-K';
+        case 'k': return 'Kindergarten';
+        case 'first': return 'First Grade';
+        case 'second': return 'Second Grade';
+        case 'third': return 'Third Grade';
+        case 'fourth': return 'Fourth Grade';
+        case 'fifth': return 'Fifth Grade';
+        case 'more': return 'Sixth Grade or higher';
+        default: return 'the appropriate grade level';
+    }
+}
+
+// --- GAME INSTANCE FACTORY ---
+function createWordChallenge(gradePrefix, wordList) {
+    const words = wordList;
+    let timeLeft = globalSettings.defaultTime;
+    let totalTime = globalSettings.defaultTime;
+    let timerInterval = null;
+    let currentWordIndex = 0;
+    let gameStarted = false;
+    let score = 0;
+    let shuffledWords = shuffle([...words]);
+    let currentWord = ''; // Store current word locally in instance
+
+    // DOM references
+    const gradeSectionElement = document.getElementById(gradePrefix === 'prek' ? 'pre-k' : `${gradePrefix}-grade`); 
+    const startBtn = document.getElementById(`start-btn-${gradePrefix}`);
+    const homeBtn = document.getElementById(`home-btn-${gradePrefix}`); 
+    const restartBtn = document.getElementById(`restart-btn-${gradePrefix}`); 
+    const backBtn = document.getElementById(`back-btn-${gradePrefix}`);
+    const nextBtn = document.getElementById(`next-btn-${gradePrefix}`);
+    const speakBtn = document.getElementById(`speak-btn-${gradePrefix}`);
+    const wordDisplay = document.getElementById(`word-display-${gradePrefix}`);
+    const timerDisplay = document.getElementById(`timer-${gradePrefix}`);
+    const timerInput = document.getElementById(`timer-input-${gradePrefix}`);
+    const scoreDisplay = document.getElementById(`score-display-${gradePrefix}`);
+    const muteToggle = document.getElementById(`mute-toggle-${gradePrefix}`);
+    const themeToggle = document.getElementById(`theme-toggle-${gradePrefix}`);
+    const bottomBar = document.getElementById(`bottom-bar-${gradePrefix}`);
+    const progressFill = document.getElementById(`progress-fill-${gradePrefix}`);
+    const statsGrid = document.getElementById(`stats-grid-${gradePrefix}`);
+    const wordsReadEl = document.getElementById(`words-read-${gradePrefix}`);
+    const wpmEl = document.getElementById(`wpm-${gradePrefix}`);
+    const keyboardHint = document.getElementById(`keyboard-hint-${gradePrefix}`);
+    const settingsSection = document.getElementById(`settings-section-${gradePrefix}`);
+    const wpmCard = document.getElementById(`wpm-card-${gradePrefix}`);
+    const wordsReadCard = document.getElementById(`words-read-card-${gradePrefix}`);
+    const speakControls = document.getElementById(`speak-controls-${gradePrefix}`);
+    const speechRateSlider = document.getElementById(`speech-rate-slider-${gradePrefix}`); 
+    const speechRateIndicatorInline = document.getElementById(`speech-rate-indicator-inline-${gradePrefix}`); 
+    const aiHelperBtn = document.getElementById(`ai-helper-btn-${gradePrefix}`); 
+
+
+    if (!startBtn || !wordDisplay || !timerInput || !homeBtn || !restartBtn || !speakControls || !speechRateSlider || !aiHelperBtn || !speechRateIndicatorInline) { 
+        console.error(`Could not initialize game for grade: ${gradePrefix}. Missing elements.`);
+        return null; 
+    }
+    
+    // Set initial timer value & slider value & indicator from settings
+    timerInput.value = globalSettings.defaultTime;
+    timerDisplay.textContent = globalSettings.defaultTime;
+    speechRateSlider.value = globalSettings.speechRate;
+    speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
+
+
+    // --- Game Functions (scoped to this instance) ---
+    function stopGame() {
+        if (gameStarted) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            gameStarted = false;
+            gradeSectionElement.classList.remove('active-game'); 
+            currentWord = ''; 
+            settingsSection.style.display = "block";
+            bottomBar.style.display = "none";
+            speakControls.style.display = "none"; 
+            speakBtn.style.display = "none";
+            startBtn.style.display = "inline-block";
+            keyboardHint.style.display = "none";
+            wordDisplay.textContent = "Press Start";
+            scoreDisplay.innerHTML = "";
+            statsGrid.style.display = "none";
+            timerInput.value = globalSettings.defaultTime;
+            timerDisplay.textContent = globalSettings.defaultTime;
+            progressFill.style.width = "100%";
+        }
+    }
+
+    function startGame() {
+        if (gameStarted) return;
+        gameStarted = true;
+        score = -1; 
+        gradeSectionElement.classList.add('active-game'); 
+        
+        try { if (Tone.context.state !== 'running') Tone.start(); } 
+        catch(e) { console.error("Tone.js context failed to start:", e); }
+        playStartSound();
+
+        totalTime = Math.max(10, parseInt(timerInput.value) || globalSettings.defaultTime);
+        timeLeft = totalTime;
+        timerDisplay.textContent = timeLeft;
+
+        settingsSection.style.display = "none";
+        startBtn.style.display = "none";
+        speakControls.style.display = "flex"; 
+        speakBtn.style.display = "inline-block"; 
+        bottomBar.style.display = "flex";
+        statsGrid.style.display = "grid";
+        keyboardHint.style.display = "block";
+        wpmCard.style.display = "none";
+        wordsReadCard.style.display = "block";
+        scoreDisplay.innerHTML = "";
+        currentWordIndex = 0;
+        shuffledWords = shuffle([...words]);
+        progressFill.style.width = "100%";
+
+        updateTimer(); 
+        timerInterval = setInterval(updateTimer, 1000);
+        showWord();
+    }
+
+    function endGame() {
+        clearInterval(timerInterval);
+        timerInterval = null; 
+        gameStarted = false;
+        gradeSectionElement.classList.remove('active-game'); 
+        currentWord = ''; 
+
+        settingsSection.style.display = "block";
+        bottomBar.style.display = "none";
+        speakControls.style.display = "none"; 
+        speakBtn.style.display = "none";
+        startBtn.style.display = "inline-block";
+        keyboardHint.style.display = "none";
+        wpmCard.style.display = "block";
+        wordDisplay.textContent = "Time's Up! 🎉";
+        scoreDisplay.innerHTML = `You read ${score} words!`;
+        playYaaySound();
+    }
+
+    function goHome() {
+        playClickSound();
+        stopGame(); 
+    }
+
+    function restartGame() {
+        playClickSound();
+        stopGame(); 
+        startGame(); 
+    }
+
+    function showWord() {
+        if (currentWordIndex >= shuffledWords.length) currentWordIndex = 0; 
+        if (currentWordIndex < 0) currentWordIndex = shuffledWords.length - 1; 
+
+        currentWord = shuffledWords[currentWordIndex]; 
+        currentWordForAI = currentWord; 
+        wordDisplay.textContent = currentWord; 
+        wordDisplay.style.animation = 'none';
+        
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                 wordDisplay.style.animation = 'wordPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            });
+        });
+        
+        score++;
+        updateStats();
+
+        if (globalSettings.autoSpeak && gameStarted) {
+            speakWord(currentWord);
+        }
+    }
+
+    function nextWord() {
+        playNavigationSound();
+        currentWordIndex++; 
+        showWord();
+    }
+
+    function prevWord() {
+        playNavigationSound();
+        currentWordIndex--; 
+        score -= 2; 
+        showWord();
+    }
+
+    function updateTimer() {
+        if (!gameStarted) return;
+        timeLeft--;
+        if (timeLeft >= 0) {
+            timerDisplay.textContent = timeLeft;
+            const progress = (timeLeft / totalTime) * 100;
+            progressFill.style.width = progress + '%';
+        }
+        if (timeLeft <= 0) {
+            endGame();
+        } else {
+            updateStats();
+        }
+    }
+
+    function updateStats() {
+        wordsReadEl.textContent = Math.max(0, score); 
+        const elapsed = totalTime - timeLeft;
+        const wpm = elapsed > 0 ? Math.round((Math.max(0, score) / elapsed) * 60) : 0;
+        wpmEl.textContent = wpm;
+    }
+
+    // --- Event Listeners (scoped to this instance) ---
+    startBtn.addEventListener('click', () => { playClickSound(); startGame(); });
+    homeBtn.addEventListener('click', goHome);
+    restartBtn.addEventListener('click', restartGame);
+    nextBtn.addEventListener('click', nextWord);
+    backBtn.addEventListener('click', prevWord);
+    speakBtn.addEventListener('click', () => { playClickSound(); speakWord(currentWord); }); 
+
+    // Listener for speech rate slider (in-game)
+    speechRateSlider.addEventListener('input', (e) => {
+        globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
+        speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; 
+        updateSettingsUI(); 
+    });
+     speechRateSlider.addEventListener('change', () => { 
+         saveSettings();
+         if (gameStarted && currentWord) { 
+            speakWord(currentWord); 
+         }
+     });
+
+    muteToggle.addEventListener('click', () => {
+        playClickSound();
+        globalSettings.sound = !globalSettings.sound;
+        saveSettings();
+        updateSettingsUI(); 
+    });
+
+    themeToggle.addEventListener('click', () => {
+        playClickSound();
+        globalSettings.theme = (globalSettings.theme === 'light') ? 'dark' : 'light';
+        saveSettings();
+        applySettings(); 
+        updateSettingsUI(); 
+    });
+
+    timerInput.addEventListener('input', () => {
+        if (!gameStarted) {
+            const newTime = parseInt(timerInput.value) || globalSettings.defaultTime;
+            timerDisplay.textContent = newTime;
+        }
+    });
+    
+    // AI Helper Button Listener
+    aiHelperBtn.addEventListener('click', () => {
+        playClickSound();
+        const aiWordElement = document.getElementById('ai-word');
+        const aiWelcomeMessage = document.getElementById('ai-welcome-message');
+        const aiButtons = document.getElementById('ai-buttons');
+        const aiResultDiv = document.getElementById('ai-result');
+
+        if (gameStarted && currentWord) { 
+            currentWordForAI = currentWord; 
+            currentGradeForAI = getGradeLevelString(gradePrefix); 
+            aiWordElement.textContent = currentWordForAI;
+            aiWordElement.parentElement.style.display = 'block'; // Show p tag containing word
+            aiWelcomeMessage.style.display = 'none'; 
+            aiButtons.style.display = 'flex'; 
+            aiResultDiv.textContent = 'Tap a button above...'; 
+            document.getElementById('ai-helper-backdrop').classList.add('visible');
+        } else {
+            // Show welcome message in the modal
+            aiWordElement.parentElement.style.display = 'none'; // Hide p tag containing word
+            aiWelcomeMessage.style.display = 'block'; 
+            aiButtons.style.display = 'none'; 
+            aiResultDiv.textContent = ''; 
+            document.getElementById('ai-helper-backdrop').classList.add('visible');
+        }
+    });
+    
+    // Simple custom alert function (replace with a styled modal later if needed)
+    function showCustomAlert(message) {
+        // --- Custom Alert Implementation (keep as is) ---
+        const alertBox = document.createElement('div');
+        alertBox.style.position = 'fixed';
+        alertBox.style.top = '20px';
+        alertBox.style.left = '50%';
+        alertBox.style.transform = 'translateX(-50%)';
+        alertBox.style.padding = '15px 20px';
+        alertBox.style.background = 'rgba(20, 20, 30, 0.9)';
+        alertBox.style.color = 'white';
+        alertBox.style.borderRadius = '15px';
+        alertBox.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+        alertBox.style.zIndex = '101';
+        alertBox.style.opacity = '0';
+        alertBox.style.transition = 'opacity 0.3s ease';
+        alertBox.textContent = message;
+        document.body.appendChild(alertBox);
+        requestAnimationFrame(() => alertBox.style.opacity = '1');
+        setTimeout(() => {
+            alertBox.style.opacity = '0';
+            setTimeout(() => alertBox.remove(), 300);
+        }, 2500);
+    }
+
+
+    function handleKeyDown(e) {
+        if (!gameStarted) {
+            if (e.key === ' ') { e.preventDefault(); playClickSound(); startGame(); }
+            return;
+        }
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextWord(); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevWord(); }
+        if (e.key === 's' || e.key === 'S') { e.preventDefault(); playClickSound(); speakWord(currentWord); } 
+    }
+
+    // Return methods to control this instance
+    return {
+        attachKeyboardListener: () => document.addEventListener('keydown', handleKeyDown),
+        removeKeyboardListener: () => document.removeEventListener('keydown', handleKeyDown),
+        stopGame: stopGame,
+        updateDefaultTime: (time) => {
+            if (!gameStarted) {
+                timerInput.value = time;
+                timerDisplay.textContent = time;
+            }
+        },
+        getCurrentWord: () => gameStarted ? currentWord : null, 
+        getGradePrefix: () => gradePrefix 
+    };
+}
+
+
+// --- WORD LISTS (Keep as they are) ---
+const words_prek=[..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"];const words_k=["am","an","as","at","be","by","do","go","he","hi","if","in","is","it","me","my","no","of","on","or","so","to","up","us","we","a","and","are","bad","bag","bat","bed","big","bit","box","boy","bug","bun","but","buy","can","cap","car","cat","cow","cry","cub","cut","dad","day","did","dig","dip","dog","dot","dry","eat","egg","end","fan","far","fat","few","fin","fit","fix","fly","for","fog","fun","fur","get","got","gum","gun","had","has","hat","hen","her","him","his","hit","hot","how","hug","hut","ice","ink","its","jam","jar","jet","job","jog","joy","jug","key","kid","kit","lab","lad","lap","lay","led","leg","let","lid","lip","lit","log","lot","low","mad","man","map","mat","may","men","met","mix","mom","mop","mud","mug","nap","net","new","nod","not","now","nut","off","old","one","our","out","owl","own","pad","pan","pat","pay","peg","pen","pet","pig","pin","pit","pod","pop","pot","put","rag","ram","ran","rap","rat","red","rib","rid","rim","rip","rod","rot","rub","rug","run","rut","sad","sap","sat","saw","say","see","set","sew","she","shy","sin","sip","sit","six","ski","sky","sob","son","sow","sub","sue","sum","sun","tab","tag","tan","tap","tax","tea","ten","the","tie","tin","tip","toe","tom","top","toy","try","tub","tug","two","use","van","vet","war","was","wax","way","web","wed","wet","who","why","wig","win","wit","won","yes","yet","you","zip","zoo"];const words_first=["like","look","see","with","they","you","said","was","have","from","word","but","what","all","were","when","your","can","use","each","which","she","how","their","will","up","other","about","out","many","then","them","these","so","some","her","would","make","him","into","time","has","more","write","go","number","no","way","could","people","my","than","first","water","been","call","who","oil","now","find","long","down","day","get","come","made","may","part","after","again","an","any","as","ask","by","every","fly","give","giving","had","just","know","let","live","of","old","once","open","over","put","round","stop","take","thank","think","walk"];const words_second=["mat","bad","fix","ham","rig","wig","bib","sap","six","rat","sit","tag","fig","Tim","map","hat","hip","it","rap","pig","pan","in","bit","fan","kid","cab","pad","at","lad","rip","bam","big","can","rim","van","tip","dad","gap","rag","sad","fin","tin","nag","him","set","did","bed","sum","yes","hog","rut","not","jam","Ned","bud","cod","mug","fit","lab","jot","cap","pin","rug","cop","kit","gut","get","rod","met","sat","pod","cat","got","beg","wet","sub","dot","zip","puff","the","go","talk","by","friend","look","no","walk","my","because","I","book","so","could","one","woman","is","are","goes","would","once","women","a","was","says","should","two","move","as","she","or","does","both","said","what","we","for","any","four","to","have","they","there","many","fourth","do","your","their","where","been","forty","of","want","were","who","into","people","see","he","be","me","pretty","above","month","honest","toward","young","nothing","among","hour","honor","through","touch","other","again","minute","truth","learn","rough","another","against","Monday","truly","earth","tough","mother","door","Wednesday","busy","early","enough","brother","poor","February","build","buy","father","floor","eye","built","guy","water","won","heart","sure","guess","very","son","about","laugh","guest","today","always","answer","whom","guide","almost","whose","tan","nap","going","had","red","gave","good","and","give","five","veah","say","live","goe","saw","has"];const words_third=["better","bring","carry","clean","complete","cut","done","draw","drink","eight","fall","far","full","grow","hold","hot","hurt","if","keep","kind","light","long","much","myself","never","only","own","pick","seven","shall","show","six","small","start","ten","together","try","warm","around","before","best","call","cold","don't","fast","five","found","green","its","made","off","pull","read","right","sing","sleep","tell","these","those","upon","us","use","wash","wish","work","write","your","apple","baby","back","ball","bear","bird","birthday","boat","boy","bread","brother","cake","chair","chicken","children","coat","corn","cow","doll","duck","egg","eye","farm","farmer","father","feet","fire","fish","flower","game","garden","girl","goodbye","grass","ground","hand","head","hill","home","horse","house","kitty","leg","letter","man","men","milk","money","morning","mother","name","nest","night","paper","party","picture","pig","rabbit","rain","ring","robin","school","seed","sheep","shoe","sister","snow","song","squirrel","stick","street","sun","table","thing","top","toy","tree","watch","way","wind","window","wood"];const words_fourth=["accident","actual","address","appear","arrive","bicycle","breath","breathe","business","calendar","caught","center","century","certain","circle","consider","continue","describe","difficult","disappear","exercise","experience","experiment","extreme","favorite","February","forward","fruit","grammar","group","guard","guide","height","imagine","important","increase","interest","island","knowledge","length","library","material","medicine","mention","natural","neither","notice","often","opposite","ordinary","particular","peculiar","perhaps","popular","position","possess","possible","potatoes","promise","purpose","quarter","question","recent","regular","reign","remember","sentence","separate","special","straight","strange","strength","suppose","surprise","therefore","though","thought","various","weight","woman","women","although","area","argue","brain","brought","captain","chief","church","clothes","company","country","course","daughter","discover","division","during","either","eleven","energy","engine","England","Europe","evening","except","expect","explain","finally","forest","future","general","heavy","hospital","however","include","instead","journey","language","listen","little","machine","measure","middle","million","mountain","music","nation"];const words_fifth=["achieve","ancient","apparent","appreciate","approach","approve","average","awkward","bargain","barrier","borrow","boundary","brilliant","budget","burden","calculate","campaign","capacity","category","challenge","character","characteristic","chorus","citizen","column","combination","command","committee","communicate","community","compare","compete","competition","compose","concern","conclude","concrete","condition","conduct","confident","connect","conscious","consist","construct","contain","contrast","contribute","control","convince","correspond","courage","create","creature","criticize","culture","current","deceive","definite","delicious","depend","design","destroy","determine","develop","dictionary","direct","disaster","discuss","disease","distant","distribute","divide","dozen","drama","jealous","judgment","league","leisure","lightning","likely","liquid","lonely","luxury","magazine","maintain","major","manage","manual","manufacture","maximum","mischief","modern","moist","muscle","mystery","necessary","neighbor","nuisance","occupy","occur","opportunity","parliament","persuade","physical","prejudice","privilege","profession","program","pronounce","queue","recognize","recommend","relevant","restaurant","rhyme","rhythm","sacrifice","secretary","shoulder","signature","sincere","soldier","stomach","sufficient","suggest","symbol","system","temperature","thorough","twelfth","variety","vegetable","vehicle","yacht"];const words_more=["abundant","accumulate","accurate","adapt","adequate","adjacent","adjust","advantage","advocate","affect","aggravate","amateur","ambitious","ample","analyze","anxious","appeal","appropriate","approximate","arrogant","artificial","ascend","assist","attempt","attentive","authentic","benefit","bias","brief","brutal","capable","cautious","cease","chaos","chronological","clarify","classify","coarse","coherent","colossal","commence","comment","comfortable","complex","component","comprehend","conceal","concise","condemn","conflict","consecutive","consensus","consent","conspicuous","context","continuous","convenient","crucial","data","debate","debt","deceitful","declare","decline","deficient","dense","depict","desist","despise","destitute","detect","deter","diligent","diminish","disrupt","distinct","distort","diverse","dominant","drastic","drowsy","dubious","durable","eager","eccentric","edible","eerie","effect","efficient","elaborate","elegant","eligible","elite","eloquent","embark","emerge","emphasis","encounter","endeavor","endorse","endure","energetic","enhance","enigma","entice","era","essential","evade","evident","evolve","exceed","excel","exempt","exotic","expand","expert","explicit","extol","extract","extravagant","facetious","fallacy","feasible","feeble","feud","fickle","fiery","final","flagrant","flaw","flee","flimsy","fluctuate","fluent","foe","formal","frantic","frequent","frugal","futile","genuine","gigantic","glare","glum","gradual","grasp","gravity","greedy","grievance","grim","groggy","grudge","habitable","haphazard","harsh","hasty","hazardous","hesitate","hideous","hoax","hostile","identical","idle","illegible","illicit","imitate","immense","impartial","impede","implicit","imply","incessant","increment","independent","indicate","indignant","indispensable","induce","inept","inevitable","infamous","infer","infinite","infuriate","ingenious","inherent","inhibit","initial","inquiry","integral","intricate","intuitive","irate","irrelevant","jeopardize","jubilant","judicious","justify","keen","labyrinth","lack","legible","lenient","lethal","listless","literal","loathe","logical","lucid","lucrative","ludicrous","lurk","majestic","meager","mediocre","melancholy","mellow","meticulous","mimic","moderate","modest","monotonous","morbid","mundane","multitude","nimble","nonchalant","notify","numerous","nutritious","oblivious","obscure","obsolete","obstacle","ominous","opportune","ordeal","ornate","orthodox","overlap","overt","parody","passive","persist","pertinent","plausible","plea","plentiful","ponder","potent","precise","predominant","preliminary","presume","prevail","prevalent","prior","probe","proceed","prohibit","prominent","propel","profound","prolific","prospect","prudent","query","quest","radiant","random","rational","realistic","reasonable","rebel","recall","reciprocate","reckless","redundant","refuge","regime","relevant","reluctant","remote","repel","resent","resolute","respond","restrict","reveal","rigid","rigorous","rural","scarce","scatter","skeptical","scheme","scope","significant","simultaneous","sinister","slack","sleazy","slight","sluggish","solitary","sparse","spontaneous","sporadic","stable","stagnant","sterile","stern","subtle","superficial","superfluous","supplement","suppress","surpass","surplus","tangible","tedious","temperate","tentative","terminate","terrain","terse","thorough","timid","toxic","tranquil","transient","transparent","trivial","turbulent","unanimous","uncouth","unique","valid","vague","versatile","viable","vibrant","vigilant","vigorous","vivid","weary","wholesome","widespread","wily","wither","yearn","zest"];
+
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Load settings from localStorage
+    loadSettings();
+    
+    // --- Settings Modal Listeners ---
+    const settingsBackdrop = document.getElementById('settings-backdrop');
+    const allGlobalSettingsBtns = document.querySelectorAll('.global-settings-btn'); 
+    const settingsCloseBtn = document.getElementById('settings-close-btn');
+
+    function openSettings() {
+        updateSettingsUI(); 
+        settingsBackdrop.classList.add('visible');
+    }
+    function closeSettings() {
+        settingsBackdrop.classList.remove('visible');
+    }
+
+    allGlobalSettingsBtns.forEach(btn => btn.addEventListener('click', openSettings));
+    settingsCloseBtn.addEventListener('click', closeSettings);
+    settingsBackdrop.addEventListener('click', (e) => { if (e.target === settingsBackdrop) closeSettings(); });
+
+    // --- AI Helper Modal Listeners ---
+    const aiHelperBackdrop = document.getElementById('ai-helper-backdrop');
+    const aiHelperCloseBtn = document.getElementById('ai-helper-close-btn');
+    const aiDefineBtn = document.getElementById('ai-define-btn');
+    const aiSentenceBtn = document.getElementById('ai-sentence-btn');
+    const aiResultDiv = document.getElementById('ai-result');
+    const aiLoadingDiv = document.getElementById('ai-loading');
+
+    function closeAiHelper() {
+        aiHelperBackdrop.classList.remove('visible');
+    }
+    
+    aiHelperCloseBtn.addEventListener('click', closeAiHelper);
+    aiHelperBackdrop.addEventListener('click', (e) => { if (e.target === aiHelperBackdrop) closeAiHelper(); });
+
+    async function handleAiRequest(type) {
+        if (!currentWordForAI) return;
+        playClickSound();
+        aiResultDiv.textContent = '';
+        aiLoadingDiv.style.display = 'block';
+        let prompt = '';
+        const gradeContext = currentGradeForAI ? ` for a student in ${currentGradeForAI}` : '';
+
+        if (type === 'define') {
+            prompt = `Define the word "${currentWordForAI}" in simple terms${gradeContext}.`;
+        } else if (type === 'sentence') {
+            prompt = `Use the word "${currentWordForAI}" in a simple sentence suitable${gradeContext}.`;
+        }
+        
+        const result = await callGeminiApi(prompt);
+        aiLoadingDiv.style.display = 'none';
+        aiResultDiv.textContent = result;
+    }
+
+    aiDefineBtn.addEventListener('click', () => handleAiRequest('define'));
+    aiSentenceBtn.addEventListener('click', () => handleAiRequest('sentence'));
+
+
+    // --- Settings Control Listeners ---
+    document.getElementById('settings-theme-toggle').addEventListener('change', (e) => {
+        globalSettings.theme = e.target.checked ? 'dark' : 'light';
+        saveSettings(); applySettings(); updateSettingsUI(); 
+    });
+    document.getElementById('settings-sound-toggle').addEventListener('change', (e) => {
+        globalSettings.sound = e.target.checked;
+        saveSettings(); updateSettingsUI(); 
+        if (globalSettings.sound) playClickSound(); 
+    });
+    document.getElementById('settings-default-time').addEventListener('change', (e) => {
+        globalSettings.defaultTime = parseInt(e.target.value) || 60;
+        saveSettings();
+        Object.values(gameInstances).forEach(game => {
+            if(game && game.updateDefaultTime) game.updateDefaultTime(globalSettings.defaultTime);
+        });
+    });
+    const fontSizeSlider = document.getElementById('settings-font-size');
+    const fontSizeIndicator = document.getElementById('font-size-indicator');
+    fontSizeSlider.addEventListener('input', (e) => {
+        globalSettings.fontSize = parseFloat(e.target.value).toFixed(1);
+        fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
+        applySettings(); 
+    });
+    fontSizeSlider.addEventListener('change', saveSettings); 
+    document.getElementById('settings-autospeak-toggle').addEventListener('change', (e) => {
+        globalSettings.autoSpeak = e.target.checked;
+        saveSettings();
+    });
+    const speechRateSlider = document.getElementById('settings-speech-rate');
+    const speechRateIndicator = document.getElementById('speech-rate-indicator');
+    speechRateSlider.addEventListener('input', (e) => {
+        globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
+        speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
+        // Update all game sliders visually
+        document.querySelectorAll('.speech-rate-slider').forEach(slider => slider.value = globalSettings.speechRate);
+        // Update all inline indicators
+         document.querySelectorAll('.speech-rate-indicator-inline').forEach(span => {
+             span.textContent = `${globalSettings.speechRate}x`;
+         });
+    });
+    speechRateSlider.addEventListener('change', saveSettings); 
+    document.getElementById('reset-settings-btn').addEventListener('click', resetSettings);
+
+
+    // --- Game Instance Creation ---
+    const gameInstances = {
+        'prek': createWordChallenge('prek', words_prek), 
+        'k': createWordChallenge('k', words_k),
+        'first': createWordChallenge('first', words_first),
+        'second': createWordChallenge('second', words_second),
+        'third': createWordChallenge('third', words_third),
+        'fourth': createWordChallenge('fourth', words_fourth),
+        'fifth': createWordChallenge('fifth', words_fifth),
+        'more': createWordChallenge('more', words_more)
+    };
+
+    // --- Tab Navigation Logic ---
+    const tabs = document.querySelectorAll('.nav-tab');
+    const sections = document.querySelectorAll('.grade-section');
+    activeGameInstance = gameInstances['prek']; 
+
+    if (activeGameInstance && activeGameInstance.attachKeyboardListener) {
+        activeGameInstance.attachKeyboardListener();
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            playClickSound(); 
+            const targetId = tab.getAttribute('data-target');
+            const targetKey = targetId.replace('-grade', '').replace('pre-k', 'prek').replace('more-grades','more'); 
+
+
+            if (activeGameInstance && activeGameInstance.removeKeyboardListener) {
+                activeGameInstance.removeKeyboardListener();
+                activeGameInstance.stopGame();
+            }
+
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            sections.forEach(section => {
+                section.classList.toggle('active', section.id === targetId);
+            });
+
+            activeGameInstance = gameInstances[targetKey];
+            if (activeGameInstance && activeGameInstance.attachKeyboardListener) {
+                activeGameInstance.attachKeyboardListener();
+                const slider = document.getElementById(`speech-rate-slider-${targetKey}`);
+                 if (slider) { 
+                     slider.value = globalSettings.speechRate;
+                 } else {
+                     console.warn(`Speech rate slider not found for key: ${targetKey}`);
+                 }
+                 const indicator = document.getElementById(`speech-rate-indicator-inline-${targetKey}`);
+                 if(indicator) {
+                      indicator.textContent = `${globalSettings.speechRate}x`;
+                 }
+
+            } else {
+                console.warn("No game instance found or attachKeyboardListener method missing for key:", targetKey);
+            }
+        });
+    });
+
+    updateSettingsUI(); // Initial icon render
+});
+</script>
+
+</body>
+</html>
+
