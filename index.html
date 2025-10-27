@@ -650,18 +650,19 @@ button:active {
   margin-top: 4px;
 }
 
-/* --- Bottom Nav Bar --- */
+/* --- Bottom Nav Bar (UPDATED) --- */
 #bottom-bar {
   height: auto;
   background: var(--card-bg);
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center; /* Center buttons horizontally */
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: clamp(5px, 1vw, 8px); /* Add gap between wrapped buttons */
   box-shadow: 0 8px 30px var(--shadow-color);
   transition: all 0.3s ease;
   border-radius: 22px;
-  padding: 10px 8px;
+  padding: clamp(8px, 1.5vh, 10px) clamp(10px, 2vw, 12px); /* Responsive padding */
   border: 1px solid var(--border-color);
   margin-top: auto; /* Push to bottom within flex container */
   margin-bottom: clamp(5px, 1vh, 10px); /* Responsive bottom margin */
@@ -673,20 +674,21 @@ button:active {
   transform: translateX(-50%);
 }
 
-
 #bottom-bar button {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: #ffffff;
   font-weight: 600;
-  font-size: 0.95rem;
-  padding: 10px 12px;
+  font-size: clamp(0.85rem, 2vw, 0.95rem); /* Responsive font size */
+  padding: clamp(8px, 1.5vh, 10px) clamp(10px, 1.8vw, 12px); /* Responsive padding */
   display: flex;
   align-items: center;
   gap: 5px;
   box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
   letter-spacing: 0px;
-  flex-shrink: 0;
-  margin: 0 3px;
+  flex-grow: 1; /* Allow buttons to grow */
+  flex-basis: auto; /* Let flexbox decide basis */
+  min-width: fit-content; /* Ensure text doesn't wrap too early */
+  margin: 2px; /* Small margin for wrapping */
   border-radius: 12px;
 }
 
@@ -697,8 +699,8 @@ button:active {
 
 #bottom-bar i {
   display: inline;
-  width: 18px;
-  height: 18px;
+  width: clamp(16px, 2.5vw, 18px); /* Responsive size */
+  height: clamp(16px, 2.5vw, 18px);
 }
 
 #keyboard-hint {
@@ -1198,10 +1200,13 @@ input:checked + .slider:before {
       margin-bottom: clamp(5px, 1vh, 10px); /* Consistent margin */
       height: clamp(50px, 8vh, 55px); /* Responsive height */
       padding: clamp(8px, 1.5vh, 10px) 8px;
+      flex-wrap: nowrap; /* Prevent wrapping in landscape */
+      justify-content: space-evenly; /* Evenly space in landscape */
   }
   #bottom-bar button {
       padding: clamp(8px, 1.5vh, 10px) clamp(10px, 1.5vw, 12px);
       font-size: clamp(0.85rem, 2vw, 0.95rem);
+      flex-grow: 0; /* Don't grow buttons in landscape */
   }
   .timer-controls {
       grid-column: 1 / -1; /* Span full width */
