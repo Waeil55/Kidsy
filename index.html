@@ -3,15 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <!-- Native App Meta Tags -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"> <!-- Added user-scalable=no, viewport-fit=cover -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kidsy">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="https://placehold.co/180x180/8e44ad/ffffff?text=Kidsy"> <!-- Updated color -->
+<link rel="apple-touch-icon" href="https://placehold.co/180x180/8e44ad/ffffff?text=Kidsy">
 
 <title>Kidsy</title>
+<!-- Libs: Tone (Audio), Lucide (Icons), Confetti (Fun!) -->
 <script src="https://cdn.jsdelivr.net/npm/tone@14.8.39/build/Tone.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
@@ -22,82 +25,78 @@
   --card-bg: rgba(255, 255, 255, 0.98);
   --accent-primary: #8e44ad; /* Purple */
   --accent-secondary: #f39c12; /* Orange */
+  --accent-success: #2ecc71; /* Green */
+  --accent-danger: #e74c3c; /* Red */
   --shadow-color: rgba(142, 68, 173, 0.18);
   --border-color: rgba(142, 68, 173, 0.09);
   --glow-color: rgba(243, 156, 18, 0.5);
 
-  --word-font-size: 5em; /* Keep increased word size */
+  /* Use clamp for responsive font sizes */
+  --word-font-size: clamp(3em, 12vw, 5em);
   --base-font-size: 17px;
 }
 
-/* --- Theme Definitions - Vibrant & Colorful v2 --- */
+/* --- Theme Definitions --- */
 body.theme-ocean {
-  --bg-gradient: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%); /* Blue/Indigo */
+  --bg-gradient: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%);
   --text-primary: #00394f;
-  --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #36d1dc; /* Bright Cyan */
-  --accent-secondary: #5b86e5; /* Royal Blue */
+  --accent-primary: #36d1dc;
+  --accent-secondary: #5b86e5;
   --shadow-color: rgba(54, 209, 220, 0.2);
   --border-color: rgba(54, 209, 220, 0.1);
   --glow-color: rgba(91, 134, 229, 0.6);
 }
 
 body.theme-sunset {
-  --bg-gradient: linear-gradient(135deg, #fe8c00 0%, #f83600 100%); /* Bright Orange/Red */
-  --text-primary: #611e00; /* Dark Brown */
-  --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #fc4a1a; /* Orange-Red */
-  --accent-secondary: #f7b733; /* Yellow */
+  --bg-gradient: linear-gradient(135deg, #fe8c00 0%, #f83600 100%);
+  --text-primary: #611e00;
+  --accent-primary: #fc4a1a;
+  --accent-secondary: #f7b733;
   --shadow-color: rgba(252, 74, 26, 0.2);
   --border-color: rgba(252, 74, 26, 0.1);
   --glow-color: rgba(247, 183, 51, 0.6);
 }
 
 body.theme-forest {
- --bg-gradient: linear-gradient(135deg, #9ef5a5 0%, #5bb964 100%); /* Mint/Green */
+  --bg-gradient: linear-gradient(135deg, #9ef5a5 0%, #5bb964 100%);
   --text-primary: #1b5e20;
-  --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #76b852; /* Muted Green */
-  --accent-secondary: #f7b733; /* Yellow accent */
+  --accent-primary: #76b852;
+  --accent-secondary: #f7b733;
   --shadow-color: rgba(118, 184, 82, 0.2);
   --border-color: rgba(118, 184, 82, 0.1);
   --glow-color: rgba(247, 183, 51, 0.6);
 }
 
 body.theme-pink {
-  --bg-gradient: linear-gradient(135deg, #f43b47 0%, #453a94 100%); /* Red/Indigo */
-  --text-primary: #f8f8f8; /* Light text for contrast */
-  --card-bg: rgba(255, 255, 255, 0.98); /* Keep light card */
-  --accent-primary: #ff7eb9; /* Pink */
-  --accent-secondary: #fed95f; /* Yellow */
+  --bg-gradient: linear-gradient(135deg, #f43b47 0%, #453a94 100%);
+  --text-primary: #f8f8f8;
+  --card-bg: rgba(69, 58, 148, 0.85); /* Darker card for this theme */
+  --accent-primary: #ff7eb9;
+  --accent-secondary: #fed95f;
   --shadow-color: rgba(244, 59, 71, 0.2);
   --border-color: rgba(244, 59, 71, 0.1);
   --glow-color: rgba(254, 217, 95, 0.6);
 }
 body.theme-purple {
-  --bg-gradient: linear-gradient(135deg, #9face6 0%, #74ebd5 100%); /* Light Blue/Mint */
+  --bg-gradient: linear-gradient(135deg, #9face6 0%, #74ebd5 100%);
   --text-primary: #4a148c;
-  --card-bg: rgba(255, 255, 255, 0.98);
-  --accent-primary: #b06ab3; /* Muted Purple */
-  --accent-secondary: #4568dc; /* Indigo */
+  --accent-primary: #b06ab3;
+  --accent-secondary: #4568dc;
   --shadow-color: rgba(176, 106, 179, 0.2);
   --border-color: rgba(176, 106, 179, 0.1);
   --glow-color: rgba(69, 104, 220, 0.6);
 }
 body.theme-skyblue {
-    --bg-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); /* Vibrant Blue */
+    --bg-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
     --text-primary: #0d47a1;
-    --card-bg: rgba(255, 255, 255, 0.98);
-    --accent-primary: #64b5f6; /* Lighter Blue */
-    --accent-secondary: #ffb74d; /* Light Orange accent */
+    --accent-primary: #64b5f6;
+    --accent-secondary: #ffb74d;
     --shadow-color: rgba(100, 181, 246, 0.2);
     --border-color: rgba(100, 181, 246, 0.1);
     --glow-color: rgba(255, 183, 77, 0.6);
 }
 
-
-
-/* --- Dark Mode Overrides - Vibrant --- */
+/* --- Dark Mode Overrides --- */
 body.dark {
   --text-primary: #e0e0e0;
   --card-bg: rgba(44, 62, 80, 0.97); 
@@ -127,6 +126,8 @@ body.dark.theme-forest {
 }
 body.dark.theme-pink {
   --bg-gradient: linear-gradient(135deg, #cc2b5e 0%, #753a88 100%); 
+  --text-primary: #f8f8f8; /* Keep light text */
+  --card-bg: rgba(117, 58, 136, 0.9); /* Darker card */
   --accent-primary: #f48fb1; 
   --accent-secondary: #f8bbd0; 
 }
@@ -141,26 +142,25 @@ body.dark.theme-skyblue {
     --accent-secondary: #b3e5fc; 
 }
 
-
+/* --- Base Layout --- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* --- Layout Adjustments for App Feel --- */
 html, body {
-    height: 100%; 
-    overflow: hidden; 
-    overscroll-behavior: none; 
-    font-size: var(--base-font-size); 
+  height: 100%; 
+  overflow: hidden; 
+  overscroll-behavior: none; 
+  font-size: var(--base-font-size); 
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   text-align: center;
-  background: var(--bg-gradient); /* Use variable */
-  color: var(--text-primary); /* Use variable */
+  background: var(--bg-gradient);
+  color: var(--text-primary);
   transition: background 0.3s ease, color 0.3s ease; 
   position: relative;
   display: flex; 
@@ -169,68 +169,19 @@ body {
   justify-content: flex-start; 
   padding: 10px 0 0 0; 
 }
-/* --- End Layout Adjustments --- */
 
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* Removed gradients, rely on body background */
-  background: none;
-  pointer-events: none;
-  z-index: -1; 
-}
-
-
-/* Wrapper takes full space */
 .main-wrapper {
   max-width: 700px; 
   width: 100%; 
   padding: 0 10px; 
   display: flex;
-  flex-direction: column; /* Default: Tabs on top */
+  flex-direction: column; /* Tabs on top */
   flex-grow: 1; 
   overflow: hidden; 
   min-height: 0; 
 }
 
-/* Grade sections fill space below tabs */
-.grade-section {
-  display: none; 
-  flex-grow: 1; 
-  flex-direction: column; 
-  overflow: hidden; 
-  min-height: 0; 
-}
-
-.grade-section.active {
-  display: flex; 
-  animation: slideIn 0.3s ease-out;
-}
-
-
-.container {
-  padding: 25px; 
-  background: var(--card-bg); /* Use variable */
-  border-radius: 28px; 
-  box-shadow: 0 12px 45px var(--shadow-color); /* Use variable */
-  transition: all 0.2s ease;
-  backdrop-filter: blur(12px); 
-  position: relative;
-  z-index: 1;
-  border: 1px solid var(--border-color); /* Use variable */
-  margin-bottom: 15px; 
-  flex-shrink: 1; 
-  overflow-y: auto; 
-  overscroll-behavior: contain; 
-  min-height: 0; 
-}
-
-
+/* --- Tab Navigation --- */
 .nav-tabs-container {
   display: flex;
   justify-content: center; 
@@ -245,15 +196,14 @@ body::before {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  background: var(--card-bg); /* Use variable */
+  background: var(--card-bg);
   border-radius: 22px; 
   padding: 8px; 
-  box-shadow: 0 6px 25px var(--shadow-color); /* Use variable */
-  border: 1px solid var(--border-color); /* Use variable */
+  box-shadow: 0 6px 25px var(--shadow-color);
+  border: 1px solid var(--border-color);
   position: relative;
   z-index: 2;
 }
-
 
 .nav-tab {
   padding: 10px 18px; 
@@ -263,15 +213,13 @@ body::before {
   cursor: pointer;
   font-size: 1.0rem; 
   font-weight: 600; 
-  font-family: 'Poppins', sans-serif;
   transition: all 0.2s ease;
-  background: rgba(0, 0, 0, 0.05); /* Keep subtle */
-  color: var(--text-primary); /* Use variable */
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
 }
 
 body.dark .nav-tab {
   background: rgba(255, 255, 255, 0.08);
-  color: var(--text-dark);
 }
 
 .nav-tab:hover {
@@ -283,124 +231,144 @@ body.dark .nav-tab:hover {
 }
 
 .nav-tab.active {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); /* Use variables */
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: white;
-  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35); /* Use variable */
+  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35);
   transform: translateY(-2px) scale(1.02);
 }
-body.dark .nav-tab.active {
-     box-shadow: 0 5px 18px hsla(from var(--accent-secondary) h s l / 0.4); /* Use variable */
-}
 
+/* --- SINGLE Game Section --- */
+/* This is now the ONLY section, dynamically updated */
+.grade-section {
+  display: flex; 
+  flex-grow: 1; 
+  flex-direction: column; 
+  overflow: hidden; 
+  min-height: 0; 
+  animation: slideIn 0.3s ease-out;
+}
 
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(15px) scale(0.98); } 
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* --- Challenge Header --- */
+.container {
+  padding: 25px; 
+  background: var(--card-bg);
+  border-radius: 28px; 
+  box-shadow: 0 12px 45px var(--shadow-color);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(12px); 
+  position: relative;
+  z-index: 1;
+  border: 1px solid var(--border-color);
+  margin-bottom: 15px; 
+  flex-shrink: 1; 
+  /* This makes the container scrollable, not the whole page */
+  overflow-y: auto; 
+  overscroll-behavior: contain; 
+  min-height: 0; 
+}
+
+/* --- Game UI Elements --- */
 .challenge-header {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    margin-bottom: 20px; 
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  margin-bottom: 20px; 
 }
 .challenge-header .icon-btn {
-    position: absolute; 
-    left: 0; 
-    width: 38px; 
-    height: 38px;
+  position: absolute; 
+  left: 0; 
+  width: 38px; 
+  height: 38px;
 }
 .challenge-header h1 {
-  font-size: 2.1rem; 
+  font-size: clamp(1.8rem, 7vw, 2.1rem); 
   font-weight: 700; 
   margin: 0; 
   padding: 0 50px; 
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); /* Use variables */
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: fadeIn 0.4s ease-out;
-  text-shadow: 0 0 15px hsla(from var(--accent-primary) h s l / 0.1); /* Use variable color */
+  text-shadow: 0 0 15px hsla(from var(--accent-primary) h s l / 0.1);
   letter-spacing: -0.5px; 
 }
-body.dark .challenge-header h1 {
-    text-shadow: 0 0 15px hsla(from var(--accent-secondary) h s l / 0.2); /* Use variable color */
-}
-
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); } 
   to { opacity: 1; transform: scale(1); }
 }
 
-/* --- Force Stacking Elements --- */
-.start-btn,
-.word-display,
-.settings-section, 
-/* .timer-section, REMOVED - Handled by grid now */
-.speak-controls,
-.stats-grid, /* Grid handles its children */
-.score-display,
-.keyboard-hint,
-.progress-bar { 
-    display: block; 
-    width: fit-content; 
-    max-width: 100%; 
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 15px; 
+/* --- Centering All Game Content --- */
+/* This ensures content is stacked and centered */
+#start-btn,
+#word-display,
+#settings-section, 
+#speak-controls,
+#stats-grid,
+#score-display,
+#keyboard-hint,
+#progress-bar,
+#high-score-display,
+#star-rating-display,
+#countdown-overlay { 
+  display: block; 
+  width: fit-content; 
+  max-width: 100%; 
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15px; 
 }
-.word-display { width: 100%; }
-.settings-section { 
-    width: 100%; 
-    max-width: 320px; 
-    padding: 12px;
+#word-display { width: 100%; }
+#settings-section { 
+  width: 100%; 
+  max-width: 320px; 
+  padding: 12px;
 }
-.speak-controls { width: fit-content; }
-.stats-grid { width: 100%; max-width: 400px; display: grid !important; } /* Ensure grid display */
-.progress-bar { width: 100%; max-width: 400px; } 
-
-/* Ensure game wrapper doesn't interfere */
-.game-wrapper-landscape { display: block; }
-.game-main, .game-sidebar { display: block; }
-
-/* --- End Force Stacking Elements --- */
-
+#speak-controls { width: fit-content; }
+#stats-grid { width: 100%; max-width: 400px; display: grid !important; }
+#progress-bar { width: 100%; max-width: 400px; } 
+#high-score-display {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  opacity: 0.8;
+}
 
 label {
   font-weight: 600;
   font-size: 1.0rem; 
   display: block;
   margin-bottom: 10px; 
-  color: var(--text-primary); /* Use variable */
+  color: var(--text-primary);
   opacity: 0.9;
 }
-
 
 .timer-input { 
   width: 110px; 
   padding: 10px; 
-  border: 1px solid var(--border-color); /* Use variable */
+  border: 1px solid var(--border-color);
   border-radius: 12px; 
   font-size: 1.0rem; 
   font-weight: 600;
   text-align: center;
   transition: all 0.3s ease;
   font-family: 'Poppins', sans-serif;
-  background: var(--card-bg); /* Use variable */
-  color: var(--text-primary); /* Use variable */
+  background: var(--card-bg);
+  color: var(--text-primary);
   display: inline-block; 
 }
 
-
 .timer-input:focus {
   outline: none;
-  border-color: var(--accent-primary); /* Use variable */
-  box-shadow: 0 0 0 3px hsla(from var(--accent-primary) h s l / 0.2); /* Use variable */
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px hsla(from var(--accent-primary) h s l / 0.2);
   transform: scale(1.03); 
 }
-
 
 button {
   padding: 12px 22px; 
@@ -412,95 +380,67 @@ button {
   font-weight: 600; 
   font-family: 'Poppins', sans-serif;
   transition: all 0.15s ease;
-  box-shadow: 0 4px 12px var(--shadow-color); /* Use variable */
+  box-shadow: 0 4px 12px var(--shadow-color);
   position: relative;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.05); 
-  color: var(--text-primary); /* Use variable */
+  color: var(--text-primary);
 }
 body.dark button {
     background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-dark);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2); 
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-}
-body.dark button::before {
-     background: rgba(0, 0, 0, 0.1);
-}
-
-button:hover::before {
-  width: 280px; 
-  height: 280px;
 }
 
 button:hover {
   transform: translateY(-2px) scale(1.02); 
-  box-shadow: 0 6px 18px hsla(from var(--shadow-color) h s l / 1.5); /* Increase shadow alpha */
+  box-shadow: 0 6px 18px hsla(from var(--shadow-color) h s l / 1.5);
 }
-
 
 button:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.97); /* Squish effect */
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
-.start-btn { 
-  background: linear-gradient(135deg, #2ecc71, #27ae60); 
+#start-btn { 
+  background: linear-gradient(135deg, var(--accent-success), #27ae60); 
   color: white;
   font-size: 1.1rem; 
   padding: 14px 32px; 
-   box-shadow: 0 5px 18px rgba(46, 204, 113, 0.35); 
+  box-shadow: 0 5px 18px rgba(46, 204, 113, 0.35); 
 }
 
-.speak-btn { 
+#speak-btn { 
   background: linear-gradient(135deg, #e67e22, #d35400); 
   color: white;
   display: none; 
-  animation: pulse 1.8s infinite; 
+  animation: pulse-orange 1.8s infinite; 
   padding: 11px 18px; 
   font-size: 1.0rem;
   box-shadow: 0 5px 18px rgba(230, 126, 34, 0.35); 
 }
 
-@keyframes pulse {
+@keyframes pulse-orange {
   0%, 100% { transform: scale(1); box-shadow: 0 5px 18px rgba(230, 126, 34, 0.35); }
   50% { transform: scale(1.04); box-shadow: 0 7px 22px rgba(230, 126, 34, 0.55); }
 }
 
-
-/* Speak controls alignment fix */
-.speak-controls {
-    display: none; 
-    align-items: center; /* Vertically align items */
-    justify-content: center;
-    gap: 8px; 
-    margin: 10px auto; /* Ensure centering */
+#speak-controls {
+  display: none; 
+  align-items: center; /* Vertically align items */
+  justify-content: center;
+  gap: 8px; 
+  margin: 10px auto;
 }
 
-
-/* Style for speed indicator text */
 .speech-rate-indicator-inline {
-    font-weight: 600;
-    font-size: 0.9rem; 
-    color: var(--text-primary); 
-    opacity: 0.8;
-    min-width: 35px; 
-    text-align: right;
+  font-weight: 600;
+  font-size: 0.9rem; 
+  color: var(--text-primary); 
+  opacity: 0.8;
+  min-width: 35px; 
+  text-align: right;
 }
 
-
-/* Base style for circular icon buttons */
 .icon-btn {
   background: rgba(0, 0, 0, 0.05); 
   border-radius: 50%;
@@ -512,12 +452,11 @@ button:active {
   transition: all 0.3s ease;
   padding: 0;
   margin: 0;
-  color: var(--text-primary); /* Use variable */
+  color: var(--text-primary);
   opacity: 0.8;
   flex-shrink: 0; 
   border: none; 
 }
-
 
 .icon-btn:hover {
   background: rgba(0, 0, 0, 0.1);
@@ -525,13 +464,11 @@ button:active {
   transform: rotate(10deg) scale(1.05); 
 }
 
-
-.word-display { 
+#word-display { 
   font-size: var(--word-font-size); 
   font-weight: 700; 
-  color: var(--accent-primary); /* Use variable */
+  color: var(--accent-primary);
   text-shadow: none; 
-  animation: wordPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   min-height: 90px; 
   display: flex;
   align-items: center;
@@ -539,11 +476,17 @@ button:active {
   letter-spacing: 1.5px; 
   position: relative;
   word-break: break-all; 
+  /* Animation will be triggered by JS */
+  opacity: 0;
+  transform: scale(0.8);
 }
 
-body.dark .word-display {
-  color: var(--text-dark); 
-   text-shadow: 0 0 15px hsla(from var(--accent-secondary) h s l / 0.3); /* Use variable */
+/* NEW: Word animation classes */
+#word-display.pop-in {
+  animation: wordPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+#word-display.swoosh-in {
+  animation: swooshIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes wordPop {
@@ -552,29 +495,50 @@ body.dark .word-display {
   100% { transform: scale(1) rotateX(0deg); opacity: 1; }
 }
 
-
-/* Removed timer-section - content moved to stats-grid */
+@keyframes swooshIn {
+  0% { transform: translateX(-50px) scale(0.8); opacity: 0; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
 
 .timer-controls {
   display: flex;
   align-items: center; 
   justify-content: center; /* Center horizontally */
-  gap: 12px; /* Increased gap slightly */
+  gap: 12px;
   grid-column: 1 / -1; /* Make it span full grid width */
-  margin-top: 10px; /* Add space above icons */
+  margin-top: 10px;
 }
 
-
-.score-display { 
+#score-display { 
   font-size: 1.2rem; 
   margin-top: 10px; 
   font-weight: 600;
-  color: var(--accent-secondary); /* Use variable */
+  color: var(--accent-secondary);
   line-height: 1.5; 
 }
 
+/* NEW: Star Rating */
+#star-rating-display {
+  font-size: 2.5rem;
+  color: #ffc107; /* Star yellow */
+  margin-top: -10px;
+}
+#star-rating-display i {
+  margin: 0 2px;
+  transform: scale(0);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+/* Animation for stars appearing one by one */
+#star-rating-display.show-stars i {
+  transform: scale(1);
+  opacity: 1;
+}
+#star-rating-display.show-stars i:nth-child(2) { transition-delay: 0.1s; }
+#star-rating-display.show-stars i:nth-child(3) { transition-delay: 0.2s; }
 
-.progress-bar {
+
+#progress-bar {
   width: 100%;
   height: 8px; 
   background: rgba(0, 0, 0, 0.05); 
@@ -583,35 +547,39 @@ body.dark .word-display {
   box-shadow: none; 
 }
 
-
-.progress-fill { 
+#progress-fill { 
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); /* Use variables */
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
   transition: width 0.2s ease;
   border-radius: 20px;
   box-shadow: none; 
   position: relative;
 }
 
-.progress-fill::after {
- content: none;
-}
-
-
-.stats-grid { 
+/* --- Stats Grid --- */
+#stats-grid { 
   display: grid;
   grid-template-columns: 1fr 1fr; /* Two columns for cards */
   gap: 12px; 
 }
-/* New Timer Card Style */
+
 .timer-card {
-    /* Inherits stat-card styles */
-     font-weight: 600;
-     font-size: 1.1rem; /* Match timer section font size */
-     /* Center timer text */
-     display: flex;
-     align-items: center;
-     justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* NEW: Timer pulse animation */
+@keyframes pulse-red {
+  0%, 100% { transform: scale(1); color: var(--accent-danger); }
+  50% { transform: scale(1.1); }
+}
+.timer-card.timer-low {
+  animation: pulse-red 1s infinite;
+  color: var(--accent-danger) !important;
 }
 
 .stat-card {
@@ -619,60 +587,61 @@ body.dark .word-display {
   padding: 12px; 
   border-radius: 16px; 
   transition: all 0.2s ease;
-  border: 1px solid var(--border-color); /* Use variable */
+  border: 1px solid var(--border-color);
   text-align: center; 
-  /* Centering using Flexbox */
   display: flex;
   flex-direction: column;
   align-items: center; 
   justify-content: center; 
 }
 
-
 .stat-card:hover {
   transform: translateY(-3px) scale(1.02); 
   background: rgba(0, 0, 0, 0.06); 
-  box-shadow: 0 5px 15px var(--shadow-color); /* Use variable */
+  box-shadow: 0 5px 15px var(--shadow-color);
 }
 
-
 .stat-number { 
-  font-size: 3rem; /* Further Increased size */
+  font-size: 3rem;
   font-weight: 700; 
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); /* Use variables */
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  line-height: 1.1; /* Adjust line height */
+  line-height: 1.1;
+}
+/* NEW: Streak Counter Style */
+#streak-counter {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-secondary);
 }
 
 .stat-label {
   font-size: 0.8rem; 
   opacity: 0.7; 
-  margin-top: 4px; /* Slightly increased margin */
+  margin-top: 4px;
 }
 
-/* Bottom Nav Bar */
-.bottom-bar { 
+/* --- Bottom Nav Bar --- */
+#bottom-bar { 
   height: auto; 
-  background: var(--card-bg); /* Use variable */
+  background: var(--card-bg);
   display: flex;
   justify-content: space-evenly; 
   align-items: center;
   flex-wrap: nowrap; 
-  box-shadow: 0 8px 30px var(--shadow-color); /* Use variable */
+  box-shadow: 0 8px 30px var(--shadow-color);
   transition: all 0.3s ease;
   border-radius: 22px; 
   padding: 10px 8px; 
-  border: 1px solid var(--border-color); /* Use variable */
+  border: 1px solid var(--border-color);
   margin-top: 15px; 
   margin-bottom: 10px; 
   flex-shrink: 0; 
 }
 
-
-
-.bottom-bar button {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); /* Use variables */
+#bottom-bar button {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: #ffffff;
   font-weight: 600; 
   font-size: 0.95rem; 
@@ -680,41 +649,188 @@ body.dark .word-display {
   display: flex;
   align-items: center;
   gap: 5px; 
-  box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25); /* Use variable */
+  box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
   letter-spacing: 0px; 
   flex-shrink: 0; 
   margin: 0 3px; 
   border-radius: 12px; 
 }
-body.dark .bottom-bar button {
-     box-shadow: 0 4px 12px hsla(from var(--accent-secondary) h s l / 0.3); /* Use variable */
-}
 
-.bottom-bar button:hover {
+#bottom-bar button:hover {
   transform: scale(1.05); 
-  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35); /* Use variable */
-}
-body.dark .bottom-bar button:hover {
-     box-shadow: 0 5px 18px hsla(from var(--accent-secondary) h s l / 0.45); /* Use variable */
+  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35);
 }
 
-.bottom-bar i {
+#bottom-bar i {
   display: inline;
   width: 18px; 
   height: 18px;
 }
 
-.keyboard-hint { 
+#keyboard-hint { 
   font-size: 0.8rem; 
   opacity: 0.6; 
   margin-top: 8px; 
 }
 
+/* --- NEW: Countdown Overlay --- */
+#countdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20vw;
+  font-weight: 700;
+  color: white;
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#countdown-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+#countdown-text {
+  transform: scale(0.5);
+  opacity: 0;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+/* Animation for each number */
+#countdown-overlay.visible #countdown-text.show {
+  animation: countdown-pop 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes countdown-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
-/* --- SETTINGS MODAL --- */
+
+/* --- NEW: CSS Mascot --- */
+#mascot {
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  z-index: 5;
+  transition: transform 0.3s ease;
+}
+.mascot-body {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-secondary), #f1c40f);
+  border-radius: 50% 50% 40% 40%;
+  position: relative;
+  border: 3px solid var(--card-bg);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  animation: mascot-idle 2s infinite ease-in-out;
+}
+.mascot-eye {
+  width: 12px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 18px;
+  border: 2px solid #333;
+  animation: mascot-blink 4s infinite;
+}
+.mascot-eye::after { /* Pupil */
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 8px;
+  left: 3px;
+}
+.mascot-eye.left { left: 12px; }
+.mascot-eye.right { right: 12px; }
+
+.mascot-mouth {
+  width: 20px;
+  height: 10px;
+  background: #c0392b;
+  border: 2px solid #333;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.2s ease;
+}
+
+/* Mascot Animations */
+@keyframes mascot-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes mascot-blink {
+  0%, 90% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+  100% { transform: scaleY(1); }
+}
+
+/* Mascot States (triggered by JS) */
+#mascot.cheer {
+  animation: mascot-cheer-jump 0.5s ease;
+}
+#mascot.cheer .mascot-mouth { /* Big smile */
+  width: 25px;
+  height: 15px;
+  border-radius: 15px;
+  bottom: 10px;
+}
+@keyframes mascot-cheer-jump {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px) rotate(10deg) scale(1.1); }
+}
+
+#mascot.worried {
+  animation: mascot-worried-shake 0.5s infinite;
+}
+#mascot.worried .mascot-mouth { /* Worried mouth */
+  width: 15px;
+  height: 5px;
+  border-radius: 0;
+  border-top: 3px solid #333;
+  background: none;
+  bottom: 15px;
+}
+@keyframes mascot-worried-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+#mascot.celebrate {
+  animation: mascot-celebrate-spin 1s infinite linear;
+}
+#mascot.celebrate .mascot-mouth { /* Open smile */
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  bottom: 10px;
+}
+@keyframes mascot-celebrate-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+
+/* --- SETTINGS MODAL (Mostly Unchanged) --- */
 #settings-backdrop, #ai-helper-backdrop { 
-  /* Styles remain the same */
-   position: fixed;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -726,12 +842,10 @@ body.dark .bottom-bar button:hover {
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
-
 #settings-backdrop.visible, #ai-helper-backdrop.visible { 
   opacity: 1;
   pointer-events: all;
 }
-
 #settings-modal, #ai-helper-modal { 
   position: fixed;
   top: 50%;
@@ -739,10 +853,10 @@ body.dark .bottom-bar button:hover {
   transform: translate(-50%, -50%) scale(0.95);
   width: 90%;
   max-width: 420px; 
-  background: var(--card-bg); /* Use variable */
+  background: var(--card-bg);
   border-radius: 22px; 
-  box-shadow: 0 15px 50px var(--shadow-color); /* Use variable */
-  border: 1px solid var(--border-color); /* Use variable */
+  box-shadow: 0 15px 50px var(--shadow-color);
+  border: 1px solid var(--border-color);
   z-index: 100;
   text-align: left;
   padding: 25px; 
@@ -750,43 +864,36 @@ body.dark .bottom-bar button:hover {
   pointer-events: none;
   transition: all 0.3s ease;
 }
-
 #settings-backdrop.visible #settings-modal,
 #ai-helper-backdrop.visible #ai-helper-modal { 
   opacity: 1;
   pointer-events: all;
   transform: translate(-50%, -50%) scale(1);
 }
-
-
 .settings-header, .ai-helper-header { 
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px; 
 }
-
 .settings-header h2, .ai-helper-header h2 { 
   font-size: 1.7rem; 
   font-weight: 700;
   margin: 0;
 }
-
-
 .setting-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px; 
   padding-bottom: 18px; 
-  border-bottom: 1px solid var(--border-color); /* Use variable */
+  border-bottom: 1px solid var(--border-color);
 }
 .setting-item:last-of-type {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
-
 .setting-label {
   font-weight: 600;
   font-size: 1.0rem; 
@@ -798,53 +905,38 @@ body.dark .bottom-bar button:hover {
   font-size: 0.85rem; 
   margin-top: 3px; 
 }
-
-/* Theme Selector Styles */
 .theme-selector {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap; /* Allow wrapping */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping */
 }
 .theme-option {
-    display: inline-block;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid transparent; /* Thicker border */
-    transition: all 0.2s ease; /* Transition all */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Add subtle shadow */
-}
-.theme-option.selected {
-    border-color: var(--accent-primary); /* Highlight selected */
-    transform: scale(1.1); /* Slightly enlarge selected */
-}
-/* Theme previews matching new gradients */
-.theme-option[data-theme="default"] { background: linear-gradient(135deg, #a18cd1 , #fbc2eb); }
-.theme-option[data-theme="ocean"] { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-.theme-option[data-theme="sunset"] { background: linear-gradient(135deg, #fce38a, #f38181); }
-.theme-option[data-theme="forest"] { background: linear-gradient(135deg, #76b852, #8dc26f); }
-.theme-option[data-theme="pink"] { background: linear-gradient(135deg, #f093fb, #f5576c); }
-.theme-option[data-theme="purple"] { background: linear-gradient(135deg, #6a11cb, #2575fc); }
-.theme-option[data-theme="skyblue"] { background: linear-gradient(135deg, #81FFEF, #F067B4); }
-
-
-/* Add outline for better visibility on light backgrounds */
-.theme-option {
-    outline: 1px solid rgba(0,0,0,0.1);
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  outline: 1px solid rgba(0,0,0,0.1);
 }
 body.dark .theme-option {
-     outline: 1px solid rgba(255,255,255,0.1);
+    outline: 1px solid rgba(255,255,255,0.1);
 }
-/* Update border color for default in light mode for better contrast */
-.theme-option[data-theme="default"].selected {
-    border-color: #a0a0a0;
+.theme-option.selected {
+  border-color: var(--accent-primary);
+  transform: scale(1.1);
 }
-body.dark .theme-option[data-theme="default"].selected {
-    border-color: var(--accent-primary); /* Use accent in dark */
-}
-
+/* Updated theme previews */
+.theme-option[data-theme="default"] { background: linear-gradient(135deg, #a6c0fe, #f68084); }
+.theme-option[data-theme="ocean"] { background: linear-gradient(135deg, #48c6ef, #6f86d6); }
+.theme-option[data-theme="sunset"] { background: linear-gradient(135deg, #fe8c00, #f83600); }
+.theme-option[data-theme="forest"] { background: linear-gradient(135deg, #9ef5a5, #5bb964); }
+.theme-option[data-theme="pink"] { background: linear-gradient(135deg, #f43b47, #453a94); }
+.theme-option[data-theme="purple"] { background: linear-gradient(135deg, #9face6, #74ebd5); }
+.theme-option[data-theme="skyblue"] { background: linear-gradient(135deg, #00c6ff, #0072ff); }
 
 /* Toggle Switch Styles */
 .toggle-switch {
@@ -854,7 +946,6 @@ body.dark .theme-option[data-theme="default"].selected {
   height: 26px; 
   flex-shrink: 0;
 }
-
 .slider {
   position: absolute;
   cursor: pointer;
@@ -866,7 +957,6 @@ body.dark .theme-option[data-theme="default"].selected {
   transition: .4s;
   border-radius: 26px; 
 }
-
 .slider:before {
   position: absolute;
   content: "";
@@ -879,11 +969,8 @@ body.dark .theme-option[data-theme="default"].selected {
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
 }
-body.dark .slider:before {
-    background-color: #bdc3c7; 
-}
 input:checked + .slider {
-  background-color: var(--accent-primary); /* Use variable */
+  background-color: var(--accent-primary);
 }
 input:checked + .slider:before {
   transform: translateX(22px); 
@@ -891,1469 +978,1345 @@ input:checked + .slider:before {
 
 /* Range Slider Styles */
 .range-slider {
+  -webkit-appearance: none;
+  appearance: none;
   width: 120px; 
   height: 8px; 
   background: rgba(0, 0, 0, 0.1); 
   border-radius: 8px;
+  outline: none;
+  opacity: 0.7;
+  transition: opacity .2s;
 }
-
+.range-slider:hover {
+  opacity: 1;
+}
 .range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
   width: 20px; 
   height: 20px; 
-  background: var(--accent-primary); /* Use variable */
-   box-shadow: 0 2px 5px hsla(from var(--accent-primary) h s l / 0.4); /* Use variable */
+  background: var(--accent-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px hsla(from var(--accent-primary) h s l / 0.4);
 }
-body.dark .range-slider::-webkit-slider-thumb {
-     background: var(--accent-secondary); /* Use variable */
-      box-shadow: 0 2px 5px hsla(from var(--accent-secondary) h s l / 0.5); /* Use variable */
-}
-.range-slider::-moz-range-thumb { /* Firefox */
+.range-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: var(--accent-primary); /* Use variable */
-   box-shadow: 0 2px 5px hsla(from var(--accent-primary) h s l / 0.4); /* Use variable */
+  background: var(--accent-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px hsla(from var(--accent-primary) h s l / 0.4);
 }
-body.dark .range-slider::-moz-range-thumb {
-    background: var(--accent-secondary); /* Use variable */
-    box-shadow: 0 2px 5px hsla(from var(--accent-secondary) h s l / 0.5); /* Use variable */
+/* In-game speak slider */
+#speak-controls .range-slider {
+  background: rgba(230, 126, 34, 0.2); 
+  width: 100px; 
 }
+#speak-controls .range-slider::-webkit-slider-thumb {
+  background: #e67e22; 
+  box-shadow: 0 2px 5px rgba(230, 126, 34, 0.4);
+}
+#speak-controls .range-slider::-moz-range-thumb {
+  background: #e67e22; 
+  box-shadow: 0 2px 5px rgba(230, 126, 34, 0.4);
+}
+
 .setting-item .value-indicator {
   font-size: 0.9rem; 
   margin-right: 10px; 
   width: 45px; 
   opacity: 0.8;
 }
-/* Specific style for speak controls slider */
-.speak-controls .range-slider {
-    background: rgba(230, 126, 34, 0.2); 
-    width: 100px; 
-}
-.speak-controls .range-slider::-webkit-slider-thumb {
-     background: #e67e22; 
-     box-shadow: 0 2px 5px rgba(230, 126, 34, 0.4);
-}
-.speak-controls .range-slider::-moz-range-thumb {
-    background: #e67e22; 
-    box-shadow: 0 2px 5px rgba(230, 126, 34, 0.4);
-}
-
-
-.setting-item select,
 .setting-item .number-input {
   width: 110px; 
   padding: 8px; 
-  border: 1px solid var(--border-color); /* Use variable */
+  border: 1px solid var(--border-color);
   border-radius: 10px; 
   font-size: 0.95rem; 
 }
-
 #reset-settings-btn {
-  background: linear-gradient(135deg, #e74c3c, #c0392b); 
+  background: linear-gradient(135deg, var(--accent-danger), #c0392b); 
   color: white;
   width: 100%;
   margin-top: 20px; 
   padding: 14px; 
   font-size: 1.0rem; 
-   box-shadow: 0 5px 18px rgba(231, 76, 60, 0.35); 
+  box-shadow: 0 5px 18px rgba(231, 76, 60, 0.35); 
 }
 
 /* --- AI Helper Modal Styles --- */
 #ai-helper-content {
-    margin-bottom: 20px; 
+  margin-bottom: 20px; 
 }
 #ai-helper-content p {
-    margin-bottom: 12px; 
-    line-height: 1.6; 
-    font-size: 1.0rem; 
+  margin-bottom: 12px; 
+  line-height: 1.6; 
+  font-size: 1.0rem; 
 }
-
 #ai-buttons {
-    gap: 10px; 
-    margin-bottom: 12px; 
+  gap: 10px; 
+  margin-bottom: 12px; 
 }
 #ai-buttons button {
-    font-size: 0.95rem; 
-    padding: 12px 15px; 
-     box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25); /* Use variable */
+  font-size: 0.95rem; 
+  padding: 12px 15px; 
+  box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
 }
-body.dark #ai-buttons button {
-      box-shadow: 0 4px 12px hsla(from var(--accent-secondary) h s l / 0.3); /* Use variable */
-}
-
 #ai-result {
-    background: rgba(0, 0, 0, 0.04); 
-    border-radius: 16px; 
-    padding: 15px; 
-    min-height: 70px; 
-    line-height: 1.6; 
-    font-size: 0.95rem; 
-    border: 1px solid var(--border-color); /* Use variable */
+  background: rgba(0, 0, 0, 0.04); 
+  border-radius: 16px; 
+  padding: 15px; 
+  min-height: 70px; 
+  line-height: 1.6; 
+  font-size: 0.95rem; 
+  border: 1px solid var(--border-color);
+  white-space: pre-wrap; /* Show line breaks from AI */
 }
-
-
 #ai-loading {
-    margin-top: 10px; 
-    font-size: 0.95rem; 
+  margin-top: 10px; 
+  font-size: 0.95rem; 
+  display: none; /* Hidden by default */
+  animation: pulse-orange 1.5s infinite;
 }
+
 
 /* --- RESPONSIVE STYLES --- */
 
 /* Adjustments for smaller phone screens */
-@media (max-width: 370px) { /* Target smaller phones */
-    :root { --base-font-size: 15px; --word-font-size: 3.2em;} /* Reduce base font slightly */
+@media (max-width: 370px) {
+  :root { --base-font-size: 15px; }
 
-    .nav-tab { font-size: 0.8rem; padding: 6px 10px; }
-    .challenge-header h1 { font-size: 1.6rem; }
-    .bottom-bar button { font-size: 0.8rem; padding: 8px 6px; gap: 3px; }
-    .bottom-bar i { width: 14px; height: 14px; }
-    .icon-btn { width: 36px; height: 36px; }
-    /* .timer-section { font-size: 1.0rem; } REMOVED */
-     #settings-modal, #ai-helper-modal { padding: 15px; } /* Reduce modal padding */
-     .settings-header h2, .ai-helper-header h2 { font-size: 1.4rem; }
-     .setting-label { font-size: 0.85rem; }
-     .stat-number { font-size: 2.5rem; } /* Adjust stat number size */
+  .nav-tab { font-size: 0.8rem; padding: 6px 10px; }
+  .challenge-header h1 { font-size: 1.6rem; }
+  #bottom-bar button { font-size: 0.8rem; padding: 8px 6px; gap: 3px; }
+  #bottom-bar i { width: 14px; height: 14px; }
+  .icon-btn { width: 36px; height: 36px; }
+  #settings-modal, #ai-helper-modal { padding: 15px; }
+  .settings-header h2, .ai-helper-header h2 { font-size: 1.4rem; }
+  .setting-label { font-size: 0.85rem; }
+  .stat-number { font-size: 2.5rem; }
+  #mascot { width: 50px; height: 50px; bottom: 5px; right: 5px; }
 }
 
 /* Landscape adjustments */
 @media (orientation: landscape) {
-   .main-wrapper {
-       flex-direction: row; /* Tabs | Content */
-       align-items: stretch; 
-       padding: 0 8px; 
-       max-width: 98%; 
-   }
-   .nav-tabs-container {
-       flex-direction: column; 
-       justify-content: flex-start; 
-       width: auto; 
-       flex-basis: 160px; /* Wider tabs */
-       flex-shrink: 0;
-       margin-right: 15px; 
-       margin-bottom: 0; 
-       align-items: stretch; 
-       padding-top: 10px; 
-       padding-bottom: 10px; 
-   }
-   .nav-tabs {
-       flex-direction: column; 
-       align-items: stretch; 
-       width: 100%;
-       flex-wrap: nowrap; 
-       padding: 8px; 
-       justify-content: flex-start;
-       overflow-y: auto; 
-       overscroll-behavior: contain;
-       flex-shrink: 1; 
-       min-height: 0;
-       border-radius: 18px; 
-   }
-    .nav-tab {
-       width: 100%; 
-       text-align: left; 
-       padding: 12px 18px; 
-       margin: 4px 0; 
-       font-size: 1.0rem; 
-       flex-shrink: 0; 
-       border-radius: 14px; 
-   }
+  .main-wrapper {
+      flex-direction: row; /* Tabs | Content */
+      align-items: stretch; 
+      padding: 0 8px; 
+      max-width: 98%; 
+  }
+  .nav-tabs-container {
+      flex-direction: column; 
+      justify-content: flex-start; 
+      width: auto; 
+      flex-basis: 160px; /* Wider tabs */
+      flex-shrink: 0;
+      margin-right: 15px; 
+      margin-bottom: 0; 
+      align-items: stretch; 
+      padding-top: 10px; 
+      padding-bottom: 10px; 
+  }
+  .nav-tabs {
+      flex-direction: column; 
+      align-items: stretch; 
+      width: 100%;
+      flex-wrap: nowrap; 
+      padding: 8px; 
+      justify-content: flex-start;
+      overflow-y: auto; 
+      overscroll-behavior: contain;
+      flex-shrink: 1; 
+      min-height: 0;
+      border-radius: 18px; 
+  }
+   .nav-tab {
+      width: 100%; 
+      text-align: left; 
+      padding: 12px 18px; 
+      margin: 4px 0; 
+      font-size: 1.0rem; 
+      flex-shrink: 0; 
+      border-radius: 14px; 
+  }
+  .grade-section {
+      padding-bottom: 10px; 
+  }
+  .container {
+       padding: 20px; 
+       min-height: 0; 
+       flex-grow: 1; 
+  }
+  /* Ensure centering in landscape too */
+  .timer-controls { 
+      grid-column: 1 / -1; /* Span full width */
+      justify-content: center; /* Center horizontally */
+      margin-left: 0;
+  } 
 
-   .grade-section {
-       padding-bottom: 10px; 
-   }
-   .container {
-        padding: 20px; 
-        min-height: 0; 
-        flex-grow: 1; 
-   }
-
-    /* Force stacking in landscape too */
-    .start-btn,
-    .word-display,
-    .settings-section, 
-    /* .timer-section, REMOVED */
-    .speak-controls,
-    .stats-grid,
-    .score-display,
-    .keyboard-hint,
-    .progress-bar { 
-        display: block; 
-        width: fit-content; 
-        max-width: 100%; 
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 15px; 
-    }
-     .word-display { width: 100%; }
-     .settings-section { width: 100%; max-width: 320px; }
-     .speak-controls { width: fit-content; }
-     .stats-grid { width: 100%; max-width: 400px; } 
-     .progress-bar { width: 100%; max-width: 400px; } 
-     .game-wrapper-landscape, .game-main, .game-sidebar { display: block; } 
-     /* Ensure timer controls are centered below cards in grid */
-     .timer-controls { 
-         grid-column: 1 / -1; /* Span full width */
-         justify-content: center; /* Center horizontally */
-         margin-left: 0; /* Override margin */
-     } 
-
-
-   /* Specific adjustments for landscape on short screens */
-   @media (max-height: 550px) { 
-        :root { --base-font-size: 15px; --word-font-size: 3.0em; } 
-        .container { padding: 12px; }
-        .challenge-header h1 { font-size: 1.4rem; margin-bottom: 10px; }
-        .bottom-bar { padding: 6px 4px; margin-top: 8px; margin-bottom: 5px; }
-        .bottom-bar button { font-size: 0.8rem; padding: 7px 8px; gap: 3px; }
-        .bottom-bar i { width: 14px; height: 14px; }
-        .nav-tabs-container { flex-basis: 140px; margin-right: 10px; } 
-        .nav-tab { padding: 8px 12px; font-size: 0.9rem; }
-        .start-btn, .speak-btn, .settings-section, .timer-section, .speak-controls, .stats-grid, .score-display, .keyboard-hint, .progress-bar { margin-bottom: 8px; } 
-        .icon-btn { width: 36px; height: 36px; }
-   }
+  /* Specific adjustments for landscape on short screens */
+  @media (max-height: 550px) { 
+      :root { --base-font-size: 15px; } 
+      .container { padding: 12px; }
+      .challenge-header h1 { font-size: 1.4rem; margin-bottom: 10px; }
+      #bottom-bar { padding: 6px 4px; margin-top: 8px; margin-bottom: 5px; }
+      #bottom-bar button { font-size: 0.8rem; padding: 7px 8px; gap: 3px; }
+      #bottom-bar i { width: 14px; height: 14px; }
+      .nav-tabs-container { flex-basis: 140px; margin-right: 10px; } 
+      .nav-tab { padding: 8px 12px; font-size: 0.9rem; }
+      #start-btn, #speak-controls, #stats-grid, #score-display, #keyboard-hint, #progress-bar { margin-bottom: 8px; } 
+      .icon-btn { width: 36px; height: 36px; }
+      #mascot { width: 50px; height: 50px; }
+  }
 }
-
-
 </style>
 
 </head>
-<body class="theme-default"> <!-- Start with default theme -->
+<body class="theme-default">
 
+<!-- Main wrapper for landscape/portrait layout -->
 <div class="main-wrapper">
-    <!-- Navigation Tabs -->
-    <div class="nav-tabs-container">
-        <div class="nav-tabs">
-            <button class="nav-tab active" data-target="pre-k">Pre-K</button>
-            <button class="nav-tab" data-target="kindergarten">Kindergarten</button>
-            <button class="nav-tab" data-target="first-grade">First Grade</button>
-            <button class="nav-tab" data-target="second-grade">Second Grade</button>
-            <button class="nav-tab" data-target="third-grade">Third Grade</button>
-            <button class="nav-tab" data-target="fourth-grade">Fourth Grade</button>
-            <button class="nav-tab" data-target="fifth-grade">Fifth Grade</button>
-            <button class="nav-tab" data-target="more-grades">More Grades (6+)</button>
+  
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs-container">
+    <div class="nav-tabs">
+      <!-- Tabs now just carry data. JS handles all logic. -->
+      <button class="nav-tab active" data-grade="prek">Pre-K</button>
+      <button class="nav-tab" data-grade="k">Kindergarten</button>
+      <button class="nav-tab" data-grade="first">First Grade</button>
+      <button class="nav-tab" data-grade="second">Second Grade</button>
+      <button class="nav-tab" data-grade="third">Third Grade</button>
+      <button class="nav-tab" data-grade="fourth">Fourth Grade</button>
+      <button class="nav-tab" data-grade="fifth">Fifth Grade</button>
+      <button class="nav-tab" data-grade="more">More Grades (6+)</button>
+    </div>
+  </div>
+
+  <!-- 
+    =================================================
+    === SINGLE DYNAMIC GAME SECTION (Refactored) ===
+    =================================================
+    This one section is now controlled entirely by JavaScript.
+    No more duplicate HTML!
+  -->
+  <div class="grade-section" id="game-engine">
+    <div class="container">
+      
+      <!-- Challenge Header (Dynamically updated) -->
+      <div class="challenge-header">
+        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
+          <i data-lucide="settings"></i>
+        </button>
+        <h1 id="game-title">🎯 Pre-K Challenge</h1>
+      </div>
+
+      <!-- Start State -->
+      <div id="start-state-content">
+        <div id="settings-section">
+          <label for="timer-input">⏱️ Set Time (seconds):</label>
+          <input class="timer-input" id="timer-input" type="number" min="10" value="60">
         </div>
+        <p id="high-score-display">Best: 0 WPM</p>
+        <button class="start-btn" id="start-btn">🚀 Start Challenge</button>
+      </div>
+
+      <!-- Game State -->
+      <div id="game-state-content" style="display: none;">
+        <div id="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+
+        <div id="word-display">Press Start</div>
+
+        <div id="speak-controls">
+          <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline">0.9x</span>
+          <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider" min="0.5" max="1.5" step="0.1">
+          <button class="speak-btn" id="speak-btn">🔊 Speak</button>
+        </div>
+        
+        <p class="score-display" id="score-display"></p>
+        <div id="star-rating-display"></div>
+
+        <div class="stats-grid" id="stats-grid">
+          <!-- Card 1: Words Read -->
+          <div class="stat-card" id="words-read-card"> 
+            <div class="stat-number" id="words-read">0</div>
+            <div class="stat-label">Letters Read</div>
+          </div>
+          
+          <!-- Card 2: Timer -->
+          <div class="stat-card timer-card" id="timer-card">
+            <span>⏱️ Time: <span class="timer-display-value" id="timer">60</span>s</span>
+          </div>
+
+          <!-- Card 3: Streak (NEW) -->
+          <div class="stat-card" id="streak-card">
+             <div class="stat-number" id="streak-counter">0 🔥</div>
+             <div class="stat-label">Streak</div>
+          </div>
+
+          <!-- Card 4: WPM (Shows at end) -->
+          <div class="stat-card" id="wpm-card" style="display:none;"> 
+            <div class="stat-number" id="wpm">0</div>
+            <div class="stat-label">Letters/Min</div>
+          </div>
+          
+          <!-- Controls (Span full grid) -->
+          <div class="timer-controls"> 
+            <button class="icon-btn ai-helper-btn" id="ai-helper-btn"><i data-lucide="brain"></i></button>
+            <button class="icon-btn mute-toggle" id="mute-toggle"><i data-lucide="volume-2"></i></button>
+            <button class="icon-btn theme-toggle" id="theme-toggle"><i data-lucide="moon"></i></button>
+          </div>
+        </div>
+
+        <p class="keyboard-hint" id="keyboard-hint">
+          ⌨️ Arrow Keys or Space • S to speak
+        </p>
+      </div>
+
+      <!-- NEW: CSS Mascot -->
+      <div id="mascot">
+        <div class="mascot-body">
+          <div class="mascot-eye left"></div>
+          <div class="mascot-eye right"></div>
+          <div class="mascot-mouth"></div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Pre-K Section -->
-    <div class="grade-section active" id="pre-k">
-        <div class="container">
-            <div class="game-wrapper-landscape"> 
-                <div class="game-main"> 
-                    <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 Pre-K Challenge</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-prek">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-prek">Press Start</div>
-                    <div class="speak-controls" id="speak-controls-prek">
-                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-prek">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-prek" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-prek">🔊 Speak</button> 
-                    </div>
-                </div>
-                <div class="game-sidebar"> 
-                    <div class="settings-section" id="settings-section-prek">
-                        <label for="timer-input-prek">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-prek" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-prek"></div>
-                    </div>
-                    <div class="stats-grid" id="stats-grid-prek" style="display:none;">
-                        <div class="stat-card" id="words-read-card-prek"> 
-                            <div class="stat-number" id="words-read-prek">0</div>
-                            <div class="stat-label">Letters Read</div>
-                        </div>
-                        <div class="stat-card timer-card" id="timer-card-prek"> <!-- New Timer Card -->
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-prek">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> <!-- Moved controls inside grid -->
-                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-prek"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-prek"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-prek"><i data-lucide="moon"></i></button>
-                        </div>
-                        <!-- WPM Card (initially hidden) -->
-                         <div class="stat-card" id="wpm-card-prek" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-prek">0</div>
-                            <div class="stat-label">Letters/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-prek"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-prek" style="display:none;">
-                        ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-prek" style="display:none;">
-            <button id="home-btn-prek"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-prek"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-prek"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-prek"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
+    <!-- Bottom Navigation Bar (Appears during game) -->
+    <div class="bottom-bar" id="bottom-bar" style="display:none;">
+      <button id="home-btn"><i data-lucide="home"></i> Home</button>
+      <button id="restart-btn"><i data-lucide="rotate-cw"></i> Restart</button>
+      <button id="back-btn"><i data-lucide="arrow-left-circle"></i> Back</button>
+      <button id="next-btn"><i data-lucide="arrow-right-circle"></i> Next</button>
     </div>
-
-    <!-- Kindergarten Section -->
-    <div class="grade-section" id="kindergarten">
-         <div class="container">
-            <div class="game-wrapper-landscape">
-                <div class="game-main">
-                    <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 Kindergarten Challenge</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-k">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-k">Press Start</div>
-                    <div class="speak-controls" id="speak-controls-k">
-                        <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-k">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-k" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-k">🔊 Speak</button>
-                    </div>
-                </div>
-                <div class="game-sidebar">
-                    <div class="settings-section" id="settings-section-k">
-                        <label for="timer-input-k">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-k" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-k"></div>
-                    </div>
-                     <div class="stats-grid" id="stats-grid-k" style="display:none;">
-                        <div class="stat-card" id="words-read-card-k"> 
-                            <div class="stat-number" id="words-read-k">0</div>
-                            <div class="stat-label">Words Read</div>
-                        </div>
-                        <div class="stat-card timer-card" id="timer-card-k"> 
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-k">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> 
-                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-k"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-k"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-k"><i data-lucide="moon"></i></button>
-                        </div>
-                        <div class="stat-card" id="wpm-card-k" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-k">0</div>
-                            <div class="stat-label">Words/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-k"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-k" style="display:none;">
-                        ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-k" style="display:none;">
-            <button id="home-btn-k"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-k"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-k"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-k"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
-    </div>
-
-    <!-- First Grade Section -->
-    <div class="grade-section" id="first-grade">
-         <div class="container">
-            <div class="game-wrapper-landscape">
-                <div class="game-main">
-                    <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 First Grade Challenge</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-first">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-first">Press Start</div>
-                     <div class="speak-controls" id="speak-controls-first">
-                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-first">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-first" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-first">🔊 Speak</button>
-                    </div>
-                </div>
-                <div class="game-sidebar">
-                    <div class="settings-section" id="settings-section-first">
-                        <label for="timer-input-first">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-first" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-first"></div>
-                    </div>
-                     <div class="stats-grid" id="stats-grid-first" style="display:none;">
-                        <div class="stat-card" id="words-read-card-first"> 
-                            <div class="stat-number" id="words-read-first">0</div>
-                            <div class="stat-label">Words Read</div>
-                        </div>
-                         <div class="stat-card timer-card" id="timer-card-first"> 
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-first">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> 
-                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-first"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-first"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-first"><i data-lucide="moon"></i></button>
-                        </div>
-                         <div class="stat-card" id="wpm-card-first" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-first">0</div>
-                            <div class="stat-label">Words/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-first"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-first" style="display:none;">
-                        ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-first" style="display:none;">
-            <button id="home-btn-first"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-first"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-first"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-first"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
-    </div>
-
-    <!-- Second Grade Section -->
-    <div class="grade-section" id="second-grade">
-         <div class="container">
-            <div class="game-wrapper-landscape">
-                <div class="game-main">
-                    <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 Second Grade Challenge</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-second">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-second">Press Start</div>
-                     <div class="speak-controls" id="speak-controls-second">
-                        <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-second">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-second" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-second">🔊 Speak</button>
-                    </div>
-                </div>
-                <div class="game-sidebar">
-                    <div class="settings-section" id="settings-section-second">
-                        <label for="timer-input-second">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-second" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-second"></div>
-                    </div>
-                     <div class="stats-grid" id="stats-grid-second" style="display:none;">
-                        <div class="stat-card" id="words-read-card-second"> 
-                            <div class="stat-number" id="words-read-second">0</div>
-                            <div class="stat-label">Words Read</div>
-                        </div>
-                        <div class="stat-card timer-card" id="timer-card-second"> 
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-second">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> 
-                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-second"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-second"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-second"><i data-lucide="moon"></i></button>
-                        </div>
-                        <div class="stat-card" id="wpm-card-second" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-second">0</div>
-                            <div class="stat-label">Words/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-second"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-second" style="display:none;">
-                         ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-second" style="display:none;">
-             <button id="home-btn-second"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-second"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-second"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-second"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
-    </div>
-
-    <!-- Third Grade Section -->
-    <div class="grade-section" id="third-grade">
-         <div class="container">
-            <div class="game-wrapper-landscape">
-                <div class="game-main">
-                    <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 Third Grade Challenge</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-third">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-third">Press Start</div>
-                     <div class="speak-controls" id="speak-controls-third">
-                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-third">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-third" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-third">🔊 Speak</button>
-                    </div>
-                </div>
-                <div class="game-sidebar">
-                    <div class="settings-section" id="settings-section-third">
-                        <label for="timer-input-third">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-third" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-third"></div>
-                    </div>
-                     <div class="stats-grid" id="stats-grid-third" style="display:none;">
-                        <div class="stat-card" id="words-read-card-third"> 
-                            <div class="stat-number" id="words-read-third">0</div>
-                            <div class="stat-label">Words Read</div>
-                        </div>
-                        <div class="stat-card timer-card" id="timer-card-third"> 
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-third">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> 
-                             <button class="icon-btn ai-helper-btn" id="ai-helper-btn-third"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-third"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-third"><i data-lucide="moon"></i></button>
-                        </div>
-                        <div class="stat-card" id="wpm-card-third" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-third">0</div>
-                            <div class="stat-label">Words/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-third"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-third" style="display:none;">
-                         ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-third" style="display:none;">
-            <button id="home-btn-third"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-third"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-third"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-third"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
-    </div>
-
-    <!-- Fourth Grade Section -->
-     <div class="grade-section" id="fourth-grade">
-         <div class="container">
-            <div class="game-wrapper-landscape">
-                <div class="game-main">
-                    <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 Fourth Grade Challenge</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-fourth">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-fourth">Press Start</div>
-                     <div class="speak-controls" id="speak-controls-fourth">
-                        <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-fourth">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-fourth" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-fourth">🔊 Speak</button>
-                    </div>
-                </div>
-                <div class="game-sidebar">
-                    <div class="settings-section" id="settings-section-fourth">
-                        <label for="timer-input-fourth">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-fourth" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-fourth"></div>
-                    </div>
-                     <div class="stats-grid" id="stats-grid-fourth" style="display:none;">
-                        <div class="stat-card" id="words-read-card-fourth"> 
-                            <div class="stat-number" id="words-read-fourth">0</div>
-                            <div class="stat-label">Words Read</div>
-                        </div>
-                        <div class="stat-card timer-card" id="timer-card-fourth"> 
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-fourth">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> 
-                             <button class="icon-btn ai-helper-btn" id="ai-helper-btn-fourth"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-fourth"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-fourth"><i data-lucide="moon"></i></button>
-                        </div>
-                         <div class="stat-card" id="wpm-card-fourth" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-fourth">0</div>
-                            <div class="stat-label">Words/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-fourth"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-fourth" style="display:none;">
-                         ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-fourth" style="display:none;">
-            <button id="home-btn-fourth"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-fourth"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-fourth"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-fourth"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
-    </div>
-
-    <!-- Fifth Grade Section -->
-     <div class="grade-section" id="fifth-grade">
-         <div class="container">
-            <div class="game-wrapper-landscape">
-                <div class="game-main">
-                    <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 Fifth Grade Challenge</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-fifth">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-fifth">Press Start</div>
-                     <div class="speak-controls" id="speak-controls-fifth">
-                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-fifth">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-fifth" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-fifth">🔊 Speak</button>
-                    </div>
-                </div>
-                <div class="game-sidebar">
-                    <div class="settings-section" id="settings-section-fifth">
-                        <label for="timer-input-fifth">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-fifth" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-fifth"></div>
-                    </div>
-                    <div class="stats-grid" id="stats-grid-fifth" style="display:none;">
-                        <div class="stat-card" id="words-read-card-fifth"> 
-                            <div class="stat-number" id="words-read-fifth">0</div>
-                            <div class="stat-label">Words Read</div>
-                        </div>
-                        <div class="stat-card timer-card" id="timer-card-fifth"> 
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-fifth">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> 
-                             <button class="icon-btn ai-helper-btn" id="ai-helper-btn-fifth"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-fifth"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-fifth"><i data-lucide="moon"></i></button>
-                        </div>
-                        <div class="stat-card" id="wpm-card-fifth" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-fifth">0</div>
-                            <div class="stat-label">Words/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-fifth"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-fifth" style="display:none;">
-                         ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-fifth" style="display:none;">
-            <button id="home-btn-fifth"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-fifth"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-fifth"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-fifth"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
-    </div>
-
-    <!-- More Grades Section -->
-     <div class="grade-section" id="more-grades">
-         <div class="container">
-            <div class="game-wrapper-landscape">
-                <div class="game-main">
-                     <div class="challenge-header">
-                        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-                            <i data-lucide="settings"></i>
-                        </button>
-                        <h1>🎯 More Grades (6+)</h1>
-                    </div>
-                    <button class="start-btn" id="start-btn-more">🚀 Start Challenge</button>
-                    <div class="word-display" id="word-display-more">Press Start</div>
-                     <div class="speak-controls" id="speak-controls-more">
-                         <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline-more">0.9x</span>
-                        <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider-more" min="0.5" max="1.5" step="0.1">
-                        <button class="speak-btn" id="speak-btn-more">🔊 Speak</button>
-                    </div>
-                </div>
-                <div class="game-sidebar">
-                    <div class="settings-section" id="settings-section-more">
-                        <label for="timer-input-more">⏱️ Set Time (seconds):</label>
-                        <input class="timer-input" id="timer-input-more" type="number" min="10" value="60">
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill-more"></div>
-                    </div>
-                    <div class="stats-grid" id="stats-grid-more" style="display:none;">
-                        <div class="stat-card" id="words-read-card-more"> 
-                            <div class="stat-number" id="words-read-more">0</div>
-                            <div class="stat-label">Words Read</div>
-                        </div>
-                        <div class="stat-card timer-card" id="timer-card-more"> 
-                             <span>⏱️ Time: <span class="timer-display-value" id="timer-more">60</span>s</span>
-                        </div>
-                        <div class="timer-controls"> 
-                            <button class="icon-btn ai-helper-btn" id="ai-helper-btn-more"><i data-lucide="brain"></i></button>
-                            <button class="icon-btn mute-toggle" id="mute-toggle-more"><i data-lucide="volume-2"></i></button>
-                            <button class="icon-btn theme-toggle" id="theme-toggle-more"><i data-lucide="moon"></i></button>
-                        </div>
-                        <div class="stat-card" id="wpm-card-more" style="display:none; grid-column: 1 / -1;"> 
-                            <div class="stat-number" id="wpm-more">0</div>
-                            <div class="stat-label">Words/Min</div>
-                        </div>
-                    </div>
-                    <p class="score-display" id="score-display-more"></p>
-                    <p class="keyboard-hint" id="keyboard-hint-more" style="display:none;">
-                         ⌨️ Arrow Keys or Space • S to speak
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-bar" id="bottom-bar-more" style="display:none;">
-            <button id="home-btn-more"><i data-lucide="home"></i> Home</button>
-            <button id="restart-btn-more"><i data-lucide="rotate-cw"></i> Restart</button>
-            <button id="back-btn-more"><i data-lucide="arrow-left-circle"></i> Back</button>
-            <button id="next-btn-more"><i data-lucide="arrow-right-circle"></i> Next</button>
-        </div>
-    </div>
+  </div>
 </div>
 
-<!-- SETTINGS MODAL -->
+<!-- NEW: Countdown Overlay -->
+<div id="countdown-overlay">
+  <div id="countdown-text">3</div>
+</div>
+
+<!-- 
+=================================================
+=== MODALS (Settings & AI Helper) ===
+=================================================
+These are global and unchanged.
+-->
 <div id="settings-backdrop">
-    <div id="settings-modal">
-        <div class="settings-header">
-            <h2>Settings</h2>
-            <button class="icon-btn" id="settings-close-btn" aria-label="Close Settings">
-                <i data-lucide="x"></i>
-            </button>
-        </div>
-        
-         <!-- Theme Selector -->
-        <div class="setting-item">
-            <div class="setting-label">Theme</div>
-            <div class="theme-selector">
-                <span class="theme-option" data-theme="default" title="Default"></span>
-                <span class="theme-option" data-theme="ocean" title="Ocean"></span>
-                <span class="theme-option" data-theme="sunset" title="Sunset"></span>
-                <span class="theme-option" data-theme="forest" title="Forest"></span>
-                <span class="theme-option" data-theme="pink" title="Pink"></span>
-                <span class="theme-option" data-theme="purple" title="Purple"></span>
-                <span class="theme-option" data-theme="skyblue" title="Sky Blue"></span>
-            </div>
-        </div>
-        
-        <div class="setting-item">
-            <div class="setting-label">Dark Mode</div>
-            <label class="toggle-switch">
-                <input type="checkbox" id="settings-theme-toggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="setting-item">
-            <div class="setting-label">Sound</div>
-            <label class="toggle-switch">
-                <input type="checkbox" id="settings-sound-toggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="setting-item">
-            <div class="setting-label">
-                Default Time <small>Challenge timer (seconds)</small>
-            </div>
-            <input type="number" class="number-input" id="settings-default-time" min="10" step="5">
-        </div>
-
-        <div class="setting-item">
-            <div class="setting-label">
-                Word Font Size <small>Size of the challenge word</small>
-            </div>
-            <div>
-                <span class="value-indicator" id="font-size-indicator">3.5em</span>
-                <input type="range" class="range-slider" id="settings-font-size" min="2" max="6" step="0.1">
-            </div>
-        </div>
-
-        <div class="setting-item">
-            <div class="setting-label">
-                Auto-Speak Word <small>Speak new word automatically</small>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox" id="settings-autospeak-toggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="setting-item">
-            <div class="setting-label">Voice Speed</div>
-             <div>
-                <span class="value-indicator" id="speech-rate-indicator">0.9x</span>
-                <input type="range" class="range-slider" id="settings-speech-rate" min="0.5" max="1.5" step="0.1">
-            </div>
-        </div>
-        
-        <button id="reset-settings-btn">
-            <i data-lucide="trash-2" style="width:18px; height:18px; margin-right: 8px;"></i>
-            Reset to Defaults
-        </button>
+  <div id="settings-modal">
+    <div class="settings-header">
+      <h2>Settings</h2>
+      <button class="icon-btn" id="settings-close-btn" aria-label="Close Settings">
+        <i data-lucide="x"></i>
+      </button>
     </div>
+    
+    <!-- Theme Selector -->
+    <div class="setting-item">
+      <div class="setting-label">Theme</div>
+      <div class="theme-selector">
+        <span class="theme-option" data-theme="default" title="Default"></span>
+        <span class="theme-option" data-theme="ocean" title="Ocean"></span>
+        <span class="theme-option" data-theme="sunset" title="Sunset"></span>
+        <span class="theme-option" data-theme="forest" title="Forest"></span>
+        <span class="theme-option" data-theme="pink" title="Pink"></span>
+        <span class="theme-option" data-theme="purple" title="Purple"></span>
+        <span class="theme-option" data-theme="skyblue" title="Sky Blue"></span>
+      </div>
+    </div>
+    
+    <div class="setting-item">
+      <div class="setting-label">Dark Mode</div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="settings-theme-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-item">
+      <div class="setting-label">Sound</div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="settings-sound-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-item">
+      <div class="setting-label">
+        Default Time <small>Challenge timer (seconds)</small>
+      </div>
+      <input type="number" class="number-input" id="settings-default-time" min="10" step="5">
+    </div>
+
+    <div class="setting-item">
+      <div class="setting-label">
+        Word Font Size <small>Size of the challenge word</small>
+      </div>
+      <div>
+        <span class="value-indicator" id="font-size-indicator">3.5em</span>
+        <input type="range" class="range-slider" id="settings-font-size" min="2" max="6" step="0.1">
+      </div>
+    </div>
+
+    <div class="setting-item">
+      <div class="setting-label">
+        Auto-Speak Word <small>Speak new word automatically</small>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="settings-autospeak-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-item">
+      <div class="setting-label">Voice Speed</div>
+        <div>
+        <span class="value-indicator" id="speech-rate-indicator">0.9x</span>
+        <input type="range" class="range-slider" id="settings-speech-rate" min="0.5" max="1.5" step="0.1">
+      </div>
+    </div>
+    
+    <button id="reset-settings-btn">
+      <i data-lucide="trash-2" style="width:18px; height:18px; margin-right: 8px;"></i>
+      Reset to Defaults
+    </button>
+  </div>
 </div>
 
 <!-- AI HELPER MODAL -->
 <div id="ai-helper-backdrop">
-    <div id="ai-helper-modal">
-        <div class="ai-helper-header">
-            <h2><i data-lucide="brain" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: bottom;"></i> AI Helper</h2>
-            <button class="icon-btn" id="ai-helper-close-btn" aria-label="Close AI Helper">
-                <i data-lucide="x"></i>
-            </button>
-        </div>
-        <div id="ai-helper-content">
-            <p style="display: block;">Get help with the word: <strong id="ai-word">...</strong></p> <!-- Ensure p tag is always block -->
-             <p id="ai-welcome-message" style="display:none; font-style: italic; opacity: 0.8;">Hi! I'm your AI helper. Start the challenge, and I can help you define words or use them in sentences!</p> 
-            <div id="ai-buttons">
-                 <button id="ai-define-btn">Define</button>
-                 <button id="ai-sentence-btn">Use in Sentence</button>
-            </div>
-            <div id="ai-result">Tap a button above...</div>
-            <div id="ai-loading">Generating response...</div>
-        </div>
+  <div id="ai-helper-modal">
+    <div class="ai-helper-header">
+      <h2><i data-lucide="brain" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: bottom;"></i> AI Helper</h2>
+      <button class="icon-btn" id="ai-helper-close-btn" aria-label="Close AI Helper">
+        <i data-lucide="x"></i>
+      </button>
     </div>
+    <div id="ai-helper-content">
+      <p style="display: block;">Get help with the word: <strong id="ai-word">...</strong></p>
+      <p id="ai-welcome-message" style="display:none; font-style: italic; opacity: 0.8;">Hi! I'm your AI helper. Start the challenge, and I can help you define words or use them in sentences!</p> 
+      <div id="ai-buttons">
+          <button id="ai-define-btn">Define</button>
+          <button id="ai-sentence-btn">Use in Sentence</button>
+      </div>
+      <div id="ai-result">Tap a button above...</div>
+      <div id="ai-loading">Generating response...</div>
+    </div>
+  </div>
 </div>
 
 
 <script>
+// --- WORD LISTS ---
+// (Kept here for single-file simplicity)
+const WORD_LISTS = {
+  prek: [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"],
+  k: ["am","an","as","at","be","by","do","go","he","hi","if","in","is","it","me","my","no","of","on","or","so","to","up","us","we","a","and","are","bad","bag","bat","bed","big","bit","box","boy","bug","bun","but","buy","can","cap","car","cat","cow","cry","cub","cut","dad","day","did","dig","dip","dog","dot","dry","eat","egg","end","fan","far","fat","few","fin","fit","fix","fly","for","fog","fun","fur","get","got","gum","gun","had","has","hat","hen","her","him","his","hit","hot","how","hug","hut","ice","ink","its","jam","jar","jet","job","jog","joy","jug","key","kid","kit","lab","lad","lap","lay","led","leg","let","lid","lip","lit","log","lot","low","mad","man","map","mat","may","men","met","mix","mom","mop","mud","mug","nap","net","new","nod","not","now","nut","off","old","one","our","out","owl","own","pad","pan","pat","pay","peg","pen","pet","pig","pin","pit","pod","pop","pot","put","rag","ram","ran","rap","rat","red","rib","rid","rim","rip","rod","rot","rub","rug","run","rut","sad","sap","sat","saw","say","see","set","sew","she","shy","sin","sip","sit","six","ski","sky","sob","son","sow","sub","sue","sum","sun","tab","tag","tan","tap","tax","tea","ten","the","tie","tin","tip","toe","tom","top","toy","try","tub","tug","two","use","van","vet","war","was","wax","way","web","wed","wet","who","why","wig","win","wit","won","yes","yet","you","zip","zoo"],
+  first: ["like","look","see","with","they","you","said","was","have","from","word","but","what","all","were","when","your","can","use","each","which","she","how","their","will","up","other","about","out","many","then","them","these","so","some","her","would","make","him","into","time","has","more","write","go","number","no","way","could","people","my","than","first","water","been","call","who","oil","now","find","long","down","day","get","come","made","may","part","after","again","an","any","as","ask","by","every","fly","give","giving","had","just","know","let","live","of","old","once","open","over","put","round","stop","take","thank","think","walk"],
+  second: ["mat","bad","fix","ham","rig","wig","bib","sap","six","rat","sit","tag","fig","Tim","map","hat","hip","it","rap","pig","pan","in","bit","fan","kid","cab","pad","at","lad","rip","bam","big","can","rim","van","tip","dad","gap","rag","sad","fin","tin","nag","him","set","did","bed","sum","yes","hog","rut","not","jam","Ned","bud","cod","mug","fit","lab","jot","cap","pin","rug","cop","kit","gut","get","rod","met","sat","pod","cat","got","beg","wet","sub","dot","zip","puff","the","go","talk","by","friend","look","no","walk","my","because","I","book","so","could","one","woman","is","are","goes","would","once","women","a","was","says","should","two","move","as","she","or","does","both","said","what","we","for","any","four","to","have","they","there","many","fourth","do","your","their","where","been","forty","of","want","were","who","into","people","see","he","be","me","pretty","above","month","honest","toward","young","nothing","among","hour","honor","through","touch","other","again","minute","truth","learn","rough","another","against","Monday","truly","earth","tough","mother","door","Wednesday","busy","early","enough","brother","poor","February","build","buy","father","floor","eye","built","guy","water","won","heart","sure","guess","very","son","about","laugh","guest","today","always","answer","whom","guide","almost","whose","tan","nap","going","had","red","gave","good","and","give","five","veah","say","live","goe","saw","has"],
+  third: ["better","bring","carry","clean","complete","cut","done","draw","drink","eight","fall","far","full","grow","hold","hot","hurt","if","keep","kind","light","long","much","myself","never","only","own","pick","seven","shall","show","six","small","start","ten","together","try","warm","around","before","best","call","cold","don't","fast","five","found","green","its","made","off","pull","read","right","sing","sleep","tell","these","those","upon","us","use","wash","wish","work","write","your","apple","baby","back","ball","bear","bird","birthday","boat","boy","bread","brother","cake","chair","chicken","children","coat","corn","cow","doll","duck","egg","eye","farm","farmer","father","feet","fire","fish","flower","game","garden","girl","goodbye","grass","ground","hand","head","hill","home","horse","house","kitty","leg","letter","man","men","milk","money","morning","mother","name","nest","night","paper","party","picture","pig","rabbit","rain","ring","robin","school","seed","sheep","shoe","sister","snow","song","squirrel","stick","street","sun","table","thing","top","toy","tree","watch","way","wind","window","wood"],
+  fourth: ["accident","actual","address","appear","arrive","bicycle","breath","breathe","business","calendar","caught","center","century","certain","circle","consider","continue","describe","difficult","disappear","exercise","experience","experiment","extreme","favorite","February","forward","fruit","grammar","group","guard","guide","height","imagine","important","increase","interest","island","knowledge","length","library","material","medicine","mention","natural","neither","notice","often","opposite","ordinary","particular","peculiar","perhaps","popular","position","possess","possible","potatoes","promise","purpose","quarter","question","recent","regular","reign","remember","sentence","separate","special","straight","strange","strength","suppose","surprise","therefore","though","thought","various","weight","woman","women","although","area","argue","brain","brought","captain","chief","church","clothes","company","country","course","daughter","discover","division","during","either","eleven","energy","engine","England","Europe","evening","except","expect","explain","finally","forest","future","general","heavy","hospital","however","include","instead","journey","language","listen","little","machine","measure","middle","million","mountain","music","nation"],
+  fifth: ["achieve","ancient","apparent","appreciate","approach","approve","average","awkward","bargain","barrier","borrow","boundary","brilliant","budget","burden","calculate","campaign","capacity","category","challenge","character","characteristic","chorus","citizen","column","combination","command","committee","communicate","community","compare","compete","competition","compose","concern","conclude","concrete","condition","conduct","confident","connect","conscious","consist","construct","contain","contrast","contribute","control","convince","correspond","courage","create","creature","criticize","culture","current","deceive","definite","delicious","depend","design","destroy","determine","develop","dictionary","direct","disaster","discuss","disease","distant","distribute","divide","dozen","drama","jealous","judgment","league","leisure","lightning","likely","liquid","lonely","luxury","magazine","maintain","major","manage","manual","manufacture","maximum","mischief","modern","moist","muscle","mystery","necessary","neighbor","nuisance","occupy","occur","opportunity","parliament","persuade","physical","prejudice","privilege","profession","program","pronounce","queue","recognize","recommend","relevant","restaurant","rhyme","rhythm","sacrifice","secretary","shoulder","signature","sincere","soldier","stomach","sufficient","suggest","symbol","system","temperature","thorough","twelfth","variety","vegetable","vehicle","yacht"],
+  more: ["abundant","accumulate","accurate","adapt","adequate","adjacent","adjust","advantage","advocate","affect","aggravate","amateur","ambitious","ample","analyze","anxious","appeal","appropriate","approximate","arrogant","artificial","ascend","assist","attempt","attentive","authentic","benefit","bias","brief","brutal","capable","cautious","cease","chaos","chronological","clarify","classify","coarse","coherent","colossal","commence","comment","comfortable","complex","component","comprehend","conceal","concise","condemn","conflict","consecutive","consensus","consent","conspicuous","context","continuous","convenient","crucial","data","debate","debt","deceitful","declare","decline","deficient","dense","depict","desist","despise","destitute","detect","deter","diligent","diminish","disrupt","distinct","distort","diverse","dominant","drastic","drowsy","dubious","durable","eager","eccentric","edible","eerie","effect","efficient","elaborate","elegant","eligible","elite","eloquent","embark","emerge","emphasis","encounter","endeavor","endorse","endure","energetic","enhance","enigma","entice","era","essential","evade","evident","evolve","exceed","excel","exempt","exotic","expand","expert","explicit","extol","extract","extravagant","facetious","fallacy","feasible","feeble","feud","fickle","fiery","final","flagrant","flaw","flee","flimsy","fluctuate","fluent","foe","formal","frantic","frequent","frugal","futile","genuine","gigantic","glare","glum","gradual","grasp","gravity","greedy","grievance","grim","groggy","grudge","habitable","haphazard","harsh","hasty","hazardous","hesitate","hideous","hoax","hostile","identical","idle","illegible","illicit","imitate","immense","impartial","impede","implicit","imply","incessant","increment","independent","indicate","indignant","indispensable","induce","inept","inevitable","infamous","infer","infinite","infuriate","ingenious","inherent","inhibit","initial","inquiry","integral","intricate","intuitive","irate","irrelevant","jeopardize","jubilant","judicious","justify","keen","labyrinth","lack","legible","lenient","lethal","listless","literal","loathe","logical","lucid","lucrative","ludicrous","lurk","majestic","meager","mediocre","melancholy","mellow","meticulous","mimic","moderate","modest","monotonous","morbid","mundane","multitude","nimble","nonchalant","notify","numerous","nutritious","oblivious","obscure","obsolete","obstacle","ominous","opportune","ordeal","ornate","orthodox","overlap","overt","parody","passive","persist","pertinent","plausible","plea","plentiful","ponder","potent","precise","predominant","preliminary","presume","prevail","prevalent","prior","probe","proceed","prohibit","prominent","propel","profound","prolific","prospect","prudent","query","quest","radiant","random","rational","realistic","reasonable","rebel","recall","reciprocate","reckless","redundant","refuge","regime","relevant","reluctant","remote","repel","resent","resolute","respond","restrict","reveal","rigid","rigorous","rural","scarce","scatter","skeptical","scheme","scope","significant","simultaneous","sinister","slack","sleazy","slight","sluggish","solitary","sparse","spontaneous","sporadic","stable","stagnant","sterile","stern","subtle","superficial","superfluous","supplement","suppress","surpass","surplus","tangible","tedious","temperate","tentative","terminate","terrain","terse","thorough","timid","toxic","tranquil","transient","transparent","trivial","turbulent","unanimous","uncouth","unique","valid","vague","versatile","viable","vibrant","vigilant","vigorous","vivid","weary","wholesome","widespread","wily","wither","yearn","zest"]
+};
+
+// NEW: Star Rating Thresholds (WPM)
+const STAR_THRESHOLDS = {
+  prek: [15, 30, 45], // 1, 2, 3 stars
+  k: [10, 20, 35],
+  first: [20, 35, 50],
+  second: [30, 50, 70],
+  third: [40, 65, 85],
+  fourth: [50, 80, 100],
+  fifth: [60, 90, 120],
+  more: [70, 100, 130]
+};
+
+// NEW: Grade Titles
+const GRADE_TITLES = {
+  prek: "🎯 Pre-K Challenge",
+  k: "🎯 Kindergarten Challenge",
+  first: "🎯 First Grade Challenge",
+  second: "🎯 Second Grade Challenge",
+  third: "🎯 Third Grade Challenge",
+  fourth: "🎯 Fourth Grade Challenge",
+  fifth: "🎯 Fifth Grade Challenge",
+  more: "🎯 More Grades (6+)"
+};
+
 // --- GLOBAL STATE & SETTINGS ---
 const globalSynth = window.speechSynthesis;
 const SETTINGS_KEY = 'kidsySettings';
+const HIGHSCORE_KEY_PREFIX = 'kidsy-highscore-';
 
 const defaultSettings = {
-    theme: 'default', // Default theme name
-    darkMode: false, // Separate dark mode setting
-    sound: true,
-    defaultTime: 60,
-    fontSize: 3.5,
-    autoSpeak: false,
-    speechRate: 0.9
+  theme: 'default',
+  darkMode: false,
+  sound: true,
+  defaultTime: 60,
+  fontSize: 3.5,
+  autoSpeak: false,
+  speechRate: 0.9
 };
 
 let globalSettings = { ...defaultSettings };
-let activeGameInstance = null; // To track the currently active game
-let currentWordForAI = ''; // To pass the word to the AI modal
-let currentGradeForAI = ''; // To pass the grade level to the AI modal
+let activeGameInstance = null;
+let currentWordForAI = '';
+let currentGradeForAI = '';
 
+// --- DOM Cache (Refactored) ---
+// Cache all DOM elements once
+const DOMElements = {
+  // Navigation
+  navTabs: document.querySelectorAll('.nav-tab'),
+  
+  // Game UI
+  gameTitle: document.getElementById('game-title'),
+  startStateContent: document.getElementById('start-state-content'),
+  gameStateContent: document.getElementById('game-state-content'),
+  settingsSection: document.getElementById('settings-section'),
+  highScoreDisplay: document.getElementById('high-score-display'),
+  startBtn: document.getElementById('start-btn'),
+  
+  // In-Game
+  progressBar: document.getElementById('progress-bar'),
+  progressFill: document.getElementById('progress-fill'),
+  wordDisplay: document.getElementById('word-display'),
+  speakControls: document.getElementById('speak-controls'),
+  speechRateIndicatorInline: document.getElementById('speech-rate-indicator-inline'),
+  speechRateSlider: document.getElementById('speech-rate-slider'),
+  speakBtn: document.getElementById('speak-btn'),
+  scoreDisplay: document.getElementById('score-display'),
+  starRatingDisplay: document.getElementById('star-rating-display'),
+  
+  // Stats Grid
+  statsGrid: document.getElementById('stats-grid'),
+  wordsReadCard: document.getElementById('words-read-card'),
+  wordsReadLabel: document.querySelector('#words-read-card .stat-label'),
+  wordsRead: document.getElementById('words-read'),
+  timerCard: document.getElementById('timer-card'),
+  timer: document.getElementById('timer'),
+  streakCard: document.getElementById('streak-card'),
+  streakCounter: document.getElementById('streak-counter'),
+  wpmCard: document.getElementById('wpm-card'),
+  wpm: document.getElementById('wpm'),
+  wpmLabel: document.querySelector('#wpm-card .stat-label'),
+  
+  // Controls
+  timerInput: document.getElementById('timer-input'),
+  aiHelperBtn: document.getElementById('ai-helper-btn'),
+  muteToggle: document.getElementById('mute-toggle'),
+  themeToggle: document.getElementById('theme-toggle'),
+  keyboardHint: document.getElementById('keyboard-hint'),
+  bottomBar: document.getElementById('bottom-bar'),
+  homeBtn: document.getElementById('home-btn'),
+  restartBtn: document.getElementById('restart-btn'),
+  backBtn: document.getElementById('back-btn'),
+  nextBtn: document.getElementById('next-btn'),
+
+  // Mascot
+  mascot: document.getElementById('mascot'),
+
+  // Countdown
+  countdownOverlay: document.getElementById('countdown-overlay'),
+  countdownText: document.getElementById('countdown-text'),
+  
+  // Settings Modal
+  settingsBackdrop: document.getElementById('settings-backdrop'),
+  globalSettingsBtns: document.querySelectorAll('.global-settings-btn'),
+  settingsCloseBtn: document.getElementById('settings-close-btn'),
+  themeOptions: document.querySelectorAll('.theme-option'),
+  settingsThemeToggle: document.getElementById('settings-theme-toggle'),
+  settingsSoundToggle: document.getElementById('settings-sound-toggle'),
+  settingsDefaultTime: document.getElementById('settings-default-time'),
+  settingsFontSize: document.getElementById('settings-font-size'),
+  fontSizeIndicator: document.getElementById('font-size-indicator'),
+  settingsAutoSpeakToggle: document.getElementById('settings-autospeak-toggle'),
+  settingsSpeechRate: document.getElementById('settings-speech-rate'),
+  speechRateIndicator: document.getElementById('speech-rate-indicator'),
+  resetSettingsBtn: document.getElementById('reset-settings-btn'),
+  
+  // AI Modal
+  aiHelperBackdrop: document.getElementById('ai-helper-backdrop'),
+  aiHelperCloseBtn: document.getElementById('ai-helper-close-btn'),
+  aiWord: document.getElementById('ai-word'),
+  aiWelcomeMessage: document.getElementById('ai-welcome-message'),
+  aiButtons: document.getElementById('ai-buttons'),
+  aiDefineBtn: document.getElementById('ai-define-btn'),
+  aiSentenceBtn: document.getElementById('ai-sentence-btn'),
+  aiResult: document.getElementById('ai-result'),
+  aiLoading: document.getElementById('ai-loading')
+};
+
+
+// --- GLOBAL SETTINGS FUNCTIONS ---
 function saveSettings() {
-    try {
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings));
-    } catch (e) {
-        console.error("Could not save settings to localStorage", e);
-    }
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings));
+  } catch (e) {
+    console.error("Could not save settings to localStorage", e);
+  }
 }
 
 function loadSettings() {
-    let loaded = {};
-    try {
-        const stored = localStorage.getItem(SETTINGS_KEY);
-        if (stored) {
-            loaded = JSON.parse(stored);
-        }
-    } catch (e) {
-        console.error("Could not parse settings from localStorage", e);
+  let loaded = {};
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) {
+      loaded = JSON.parse(stored);
     }
-    globalSettings = { ...defaultSettings, ...loaded };
-    applySettings();
-    updateSettingsUI();
+  } catch (e) {
+    console.error("Could not parse settings from localStorage", e);
+  }
+  globalSettings = { ...defaultSettings, ...loaded };
+  applySettings();
+  updateSettingsUI();
 }
 
 function applySettings() {
-    // Apply Theme Class
-    document.body.classList.remove('theme-default', 'theme-ocean', 'theme-sunset', 'theme-forest', 'theme-pink', 'theme-purple', 'theme-skyblue'); 
-    document.body.classList.add(`theme-${globalSettings.theme}`); 
-    
-    // Apply Dark Mode Class
-    document.body.classList.toggle('dark', globalSettings.darkMode);
+  // Apply Theme Class
+  document.body.className = ''; // Clear all classes
+  document.body.classList.add(`theme-${globalSettings.theme}`);
+  
+  // Apply Dark Mode Class
+  document.body.classList.toggle('dark', globalSettings.darkMode);
 
-    // Apply Font Size
-    document.documentElement.style.setProperty('--word-font-size', `${globalSettings.fontSize}em`);
-    
-    // Apply Default Time 
-    document.querySelectorAll('.timer-input').forEach(input => {
-        const gradeSection = input.closest('.grade-section');
-        if (!gradeSection || !gradeSection.classList.contains('active-game')) { 
-             input.value = globalSettings.defaultTime;
-        }
-    });
-     document.querySelectorAll('.timer-display-value').forEach(span => { // Updated selector
-         const gradeSection = span.closest('.grade-section');
-         if (!gradeSection || !gradeSection.classList.contains('active-game')) {
-             span.textContent = globalSettings.defaultTime;
-         }
-    });
+  // Apply Font Size
+  document.documentElement.style.setProperty('--word-font-size', `clamp(2em, ${globalSettings.fontSize * 2}vw, ${globalSettings.fontSize}em)`);
+  
+  // Apply Default Time 
+  DOMElements.timerInput.value = globalSettings.defaultTime;
+  DOMElements.timer.textContent = globalSettings.defaultTime;
 }
 
 function updateSettingsUI() {
-    // --- Update Modal UI ---
-    document.querySelectorAll('.theme-option').forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.theme === globalSettings.theme);
-    });
-    
-    document.getElementById('settings-theme-toggle').checked = globalSettings.darkMode;
-    document.getElementById('settings-sound-toggle').checked = globalSettings.sound;
-    document.getElementById('settings-default-time').value = globalSettings.defaultTime;
-    
-    const fontSizeSlider = document.getElementById('settings-font-size');
-    fontSizeSlider.value = globalSettings.fontSize;
-    document.getElementById('font-size-indicator').textContent = `${globalSettings.fontSize}em`;
+  // --- Update Modal UI ---
+  DOMElements.themeOptions.forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.theme === globalSettings.theme);
+  });
+  
+  DOMElements.settingsThemeToggle.checked = globalSettings.darkMode;
+  DOMElements.settingsSoundToggle.checked = globalSettings.sound;
+  DOMElements.settingsDefaultTime.value = globalSettings.defaultTime;
+  
+  DOMElements.settingsFontSize.value = globalSettings.fontSize;
+  DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
 
-    document.getElementById('settings-autospeak-toggle').checked = globalSettings.autoSpeak;
+  DOMElements.settingsAutoSpeakToggle.checked = globalSettings.autoSpeak;
 
-    const speechRateSlider = document.getElementById('settings-speech-rate');
-    speechRateSlider.value = globalSettings.speechRate;
-    document.getElementById('speech-rate-indicator').textContent = `${globalSettings.speechRate}x`;
-    
-    // --- Update In-Game UI Elements ---
-    document.querySelectorAll('.speech-rate-slider').forEach(slider => {
-        slider.value = globalSettings.speechRate;
-    });
-     document.querySelectorAll('.speech-rate-indicator-inline').forEach(span => {
-        span.textContent = `${globalSettings.speechRate}x`;
-     });
+  DOMElements.settingsSpeechRate.value = globalSettings.speechRate;
+  DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
+  
+  // --- Update In-Game UI Elements ---
+  DOMElements.speechRateSlider.value = globalSettings.speechRate;
+  DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
 
-    const isDark = globalSettings.darkMode;
-    document.querySelectorAll('.theme-toggle').forEach(btn => {
-        btn.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
-    });
-    
-    const isMuted = !globalSettings.sound;
-    document.querySelectorAll('.mute-toggle').forEach(btn => {
-        btn.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>';
-    });
-    
-    lucide.createIcons(); 
+  const isDark = globalSettings.darkMode;
+  DOMElements.themeToggle.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+  
+  const isMuted = !globalSettings.sound;
+  DOMElements.muteToggle.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>';
+  
+  lucide.createIcons(); 
 }
 
 function resetSettings() {
-    if (confirm("Are you sure you want to reset all settings to their defaults?")) {
-        globalSettings = { ...defaultSettings }; 
-        saveSettings(); 
-        applySettings();
-        updateSettingsUI();
-         document.querySelectorAll('.timer-input').forEach(input => {
-            const gradeSection = input.closest('.grade-section');
-             if (!gradeSection || !gradeSection.classList.contains('active-game')) {
-                 input.value = globalSettings.defaultTime;
-             }
-        });
-        document.querySelectorAll('.timer-display-value').forEach(span => { // Updated selector
-            const gradeSection = span.closest('.grade-section');
-             if (!gradeSection || !gradeSection.classList.contains('active-game')) {
-                 span.textContent = globalSettings.defaultTime;
-             }
-        });
-    }
+  // Use a custom modal later, for now, use confirm
+  if (confirm("Are you sure you want to reset all settings to their defaults?")) {
+    globalSettings = { ...defaultSettings }; 
+    saveSettings(); 
+    applySettings();
+    updateSettingsUI();
+    DOMElements.timerInput.value = globalSettings.defaultTime;
+    DOMElements.timer.textContent = globalSettings.defaultTime;
+  }
 }
 
+// --- GLOBAL SOUND FUNCTIONS ---
+function playSound(type) {
+  if (!globalSettings.sound || !Tone) return;
+  try {
+    if (Tone.context.state !== 'running') {
+      Tone.start();
+    }
+    
+    let synth;
+    switch (type) {
+      case 'click':
+        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('C5', '0.1');
+        break;
+      case 'nav':
+        synth = new Tone.Synth({oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('E5', '0.08');
+        break;
+      case 'start':
+        synth = new Tone.Synth().toDestination();
+        synth.triggerAttackRelease("G4", "8n", Tone.now());
+        synth.triggerAttackRelease("C5", "8n", Tone.now() + 0.1);
+        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
+        break;
+      case 'end':
+        synth = new Tone.Synth().toDestination();
+        synth.triggerAttackRelease("C5", "8n", Tone.now());
+        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
+        synth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4);
+        synth.triggerAttackRelease("C6", "8n", Tone.now() + 0.6);
+        break;
+      case 'countdown':
+        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('A4', '8n');
+        break;
+      case 'countdownGo':
+        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('C5', '4n');
+        break;
+    }
+  } catch(e) { console.error("Tone.js sound failed:", e); }
+}
 
-// --- GLOBAL SOUND FUNCTIONS --- (Keep as is)
-function playClickSound() { if (!globalSettings.sound) return; try { const synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('C5', '0.1'); } catch(e) { console.error("Tone.js click sound failed:", e); }}
-function playNavigationSound() { if (!globalSettings.sound) return; try { const synth = new Tone.Synth({oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('E5', '0.08'); } catch(e) { console.error("Tone.js nav sound failed:", e); }}
-function playStartSound() { if (!globalSettings.sound) return; try { const synth = new Tone.Synth().toDestination(); synth.triggerAttackRelease("G4", "8n"); setTimeout(() => synth.triggerAttackRelease("C5", "8n"), 100); setTimeout(() => synth.triggerAttackRelease("E5", "8n"), 200); } catch(e) { console.error("Tone.js start sound failed:", e); }}
-function playYaaySound() { if (!globalSettings.sound) return; try { const synth = new Tone.Synth().toDestination(); synth.triggerAttackRelease("C5", "8n"); setTimeout(() => synth.triggerAttackRelease("E5", "8n"), 200); setTimeout(() => synth.triggerAttackRelease("G5", "8n"), 400); setTimeout(() => synth.triggerAttackRelease("C6", "8n"), 600); } catch(e) { console.error("Tone.js end sound failed:", e); }}
-
-function speakWord(text, gradePrefix) { 
+function speakWord(text, gradeKey) { 
   if (!globalSynth || !text) return; 
   globalSynth.cancel(); 
   let textToSpeak = text;
-  if (gradePrefix === 'prek' && /^[A-Z]$/.test(text)) { /* Speak letter directly */ } 
-  else { textToSpeak = text; }
+  if (gradeKey === 'prek' && /^[A-Z]$/.test(text)) {
+    // Speak "A" as "Ay" not "A letter"
+    textToSpeak = text;
+  }
   const utterance = new SpeechSynthesisUtterance(textToSpeak); 
   utterance.lang = 'en-US'; 
   utterance.rate = globalSettings.speechRate;
   globalSynth.speak(utterance);
 }
 
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
-function shuffle(arr) { /* ... Keep as is ... */ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+// --- AI Helper Function ---
+async function callGeminiApi(prompt, retries = 3, delay = 1000) {
+  // NOTE: This requires a valid API key.
+  // In a real environment, this key would be handled by a secure backend proxy.
+  // For this demo, it relies on the execution environment (like Canvas) to provide it.
+  const apiKey = ""; // Left blank intentionally
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  
+  const payload = {
+    contents: [{ parts: [{ text: prompt }] }],
+    // Add safety settings for kid-friendly content
+    safetySettings: [
+      { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH" },
+      { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH" },
+      { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_ONLY_HIGH" },
+      { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH" }
+    ]
+  };
+  
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-// --- AI Helper Function --- (Keep as is, including API key explanation)
-async function callGeminiApi(prompt, retries = 3, delay = 1000) { /* ... Keep as is ... */ const apiKey = ""; const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`; const payload = { contents: [{ parts: [{ text: prompt }] }] }; try { const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (!response.ok) { if (response.status === 429 && retries > 0) { await new Promise(resolve => setTimeout(resolve, delay)); return callGeminiApi(prompt, retries - 1, delay * 2); } if (!apiKey && response.status >= 400 && response.status < 500) { const isLikelyNotCanvas = typeof window.__app_id === 'undefined'; if (isLikelyNotCanvas) { throw new Error(`API Error ${response.status}: Cannot call AI. API key is missing. This feature works in specific environments like Canvas.`); } else { throw new Error(`API Error: ${response.status} ${response.statusText}`); } } throw new Error(`API Error: ${response.status} ${response.statusText}`); } const result = await response.json(); const text = result.candidates?.[0]?.content?.parts?.[0]?.text; if (!text) { throw new Error("No content received from API."); } return text; } catch (error) { console.error("Error calling Gemini API:", error); return `Sorry, I couldn't get information right now. Error: ${error.message}`; } }
+    if (!response.ok) {
+      // Handle throttling
+      if (response.status === 429 && retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return callGeminiApi(prompt, retries - 1, delay * 2);
+      }
+      // Handle missing API key specifically
+      if (!apiKey && response.status >= 400 && response.status < 500) {
+        const isLikelyNotCanvas = typeof window.__app_id === 'undefined';
+        if (isLikelyNotCanvas) {
+          throw new Error(`API Error ${response.status}: Cannot call AI. API key is missing. This feature works in specific environments like Canvas.`);
+        } else {
+           throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        }
+      }
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
 
-function getGradeLevelString(gradePrefix) { /* ... Keep as is ... */ switch (gradePrefix) { case 'prek': return 'Pre-K'; case 'k': return 'Kindergarten'; case 'first': return 'First Grade'; case 'second': return 'Second Grade'; case 'third': return 'Third Grade'; case 'fourth': return 'Fourth Grade'; case 'fifth': return 'Fifth Grade'; case 'more': return 'Sixth Grade or higher'; default: return 'the appropriate grade level'; } }
+    const result = await response.json();
+    
+    // Check for safety blocks
+    if (result.candidates && result.candidates[0].finishReason === 'SAFETY') {
+      return "I can't provide a response for that word due to safety reasons.";
+    }
 
-// --- GAME INSTANCE FACTORY ---
-function createWordChallenge(gradePrefix, wordList) {
-    const words = wordList;
-    let timeLeft = globalSettings.defaultTime;
-    let totalTime = globalSettings.defaultTime;
-    let timerInterval = null;
-    let currentWordIndex = 0;
-    let gameStarted = false;
-    let score = 0;
-    let shuffledWords = shuffle([...words]);
-    let currentWord = ''; 
+    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      throw new Error("No content received from API.");
+    }
+    return text;
+  } catch (error) {
+    console.error("Error calling Gemini API:", error);
+    return `Sorry, I couldn't get information right now. Error: ${error.message}`;
+  }
+}
 
-    // DOM references
-    const gradeSectionElement = document.getElementById(gradePrefix === 'prek' ? 'pre-k' : `${gradePrefix}-grade`); 
-    const startBtn = document.getElementById(`start-btn-${gradePrefix}`);
-    const homeBtn = document.getElementById(`home-btn-${gradePrefix}`); 
-    const restartBtn = document.getElementById(`restart-btn-${gradePrefix}`); 
-    const backBtn = document.getElementById(`back-btn-${gradePrefix}`);
-    const nextBtn = document.getElementById(`next-btn-${gradePrefix}`);
-    const speakBtn = document.getElementById(`speak-btn-${gradePrefix}`);
-    const wordDisplay = document.getElementById(`word-display-${gradePrefix}`);
-    const timerDisplay = document.getElementById(`timer-${gradePrefix}`); // Get the SPAN for timer value
-    const timerInput = document.getElementById(`timer-input-${gradePrefix}`);
-    const scoreDisplay = document.getElementById(`score-display-${gradePrefix}`);
-    const muteToggle = document.getElementById(`mute-toggle-${gradePrefix}`);
-    const themeToggle = document.getElementById(`theme-toggle-${gradePrefix}`);
-    const bottomBar = document.getElementById(`bottom-bar-${gradePrefix}`);
-    const progressFill = document.getElementById(`progress-fill-${gradePrefix}`);
-    const statsGrid = document.getElementById(`stats-grid-${gradePrefix}`);
-    const wordsReadEl = document.getElementById(`words-read-${gradePrefix}`);
-    const wpmEl = document.getElementById(`wpm-${gradePrefix}`);
-    const keyboardHint = document.getElementById(`keyboard-hint-${gradePrefix}`);
-    const settingsSection = document.getElementById(`settings-section-${gradePrefix}`);
-    const wpmCard = document.getElementById(`wpm-card-${gradePrefix}`); // Reference to WPM card
-    const wordsReadCard = document.getElementById(`words-read-card-${gradePrefix}`); // Reference to Words Read card
-    const timerCard = document.getElementById(`timer-card-${gradePrefix}`); // Reference to Timer card
-    const speakControls = document.getElementById(`speak-controls-${gradePrefix}`);
-    const speechRateSlider = document.getElementById(`speech-rate-slider-${gradePrefix}`); 
-    const speechRateIndicatorInline = document.getElementById(`speech-rate-indicator-inline-${gradePrefix}`); 
-    const aiHelperBtn = document.getElementById(`ai-helper-btn-${gradePrefix}`); 
-    const timerControlsContainer = document.querySelector(`#stats-grid-${gradePrefix} .timer-controls`); // Get timer controls container
+function getGradeLevelString(gradeKey) {
+  switch (gradeKey) {
+    case 'prek': return 'Pre-K';
+    case 'k': return 'Kindergarten';
+    case 'first': return 'First Grade';
+    case 'second': return 'Second Grade';
+    case 'third': return 'Third Grade';
+    case 'fourth': return 'Fourth Grade';
+    case 'fifth': return 'Fifth Grade';
+    case 'more': return 'Sixth Grade or higher';
+    default: return 'the appropriate grade level';
+  }
+}
 
+// --- MASCOT CONTROLLER ---
+const Mascot = {
+  element: DOMElements.mascot,
+  setState(state) {
+    // state can be 'idle', 'cheer', 'worried', 'celebrate'
+    this.element.className = state;
+  },
+  cheer() {
+    this.setState('cheer');
+    setTimeout(() => this.setState('idle'), 500); // Reset after animation
+  },
+  celebrate() {
+    this.setState('celebrate');
+  },
+  worried() {
+    this.setState('worried');
+  },
+  idle() {
+    this.setState('idle');
+  }
+};
 
-    if (!startBtn || !wordDisplay || !timerInput || !homeBtn || !restartBtn || !speakControls || !speechRateSlider || !aiHelperBtn || !speechRateIndicatorInline || !timerDisplay || !statsGrid || !wpmCard || !timerCard || !timerControlsContainer) { 
-        console.error(`Could not initialize game for grade: ${gradePrefix}. Missing elements.`);
-        return null; 
+// --- GAME INSTANCE FACTORY (Refactored) ---
+function createWordChallenge() {
+  let state = {
+    gradeKey: 'prek',
+    wordList: [],
+    shuffledWords: [],
+    currentWordIndex: 0,
+    currentWord: '',
+    currentStreak: 0,
+    gameStarted: false,
+    timeLeft: 0,
+    totalTime: 0,
+    score: 0,
+    timerInterval: null
+  };
+
+  // --- Private Functions ---
+  function getHighScore(gradeKey) {
+    return parseInt(localStorage.getItem(HIGHSCORE_KEY_PREFIX + gradeKey) || 0);
+  }
+
+  function setHighScore(gradeKey, wpm) {
+    localStorage.setItem(HIGHSCORE_KEY_PREFIX + gradeKey, wpm);
+  }
+
+  function showWord() {
+    if (state.currentWordIndex >= state.shuffledWords.length) state.currentWordIndex = 0; 
+    if (state.currentWordIndex < 0) state.currentWordIndex = state.shuffledWords.length - 1; 
+
+    state.currentWord = state.shuffledWords[state.currentWordIndex]; 
+    currentWordForAI = state.currentWord; // Update global AI word
+    
+    DOMElements.wordDisplay.textContent = state.currentWord; 
+    
+    // Trigger animation
+    DOMElements.wordDisplay.className = Math.random() > 0.5 ? 'swoosh-in' : 'pop-in';
+    
+    state.score++;
+    updateStats();
+
+    if (globalSettings.autoSpeak && state.gameStarted) {
+      speakWord(state.currentWord, state.gradeKey);
+    }
+  }
+
+  function updateStats() {
+    const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min';
+    const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
+
+    DOMElements.wordsRead.textContent = Math.max(0, state.score);
+    DOMElements.streakCounter.textContent = `${state.currentStreak} 🔥`;
+    DOMElements.wordsReadLabel.textContent = wordsReadLabelText;
+    DOMElements.wpmLabel.textContent = wpmLabelText;
+
+    const elapsed = state.totalTime - state.timeLeft;
+    const wpm = elapsed > 0 ? Math.round((Math.max(0, state.score) / elapsed) * 60) : 0;
+    DOMElements.wpm.textContent = wpm;
+  }
+  
+  function updateTimer() {
+    if (!state.gameStarted) return;
+    state.timeLeft--;
+    
+    if (state.timeLeft >= 0) {
+      DOMElements.timer.textContent = state.timeLeft;
+      const progress = (state.timeLeft / state.totalTime) * 100;
+      DOMElements.progressFill.style.width = progress + '%';
+    }
+
+    if (state.timeLeft <= 10 && state.timeLeft > 0) {
+        DOMElements.timerCard.classList.add('timer-low');
+        Mascot.worried();
     }
     
-    // Set initial values from settings
-    timerInput.value = globalSettings.defaultTime;
-    timerDisplay.textContent = globalSettings.defaultTime; // Update the span
-    speechRateSlider.value = globalSettings.speechRate;
-    speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
-
-
-    // --- Game Functions ---
-    function stopGame() {
-        if (gameStarted) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            gameStarted = false;
-            gradeSectionElement.classList.remove('active-game'); 
-            currentWord = ''; 
-            settingsSection.style.display = "block";
-            bottomBar.style.display = "none";
-            speakControls.style.display = "none"; 
-            speakBtn.style.display = "none";
-            startBtn.style.display = "inline-block";
-            keyboardHint.style.display = "none";
-            wordDisplay.textContent = "Press Start";
-            scoreDisplay.innerHTML = "";
-            statsGrid.style.display = "none"; // Hide grid on stop
-            timerInput.value = globalSettings.defaultTime;
-            timerDisplay.textContent = globalSettings.defaultTime; // Reset timer display span
-            progressFill.style.width = "100%";
-        }
+    if (state.timeLeft <= 0) {
+      publicMethods.endGame();
+    } else {
+      updateStats();
     }
+  }
 
-    function startGame() {
-        if (gameStarted) return;
-        gameStarted = true;
-        score = -1; 
-        gradeSectionElement.classList.add('active-game'); 
+  function nextWord() {
+    playSound('nav');
+    state.currentWordIndex++;
+    state.currentStreak++;
+    Mascot.cheer();
+    showWord();
+  }
+
+  function prevWord() {
+    playSound('nav');
+    state.currentWordIndex--;
+    state.score -= 2; // Penalize for going back
+    state.currentStreak = 0; // Reset streak
+    Mascot.idle(); // Reset mascot
+    showWord();
+  }
+
+  function showCountdown(callback) {
+    let count = 3;
+    DOMElements.countdownText.textContent = count;
+    DOMElements.countdownOverlay.classList.add('visible');
+    DOMElements.countdownText.classList.add('show');
+    playSound('countdown');
+
+    const interval = setInterval(() => {
+      DOMElements.countdownText.classList.remove('show');
+      
+      setTimeout(() => {
+        count--;
+        if (count > 0) {
+          DOMElements.countdownText.textContent = count;
+          DOMElements.countdownText.classList.add('show');
+          playSound('countdown');
+        } else if (count === 0) {
+          DOMElements.countdownText.textContent = "GO!";
+          DOMElements.countdownText.classList.add('show');
+          playSound('countdownGo');
+        } else {
+          clearInterval(interval);
+          DOMElements.countdownOverlay.classList.remove('visible');
+          DOMElements.countdownText.classList.remove('show');
+          callback(); // Start the game
+        }
+      }, 150); // Small delay for fade out
+    }, 1000);
+  }
+
+  function showStars(wpm) {
+    const thresholds = STAR_THRESHOLDS[state.gradeKey] || [10, 20, 30];
+    let stars = 0;
+    if (wpm >= thresholds[0]) stars = 1;
+    if (wpm >= thresholds[1]) stars = 2;
+    if (wpm >= thresholds[2]) stars = 3;
+
+    let starHTML = '';
+    for(let i = 0; i < 3; i++) {
+      starHTML += `<i data-lucide="star" ${i < stars ? 'style="fill: #ffc107;"' : ''}></i>`;
+    }
+    DOMElements.starRatingDisplay.innerHTML = starHTML;
+    lucide.createIcons();
+    // Trigger animation
+    setTimeout(() => DOMElements.starRatingDisplay.classList.add('show-stars'), 100);
+  }
+
+  // --- Public Methods ---
+  const publicMethods = {
+    init(gradeKey) {
+      this.stopGame(); // Stop any previous game
+      state.gradeKey = gradeKey;
+      state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k'];
+      currentGradeForAI = getGradeLevelString(gradeKey);
+
+      // Update UI for this grade
+      DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge";
+      DOMElements.timerInput.value = globalSettings.defaultTime;
+      DOMElements.timer.textContent = globalSettings.defaultTime;
+      DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${gradeKey === 'prek' ? 'LPM' : 'WPM'}`;
+      
+      // Set label text
+      const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min';
+      const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
+      DOMElements.wordsReadLabel.textContent = wordsReadLabelText;
+      DOMElements.wpmLabel.textContent = wpmLabelText;
+
+      // Show Start Screen
+      DOMElements.startStateContent.style.display = "block";
+      DOMElements.gameStateContent.style.display = "none";
+      DOMElements.bottomBar.style.display = "none";
+      DOMElements.wordDisplay.style.opacity = 0; // Hide word display initially
+      Mascot.idle();
+    },
+
+    startGame() {
+      if (state.gameStarted) return;
+      
+      playSound('start');
+      Mascot.idle();
+
+      // Show countdown first
+      showCountdown(() => {
+        state.gameStarted = true;
+        state.score = -1; // Will be incremented to 0 on first word
+        state.currentStreak = 0;
         
-        try { if (Tone.context.state !== 'running') Tone.start(); } 
-        catch(e) { console.error("Tone.js context failed to start:", e); }
-        playStartSound();
+        state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime);
+        state.timeLeft = state.totalTime;
+        DOMElements.timer.textContent = state.timeLeft;
 
-        totalTime = Math.max(10, parseInt(timerInput.value) || globalSettings.defaultTime);
-        timeLeft = totalTime;
-        timerDisplay.textContent = timeLeft; // Update timer display span
+        // Toggle UI
+        DOMElements.startStateContent.style.display = "none";
+        DOMElements.gameStateContent.style.display = "block";
+        DOMElements.speakControls.style.display = "flex";
+        DOMElements.speakBtn.style.display = "inline-block";
+        DOMElements.bottomBar.style.display = "flex";
+        DOMElements.statsGrid.style.display = "grid";
+        DOMElements.wpmCard.style.display = "none";
+        DOMElements.streakCard.style.display = "flex";
+        DOMElements.wordsReadCard.style.display = "flex";
+        DOMElements.timerCard.style.display = "flex";
+        DOMElements.keyboardHint.style.display = "block";
+        DOMElements.scoreDisplay.innerHTML = "";
+        DOMElements.starRatingDisplay.innerHTML = "";
+        DOMElements.starRatingDisplay.classList.remove('show-stars');
+        DOMElements.timerCard.classList.remove('timer-low');
 
-        settingsSection.style.display = "none";
-        startBtn.style.display = "none";
-        speakControls.style.display = "flex"; 
-        speakBtn.style.display = "inline-block"; 
-        bottomBar.style.display = "flex";
-        statsGrid.style.display = "grid"; // Show grid on start
-        wpmCard.style.display = "none"; // Hide WPM card initially
-        wordsReadCard.style.display = "flex"; // Show Words Read card
-        timerCard.style.display = "flex"; // Show Timer card
-        timerControlsContainer.style.display = "flex"; // Show controls container
-        keyboardHint.style.display = "block";
-        scoreDisplay.innerHTML = "";
-        currentWordIndex = 0;
-        shuffledWords = shuffle([...words]);
-        progressFill.style.width = "100%";
+        state.currentWordIndex = 0;
+        state.shuffledWords = shuffle([...state.wordList]);
+        DOMElements.progressFill.style.width = "100%";
 
         updateTimer(); 
-        timerInterval = setInterval(updateTimer, 1000);
+        state.timerInterval = setInterval(updateTimer, 1000);
         showWord();
-    }
+      });
+    },
 
-    function endGame() {
-        clearInterval(timerInterval);
-        timerInterval = null; 
-        gameStarted = false;
-        gradeSectionElement.classList.remove('active-game'); 
-        currentWord = ''; 
+    stopGame() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.timerInterval = null;
+      state.gameStarted = false;
+      currentWordForAI = '';
+      
+      // Show Start Screen
+      DOMElements.startStateContent.style.display = "block";
+      DOMElements.gameStateContent.style.display = "none";
+      DOMElements.bottomBar.style.display = "none";
+      DOMElements.wordDisplay.textContent = "Press Start";
+      DOMElements.wordDisplay.className = ''; // Clear animations
+      DOMElements.wordDisplay.style.opacity = 1;
+      DOMElements.timerCard.classList.remove('timer-low');
+      
+      // Update high score on home screen
+      DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${state.gradeKey === 'prek' ? 'LPM' : 'WPM'}`;
+      Mascot.idle();
+    },
 
-        settingsSection.style.display = "block";
-        bottomBar.style.display = "none";
-        speakControls.style.display = "none"; 
-        speakBtn.style.display = "none";
-        startBtn.style.display = "inline-block";
-        keyboardHint.style.display = "none";
-        wpmCard.style.display = "flex"; // Show WPM card on end
-        // Keep other cards and controls visible in the grid if needed, or hide them:
-        // wordsReadCard.style.display = "none"; 
-        // timerCard.style.display = "none";
-        // timerControlsContainer.style.display = "none"; 
-        
-        wordDisplay.textContent = "Time's Up! 🎉";
-        scoreDisplay.innerHTML = `You read ${score} words!`;
-        playYaaySound();
-    }
+    endGame() {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null; 
+      state.gameStarted = false;
+      currentWordForAI = '';
+      
+      playSound('end');
+      Mascot.celebrate();
+      // CONGRATS!
+      confetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
 
-    function goHome() { playClickSound(); stopGame(); }
-    function restartGame() { playClickSound(); stopGame(); startGame(); }
+      // Calculate final WPM
+      const finalWPM = parseInt(DOMElements.wpm.textContent) || 0;
+      
+      // Check High Score
+      const oldHighScore = getHighScore(state.gradeKey);
+      let highScoreMessage = '';
+      if (finalWPM > oldHighScore) {
+        setHighScore(state.gradeKey, finalWPM);
+        highScoreMessage = "<br>🎉 New High Score! 🎉";
+      }
 
-    function showWord() {
-        if (currentWordIndex >= shuffledWords.length) currentWordIndex = 0; 
-        if (currentWordIndex < 0) currentWordIndex = shuffledWords.length - 1; 
+      // Show Stars
+      showStars(finalWPM);
 
-        currentWord = shuffledWords[currentWordIndex]; 
-        currentWordForAI = currentWord; 
-        wordDisplay.textContent = currentWord; 
-        wordDisplay.style.animation = 'none';
-        
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                 wordDisplay.style.animation = 'wordPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            });
-        });
-        
-        score++;
-        updateStats();
+      // Toggle UI
+      DOMElements.startStateContent.style.display = "block";
+      DOMElements.gameStateContent.style.display = "block"; // Keep game content visible
+      DOMElements.startBtn.style.display = "inline-block"; // Show start button
+      DOMElements.settingsSection.style.display = "block"; // Show settings
+      DOMElements.bottomBar.style.display = "none";
+      DOMElements.speakControls.style.display = "none"; 
+      DOMElements.speakBtn.style.display = "none";
+      DOMElements.keyboardHint.style.display = "none";
+      DOMElements.wpmCard.style.display = "flex"; // Show WPM card
+      DOMElements.timerCard.classList.remove('timer-low');
+      
+      DOMElements.wordDisplay.textContent = "Time's Up!";
+      DOMElements.wordDisplay.className = 'pop-in';
+      DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${state.gradeKey === 'prek' ? 'letters' : 'words'}! ${highScoreMessage}`;
+    },
 
-        if (globalSettings.autoSpeak && gameStarted) {
-            speakWord(currentWord, gradePrefix); // Pass gradePrefix
+    // Public actions
+    goHome() { playSound('click'); this.stopGame(); },
+    restartGame() { playSound('click'); this.stopGame(); this.startGame(); },
+    doNextWord() { if(state.gameStarted) nextWord(); },
+    doPrevWord() { if(state.gameStarted) prevWord(); },
+    doSpeakWord() { 
+      if (state.currentWord) {
+        playSound('click'); 
+        speakWord(state.currentWord, state.gradeKey);
+      }
+    },
+
+    // Keyboard handler
+    handleKeyDown(e) {
+      if (!state.gameStarted) {
+        if (e.key === ' ' || e.key === 'Enter') { 
+          e.preventDefault(); 
+          playSound('click'); 
+          this.startGame(); 
         }
-    }
-
-    function nextWord() { playNavigationSound(); currentWordIndex++; showWord(); }
-    function prevWord() { playNavigationSound(); currentWordIndex--; score -= 2; showWord(); }
-
-    function updateTimer() {
-        if (!gameStarted) return;
-        timeLeft--;
-        if (timeLeft >= 0) {
-            timerDisplay.textContent = timeLeft; // Update timer display span
-            const progress = (timeLeft / totalTime) * 100;
-            progressFill.style.width = progress + '%';
-        }
-        if (timeLeft <= 0) {
-            endGame();
-        } else {
-            updateStats();
-        }
-    }
-
-    function updateStats() {
-        wordsReadEl.textContent = Math.max(0, score); 
-        const elapsed = totalTime - timeLeft;
-        const wpm = elapsed > 0 ? Math.round((Math.max(0, score) / elapsed) * 60) : 0;
-        wpmEl.textContent = wpm;
-    }
-
-    // --- Event Listeners ---
-    startBtn.addEventListener('click', () => { playClickSound(); startGame(); });
-    homeBtn.addEventListener('click', goHome);
-    restartBtn.addEventListener('click', restartGame);
-    nextBtn.addEventListener('click', nextWord);
-    backBtn.addEventListener('click', prevWord);
-    speakBtn.addEventListener('click', () => { playClickSound(); speakWord(currentWord, gradePrefix); }); 
-
-    speechRateSlider.addEventListener('input', (e) => {
-        globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
-        speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; 
-        updateSettingsUI(); 
-    });
-     speechRateSlider.addEventListener('change', () => { 
-         saveSettings();
-         if (gameStarted && currentWord) { 
-            speakWord(currentWord, gradePrefix); 
-         }
-     });
-
-    muteToggle.addEventListener('click', () => {
-        playClickSound();
-        globalSettings.sound = !globalSettings.sound;
-        saveSettings();
-        updateSettingsUI(); 
-    });
-
-    themeToggle.addEventListener('click', () => {
-        playClickSound();
-        globalSettings.darkMode = !globalSettings.darkMode; // Toggle dark mode specifically
-        saveSettings();
-        applySettings(); 
-        updateSettingsUI(); 
-    });
-
-    timerInput.addEventListener('input', () => {
-        if (!gameStarted) {
-            const newTime = parseInt(timerInput.value) || globalSettings.defaultTime;
-            timerDisplay.textContent = newTime; // Update timer display span
-        }
-    });
+        return;
+      }
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextWord(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prevWord(); }
+      if (e.key === 's' || e.key === 'S') { e.preventDefault(); this.doSpeakWord(); }
+    },
     
-    aiHelperBtn.addEventListener('click', () => {
-        playClickSound();
-        const aiWordElement = document.getElementById('ai-word');
-        const aiWelcomeMessage = document.getElementById('ai-welcome-message');
-        const aiButtons = document.getElementById('ai-buttons');
-        const aiResultDiv = document.getElementById('ai-result');
-
-        if (gameStarted && currentWord) { 
-            currentWordForAI = currentWord; 
-            currentGradeForAI = getGradeLevelString(gradePrefix); 
-            aiWordElement.textContent = currentWordForAI;
-            aiWordElement.parentElement.style.display = 'block'; 
-            aiWelcomeMessage.style.display = 'none'; 
-            aiButtons.style.display = 'flex'; 
-            aiResultDiv.textContent = 'Tap a button above...'; 
-            document.getElementById('ai-helper-backdrop').classList.add('visible');
-        } else {
-            aiWordElement.parentElement.style.display = 'none'; 
-            aiWelcomeMessage.style.display = 'block'; 
-            aiButtons.style.display = 'none'; 
-            aiResultDiv.textContent = ''; 
-            document.getElementById('ai-helper-backdrop').classList.add('visible');
-        }
-    });
-    
-    function showCustomAlert(message) { /* ... keep as is ... */ }
-
-    function handleKeyDown(e) {
-        if (!gameStarted) {
-            if (e.key === ' ') { e.preventDefault(); playClickSound(); startGame(); }
-            return;
-        }
-        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextWord(); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); prevWord(); }
-        if (e.key === 's' || e.key === 'S') { e.preventDefault(); playClickSound(); speakWord(currentWord, gradePrefix); } 
+    // External settings update
+    updateDefaultTime(time) {
+      if (!state.gameStarted) {
+        DOMElements.timerInput.value = time;
+        DOMElements.timer.textContent = time;
+      }
     }
+  };
 
-    // Return methods
-    return {
-        attachKeyboardListener: () => document.addEventListener('keydown', handleKeyDown),
-        removeKeyboardListener: () => document.removeEventListener('keydown', handleKeyDown),
-        stopGame: stopGame,
-        updateDefaultTime: (time) => {
-            if (!gameStarted) {
-                timerInput.value = time;
-                timerDisplay.textContent = time; // Update timer display span
-            }
-        },
-        getCurrentWord: () => gameStarted ? currentWord : null, 
-        getGradePrefix: () => gradePrefix 
-    };
+  return publicMethods;
 }
 
 
-// --- WORD LISTS (Keep as they are) ---
-const words_prek=[..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"];const words_k=["am","an","as","at","be","by","do","go","he","hi","if","in","is","it","me","my","no","of","on","or","so","to","up","us","we","a","and","are","bad","bag","bat","bed","big","bit","box","boy","bug","bun","but","buy","can","cap","car","cat","cow","cry","cub","cut","dad","day","did","dig","dip","dog","dot","dry","eat","egg","end","fan","far","fat","few","fin","fit","fix","fly","for","fog","fun","fur","get","got","gum","gun","had","has","hat","hen","her","him","his","hit","hot","how","hug","hut","ice","ink","its","jam","jar","jet","job","jog","joy","jug","key","kid","kit","lab","lad","lap","lay","led","leg","let","lid","lip","lit","log","lot","low","mad","man","map","mat","may","men","met","mix","mom","mop","mud","mug","nap","net","new","nod","not","now","nut","off","old","one","our","out","owl","own","pad","pan","pat","pay","peg","pen","pet","pig","pin","pit","pod","pop","pot","put","rag","ram","ran","rap","rat","red","rib","rid","rim","rip","rod","rot","rub","rug","run","rut","sad","sap","sat","saw","say","see","set","sew","she","shy","sin","sip","sit","six","ski","sky","sob","son","sow","sub","sue","sum","sun","tab","tag","tan","tap","tax","tea","ten","the","tie","tin","tip","toe","tom","top","toy","try","tub","tug","two","use","van","vet","war","was","wax","way","web","wed","wet","who","why","wig","win","wit","won","yes","yet","you","zip","zoo"];const words_first=["like","look","see","with","they","you","said","was","have","from","word","but","what","all","were","when","your","can","use","each","which","she","how","their","will","up","other","about","out","many","then","them","these","so","some","her","would","make","him","into","time","has","more","write","go","number","no","way","could","people","my","than","first","water","been","call","who","oil","now","find","long","down","day","get","come","made","may","part","after","again","an","any","as","ask","by","every","fly","give","giving","had","just","know","let","live","of","old","once","open","over","put","round","stop","take","thank","think","walk"];const words_second=["mat","bad","fix","ham","rig","wig","bib","sap","six","rat","sit","tag","fig","Tim","map","hat","hip","it","rap","pig","pan","in","bit","fan","kid","cab","pad","at","lad","rip","bam","big","can","rim","van","tip","dad","gap","rag","sad","fin","tin","nag","him","set","did","bed","sum","yes","hog","rut","not","jam","Ned","bud","cod","mug","fit","lab","jot","cap","pin","rug","cop","kit","gut","get","rod","met","sat","pod","cat","got","beg","wet","sub","dot","zip","puff","the","go","talk","by","friend","look","no","walk","my","because","I","book","so","could","one","woman","is","are","goes","would","once","women","a","was","says","should","two","move","as","she","or","does","both","said","what","we","for","any","four","to","have","they","there","many","fourth","do","your","their","where","been","forty","of","want","were","who","into","people","see","he","be","me","pretty","above","month","honest","toward","young","nothing","among","hour","honor","through","touch","other","again","minute","truth","learn","rough","another","against","Monday","truly","earth","tough","mother","door","Wednesday","busy","early","enough","brother","poor","February","build","buy","father","floor","eye","built","guy","water","won","heart","sure","guess","very","son","about","laugh","guest","today","always","answer","whom","guide","almost","whose","tan","nap","going","had","red","gave","good","and","give","five","veah","say","live","goe","saw","has"];const words_third=["better","bring","carry","clean","complete","cut","done","draw","drink","eight","fall","far","full","grow","hold","hot","hurt","if","keep","kind","light","long","much","myself","never","only","own","pick","seven","shall","show","six","small","start","ten","together","try","warm","around","before","best","call","cold","don't","fast","five","found","green","its","made","off","pull","read","right","sing","sleep","tell","these","those","upon","us","use","wash","wish","work","write","your","apple","baby","back","ball","bear","bird","birthday","boat","boy","bread","brother","cake","chair","chicken","children","coat","corn","cow","doll","duck","egg","eye","farm","farmer","father","feet","fire","fish","flower","game","garden","girl","goodbye","grass","ground","hand","head","hill","home","horse","house","kitty","leg","letter","man","men","milk","money","morning","mother","name","nest","night","paper","party","picture","pig","rabbit","rain","ring","robin","school","seed","sheep","shoe","sister","snow","song","squirrel","stick","street","sun","table","thing","top","toy","tree","watch","way","wind","window","wood"];const words_fourth=["accident","actual","address","appear","arrive","bicycle","breath","breathe","business","calendar","caught","center","century","certain","circle","consider","continue","describe","difficult","disappear","exercise","experience","experiment","extreme","favorite","February","forward","fruit","grammar","group","guard","guide","height","imagine","important","increase","interest","island","knowledge","length","library","material","medicine","mention","natural","neither","notice","often","opposite","ordinary","particular","peculiar","perhaps","popular","position","possess","possible","potatoes","promise","purpose","quarter","question","recent","regular","reign","remember","sentence","separate","special","straight","strange","strength","suppose","surprise","therefore","though","thought","various","weight","woman","women","although","area","argue","brain","brought","captain","chief","church","clothes","company","country","course","daughter","discover","division","during","either","eleven","energy","engine","England","Europe","evening","except","expect","explain","finally","forest","future","general","heavy","hospital","however","include","instead","journey","language","listen","little","machine","measure","middle","million","mountain","music","nation"];const words_fifth=["achieve","ancient","apparent","appreciate","approach","approve","average","awkward","bargain","barrier","borrow","boundary","brilliant","budget","burden","calculate","campaign","capacity","category","challenge","character","characteristic","chorus","citizen","column","combination","command","committee","communicate","community","compare","compete","competition","compose","concern","conclude","concrete","condition","conduct","confident","connect","conscious","consist","construct","contain","contrast","contribute","control","convince","correspond","courage","create","creature","criticize","culture","current","deceive","definite","delicious","depend","design","destroy","determine","develop","dictionary","direct","disaster","discuss","disease","distant","distribute","divide","dozen","drama","jealous","judgment","league","leisure","lightning","likely","liquid","lonely","luxury","magazine","maintain","major","manage","manual","manufacture","maximum","mischief","modern","moist","muscle","mystery","necessary","neighbor","nuisance","occupy","occur","opportunity","parliament","persuade","physical","prejudice","privilege","profession","program","pronounce","queue","recognize","recommend","relevant","restaurant","rhyme","rhythm","sacrifice","secretary","shoulder","signature","sincere","soldier","stomach","sufficient","suggest","symbol","system","temperature","thorough","twelfth","variety","vegetable","vehicle","yacht"];const words_more=["abundant","accumulate","accurate","adapt","adequate","adjacent","adjust","advantage","advocate","affect","aggravate","amateur","ambitious","ample","analyze","anxious","appeal","appropriate","approximate","arrogant","artificial","ascend","assist","attempt","attentive","authentic","benefit","bias","brief","brutal","capable","cautious","cease","chaos","chronological","clarify","classify","coarse","coherent","colossal","commence","comment","comfortable","complex","component","comprehend","conceal","concise","condemn","conflict","consecutive","consensus","consent","conspicuous","context","continuous","convenient","crucial","data","debate","debt","deceitful","declare","decline","deficient","dense","depict","desist","despise","destitute","detect","deter","diligent","diminish","disrupt","distinct","distort","diverse","dominant","drastic","drowsy","dubious","durable","eager","eccentric","edible","eerie","effect","efficient","elaborate","elegant","eligible","elite","eloquent","embark","emerge","emphasis","encounter","endeavor","endorse","endure","energetic","enhance","enigma","entice","era","essential","evade","evident","evolve","exceed","excel","exempt","exotic","expand","expert","explicit","extol","extract","extravagant","facetious","fallacy","feasible","feeble","feud","fickle","fiery","final","flagrant","flaw","flee","flimsy","fluctuate","fluent","foe","formal","frantic","frequent","frugal","futile","genuine","gigantic","glare","glum","gradual","grasp","gravity","greedy","grievance","grim","groggy","grudge","habitable","haphazard","harsh","hasty","hazardous","hesitate","hideous","hoax","hostile","identical","idle","illegible","illicit","imitate","immense","impartial","impede","implicit","imply","incessant","increment","independent","indicate","indignant","indispensable","induce","inept","inevitable","infamous","infer","infinite","infuriate","ingenious","inherent","inhibit","initial","inquiry","integral","intricate","intuitive","irate","irrelevant","jeopardize","jubilant","judicious","justify","keen","labyrinth","lack","legible","lenient","lethal","listless","literal","loathe","logical","lucid","lucrative","ludicrous","lurk","majestic","meager","mediocre","melancholy","mellow","meticulous","mimic","moderate","modest","monotonous","morbid","mundane","multitude","nimble","nonchalant","notify","numerous","nutritious","oblivious","obscure","obsolete","obstacle","ominous","opportune","ordeal","ornate","orthodox","overlap","overt","parody","passive","persist","pertinent","plausible","plea","plentiful","ponder","potent","precise","predominant","preliminary","presume","prevail","prevalent","prior","probe","proceed","prohibit","prominent","propel","profound","prolific","prospect","prudent","query","quest","radiant","random","rational","realistic","reasonable","rebel","recall","reciprocate","reckless","redundant","refuge","regime","relevant","reluctant","remote","repel","resent","resolute","respond","restrict","reveal","rigid","rigorous","rural","scarce","scatter","skeptical","scheme","scope","significant","simultaneous","sinister","slack","sleazy","slight","sluggish","solitary","sparse","spontaneous","sporadic","stable","stagnant","sterile","stern","subtle","superficial","superfluous","supplement","suppress","surpass","surplus","tangible","tedious","temperate","tentative","terminate","terrain","terse","thorough","timid","toxic","tranquil","transient","transparent","trivial","turbulent","unanimous","uncouth","unique","valid","vague","versatile","viable","vibrant","vigilant","vigorous","vivid","weary","wholesome","widespread","wily","wither","yearn","zest"];
-
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // Load settings from localStorage
-    loadSettings();
-    
-    // --- Settings Modal Listeners ---
-    const settingsBackdrop = document.getElementById('settings-backdrop');
-    const allGlobalSettingsBtns = document.querySelectorAll('.global-settings-btn'); 
-    const settingsCloseBtn = document.getElementById('settings-close-btn');
+  
+  // Load settings from localStorage
+  loadSettings();
+  
+  // Create the single game instance
+  activeGameInstance = createWordChallenge();
 
-    function openSettings() {
-        updateSettingsUI(); 
-        settingsBackdrop.classList.add('visible');
+  // --- Settings Modal Listeners ---
+  function openSettings() {
+    playSound('click');
+    updateSettingsUI(); 
+    DOMElements.settingsBackdrop.classList.add('visible');
+  }
+  function closeSettings() {
+    playSound('click');
+    DOMElements.settingsBackdrop.classList.remove('visible');
+  }
+  DOMElements.globalSettingsBtns.forEach(btn => btn.addEventListener('click', openSettings));
+  DOMElements.settingsCloseBtn.addEventListener('click', closeSettings);
+  DOMElements.settingsBackdrop.addEventListener('click', (e) => { if (e.target === DOMElements.settingsBackdrop) closeSettings(); });
+
+  // --- AI Helper Modal Listeners ---
+  function closeAiHelper() {
+    playSound('click');
+    DOMElements.aiHelperBackdrop.classList.remove('visible');
+  }
+  
+  DOMElements.aiHelperBtn.addEventListener('click', () => {
+    playSound('click');
+    if (activeGameInstance && currentWordForAI) {
+      DOMElements.aiWord.textContent = currentWordForAI;
+      DOMElements.aiWord.parentElement.style.display = 'block'; 
+      DOMElements.aiWelcomeMessage.style.display = 'none'; 
+      DOMElements.aiButtons.style.display = 'flex'; 
+      DOMElements.aiResult.textContent = 'Tap a button above...'; 
+      DOMElements.aiLoading.style.display = 'none';
+    } else {
+      DOMElements.aiWord.parentElement.style.display = 'none'; 
+      DOMElements.aiWelcomeMessage.style.display = 'block'; 
+      DOMElements.aiButtons.style.display = 'none'; 
+      DOMElements.aiResult.textContent = ''; 
+      DOMElements.aiLoading.style.display = 'none';
     }
-    function closeSettings() {
-        settingsBackdrop.classList.remove('visible');
-    }
+    DOMElements.aiHelperBackdrop.classList.add('visible');
+  });
 
-    allGlobalSettingsBtns.forEach(btn => btn.addEventListener('click', openSettings));
-    settingsCloseBtn.addEventListener('click', closeSettings);
-    settingsBackdrop.addEventListener('click', (e) => { if (e.target === settingsBackdrop) closeSettings(); });
+  DOMElements.aiHelperCloseBtn.addEventListener('click', closeAiHelper);
+  DOMElements.aiHelperBackdrop.addEventListener('click', (e) => { if (e.target === DOMElements.aiHelperBackdrop) closeAiHelper(); });
 
-    // --- AI Helper Modal Listeners ---
-    const aiHelperBackdrop = document.getElementById('ai-helper-backdrop');
-    const aiHelperCloseBtn = document.getElementById('ai-helper-close-btn');
-    const aiDefineBtn = document.getElementById('ai-define-btn');
-    const aiSentenceBtn = document.getElementById('ai-sentence-btn');
-    const aiResultDiv = document.getElementById('ai-result');
-    const aiLoadingDiv = document.getElementById('ai-loading');
+  async function handleAiRequest(type) {
+    if (!currentWordForAI) return;
+    playSound('click');
+    DOMElements.aiResult.textContent = '';
+    DOMElements.aiLoading.style.display = 'block';
+    let prompt = '';
+    const gradeContext = currentGradeForAI ? ` for a student in ${currentGradeForAI}` : '';
 
-    function closeAiHelper() {
-        aiHelperBackdrop.classList.remove('visible');
+    if (type === 'define') {
+      prompt = `Define the word "${currentWordForAI}" in one or two simple sentences${gradeContext}. Keep it kid-friendly.`;
+    } else if (type === 'sentence') {
+      prompt = `Use the word "${currentWordForAI}" in a simple, kid-friendly sentence${gradeContext}.`;
     }
     
-    aiHelperCloseBtn.addEventListener('click', closeAiHelper);
-    aiHelperBackdrop.addEventListener('click', (e) => { if (e.target === aiHelperBackdrop) closeAiHelper(); });
+    const result = await callGeminiApi(prompt);
+    DOMElements.aiLoading.style.display = 'none';
+    DOMElements.aiResult.textContent = result;
+  }
+  DOMElements.aiDefineBtn.addEventListener('click', () => handleAiRequest('define'));
+  DOMElements.aiSentenceBtn.addEventListener('click', () => handleAiRequest('sentence'));
 
-    async function handleAiRequest(type) {
-        if (!currentWordForAI) return;
-        playClickSound();
-        aiResultDiv.textContent = '';
-        aiLoadingDiv.style.display = 'block';
-        let prompt = '';
-        const gradeContext = currentGradeForAI ? ` for a student in ${currentGradeForAI}` : '';
-
-        if (type === 'define') {
-            prompt = `Define the word "${currentWordForAI}" in simple terms${gradeContext}.`;
-        } else if (type === 'sentence') {
-            prompt = `Use the word "${currentWordForAI}" in a simple sentence suitable${gradeContext}.`;
-        }
-        
-        const result = await callGeminiApi(prompt);
-        aiLoadingDiv.style.display = 'none';
-        aiResultDiv.textContent = result;
-    }
-
-    aiDefineBtn.addEventListener('click', () => handleAiRequest('define'));
-    aiSentenceBtn.addEventListener('click', () => handleAiRequest('sentence'));
-
-
-    // --- Settings Control Listeners ---
-     // Theme Selector Listener
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.addEventListener('click', (e) => {
-            const newTheme = e.target.dataset.theme;
-            if (newTheme && newTheme !== globalSettings.theme) {
-                globalSettings.theme = newTheme;
-                saveSettings();
-                applySettings();
-                updateSettingsUI(); // Update selection highlight
-            }
-        });
-    });
-    
-    document.getElementById('settings-theme-toggle').addEventListener('change', (e) => {
-        globalSettings.darkMode = e.target.checked; // Changed to darkMode
-        saveSettings(); applySettings(); updateSettingsUI(); 
-    });
-    document.getElementById('settings-sound-toggle').addEventListener('change', (e) => {
-        globalSettings.sound = e.target.checked;
-        saveSettings(); updateSettingsUI(); 
-        if (globalSettings.sound) playClickSound(); 
-    });
-    document.getElementById('settings-default-time').addEventListener('change', (e) => {
-        globalSettings.defaultTime = parseInt(e.target.value) || 60;
+  // --- Settings Control Listeners ---
+  DOMElements.themeOptions.forEach(option => {
+    option.addEventListener('click', (e) => {
+      const newTheme = e.target.dataset.theme;
+      if (newTheme && newTheme !== globalSettings.theme) {
+        playSound('click');
+        globalSettings.theme = newTheme;
         saveSettings();
-        Object.values(gameInstances).forEach(game => {
-            if(game && game.updateDefaultTime) game.updateDefaultTime(globalSettings.defaultTime);
-        });
+        applySettings();
+        updateSettingsUI(); // Update selection highlight
+      }
     });
-    const fontSizeSlider = document.getElementById('settings-font-size');
-    const fontSizeIndicator = document.getElementById('font-size-indicator');
-    fontSizeSlider.addEventListener('input', (e) => {
-        globalSettings.fontSize = parseFloat(e.target.value).toFixed(1);
-        fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
-        applySettings(); 
-    });
-    fontSizeSlider.addEventListener('change', saveSettings); 
-    document.getElementById('settings-autospeak-toggle').addEventListener('change', (e) => {
-        globalSettings.autoSpeak = e.target.checked;
-        saveSettings();
-    });
-    const speechRateSlider = document.getElementById('settings-speech-rate');
-    const speechRateIndicator = document.getElementById('speech-rate-indicator');
-    speechRateSlider.addEventListener('input', (e) => {
-        globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
-        speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
-        // Update all game sliders visually
-        document.querySelectorAll('.speech-rate-slider').forEach(slider => slider.value = globalSettings.speechRate);
-        // Update all inline indicators
-         document.querySelectorAll('.speech-rate-indicator-inline').forEach(span => {
-             span.textContent = `${globalSettings.speechRate}x`;
-         });
-    });
-    speechRateSlider.addEventListener('change', saveSettings); 
-    document.getElementById('reset-settings-btn').addEventListener('click', resetSettings);
+  });
+  
+  DOMElements.settingsThemeToggle.addEventListener('change', (e) => {
+    globalSettings.darkMode = e.target.checked;
+    saveSettings(); applySettings(); updateSettingsUI(); 
+  });
+  DOMElements.settingsSoundToggle.addEventListener('change', (e) => {
+    globalSettings.sound = e.target.checked;
+    saveSettings(); updateSettingsUI(); 
+    if (globalSettings.sound) playSound('click'); 
+  });
+  DOMElements.settingsDefaultTime.addEventListener('change', (e) => {
+    globalSettings.defaultTime = parseInt(e.target.value) || 60;
+    saveSettings();
+    if(activeGameInstance) activeGameInstance.updateDefaultTime(globalSettings.defaultTime);
+  });
+
+  DOMElements.settingsFontSize.addEventListener('input', (e) => {
+    globalSettings.fontSize = parseFloat(e.target.value).toFixed(1);
+    DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
+    applySettings(); 
+  });
+  DOMElements.settingsFontSize.addEventListener('change', saveSettings); 
+
+  DOMElements.settingsAutoSpeakToggle.addEventListener('change', (e) => {
+    globalSettings.autoSpeak = e.target.checked;
+    saveSettings();
+  });
+
+  DOMElements.settingsSpeechRate.addEventListener('input', (e) => {
+    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
+    DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
+    // Update all game sliders visually
+    DOMElements.speechRateSlider.value = globalSettings.speechRate;
+    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
+  });
+  DOMElements.settingsSpeechRate.addEventListener('change', saveSettings); 
+  DOMElements.resetSettingsBtn.addEventListener('click', resetSettings);
 
 
-    // --- Game Instance Creation ---
-    const gameInstances = {
-        'prek': createWordChallenge('prek', words_prek), 
-        'k': createWordChallenge('k', words_k),
-        'first': createWordChallenge('first', words_first),
-        'second': createWordChallenge('second', words_second),
-        'third': createWordChallenge('third', words_third),
-        'fourth': createWordChallenge('fourth', words_fourth),
-        'fifth': createWordChallenge('fifth', words_fifth),
-        'more': createWordChallenge('more', words_more)
-    };
+  // --- DYNAMIC GAME LISTENERS ---
+  // Game Controls
+  DOMElements.startBtn.addEventListener('click', () => activeGameInstance.startGame());
+  DOMElements.homeBtn.addEventListener('click', () => activeGameInstance.goHome());
+  DOMElements.restartBtn.addEventListener('click', () => activeGameInstance.restartGame());
+  DOMElements.nextBtn.addEventListener('click', () => activeGameInstance.doNextWord());
+  DOMElements.backBtn.addEventListener('click', () => activeGameInstance.doPrevWord());
+  DOMElements.speakBtn.addEventListener('click', () => activeGameInstance.doSpeakWord());
 
-    // --- Tab Navigation Logic ---
-    const tabs = document.querySelectorAll('.nav-tab');
-    const sections = document.querySelectorAll('.grade-section');
-    activeGameInstance = gameInstances['prek']; 
+  // In-Game Settings
+  DOMElements.speechRateSlider.addEventListener('input', (e) => {
+    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
+    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; 
+    updateSettingsUI(); // Sync with modal
+  });
+  DOMElements.speechRateSlider.addEventListener('change', () => { 
+    saveSettings();
+    activeGameInstance.doSpeakWord(); // Speak current word with new speed
+  });
 
-    if (activeGameInstance && activeGameInstance.attachKeyboardListener) {
-        activeGameInstance.attachKeyboardListener();
+  DOMElements.muteToggle.addEventListener('click', () => {
+    playSound('click');
+    globalSettings.sound = !globalSettings.sound;
+    saveSettings();
+    updateSettingsUI(); 
+  });
+
+  DOMElements.themeToggle.addEventListener('click', () => {
+    playSound('click');
+    globalSettings.darkMode = !globalSettings.darkMode;
+    saveSettings();
+    applySettings(); 
+    updateSettingsUI(); 
+  });
+
+  // Global Keyboard Listener
+  document.addEventListener('keydown', (e) => {
+    if (activeGameInstance) {
+      // Don't interfere if user is typing in an input
+      if (e.target.tagName === 'INPUT') return;
+      // Don't interfere if a modal is open
+      if (DOMElements.settingsBackdrop.classList.contains('visible') || DOMElements.aiHelperBackdrop.classList.contains('visible')) return;
+      
+      activeGameInstance.handleKeyDown(e);
     }
+  });
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            playClickSound(); 
-            const targetId = tab.getAttribute('data-target');
-            const targetKey = targetId.replace('-grade', '').replace('pre-k', 'prek').replace('more-grades','more'); 
+  // --- Tab Navigation Logic ---
+  DOMElements.navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      playSound('click'); 
+      const targetGrade = tab.getAttribute('data-grade');
+      
+      DOMElements.navTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
 
-
-            if (activeGameInstance && activeGameInstance.removeKeyboardListener) {
-                activeGameInstance.removeKeyboardListener();
-                activeGameInstance.stopGame();
-            }
-
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            sections.forEach(section => {
-                // Ensure only the active section has the 'active' class
-                if (section.id === targetId) {
-                    section.classList.add('active');
-                } else {
-                    section.classList.remove('active');
-                }
-            });
-
-
-            activeGameInstance = gameInstances[targetKey];
-            if (activeGameInstance && activeGameInstance.attachKeyboardListener) {
-                activeGameInstance.attachKeyboardListener();
-                const slider = document.getElementById(`speech-rate-slider-${targetKey}`);
-                 if (slider) { 
-                     slider.value = globalSettings.speechRate;
-                 } else {
-                     console.warn(`Speech rate slider not found for key: ${targetKey}`);
-                 }
-                 const indicator = document.getElementById(`speech-rate-indicator-inline-${targetKey}`);
-                 if(indicator) {
-                      indicator.textContent = `${globalSettings.speechRate}x`;
-                 }
-
-            } else {
-                console.warn("No game instance found or attachKeyboardListener method missing for key:", targetKey);
-            }
-        });
+      // Initialize the game for the new grade
+      if (activeGameInstance) {
+        activeGameInstance.init(targetGrade);
+      }
     });
+  });
 
-    updateSettingsUI(); // Initial icon render
+  // --- Final Initialization ---
+  activeGameInstance.init('prek'); // Initialize with Pre-K by default
+  Mascot.idle(); // Start mascot
+  updateSettingsUI(); // Initial icon render
 });
 </script>
 
 </body>
 </html>
-
