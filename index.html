@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- Native App Meta Tags -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kidsy">
@@ -10,7 +9,6 @@
 <link rel="apple-touch-icon" href="https://placehold.co/180x180/8e44ad/ffffff?text=Kidsy">
 
 <title>Kidsy</title>
-<!-- Libs: Tone (Audio), Lucide (Icons), Confetti (Fun!) -->
 <script src="https://cdn.jsdelivr.net/npm/tone@14.8.39/build/Tone.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -147,6 +145,8 @@ body.dark.theme-skyblue {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* --- FIX: Disable tap highlight on iOS for native feel --- */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Updated html/body for full coverage */
@@ -172,8 +172,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 10px 0 0 0;
-  /* Add padding for iOS safe areas */
+  
+  /* --- FIX: Add padding for iOS safe areas (notch/home bar) + user's 10px top padding --- */
+  padding-top: calc(env(safe-area-inset-top) + 10px);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
@@ -1164,7 +1165,7 @@ input:checked + .slider:before {
       padding-top: 10px;
       padding-bottom: 10px;
       height: 100%; /* Fill vertical space */
-      max-height: calc(100vh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); /* Adjust max height considering body padding and safe areas */
+      /* --- FIX: Removed max-height, flexbox layout will handle this --- */
       overflow: hidden; /* Prevent container itself from scrolling */
   }
 
@@ -1193,14 +1194,14 @@ input:checked + .slider:before {
   .grade-section {
       padding-bottom: 0; /* Remove bottom padding */
       height: 100%;
-      max-height: calc(100vh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); /* Match nav container height */
+      /* --- FIX: Removed max-height, flexbox layout will handle this --- */
   }
   .container {
       padding: clamp(15px, 2.5vh, 20px); /* Responsive padding */
       min-height: 0;
       flex-grow: 1;
       margin-bottom: clamp(5px, 1vh, 10px); /* Responsive margin */
-      height: calc(100% - 60px); /* Adjust based on bottom bar height + margins */
+      /* --- FIX: Removed fixed height, flex-grow: 1 (inherited) will handle this --- */
   }
   #bottom-bar {
       margin-top: auto; /* Push to bottom */
@@ -1226,8 +1227,8 @@ input:checked + .slider:before {
   /* Specific adjustments for landscape on short screens */
   @media (max-height: 550px) {
       :root { --base-font-size: 15px; }
-      body { padding-top: 5px; }
-      .container { padding: 12px; height: calc(100% - 50px); }
+      body { /* --- FIX: Removed padding-top: 5px; global safe-area padding handles this --- */ }
+      .container { padding: 12px; /* --- FIX: Removed fixed height, flex-grow: 1 (inherited) will handle this --- */ }
       .challenge-header h1 { font-size: 1.4rem; margin-bottom: 10px; }
       #bottom-bar { height: 45px; padding: 6px 4px; margin-top: 8px; margin-bottom: 5px; }
       #bottom-bar button { font-size: 0.8rem; padding: 7px 8px; gap: 3px; }
@@ -1244,13 +1245,10 @@ input:checked + .slider:before {
 </head>
 <body class="theme-default">
 
-<!-- Main wrapper for landscape/portrait layout -->
 <div class="main-wrapper">
 
-  <!-- Navigation Tabs -->
   <div class="nav-tabs-container">
     <div class="nav-tabs">
-      <!-- Tabs now just carry data. JS handles all logic. -->
       <button class="nav-tab active" data-grade="prek">Pre-K</button>
       <button class="nav-tab" data-grade="k">Kindergarten</button>
       <button class="nav-tab" data-grade="first">First Grade</button>
@@ -1262,17 +1260,9 @@ input:checked + .slider:before {
     </div>
   </div>
 
-  <!--
-    =================================================
-    === SINGLE DYNAMIC GAME SECTION (Refactored) ===
-    =================================================
-    This one section is now controlled entirely by JavaScript.
-    No more duplicate HTML!
-  -->
   <div class="grade-section" id="game-engine">
     <div class="container">
 
-      <!-- Challenge Header (Dynamically updated) -->
       <div class="challenge-header">
         <button class="icon-btn global-settings-btn" aria-label="Open Settings">
           <i data-lucide="settings"></i>
@@ -1280,7 +1270,6 @@ input:checked + .slider:before {
         <h1 id="game-title">🎯 Pre-K Challenge</h1>
       </div>
 
-      <!-- Start State -->
       <div id="start-state-content">
         <div id="settings-section">
           <label for="timer-input">⏱️ Set Time (seconds):</label>
@@ -1290,7 +1279,6 @@ input:checked + .slider:before {
         <button class="start-btn" id="start-btn">🚀 Start Challenge</button>
       </div>
 
-      <!-- Game State -->
       <div id="game-state-content" style="display: none;">
         <div id="progress-bar">
           <div id="progress-fill"></div>
@@ -1308,30 +1296,25 @@ input:checked + .slider:before {
         <div id="star-rating-display"></div>
 
         <div class="stats-grid" id="stats-grid">
-          <!-- Card 1: Words Read -->
           <div class="stat-card" id="words-read-card">
             <div class="stat-number" id="words-read">0</div>
             <div class="stat-label">Letters Read</div>
           </div>
 
-          <!-- Card 2: Timer -->
           <div class="stat-card timer-card" id="timer-card">
             <span>⏱️ Time: <span class="timer-display-value" id="timer">60</span>s</span>
           </div>
 
-          <!-- Card 3: Streak (NEW) -->
           <div class="stat-card" id="streak-card">
              <div class="stat-number" id="streak-counter">0 🔥</div>
              <div class="stat-label">Streak</div>
           </div>
 
-          <!-- Card 4: WPM (Shows at end) -->
           <div class="stat-card" id="wpm-card" style="display:none;">
             <div class="stat-number" id="wpm">0</div>
             <div class="stat-label">Letters/Min</div>
           </div>
 
-          <!-- Controls (Span full grid) -->
           <div class="timer-controls">
             <button class="icon-btn ai-helper-btn" id="ai-helper-btn"><i data-lucide="brain"></i></button>
             <button class="icon-btn mute-toggle" id="mute-toggle"><i data-lucide="volume-2"></i></button>
@@ -1344,7 +1327,6 @@ input:checked + .slider:before {
         </p>
       </div>
 
-      <!-- NEW: CSS Mascot -->
       <div id="mascot">
         <div class="mascot-body">
           <div class="mascot-eye left"></div>
@@ -1355,7 +1337,6 @@ input:checked + .slider:before {
 
     </div>
 
-    <!-- Bottom Navigation Bar (Appears during game) -->
     <div class="bottom-bar" id="bottom-bar" style="display:none;">
       <button id="home-btn"><i data-lucide="home"></i> Home</button>
       <button id="restart-btn"><i data-lucide="rotate-cw"></i> Restart</button>
@@ -1365,17 +1346,10 @@ input:checked + .slider:before {
   </div>
 </div>
 
-<!-- NEW: Countdown Overlay -->
 <div id="countdown-overlay">
   <div id="countdown-text">3</div>
 </div>
 
-<!--
-=================================================
-=== MODALS (Settings & AI Helper) ===
-=================================================
-These are global and unchanged.
--->
 <div id="settings-backdrop">
   <div id="settings-modal">
     <div class="settings-header">
@@ -1385,7 +1359,6 @@ These are global and unchanged.
       </button>
     </div>
 
-    <!-- Theme Selector -->
     <div class="setting-item">
       <div class="setting-label">Theme</div>
       <div class="theme-selector">
@@ -1457,7 +1430,6 @@ These are global and unchanged.
   </div>
 </div>
 
-<!-- AI HELPER MODAL -->
 <div id="ai-helper-backdrop">
   <div id="ai-helper-modal">
     <div class="ai-helper-header">
@@ -1474,7 +1446,6 @@ These are global and unchanged.
           <button id="ai-sentence-btn">Use in Sentence</button>
       </div>
       <div id="ai-result">Tap a button above...</div>
-      <!-- Loading indicator is now visible again -->
       <div id="ai-loading" style="display: none;">Generating response...</div>
     </div>
   </div>
@@ -1827,4 +1798,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
