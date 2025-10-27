@@ -2,39 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!--
+  Viewport meta tag for responsive design and safe area coverage.
+  - width=device-width, initial-scale=1.0: Standard responsive setup.
+  - user-scalable=no: Prevents pinch-zooming, maintaining a native-app feel.
+  - viewport-fit=cover: Ensures the app fills the entire screen, including notch/safe areas.
+-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<!-- iOS specific meta tags for "Add to Home Screen" -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kidsy">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Placeholder icon for "Add to Home Screen" -->
 <link rel="apple-touch-icon" href="https://placehold.co/180x180/8e44ad/ffffff?text=Kidsy">
 
 <title>Kidsy</title>
+<!-- External Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/tone@14.8.39/build/Tone.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <style>
+  /* Import Google Font */
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 :root {
-  /* Default Theme Variables - Vibrant & Colorful v2 */
+  /* --- Base Theme Variables (Vibrant & Colorful) --- */
   --bg-gradient: linear-gradient(135deg, #a6c0fe 0%, #f68084 100%); /* Light Blue/Coral */
   --text-primary: #3d336b; /* Dark Purple Text */
-  --card-bg: rgba(255, 255, 255, 0.98);
+  --card-bg: rgba(255, 255, 255, 0.98); /* Slightly transparent white card */
   --accent-primary: #8e44ad; /* Purple */
   --accent-secondary: #f39c12; /* Orange */
   --accent-success: #2ecc71; /* Green */
   --accent-danger: #e74c3c; /* Red */
-  --shadow-color: rgba(142, 68, 173, 0.18);
-  --border-color: rgba(142, 68, 173, 0.09);
-  --glow-color: rgba(243, 156, 18, 0.5);
+  --shadow-color: rgba(142, 68, 173, 0.18); /* Soft purple shadow */
+  --border-color: rgba(142, 68, 173, 0.09); /* Very light purple border */
+  --glow-color: rgba(243, 156, 18, 0.5); /* Orange glow for accents */
 
-  /* Use clamp for responsive font sizes */
+  /* --- Responsive Typography --- */
+  /* Use clamp() for fluid font sizes based on viewport width */
   --word-font-size: clamp(3em, 12vw, 5em);
   --base-font-size: 17px;
 }
 
 /* --- Theme Definitions --- */
+/* Each theme overrides the root variables */
+
 body.theme-ocean {
   --bg-gradient: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%);
   --text-primary: #00394f;
@@ -67,7 +81,7 @@ body.theme-forest {
 
 body.theme-pink {
   --bg-gradient: linear-gradient(135deg, #f43b47 0%, #453a94 100%);
-  --text-primary: #f8f8f8;
+  --text-primary: #f8f8f8; /* Light text for dark bg */
   --card-bg: rgba(69, 58, 148, 0.85); /* Darker card for this theme */
   --accent-primary: #ff7eb9;
   --accent-secondary: #fed95f;
@@ -95,13 +109,15 @@ body.theme-skyblue {
 }
 
 /* --- Dark Mode Overrides --- */
+/* Applied when body has .dark class */
 body.dark {
-  --text-primary: #e0e0e0;
-  --card-bg: rgba(44, 62, 80, 0.97);
+  --text-primary: #e0e0e0; /* Light text */
+  --card-bg: rgba(44, 62, 80, 0.97); /* Dark card */
   --border-color: rgba(255, 255, 255, 0.08);
-  --shadow-color: rgba(0,0,0,0.5);
-  --glow-color: var(--accent-secondary);
+  --shadow-color: rgba(0,0,0,0.5); /* Deeper shadow */
+  --glow-color: var(--accent-secondary); /* Use secondary accent for glow */
 }
+/* Specific dark theme gradient overrides */
 body.dark.theme-default {
   --bg-gradient: linear-gradient(135deg, #1f4037 0%, #99f2c8 100%);
   --accent-primary: #6ab0de;
@@ -140,41 +156,53 @@ body.dark.theme-skyblue {
     --accent-secondary: #b3e5fc;
 }
 
-/* --- Base Layout --- */
+/* --- Base Layout & Reset --- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* --- FIX: Disable tap highlight on iOS for native feel --- */
+  /* --- FIX: Disable tap highlight on iOS for a native app feel --- */
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Updated html/body for full coverage */
+/*
+  Removed fixed height: 100% to allow the html element to grow
+  with the body, which is important for the 100dvh strategy.
+*/
 html {
-  /* --- FIX: Removed height: 100% --- */
-  /* This allows the html element to grow with the body */
+  /* No height property here */
 }
 
 body {
-  min-height: 100vh; /* Ensure body takes *at least* full viewport height */
-  /* Fallback for browsers not supporting dvh */
+  min-height: 100vh; /* Fallback for older browsers */
+  /* Fallback for Safari's dynamic UI bars */
   min-height: -webkit-fill-available;
-  min-height: 100dvh; /* Use dynamic viewport height for better mobile coverage */
-  overflow: hidden; /* Still prevent scrolling on body */
-  overscroll-behavior: none;
+  /*
+    --- FIX: Use 100dvh (dynamic viewport height) ---
+    This ensures the body *always* covers the full visible viewport,
+    even when mobile browser URL bars shrink or hide.
+  */
+  min-height: 100dvh;
+  overflow: hidden; /* Prevent body-level scrolling */
+  overscroll-behavior: none; /* Disable "bounce" effect on scroll */
   font-size: var(--base-font-size);
   font-family: 'Poppins', sans-serif;
   text-align: center;
-  background: var(--bg-gradient);
-  color: var(--text-primary);
+  background: var(--bg-gradient); /* Apply theme background */
+  color: var(--text-primary); /* Apply theme text color */
   transition: background 0.3s ease, color 0.3s ease;
   position: relative;
+  /* Use flexbox to structure the entire layout */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  
-  /* --- FIX: Add padding for iOS safe areas (notch/home bar) + user's 10px top padding --- */
+  justify-content: flex-start; /* Align content to the top */
+
+  /*
+    --- FIX: Add padding for iOS safe areas (notch/home bar) ---
+    `env(safe-area-inset-*)` provides the inset values.
+    We add 10px to the top for extra breathing room.
+  */
   padding-top: calc(env(safe-area-inset-top) + 10px);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
@@ -182,15 +210,14 @@ body {
 }
 
 .main-wrapper {
-  max-width: 700px;
+  max-width: 700px; /* Max width for large screens */
   width: 100%;
-  padding: 0 10px;
+  padding: 0 10px; /* Small horizontal padding */
   display: flex;
-  flex-direction: column; /* Tabs on top */
-  flex-grow: 1;
-  overflow: hidden;
-  min-height: 0; /* Important for flex child */
-  /* Remove fixed height, let flex handle it */
+  flex-direction: column; /* Default portrait layout (tabs on top) */
+  flex-grow: 1; /* Allow wrapper to fill remaining vertical space */
+  overflow: hidden; /* Prevent this wrapper from overflowing */
+  min-height: 0; /* --- FIX: Crucial for flex children to scroll properly --- */
 }
 
 /* --- Tab Navigation --- */
@@ -200,13 +227,16 @@ body {
   align-items: center;
   margin-bottom: 15px;
   position: relative;
-  flex-shrink: 0;
+  flex-shrink: 0; /* Prevent this container from shrinking */
   width: 100%;
-  transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease, margin 0.3s ease; /* Add transitions */
+  transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease, margin 0.3s ease;
   z-index: 10;
 }
 
-/* Hide tabs in portrait when game is active */
+/*
+  --- FIX: Hide tabs in portrait when game is active ---
+  This reclaims vertical space for the game content.
+*/
 @media (orientation: portrait) {
   body.game-active-portrait .nav-tabs-container {
     opacity: 0;
@@ -220,7 +250,7 @@ body {
 
 .nav-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Allow tabs to wrap on small screens */
   justify-content: center;
   background: var(--card-bg);
   border-radius: 22px;
@@ -240,12 +270,12 @@ body {
   font-size: 1.0rem;
   font-weight: 600;
   transition: all 0.2s ease;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.05); /* Light background for tab */
   color: var(--text-primary);
 }
 
 body.dark .nav-tab {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08); /* Dark mode tab background */
 }
 
 .nav-tab:hover {
@@ -259,20 +289,20 @@ body.dark .nav-tab:hover {
 .nav-tab.active {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: white;
-  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35);
+  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35); /* Shadow from accent */
   transform: translateY(-2px) scale(1.02);
 }
 
 /* --- SINGLE Game Section --- */
-/* This is now the ONLY section, dynamically updated */
+/* This section holds the entire game UI and swaps content */
 .grade-section {
   display: flex;
-  flex-grow: 1;
+  flex-grow: 1; /* Fill remaining space */
   flex-direction: column;
-  overflow: hidden; /* Crucial: prevent this section from causing scroll */
-  min-height: 0;
+  overflow: hidden; /* Prevent this section from causing scroll */
+  min-height: 0; /* --- FIX: Crucial for flex children --- */
   width: 100%;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.3s ease-out; /* Fade-in animation */
 }
 
 @keyframes slideIn {
@@ -280,23 +310,30 @@ body.dark .nav-tab:hover {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* Main game content card */
 .container {
-  padding: clamp(15px, 3vh, 25px); /* Responsive padding */
+  /* --- FIX: Use clamp() for responsive padding --- */
+  padding: clamp(15px, 3vh, 25px);
   background: var(--card-bg);
   border-radius: 28px;
   box-shadow: 0 12px 45px var(--shadow-color);
   transition: all 0.2s ease;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px); /* Frosted glass effect */
   position: relative;
   z-index: 1;
   border: 1px solid var(--border-color);
-  margin-bottom: clamp(10px, 2vh, 15px); /* Responsive margin */
+  /* --- FIX: Use clamp() for responsive margin --- */
+  margin-bottom: clamp(10px, 2vh, 15px);
   flex-grow: 1; /* Allow container to fill vertical space */
   flex-shrink: 1;
-  /* This makes the container scrollable IF content overflows */
+  /*
+    --- FIX: Allow this container to scroll internally ---
+    If content (like stats grid) overflows, the card itself scrolls,
+    not the whole page.
+  */
   overflow-y: auto;
-  overscroll-behavior: contain;
-  min-height: 0; /* Critical for scrolling within flex item */
+  overscroll-behavior: contain; /* Prevent scroll-chaining */
+  min-height: 0; /* --- FIX: Critical for scrolling within flex item --- */
 }
 
 /* --- Game UI Elements --- */
@@ -305,20 +342,23 @@ body.dark .nav-tab:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: clamp(15px, 3vh, 20px); /* Responsive margin */
-  flex-shrink: 0;
+  /* --- FIX: Use clamp() for responsive margin --- */
+  margin-bottom: clamp(15px, 3vh, 20px);
+  flex-shrink: 0; /* Prevent shrinking */
 }
 .challenge-header .icon-btn {
-  position: absolute;
+  position: absolute; /* Position settings button */
   left: 0;
   width: 38px;
   height: 38px;
 }
 .challenge-header h1 {
-  font-size: clamp(1.8rem, 6vw, 2.1rem); /* Responsive font size */
+  /* --- FIX: Use clamp() for responsive font size --- */
+  font-size: clamp(1.8rem, 6vw, 2.1rem);
   font-weight: 700;
   margin: 0;
-  padding: 0 50px;
+  padding: 0 50px; /* Space for settings button */
+  /* Gradient text */
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -333,7 +373,10 @@ body.dark .nav-tab:hover {
 }
 
 /* --- Centering All Game Content --- */
-/* This ensures content is stacked and centered */
+/*
+  This block simplifies layout by making all primary UI elements
+  centered by default.
+*/
 #start-btn,
 #word-display,
 #settings-section,
@@ -346,14 +389,19 @@ body.dark .nav-tab:hover {
 #star-rating-display,
 #countdown-overlay {
   display: block;
-  width: fit-content;
+  width: fit-content; /* Size to content */
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: clamp(10px, 2vh, 15px); /* Responsive margin */
+  /* --- FIX: Use clamp() for responsive margin --- */
+  margin-bottom: clamp(10px, 2vh, 15px);
   flex-shrink: 0; /* Prevent unwanted shrinking */
 }
-#word-display { width: 100%; min-height: clamp(70px, 15vh, 90px); /* Responsive min height */}
+#word-display {
+  width: 100%; /* Take full width for centering text */
+  /* --- FIX: Use clamp() for responsive min height --- */
+  min-height: clamp(70px, 15vh, 90px);
+}
 #settings-section {
   width: 100%;
   max-width: 320px;
@@ -442,7 +490,7 @@ button:active {
 #speak-btn {
   background: linear-gradient(135deg, #e67e22, #d35400);
   color: white;
-  display: none;
+  display: none; /* Hidden by default */
   animation: pulse-orange 1.8s infinite;
   padding: 11px 18px;
   font-size: 1.0rem;
@@ -455,7 +503,7 @@ button:active {
 }
 
 #speak-controls {
-  display: none;
+  display: none; /* Hidden by default */
   align-items: center; /* Vertically align items */
   justify-content: center;
   gap: 8px;
@@ -495,23 +543,22 @@ button:active {
 }
 
 #word-display {
-  font-size: var(--word-font-size);
+  font-size: var(--word-font-size); /* Use responsive variable */
   font-weight: 700;
   color: var(--accent-primary);
   text-shadow: none;
- /* min-height: 90px; */ /* Let flexbox handle height based on font size and container */
   display: flex;
   align-items: center;
   justify-content: center;
   letter-spacing: 1.5px;
   position: relative;
-  word-break: break-all;
+  word-break: break-all; /* Prevent long words from overflowing */
   /* Animation will be triggered by JS */
   opacity: 0;
   transform: scale(0.8);
 }
 
-/* NEW: Word animation classes */
+/* --- NEW: Word animation classes --- */
 #word-display.pop-in {
   animation: wordPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
@@ -547,7 +594,7 @@ button:active {
   line-height: 1.5;
 }
 
-/* NEW: Star Rating */
+/* --- NEW: Star Rating --- */
 #star-rating-display {
   font-size: 2.5rem;
   color: #ffc107; /* Star yellow */
@@ -659,22 +706,26 @@ button:active {
   display: flex;
   justify-content: space-evenly; /* Evenly space items */
   align-items: center;
-  flex-wrap: nowrap; /* Prevent wrapping */
+  /* --- FIX: Prevent wrapping --- */
+  flex-wrap: nowrap;
+  /* --- FIX: Use clamp() for responsive gap/padding --- */
   gap: clamp(5px, 1vw, 8px);
   box-shadow: 0 8px 30px var(--shadow-color);
   transition: all 0.3s ease;
   border-radius: 22px;
-  padding: clamp(8px, 1.5vh, 10px) clamp(6px, 1.5vw, 10px); /* Adjusted horizontal padding */
+  padding: clamp(8px, 1.5vh, 10px) clamp(6px, 1.5vw, 10px);
   border: 1px solid var(--border-color);
   margin-top: auto; /* Push to bottom within flex container */
   margin-bottom: clamp(5px, 1vh, 10px);
   flex-shrink: 0;
+  /* --- FIX: Center bar and handle overflow --- */
   width: calc(100% - 20px);
   max-width: 680px;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  overflow-x: auto; /* Allow horizontal scroll ONLY if buttons absolutely don't fit */
+  /* Allow horizontal scroll ONLY if buttons absolutely don't fit */
+  overflow-x: auto;
   scrollbar-width: none; /* Hide scrollbar for Firefox */
 }
 #bottom-bar::-webkit-scrollbar {
@@ -686,17 +737,18 @@ button:active {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: #ffffff;
   font-weight: 600;
-  font-size: clamp(0.8rem, 1.8vw, 0.9rem); /* Slightly smaller max font */
-  padding: clamp(7px, 1.3vh, 9px) clamp(8px, 1.5vw, 10px); /* Slightly smaller padding */
+  /* --- FIX: Use clamp() for responsive font/padding --- */
+  font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+  padding: clamp(7px, 1.3vh, 9px) clamp(8px, 1.5vw, 10px);
   display: flex;
   align-items: center;
-  gap: 4px; /* Slightly smaller gap */
+  gap: 4px;
   box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
   letter-spacing: 0px;
-  flex-shrink: 0; /* Prevent buttons from shrinking */
-  /* Remove flex-grow and flex-basis */
+  /* --- FIX: Ensure buttons don't shrink --- */
+  flex-shrink: 0;
   min-width: fit-content;
-  margin: 0 2px; /* Minimal margin */
+  margin: 0 2px;
   border-radius: 12px;
 }
 
@@ -707,7 +759,8 @@ button:active {
 
 #bottom-bar i {
   display: inline;
-  width: clamp(14px, 2.2vw, 16px); /* Slightly smaller icons */
+  /* --- FIX: Use clamp() for responsive icons --- */
+  width: clamp(14px, 2.2vw, 16px);
   height: clamp(14px, 2.2vw, 16px);
 }
 
@@ -873,7 +926,7 @@ button:active {
 }
 
 
-/* --- SETTINGS MODAL (Mostly Unchanged) --- */
+/* --- SETTINGS MODAL --- */
 #settings-backdrop, #ai-helper-backdrop {
   position: fixed;
   top: 0;
@@ -954,7 +1007,7 @@ button:active {
   display: flex;
   gap: 10px;
   align-items: center;
-  flex-wrap: wrap; /* Allow wrapping */
+  flex-wrap: wrap; /* Allow wrapping if many themes */
 }
 .theme-option {
   display: inline-block;
@@ -1101,6 +1154,7 @@ input:checked + .slider:before {
   font-size: 1.0rem;
 }
 #ai-buttons {
+  display: flex; /* Make buttons flex */
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -1108,6 +1162,7 @@ input:checked + .slider:before {
   font-size: 0.95rem;
   padding: 12px 15px;
   box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
+  flex: 1; /* Make buttons share space */
 }
 #ai-result {
   background: rgba(0, 0, 0, 0.04);
@@ -1119,8 +1174,8 @@ input:checked + .slider:before {
   border: 1px solid var(--border-color);
   white-space: pre-wrap; /* Show line breaks from API */
 }
-#ai-loading { /* Display block again for API calls */
-  display: block;
+#ai-loading {
+  display: block; /* Kept as block for simplicity */
   font-size: 0.9rem;
   margin-top: 10px;
   opacity: 0.7;
@@ -1131,11 +1186,11 @@ input:checked + .slider:before {
 
 /* Adjustments for smaller phone screens */
 @media (max-width: 370px) {
-  :root { --base-font-size: 15px; }
+  :root { --base-font-size: 15px; } /* Smaller base font */
 
   .nav-tab { font-size: 0.8rem; padding: 6px 10px; }
   .challenge-header h1 { font-size: 1.6rem; }
-  /* Bottom bar buttons already adjusted with clamp */
+  /* Bottom bar buttons are already responsive with clamp() */
   #bottom-bar i { width: 14px; height: 14px; }
   .icon-btn { width: 36px; height: 36px; }
   #settings-modal, #ai-helper-modal { padding: 15px; }
@@ -1148,36 +1203,37 @@ input:checked + .slider:before {
 /* Landscape adjustments */
 @media (orientation: landscape) {
   .main-wrapper {
-      flex-direction: row; /* Tabs | Content */
-      align-items: stretch;
+      flex-direction: row; /* Side-by-side: [Tabs | Content] */
+      align-items: stretch; /* Make children fill height */
       padding: 0 8px;
       max-width: 100%; /* Allow full width in landscape */
-      /* No height limit here, let body handle it */
   }
   .nav-tabs-container {
-      flex-direction: column;
+      flex-direction: column; /* Stack tabs vertically */
       justify-content: flex-start;
       width: auto;
-      flex-basis: clamp(140px, 20vw, 180px); /* Responsive width */
+      /* --- FIX: Use clamp() for responsive tab bar width --- */
+      flex-basis: clamp(140px, 20vw, 180px);
       flex-shrink: 0;
-      margin-right: clamp(10px, 1.5vw, 15px); /* Responsive margin */
+      /* --- FIX: Use clamp() for responsive margin --- */
+      margin-right: clamp(10px, 1.5vw, 15px);
       margin-bottom: 0;
       align-items: stretch;
       padding-top: 10px;
       padding-bottom: 10px;
-      /* --- FIX: Removed height: 100% --- */
+      /* --- FIX: Removed fixed height: 100% --- */
       /* This lets align-items: stretch on parent work */
       overflow: hidden; /* Prevent container itself from scrolling */
   }
 
   .nav-tabs {
       flex-direction: column;
-      align-items: stretch;
+      align-items: stretch; /* Make tabs full-width */
       width: 100%;
       flex-wrap: nowrap;
       padding: 8px;
       justify-content: flex-start;
-      overflow-y: auto; /* Allow tabs list to scroll */
+      overflow-y: auto; /* Allow tabs list to scroll if needed */
       overscroll-behavior: contain;
       flex-grow: 1; /* Take available space */
       min-height: 0;
@@ -1185,32 +1241,32 @@ input:checked + .slider:before {
   }
    .nav-tab {
       width: 100%;
-      text-align: left;
-      padding: clamp(10px, 1.5vh, 12px) clamp(15px, 2vw, 18px); /* Responsive padding */
+      text-align: left; /* Align tab text left */
+      padding: clamp(10px, 1.5vh, 12px) clamp(15px, 2vw, 18px);
       margin: 3px 0;
-      font-size: clamp(0.9rem, 2vh, 1.0rem); /* Responsive font size */
+      font-size: clamp(0.9rem, 2vh, 1.0rem);
       flex-shrink: 0;
       border-radius: 14px;
   }
   .grade-section {
-      padding-bottom: 0; /* Remove bottom padding */
-      /* --- FIX: Removed height: 100% --- */
-      /* This lets align-items: stretch on parent work */
+      padding-bottom: 0;
+      /* --- FIX: Removed fixed height: 100% --- */
   }
   .container {
-      padding: clamp(15px, 2.5vh, 20px); /* Responsive padding */
+      padding: clamp(15px, 2.5vh, 20px);
       min-height: 0;
       flex-grow: 1;
-      margin-bottom: clamp(5px, 1vh, 10px); /* Responsive margin */
-      /* --- FIX: Removed fixed height, flex-grow: 1 (inherited) will handle this --- */
+      margin-bottom: clamp(5px, 1vh, 10px);
+      /* --- FIX: Removed fixed height --- */
+      /* flex-grow: 1 (inherited) will handle this */
   }
   #bottom-bar {
       margin-top: auto; /* Push to bottom */
-      margin-bottom: clamp(5px, 1vh, 10px); /* Consistent margin */
-      height: clamp(50px, 8vh, 55px); /* Responsive height */
+      margin-bottom: clamp(5px, 1vh, 10px);
+      height: clamp(50px, 8vh, 55px);
       padding: clamp(8px, 1.5vh, 10px) 8px;
-      flex-wrap: nowrap; /* Prevent wrapping in landscape */
-      justify-content: space-evenly; /* Evenly space in landscape */
+      flex-wrap: nowrap; /* Ensure no wrapping in landscape */
+      justify-content: space-evenly;
   }
   #bottom-bar button {
       padding: clamp(8px, 1.5vh, 10px) clamp(10px, 1.5vw, 12px);
@@ -1219,23 +1275,27 @@ input:checked + .slider:before {
   }
   .timer-controls {
       grid-column: 1 / -1; /* Span full width */
-      justify-content: center; /* Center horizontally */
+      justify-content: center;
       margin-left: 0;
   }
-   #mascot { bottom: clamp(10px, 1.5vh, 15px); right: clamp(10px, 1.5vw, 15px); }
+   #mascot {
+     bottom: clamp(10px, 1.5vh, 15px);
+     right: clamp(10px, 1.5vw, 15px);
+   }
 
 
-  /* Specific adjustments for landscape on short screens */
+  /* Specific adjustments for landscape on SHORT screens (e.g., phones) */
   @media (max-height: 550px) {
       :root { --base-font-size: 15px; }
-      body { /* --- FIX: Removed padding-top: 5px; global safe-area padding handles this --- */ }
-      .container { padding: 12px; /* --- FIX: Removed fixed height, flex-grow: 1 (inherited) will handle this --- */ }
+      /* body padding already handled by safe-area */
+      .container { padding: 12px; }
       .challenge-header h1 { font-size: 1.4rem; margin-bottom: 10px; }
       #bottom-bar { height: 45px; padding: 6px 4px; margin-top: 8px; margin-bottom: 5px; }
       #bottom-bar button { font-size: 0.8rem; padding: 7px 8px; gap: 3px; }
       #bottom-bar i { width: 14px; height: 14px; }
       .nav-tabs-container { flex-basis: clamp(120px, 18vw, 140px); margin-right: 10px; }
       .nav-tab { padding: 8px 12px; font-size: 0.9rem; }
+      /* Reduce bottom margins to compress content */
       #start-btn, #speak-controls, #stats-grid, #score-display, #keyboard-hint, #progress-bar { margin-bottom: 8px; }
       .icon-btn { width: 36px; height: 36px; }
       #mascot { width: 50px; height: 50px; }
@@ -1244,10 +1304,12 @@ input:checked + .slider:before {
 </style>
 
 </head>
-<body class="theme-default">
+<body class="theme-default"> <!-- Default theme class -->
 
+<!-- Main layout wrapper -->
 <div class="main-wrapper">
 
+  <!-- Top navigation tabs -->
   <div class="nav-tabs-container">
     <div class="nav-tabs">
       <button class="nav-tab active" data-grade="prek">Pre-K</button>
@@ -1261,9 +1323,12 @@ input:checked + .slider:before {
     </div>
   </div>
 
+  <!-- Main game engine section -->
   <div class="grade-section" id="game-engine">
+    <!-- Main content card -->
     <div class="container">
 
+      <!-- Header with settings button and title -->
       <div class="challenge-header">
         <button class="icon-btn global-settings-btn" aria-label="Open Settings">
           <i data-lucide="settings"></i>
@@ -1271,6 +1336,7 @@ input:checked + .slider:before {
         <h1 id="game-title">🎯 Pre-K Challenge</h1>
       </div>
 
+      <!-- Content shown before game starts -->
       <div id="start-state-content">
         <div id="settings-section">
           <label for="timer-input">⏱️ Set Time (seconds):</label>
@@ -1280,6 +1346,7 @@ input:checked + .slider:before {
         <button class="start-btn" id="start-btn">🚀 Start Challenge</button>
       </div>
 
+      <!-- Content shown during game -->
       <div id="game-state-content" style="display: none;">
         <div id="progress-bar">
           <div id="progress-fill"></div>
@@ -1287,15 +1354,18 @@ input:checked + .slider:before {
 
         <div id="word-display">Press Start</div>
 
+        <!-- Speak button and speed controls -->
         <div id="speak-controls">
           <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline">0.9x</span>
           <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider" min="0.5" max="1.5" step="0.1">
           <button class="speak-btn" id="speak-btn">🔊 Speak</button>
         </div>
 
+        <!-- Score and star rating display (shown at end) -->
         <p class="score-display" id="score-display"></p>
         <div id="star-rating-display"></div>
 
+        <!-- Stats grid for timer, words, streak, etc. -->
         <div class="stats-grid" id="stats-grid">
           <div class="stat-card" id="words-read-card">
             <div class="stat-number" id="words-read">0</div>
@@ -1311,11 +1381,13 @@ input:checked + .slider:before {
              <div class="stat-label">Streak</div>
           </div>
 
+          <!-- WPM card (shown at end) -->
           <div class="stat-card" id="wpm-card" style="display:none;">
             <div class="stat-number" id="wpm">0</div>
             <div class="stat-label">Letters/Min</div>
           </div>
 
+          <!-- In-game controls (AI, Mute, Theme) -->
           <div class="timer-controls">
             <button class="icon-btn ai-helper-btn" id="ai-helper-btn"><i data-lucide="brain"></i></button>
             <button class="icon-btn mute-toggle" id="mute-toggle"><i data-lucide="volume-2"></i></button>
@@ -1328,6 +1400,7 @@ input:checked + .slider:before {
         </p>
       </div>
 
+      <!-- CSS Mascot -->
       <div id="mascot">
         <div class="mascot-body">
           <div class="mascot-eye left"></div>
@@ -1338,6 +1411,7 @@ input:checked + .slider:before {
 
     </div>
 
+    <!-- Bottom bar for in-game navigation -->
     <div class="bottom-bar" id="bottom-bar" style="display:none;">
       <button id="home-btn"><i data-lucide="home"></i> Home</button>
       <button id="restart-btn"><i data-lucide="rotate-cw"></i> Restart</button>
@@ -1347,10 +1421,12 @@ input:checked + .slider:before {
   </div>
 </div>
 
+<!-- Countdown Overlay -->
 <div id="countdown-overlay">
   <div id="countdown-text">3</div>
 </div>
 
+<!-- Settings Modal -->
 <div id="settings-backdrop">
   <div id="settings-modal">
     <div class="settings-header">
@@ -1431,6 +1507,7 @@ input:checked + .slider:before {
   </div>
 </div>
 
+<!-- AI Helper Modal -->
 <div id="ai-helper-backdrop">
   <div id="ai-helper-modal">
     <div class="ai-helper-header">
@@ -1456,6 +1533,7 @@ input:checked + .slider:before {
 <script>
 // --- WORD LISTS ---
 // (Kept here for single-file simplicity)
+// These lists provide the content for each grade level.
 const WORD_LISTS = {
   prek: [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"],
   k: ["am","an","as","at","be","by","do","go","he","hi","if","in","is","it","me","my","no","of","on","or","so","to","up","us","we","a","and","are","bad","bag","bat","bed","big","bit","box","boy","bug","bun","but","buy","can","cap","car","cat","cow","cry","cub","cut","dad","day","did","dig","dip","dog","dot","dry","eat","egg","end","fan","far","fat","few","fin","fit","fix","fly","for","fog","fun","fur","get","got","gum","gun","had","has","hat","hen","her","him","his","hit","hot","how","hug","hut","ice","ink","its","jam","jar","jet","job","jog","joy","jug","key","kid","kit","lab","lad","lap","lay","led","leg","let","lid","lip","lit","log","lot","low","mad","man","map","mat","may","men","met","mix","mom","mop","mud","mug","nap","net","new","nod","not","now","nut","off","old","one","our","out","owl","own","pad","pan","pat","pay","peg","pen","pet","pig","pin","pit","pod","pop","pot","put","rag","ram","ran","rap","rat","red","rib","rid","rim","rip","rod","rot","rub","rug","run","rut","sad","sap","sat","saw","say","see","set","sew","she","shy","sin","sip","sit","six","ski","sky","sob","son","sow","sub","sue","sum","sun","tab","tag","tan","tap","tax","tea","ten","the","tie","tin","tip","toe","tom","top","toy","try","tub","tug","two","use","van","vet","war","was","wax","way","web","wed","wet","who","why","wig","win","wit","won","yes","yet","you","zip","zoo"],
@@ -1467,10 +1545,10 @@ const WORD_LISTS = {
   more: ["abundant","accumulate","accurate","adapt","adequate","adjacent","adjust","advantage","advocate","affect","aggravate","amateur","ambitious","ample","analyze","anxious","appeal","appropriate","approximate","arrogant","artificial","ascend","assist","attempt","attentive","authentic","benefit","bias","brief","brutal","capable","cautious","cease","chaos","chronological","clarify","classify","coarse","coherent","colossal","commence","comment","comfortable","complex","component","comprehend","conceal","concise","condemn","conflict","consecutive","consensus","consent","conspicuous","context","continuous","convenient","crucial","data","debate","debt","deceitful","declare","decline","deficient","dense","depict","desist","despise","destitute","detect","deter","diligent","diminish","disrupt","distinct","distort","diverse","dominant","drastic","drowsy","dubious","durable","eager","eccentric","edible","eerie","effect","efficient","elaborate","elegant","eligible","elite","eloquent","embark","emerge","emphasis","encounter","endeavor","endorse","endure","energetic","enhance","enigma","entice","era","essential","evade","evident","evolve","exceed","excel","exempt","exotic","expand","expert","explicit","extol","extract","extravagant","facetious","fallacy","feasible","feeble","feud","fickle","fiery","final","flagrant","flaw","flee","flimsy","fluctuate","fluent","foe","formal","frantic","frequent","frugal","futile","genuine","gigantic","glare","glum","gradual","grasp","gravity","greedy","grievance","grim","groggy","grudge","habitable","haphazard","harsh","hasty","hazardous","hesitate","hideous","hoax","hostile","identical","idle","illegible","illicit","imitate","immense","impartial","impede","implicit","imply","incessant","increment","independent","indicate","indignant","indispensable","induce","inept","inevitable","infamous","infer","infinite","infuriate","ingenious","inherent","inhibit","initial","inquiry","integral","intricate","intuitive","irate","irrelevant","jeopardize","jubilant","judicious","justify","keen","labyrinth","lack","legible","lenient","lethal","listless","literal","loathe","logical","lucid","lucrative","ludicrous","lurk","majestic","meager","mediocre","melancholy","mellow","meticulous","mimic","moderate","modest","monotonous","morbid","mundane","multitude","nimble","nonchalant","notify","numerous","nutritious","oblivious","obscure","obsolete","obstacle","ominous","opportune","ordeal","ornate","orthodox","overlap","overt","parody","passive","persist","pertinent","plausible","plea","plentiful","ponder","potent","precise","predominant","preliminary","presume","prevail","prevalent","prior","probe","proceed","prohibit","prominent","propel","profound","prolific","prospect","prudent","query","quest","radiant","random","rational","realistic","reasonable","rebel","recall","reciprocate","reckless","redundant","refuge","regime","relevant","reluctant","remote","repel","resent","resolute","respond","restrict","reveal","rigid","rigorous","rural","scarce","scatter","skeptical","scheme","scope","significant","simultaneous","sinister","slack","sleazy","slight","sluggish","solitary","sparse","spontaneous","sporadic","stable","stagnant","sterile","stern","subtle","superficial","superfluous","supplement","suppress","surpass","surplus","tangible","tedious","temperate","tentative","terminate","terrain","terse","thorough","timid","toxic","tranquil","transient","transparent","trivial","turbulent","unanimous","uncouth","unique","valid","vague","versatile","viable","vibrant","vigilant","vigorous","vivid","weary","wholesome","widespread","wily","wither","yearn","zest"]
 };
 
-// NEW: Star Rating Thresholds (WPM)
+// --- NEW: Star Rating Thresholds (WPM or LPM for Pre-K) ---
 const STAR_THRESHOLDS = {
-  prek: [15, 30, 45], // 1, 2, 3 stars
-  k: [10, 20, 35],
+  prek: [15, 30, 45], // 1, 2, 3 stars (Letters Per Minute)
+  k: [10, 20, 35],    // (Words Per Minute)
   first: [20, 35, 50],
   second: [30, 50, 70],
   third: [40, 65, 85],
@@ -1479,7 +1557,7 @@ const STAR_THRESHOLDS = {
   more: [70, 100, 130]
 };
 
-// NEW: Grade Titles
+// --- NEW: Grade Titles ---
 const GRADE_TITLES = {
   prek: "🎯 Pre-K Challenge",
   k: "🎯 Kindergarten Challenge",
@@ -1493,9 +1571,10 @@ const GRADE_TITLES = {
 
 // --- GLOBAL STATE & SETTINGS ---
 const globalSynth = window.speechSynthesis;
-const SETTINGS_KEY = 'kidsySettings';
-const HIGHSCORE_KEY_PREFIX = 'kidsy-highscore-';
+const SETTINGS_KEY = 'kidsySettings'; // localStorage key for settings
+const HIGHSCORE_KEY_PREFIX = 'kidsy-highscore-'; // Prefix for highscore keys
 
+// Default settings
 const defaultSettings = {
   theme: 'default',
   darkMode: false,
@@ -1507,12 +1586,12 @@ const defaultSettings = {
 };
 
 let globalSettings = { ...defaultSettings };
-let activeGameInstance = null;
-let currentWordForAI = '';
-let currentGradeForAI = ''; // Keep track of grade for AI context (though dictionary API doesn't use it)
+let activeGameInstance = null; // Holds the single game instance
+let currentWordForAI = ''; // Stores the current word for the AI helper
+let currentGradeForAI = ''; // Stores the current grade level string for AI context
 
-// --- DOM Cache (Refactored) ---
-// Cache all DOM elements once
+// --- DOM Cache ---
+// Cache all DOM elements once on load for performance
 const DOMElements = {
   // Navigation
   navTabs: document.querySelectorAll('.nav-tab'),
@@ -1592,24 +1671,204 @@ const DOMElements = {
   aiDefineBtn: document.getElementById('ai-define-btn'),
   aiSentenceBtn: document.getElementById('ai-sentence-btn'),
   aiResult: document.getElementById('ai-result'),
-  aiLoading: document.getElementById('ai-loading') // Keep for API loading state
+  aiLoading: document.getElementById('ai-loading')
 };
 
 
 // --- GLOBAL SETTINGS FUNCTIONS ---
-function saveSettings() { /* ... (keep existing) ... */ try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings)); } catch (e) { console.error("Could not save settings to localStorage", e); } }
-function loadSettings() { /* ... (keep existing) ... */ let loaded = {}; try { const stored = localStorage.getItem(SETTINGS_KEY); if (stored) { loaded = JSON.parse(stored); } } catch (e) { console.error("Could not parse settings from localStorage", e); } globalSettings = { ...defaultSettings, ...loaded }; applySettings(); updateSettingsUI(); }
-function applySettings() { /* ... (keep existing) ... */ document.body.className = ''; document.body.classList.add(`theme-${globalSettings.theme}`); document.body.classList.toggle('dark', globalSettings.darkMode); document.documentElement.style.setProperty('--word-font-size', `clamp(2em, ${globalSettings.fontSize * 2}vw, ${globalSettings.fontSize}em)`); DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; }
-function updateSettingsUI() { /* ... (keep existing) ... */ DOMElements.themeOptions.forEach(opt => { opt.classList.toggle('selected', opt.dataset.theme === globalSettings.theme); }); DOMElements.settingsThemeToggle.checked = globalSettings.darkMode; DOMElements.settingsSoundToggle.checked = globalSettings.sound; DOMElements.settingsDefaultTime.value = globalSettings.defaultTime; DOMElements.settingsFontSize.value = globalSettings.fontSize; DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`; DOMElements.settingsAutoSpeakToggle.checked = globalSettings.autoSpeak; DOMElements.settingsSpeechRate.value = globalSettings.speechRate; DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`; DOMElements.speechRateSlider.value = globalSettings.speechRate; DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; const isDark = globalSettings.darkMode; DOMElements.themeToggle.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>'; const isMuted = !globalSettings.sound; DOMElements.muteToggle.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>'; lucide.createIcons(); }
-function resetSettings() { /* ... (keep existing) ... */ if (confirm("Are you sure you want to reset all settings to their defaults?")) { globalSettings = { ...defaultSettings }; saveSettings(); applySettings(); updateSettingsUI(); DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; } }
+
+/**
+ * Saves the current globalSettings object to localStorage.
+ */
+function saveSettings() {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings));
+  } catch (e) {
+    console.error("Could not save settings to localStorage", e);
+  }
+}
+
+/**
+ * Loads settings from localStorage, merges with defaults, and applies them.
+ */
+function loadSettings() {
+  let loaded = {};
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) {
+      loaded = JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error("Could not parse settings from localStorage", e);
+  }
+  // Merge loaded settings with defaults to ensure all keys exist
+  globalSettings = { ...defaultSettings, ...loaded };
+  applySettings();
+  updateSettingsUI();
+}
+
+/**
+ * Applies settings to the DOM (theme, dark mode, font size).
+ */
+function applySettings() {
+  // Apply theme and dark mode
+  document.body.className = ''; // Clear existing classes
+  document.body.classList.add(`theme-${globalSettings.theme}`);
+  document.body.classList.toggle('dark', globalSettings.darkMode);
+
+  // Apply word font size using clamp()
+  document.documentElement.style.setProperty(
+    '--word-font-size',
+    `clamp(2em, ${globalSettings.fontSize * 2}vw, ${globalSettings.fontSize}em)`
+  );
+
+  // Update default time in UI
+  DOMElements.timerInput.value = globalSettings.defaultTime;
+  DOMElements.timer.textContent = globalSettings.defaultTime;
+}
+
+/**
+ * Updates the settings modal UI to reflect current globalSettings.
+ */
+function updateSettingsUI() {
+  // Update theme selectors
+  DOMElements.themeOptions.forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.theme === globalSettings.theme);
+  });
+
+  // Update toggles
+  DOMElements.settingsThemeToggle.checked = globalSettings.darkMode;
+  DOMElements.settingsSoundToggle.checked = globalSettings.sound;
+  DOMElements.settingsAutoSpeakToggle.checked = globalSettings.autoSpeak;
+
+  // Update inputs and sliders
+  DOMElements.settingsDefaultTime.value = globalSettings.defaultTime;
+  DOMElements.settingsFontSize.value = globalSettings.fontSize;
+  DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
+  DOMElements.settingsSpeechRate.value = globalSettings.speechRate;
+  DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
+
+  // Sync in-game speech rate slider
+  DOMElements.speechRateSlider.value = globalSettings.speechRate;
+  DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
+
+  // Update in-game theme/mute icons
+  const isDark = globalSettings.darkMode;
+  DOMElements.themeToggle.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+  const isMuted = !globalSettings.sound;
+  DOMElements.muteToggle.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>';
+
+  // Re-render icons
+  lucide.createIcons();
+}
+
+/**
+ * Resets all settings to default values.
+ */
+function resetSettings() {
+  // Use a simple confirm dialog
+  if (confirm("Are you sure you want to reset all settings to their defaults?")) {
+    globalSettings = { ...defaultSettings };
+    saveSettings();
+    applySettings();
+    updateSettingsUI();
+    // Also update the main timer input
+    DOMElements.timerInput.value = globalSettings.defaultTime;
+    DOMElements.timer.textContent = globalSettings.defaultTime;
+  }
+}
 
 // --- GLOBAL SOUND FUNCTIONS ---
-function playSound(type) { /* ... (keep existing) ... */ if (!globalSettings.sound || !Tone) return; try { if (Tone.context.state !== 'running') { Tone.start(); } let synth; switch (type) { case 'click': synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('C5', '0.1'); break; case 'nav': synth = new Tone.Synth({oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('E5', '0.08'); break; case 'start': synth = new Tone.Synth().toDestination(); synth.triggerAttackRelease("G4", "8n", Tone.now()); synth.triggerAttackRelease("C5", "8n", Tone.now() + 0.1); synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2); break; case 'end': synth = new Tone.Synth().toDestination(); synth.triggerAttackRelease("C5", "8n", Tone.now()); synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2); synth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4); synth.triggerAttackRelease("C6", "8n", Tone.now() + 0.6); break; case 'countdown': synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('A4', '8n'); break; case 'countdownGo': synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('C5', '4n'); break; } } catch(e) { console.error("Tone.js sound failed:", e); } }
 
-function speakWord(text, gradeKey) { /* ... (keep existing) ... */ if (!globalSynth || !text) return; globalSynth.cancel(); let textToSpeak = text; if (gradeKey === 'prek' && /^[A-Z]$/.test(text)) { textToSpeak = text; } const utterance = new SpeechSynthesisUtterance(textToSpeak); utterance.lang = 'en-US'; utterance.rate = globalSettings.speechRate; globalSynth.speak(utterance); }
-function shuffle(arr) { /* ... (keep existing) ... */ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+/**
+ * Plays a sound effect using Tone.js based on type.
+ * @param {string} type - The type of sound to play ('click', 'nav', 'start', 'end', 'countdown', 'countdownGo').
+ */
+function playSound(type) {
+  if (!globalSettings.sound || !Tone) return;
+  try {
+    // Start Tone.js context if not already running (required by browsers)
+    if (Tone.context.state !== 'running') {
+      Tone.start();
+    }
+    let synth;
+    switch (type) {
+      case 'click':
+        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('C5', '0.1');
+        break;
+      case 'nav':
+        synth = new Tone.Synth({oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('E5', '0.08');
+        break;
+      case 'start':
+        synth = new Tone.Synth().toDestination();
+        synth.triggerAttackRelease("G4", "8n", Tone.now());
+        synth.triggerAttackRelease("C5", "8n", Tone.now() + 0.1);
+        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
+        break;
+      case 'end': // A celebratory sound
+        synth = new Tone.Synth().toDestination();
+        synth.triggerAttackRelease("C5", "8n", Tone.now());
+        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
+        synth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4);
+        synth.triggerAttackRelease("C6", "8n", Tone.now() + 0.6);
+        break;
+      case 'countdown':
+        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('A4', '8n');
+        break;
+      case 'countdownGo':
+        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }}).toDestination();
+        synth.triggerAttackRelease('C5', '4n');
+        break;
+    }
+  } catch(e) {
+    console.error("Tone.js sound failed:", e);
+  }
+}
 
-// --- FREE DICTIONARY API Helper Function (MODIFIED) ---
+/**
+ * Uses the browser's SpeechSynthesis API to speak a word.
+ * @param {string} text - The word or text to speak.
+ * @param {string} gradeKey - The current grade key (e.g., 'prek').
+ */
+function speakWord(text, gradeKey) {
+  if (!globalSynth || !text) return;
+  globalSynth.cancel(); // Stop any previous speech
+
+  let textToSpeak = text;
+  // Special case for Pre-K: just speak the letter name
+  if (gradeKey === 'prek' && /^[A-Z]$/.test(text)) {
+    textToSpeak = text; // Speaks "A", "B", etc.
+  }
+
+  const utterance = new SpeechSynthesisUtterance(textToSpeak);
+  utterance.lang = 'en-US';
+  utterance.rate = globalSettings.speechRate;
+  globalSynth.speak(utterance);
+}
+
+/**
+ * Shuffles an array in place (Fisher-Yates algorithm).
+ * @param {Array} arr - The array to shuffle.
+ * @returns {Array} The shuffled array.
+ */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// --- FREE DICTIONARY API Helper Function ---
+/**
+ * Calls the free dictionary API to get definitions or sentences.
+ * @param {string} word - The word to look up.
+ * @param {string} type - 'define' or 'sentence'.
+ * @returns {Promise<string>} A string with the result or an error message.
+ */
 async function callDictionaryApi(word, type) {
   const apiUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
 
@@ -1628,12 +1887,11 @@ async function callDictionaryApi(word, type) {
       return `Sorry, no dictionary results found for "${word}".`;
     }
 
-    // Try to find the first relevant definition or example
     let resultText = `Sorry, I couldn't get the specific info for "${word}".`;
     const entry = data[0]; // Use the first entry
 
     if (entry.meanings && entry.meanings.length > 0) {
-      // Find the first meaning with definitions
+      // Find the first meaning that has definitions
       const meaningWithDefs = entry.meanings.find(m => m.definitions && m.definitions.length > 0);
       if (meaningWithDefs) {
         const definitionData = meaningWithDefs.definitions[0]; // Use the first definition
@@ -1641,7 +1899,7 @@ async function callDictionaryApi(word, type) {
         if (type === 'define' && definitionData.definition) {
           resultText = definitionData.definition;
         } else if (type === 'sentence') {
-          // Try finding an example in *any* definition within this meaning first
+          // Try finding an example in *any* definition within this meaning
           let foundExample = null;
           for(const def of meaningWithDefs.definitions) {
               if (def.example) {
@@ -1649,11 +1907,11 @@ async function callDictionaryApi(word, type) {
                   break; // Stop at the first example found
               }
           }
+          // Fallback to definition if no example is found
            resultText = foundExample || `No example sentence found for "${word}", but the definition is: ${definitionData.definition || 'Not available'}`;
         }
       }
     }
-
     return resultText;
 
   } catch (error) {
@@ -1662,36 +1920,436 @@ async function callDictionaryApi(word, type) {
   }
 }
 
-function getGradeLevelString(gradeKey) { /* ... (keep existing) ... */ switch (gradeKey) { case 'prek': return 'Pre-K'; case 'k': return 'Kindergarten'; case 'first': return 'First Grade'; case 'second': return 'Second Grade'; case 'third': return 'Third Grade'; case 'fourth': return 'Fourth Grade'; case 'fifth': return 'Fifth Grade'; case 'more': return 'Sixth Grade or higher'; default: return 'the appropriate grade level'; } }
+
+/**
+ * Converts a grade key (e.g., 'first') to a display string.
+ * @param {string} gradeKey - The grade key.
+ * @returns {string} A user-friendly string.
+ */
+function getGradeLevelString(gradeKey) {
+  switch (gradeKey) {
+    case 'prek': return 'Pre-K';
+    case 'k': return 'Kindergarten';
+    case 'first': return 'First Grade';
+    case 'second': return 'Second Grade';
+    case 'third': return 'Third Grade';
+    case 'fourth': return 'Fourth Grade';
+    case 'fifth': return 'Fifth Grade';
+    case 'more': return 'Sixth Grade or higher';
+    default: return 'the appropriate grade level';
+  }
+}
 
 // --- MASCOT CONTROLLER ---
-const Mascot = { /* ... (keep existing) ... */ element: DOMElements.mascot, setState(state) { this.element.className = state; }, cheer() { this.setState('cheer'); setTimeout(() => this.setState('idle'), 500); }, celebrate() { this.setState('celebrate'); }, worried() { this.setState('worried'); }, idle() { this.setState('idle'); } };
+// A simple object to control the mascot's CSS state.
+const Mascot = {
+  element: DOMElements.mascot,
+  setState(state) {
+    this.element.className = state;
+  },
+  cheer() {
+    this.setState('cheer');
+    setTimeout(() => this.setState('idle'), 500); // Return to idle after animation
+  },
+  celebrate() {
+    this.setState('celebrate'); // Stays celebrating until explicitly changed
+  },
+  worried() {
+    this.setState('worried'); // Stays worried
+  },
+  idle() {
+    this.setState('idle'); // Default state
+  }
+};
 
-// --- GAME INSTANCE FACTORY (Refactored) ---
-function createWordChallenge() { /* ... (keep existing setup and private functions) ... */
-    let state = { gradeKey: 'prek', wordList: [], shuffledWords: [], currentWordIndex: 0, currentWord: '', currentStreak: 0, gameStarted: false, timeLeft: 0, totalTime: 0, score: 0, timerInterval: null };
-    function getHighScore(gradeKey) { return parseInt(localStorage.getItem(HIGHSCORE_KEY_PREFIX + gradeKey) || 0); }
-    function setHighScore(gradeKey, wpm) { localStorage.setItem(HIGHSCORE_KEY_PREFIX + gradeKey, wpm); }
-    function showWord() { if (state.currentWordIndex >= state.shuffledWords.length) state.currentWordIndex = 0; if (state.currentWordIndex < 0) state.currentWordIndex = state.shuffledWords.length - 1; state.currentWord = state.shuffledWords[state.currentWordIndex]; currentWordForAI = state.currentWord; DOMElements.wordDisplay.textContent = state.currentWord; DOMElements.wordDisplay.className = Math.random() > 0.5 ? 'swoosh-in' : 'pop-in'; state.score++; updateStats(); if (globalSettings.autoSpeak && state.gameStarted) { speakWord(state.currentWord, state.gradeKey); } }
-    function updateStats() { const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min'; const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read'; DOMElements.wordsRead.textContent = Math.max(0, state.score); DOMElements.streakCounter.textContent = `${state.currentStreak} 🔥`; DOMElements.wordsReadLabel.textContent = wordsReadLabelText; DOMElements.wpmLabel.textContent = wpmLabelText; const elapsed = state.totalTime - state.timeLeft; const wpm = elapsed > 0 ? Math.round((Math.max(0, state.score) / elapsed) * 60) : 0; DOMElements.wpm.textContent = wpm; }
-    function updateTimer() { if (!state.gameStarted) return; state.timeLeft--; if (state.timeLeft >= 0) { DOMElements.timer.textContent = state.timeLeft; const progress = (state.timeLeft / state.totalTime) * 100; DOMElements.progressFill.style.width = progress + '%'; } if (state.timeLeft <= 10 && state.timeLeft > 0) { DOMElements.timerCard.classList.add('timer-low'); Mascot.worried(); } if (state.timeLeft <= 0) { publicMethods.endGame(); } else { updateStats(); } }
-    function nextWord() { playSound('nav'); state.currentWordIndex++; state.currentStreak++; Mascot.cheer(); showWord(); }
-    function prevWord() { playSound('nav'); state.currentWordIndex--; state.score -= 2; state.currentStreak = 0; Mascot.idle(); showWord(); }
-    function showCountdown(callback) { let count = 3; DOMElements.countdownText.textContent = count; DOMElements.countdownOverlay.classList.add('visible'); DOMElements.countdownText.classList.add('show'); playSound('countdown'); const interval = setInterval(() => { DOMElements.countdownText.classList.remove('show'); setTimeout(() => { count--; if (count > 0) { DOMElements.countdownText.textContent = count; DOMElements.countdownText.classList.add('show'); playSound('countdown'); } else if (count === 0) { DOMElements.countdownText.textContent = "GO!"; DOMElements.countdownText.classList.add('show'); playSound('countdownGo'); } else { clearInterval(interval); DOMElements.countdownOverlay.classList.remove('visible'); DOMElements.countdownText.classList.remove('show'); callback(); } }, 150); }, 1000); }
-    function showStars(wpm) { const thresholds = STAR_THRESHOLDS[state.gradeKey] || [10, 20, 30]; let stars = 0; if (wpm >= thresholds[0]) stars = 1; if (wpm >= thresholds[1]) stars = 2; if (wpm >= thresholds[2]) stars = 3; let starHTML = ''; for(let i = 0; i < 3; i++) { starHTML += `<i data-lucide="star" ${i < stars ? 'style="fill: #ffc107;"' : ''}></i>`; } DOMElements.starRatingDisplay.innerHTML = starHTML; lucide.createIcons(); setTimeout(() => DOMElements.starRatingDisplay.classList.add('show-stars'), 100); }
+// --- GAME INSTANCE FACTORY ---
+/**
+ * Creates a new game instance. This factory pattern encapsulates
+ * all game state and logic within a single object.
+ * @returns {object} A game instance with public methods.
+ */
+function createWordChallenge() {
+    // --- Private Game State ---
+    let state = {
+        gradeKey: 'prek',
+        wordList: [],
+        shuffledWords: [],
+        currentWordIndex: 0,
+        currentWord: '',
+        currentStreak: 0,
+        gameStarted: false,
+        timeLeft: 0,
+        totalTime: 0,
+        score: 0, // Words or letters read
+        timerInterval: null
+    };
 
+    // --- Private Helper Functions ---
+    function getHighScore(gradeKey) {
+        return parseInt(localStorage.getItem(HIGHSCORE_KEY_PREFIX + gradeKey) || 0);
+    }
+
+    function setHighScore(gradeKey, wpm) {
+        localStorage.setItem(HIGHSCORE_KEY_PREFIX + gradeKey, wpm);
+    }
+
+    /**
+     * Displays the current word and handles audio/animation.
+     */
+    function showWord() {
+        // Loop word list if end is reached
+        if (state.currentWordIndex >= state.shuffledWords.length) {
+            state.currentWordIndex = 0;
+        }
+        // Loop backwards
+        if (state.currentWordIndex < 0) {
+            state.currentWordIndex = state.shuffledWords.length - 1;
+        }
+
+        state.currentWord = state.shuffledWords[state.currentWordIndex];
+        currentWordForAI = state.currentWord; // Update global AI helper variable
+
+        DOMElements.wordDisplay.textContent = state.currentWord;
+        // Apply a random pop-in animation
+        DOMElements.wordDisplay.className = Math.random() > 0.5 ? 'swoosh-in' : 'pop-in';
+        state.score++;
+        updateStats();
+
+        // Auto-speak if setting is enabled and game is running
+        if (globalSettings.autoSpeak && state.gameStarted) {
+            speakWord(state.currentWord, state.gradeKey);
+        }
+    }
+
+    /**
+     * Updates all stat displays (score, streak, WPM).
+     */
+    function updateStats() {
+        // Adjust labels for Pre-K (Letters) vs. other grades (Words)
+        const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min';
+        const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
+
+        DOMElements.wordsRead.textContent = Math.max(0, state.score); // Score can be negative on 'back'
+        DOMElements.streakCounter.textContent = `${state.currentStreak} 🔥`;
+        DOMElements.wordsReadLabel.textContent = wordsReadLabelText;
+        DOMElements.wpmLabel.textContent = wpmLabelText;
+
+        // Calculate WPM (or LPM)
+        const elapsed = state.totalTime - state.timeLeft;
+        const wpm = elapsed > 0 ? Math.round((Math.max(0, state.score) / elapsed) * 60) : 0;
+        DOMElements.wpm.textContent = wpm;
+    }
+
+    /**
+     * The main game loop, called every second by setInterval.
+     */
+    function updateTimer() {
+        if (!state.gameStarted) return;
+        state.timeLeft--;
+
+        if (state.timeLeft >= 0) {
+            DOMElements.timer.textContent = state.timeLeft;
+            const progress = (state.timeLeft / state.totalTime) * 100;
+            DOMElements.progressFill.style.width = progress + '%';
+        }
+
+        // Timer pulse and mascot worry state
+        if (state.timeLeft <= 10 && state.timeLeft > 0) {
+            DOMElements.timerCard.classList.add('timer-low');
+            Mascot.worried();
+        }
+
+        if (state.timeLeft <= 0) {
+            publicMethods.endGame();
+        } else {
+            updateStats(); // Update WPM every second
+        }
+    }
+
+    /**
+     * Advances to the next word.
+     */
+    function nextWord() {
+        playSound('nav');
+        state.currentWordIndex++;
+        state.currentStreak++;
+        Mascot.cheer();
+        showWord();
+    }
+
+    /**
+     * Goes to the previous word.
+     */
+    function prevWord() {
+        playSound('nav');
+        state.currentWordIndex--;
+        state.score -= 2; // Penalize score for going back
+        state.currentStreak = 0; // Reset streak
+        Mascot.idle();
+        showWord();
+    }
+
+    /**
+     * Shows the 3, 2, 1, GO! countdown.
+     * @param {function} callback - Function to call after countdown finishes.
+     */
+    function showCountdown(callback) {
+        let count = 3;
+        DOMElements.countdownText.textContent = count;
+        DOMElements.countdownOverlay.classList.add('visible');
+        DOMElements.countdownText.classList.add('show'); // Trigger animation
+        playSound('countdown');
+
+        const interval = setInterval(() => {
+            DOMElements.countdownText.classList.remove('show'); // Hide old number
+            setTimeout(() => { // Wait for hide animation
+                count--;
+                if (count > 0) {
+                    DOMElements.countdownText.textContent = count;
+                    DOMElements.countdownText.classList.add('show');
+                    playSound('countdown');
+                } else if (count === 0) {
+                    DOMElements.countdownText.textContent = "GO!";
+                    DOMElements.countdownText.classList.add('show');
+                    playSound('countdownGo');
+                } else {
+                    // --- GO! ---
+                    clearInterval(interval);
+                    DOMElements.countdownOverlay.classList.remove('visible');
+                    DOMElements.countdownText.classList.remove('show');
+                    callback(); // Start the game
+                }
+            }, 150); // Delay for fade out
+        }, 1000);
+    }
+
+    /**
+     * Displays the star rating at the end of the game.
+     * @param {number} wpm - The final WPM/LPM score.
+     */
+    function showStars(wpm) {
+        const thresholds = STAR_THRESHOLDS[state.gradeKey] || [10, 20, 30];
+        let stars = 0;
+        if (wpm >= thresholds[0]) stars = 1;
+        if (wpm >= thresholds[1]) stars = 2;
+        if (wpm >= thresholds[2]) stars = 3;
+
+        let starHTML = '';
+        for(let i = 0; i < 3; i++) {
+            // Add inline style for filled stars
+            starHTML += `<i data-lucide="star" ${i < stars ? 'style="fill: #ffc107;"' : ''}></i>`;
+        }
+        DOMElements.starRatingDisplay.innerHTML = starHTML;
+        lucide.createIcons();
+        // Add class to trigger star animation
+        setTimeout(() => DOMElements.starRatingDisplay.classList.add('show-stars'), 100);
+    }
+
+    // --- Public Methods ---
     const publicMethods = {
-        init(gradeKey) { /* ... (keep existing) ... */ this.stopGame(); state.gradeKey = gradeKey; state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k']; currentGradeForAI = getGradeLevelString(gradeKey); DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge"; DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${gradeKey === 'prek' ? 'LPM' : 'WPM'}`; const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min'; const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read'; DOMElements.wordsReadLabel.textContent = wordsReadLabelText; DOMElements.wpmLabel.textContent = wpmLabelText; DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.style.opacity = 0; document.body.classList.remove('game-active-portrait'); Mascot.idle(); },
-        startGame() { /* ... (keep existing) ... */ if (state.gameStarted) return; playSound('start'); Mascot.idle(); document.body.classList.add('game-active-portrait'); showCountdown(() => { state.gameStarted = true; state.score = -1; state.currentStreak = 0; state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime); state.timeLeft = state.totalTime; DOMElements.timer.textContent = state.timeLeft; DOMElements.startStateContent.style.display = "none"; DOMElements.gameStateContent.style.display = "block"; DOMElements.speakControls.style.display = "flex"; DOMElements.speakBtn.style.display = "inline-block"; DOMElements.bottomBar.style.display = "flex"; DOMElements.statsGrid.style.display = "grid"; DOMElements.wpmCard.style.display = "none"; DOMElements.streakCard.style.display = "flex"; DOMElements.wordsReadCard.style.display = "flex"; DOMElements.timerCard.style.display = "flex"; DOMElements.keyboardHint.style.display = "block"; DOMElements.scoreDisplay.innerHTML = ""; DOMElements.starRatingDisplay.innerHTML = ""; DOMElements.starRatingDisplay.classList.remove('show-stars'); DOMElements.timerCard.classList.remove('timer-low'); state.currentWordIndex = 0; state.shuffledWords = shuffle([...state.wordList]); DOMElements.progressFill.style.width = "100%"; updateTimer(); state.timerInterval = setInterval(updateTimer, 1000); showWord(); }); },
-        stopGame() { /* ... (keep existing) ... */ if (state.timerInterval) clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; document.body.classList.remove('game-active-portrait'); DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.textContent = "Press Start"; DOMElements.wordDisplay.className = ''; DOMElements.wordDisplay.style.opacity = 1; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${state.gradeKey === 'prek' ? 'LPM' : 'WPM'}`; Mascot.idle(); },
-        endGame() { /* ... (keep existing) ... */ clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; document.body.classList.remove('game-active-portrait'); playSound('end'); Mascot.celebrate(); confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } }); const finalWPM = parseInt(DOMElements.wpm.textContent) || 0; const oldHighScore = getHighScore(state.gradeKey); let highScoreMessage = ''; if (finalWPM > oldHighScore) { setHighScore(state.gradeKey, finalWPM); highScoreMessage = "<br>🎉 New High Score! 🎉"; } showStars(finalWPM); DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "block"; DOMElements.startBtn.style.display = "inline-block"; DOMElements.settingsSection.style.display = "block"; DOMElements.bottomBar.style.display = "none"; DOMElements.speakControls.style.display = "none"; DOMElements.speakBtn.style.display = "none"; DOMElements.keyboardHint.style.display = "none"; DOMElements.wpmCard.style.display = "flex"; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.wordDisplay.textContent = "Time's Up!"; DOMElements.wordDisplay.className = 'pop-in'; DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${state.gradeKey === 'prek' ? 'letters' : 'words'}! ${highScoreMessage}`; },
-        goHome() { playSound('click'); this.stopGame(); },
-        restartGame() { playSound('click'); this.stopGame(); this.startGame(); },
-        doNextWord() { if(state.gameStarted) nextWord(); },
-        doPrevWord() { if(state.gameStarted) prevWord(); },
-        doSpeakWord() { if (state.currentWord) { playSound('click'); speakWord(state.currentWord, state.gradeKey); } },
-        handleKeyDown(e) { if (!state.gameStarted) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); playSound('click'); this.startGame(); } return; } if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextWord(); } if (e.key === 'ArrowLeft') { e.preventDefault(); prevWord(); } if (e.key === 's' || e.key === 'S') { e.preventDefault(); this.doSpeakWord(); } },
-        updateDefaultTime(time) { if (!state.gameStarted) { DOMElements.timerInput.value = time; DOMElements.timer.textContent = time; } }
+        /**
+         * Initializes the game for a specific grade level.
+         * @param {string} gradeKey - 'prek', 'k', etc.
+         */
+        init(gradeKey) {
+            this.stopGame(); // Ensure any running game is stopped
+            state.gradeKey = gradeKey;
+            state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k'];
+            currentGradeForAI = getGradeLevelString(gradeKey);
+
+            // Update UI for the new grade
+            DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge";
+            DOMElements.timerInput.value = globalSettings.defaultTime;
+            DOMElements.timer.textContent = globalSettings.defaultTime;
+            const wpmLabel = state.gradeKey === 'prek' ? 'LPM' : 'WPM';
+            DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${wpmLabel}`;
+            DOMElements.wordsReadLabel.textContent = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
+            DOMElements.wpmLabel.textContent = wpmLabel;
+
+            // Show start screen, hide game screen
+            DOMElements.startStateContent.style.display = "block";
+            DOMElements.gameStateContent.style.display = "none";
+            DOMElements.bottomBar.style.display = "none";
+            DOMElements.wordDisplay.style.opacity = 0;
+            document.body.classList.remove('game-active-portrait');
+            Mascot.idle();
+        },
+
+        /**
+         * Starts the game countdown and then the game itself.
+         */
+        startGame() {
+            if (state.gameStarted) return;
+            playSound('start');
+            Mascot.idle();
+            // Add class to hide tabs in portrait mode
+            document.body.classList.add('game-active-portrait');
+
+            showCountdown(() => {
+                // --- Game Starts NOW ---
+                state.gameStarted = true;
+                state.score = -1; // Start at -1, first word call will make it 0
+                state.currentStreak = 0;
+                state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime);
+                state.timeLeft = state.totalTime;
+
+                // Configure UI for game state
+                DOMElements.timer.textContent = state.timeLeft;
+                DOMElements.startStateContent.style.display = "none";
+                DOMElements.gameStateContent.style.display = "block";
+                DOMElements.speakControls.style.display = "flex";
+                DOMElements.speakBtn.style.display = "inline-block";
+                DOMElements.bottomBar.style.display = "flex";
+                DOMElements.statsGrid.style.display = "grid";
+                DOMElements.wpmCard.style.display = "none"; // Hide WPM until end
+                DOMElements.streakCard.style.display = "flex";
+                DOMElements.wordsReadCard.style.display = "flex";
+                DOMElements.timerCard.style.display = "flex";
+                DOMElements.keyboardHint.style.display = "block";
+                DOMElements.scoreDisplay.innerHTML = "";
+                DOMElements.starRatingDisplay.innerHTML = "";
+                DOMElements.starRatingDisplay.classList.remove('show-stars');
+                DOMElements.timerCard.classList.remove('timer-low');
+
+                state.currentWordIndex = 0;
+                state.shuffledWords = shuffle([...state.wordList]);
+                DOMElements.progressFill.style.width = "100%";
+
+                // Start the timer interval
+                updateTimer(); // Call once immediately
+                state.timerInterval = setInterval(updateTimer, 1000);
+                showWord(); // Show the first word
+            });
+        },
+
+        /**
+         * Stops the game timer and resets the UI to the pre-game state.
+         */
+        stopGame() {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.timerInterval = null;
+            state.gameStarted = false;
+            currentWordForAI = ''; // Clear AI word
+            document.body.classList.remove('game-active-portrait');
+
+            // Reset UI
+            DOMElements.startStateContent.style.display = "block";
+            DOMElements.gameStateContent.style.display = "none";
+            DOMElements.bottomBar.style.display = "none";
+            DOMElements.wordDisplay.textContent = "Press Start";
+            DOMElements.wordDisplay.className = ''; // Clear animations
+            DOMElements.wordDisplay.style.opacity = 1;
+            DOMElements.timerCard.classList.remove('timer-low');
+            // Update high score display
+            const wpmLabel = state.gradeKey === 'prek' ? 'LPM' : 'WPM';
+            DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${wpmLabel}`;
+            Mascot.idle();
+        },
+
+        /**
+         * Called when the timer runs out. Stops the game and shows results.
+         */
+        endGame() {
+            clearInterval(state.timerInterval);
+            state.timerInterval = null;
+            state.gameStarted = false;
+            currentWordForAI = '';
+            document.body.classList.remove('game-active-portrait');
+
+            playSound('end');
+            Mascot.celebrate();
+            // Trigger confetti
+            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+
+            const finalWPM = parseInt(DOMElements.wpm.textContent) || 0;
+            const oldHighScore = getHighScore(state.gradeKey);
+            let highScoreMessage = '';
+            if (finalWPM > oldHighScore) {
+                setHighScore(state.gradeKey, finalWPM);
+                highScoreMessage = "<br>🎉 New High Score! 🎉";
+            }
+
+            showStars(finalWPM); // Display star rating
+
+            // Show end-game UI
+            DOMElements.startStateContent.style.display = "block"; // Show start button again
+            DOMElements.gameStateContent.style.display = "block"; // Keep game content visible
+            DOMElements.startBtn.style.display = "inline-block";
+            DOMElements.settingsSection.style.display = "block";
+            DOMElements.bottomBar.style.display = "none"; // Hide game nav
+            DOMElements.speakControls.style.display = "none";
+            DOMElements.speakBtn.style.display = "none";
+            DOMElements.keyboardHint.style.display = "none";
+            DOMElements.wpmCard.style.display = "flex"; // Show final WPM card
+            DOMElements.timerCard.classList.remove('timer-low');
+            DOMElements.wordDisplay.textContent = "Time's Up!";
+            DOMElements.wordDisplay.className = 'pop-in';
+            const wordLabel = state.gradeKey === 'prek' ? 'letters' : 'words';
+            DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${wordLabel}! ${highScoreMessage}`;
+        },
+
+        // --- Public Event Handlers ---
+        goHome() {
+            playSound('click');
+            this.stopGame();
+        },
+        restartGame() {
+            playSound('click');
+            this.stopGame();
+            this.startGame();
+        },
+        doNextWord() {
+            if(state.gameStarted) nextWord();
+        },
+        doPrevWord() {
+            if(state.gameStarted) prevWord();
+        },
+        doSpeakWord() {
+            if (state.currentWord) {
+                playSound('click');
+                speakWord(state.currentWord, state.gradeKey);
+            }
+        },
+
+        /**
+         * Handles global keydown events for game controls.
+         * @param {KeyboardEvent} e - The keydown event.
+         */
+        handleKeyDown(e) {
+            if (!state.gameStarted) {
+                // Start game with Space or Enter
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    playSound('click');
+                    this.startGame();
+                }
+                return;
+            }
+            // In-game controls
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextWord();
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevWord();
+            }
+            if (e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                this.doSpeakWord();
+            }
+        },
+
+        /**
+         * Updates the timer display when changed in settings.
+         * @param {number} time - The new default time.
+         */
+        updateDefaultTime(time) {
+            if (!state.gameStarted) {
+                DOMElements.timerInput.value = time;
+                DOMElements.timer.textContent = time;
+            }
+        }
     };
     return publicMethods;
 }
@@ -1707,25 +2365,40 @@ document.addEventListener('DOMContentLoaded', () => {
   activeGameInstance = createWordChallenge();
 
   // --- Settings Modal Listeners ---
-  function openSettings() { /* ... (keep existing) ... */ playSound('click'); updateSettingsUI(); DOMElements.settingsBackdrop.classList.add('visible'); }
-  function closeSettings() { /* ... (keep existing) ... */ playSound('click'); DOMElements.settingsBackdrop.classList.remove('visible'); }
+  function openSettings() {
+    playSound('click');
+    updateSettingsUI(); // Ensure modal UI is in sync
+    DOMElements.settingsBackdrop.classList.add('visible');
+  }
+  function closeSettings() {
+    playSound('click');
+    DOMElements.settingsBackdrop.classList.remove('visible');
+  }
   DOMElements.globalSettingsBtns.forEach(btn => btn.addEventListener('click', openSettings));
   DOMElements.settingsCloseBtn.addEventListener('click', closeSettings);
-  DOMElements.settingsBackdrop.addEventListener('click', (e) => { if (e.target === DOMElements.settingsBackdrop) closeSettings(); });
+  // Close modal by clicking on the backdrop
+  DOMElements.settingsBackdrop.addEventListener('click', (e) => {
+    if (e.target === DOMElements.settingsBackdrop) closeSettings();
+  });
 
   // --- AI Helper Modal Listeners (MODIFIED FOR Dictionary API) ---
-  function closeAiHelper() { /* ... (keep existing) ... */ playSound('click'); DOMElements.aiHelperBackdrop.classList.remove('visible'); }
+  function closeAiHelper() {
+    playSound('click');
+    DOMElements.aiHelperBackdrop.classList.remove('visible');
+  }
 
   DOMElements.aiHelperBtn.addEventListener('click', () => {
     playSound('click');
     if (activeGameInstance && currentWordForAI) {
+      // Game is active, show word and buttons
       DOMElements.aiWord.textContent = currentWordForAI;
       DOMElements.aiWord.parentElement.style.display = 'block';
       DOMElements.aiWelcomeMessage.style.display = 'none';
       DOMElements.aiButtons.style.display = 'flex';
       DOMElements.aiResult.textContent = 'Tap a button above...';
-      DOMElements.aiLoading.style.display = 'none'; // Hide initially
+      DOMElements.aiLoading.style.display = 'none';
     } else {
+      // Game not active, show welcome message
       DOMElements.aiWord.parentElement.style.display = 'none';
       DOMElements.aiWelcomeMessage.style.display = 'block';
       DOMElements.aiButtons.style.display = 'none';
@@ -1736,7 +2409,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   DOMElements.aiHelperCloseBtn.addEventListener('click', closeAiHelper);
-  DOMElements.aiHelperBackdrop.addEventListener('click', (e) => { if (e.target === DOMElements.aiHelperBackdrop) closeAiHelper(); });
+  DOMElements.aiHelperBackdrop.addEventListener('click', (e) => {
+    if (e.target === DOMElements.aiHelperBackdrop) closeAiHelper();
+  });
 
   // Modified function to handle Dictionary API call
   async function handleAiRequest(type) {
@@ -1755,40 +2430,127 @@ document.addEventListener('DOMContentLoaded', () => {
   DOMElements.aiSentenceBtn.addEventListener('click', () => handleAiRequest('sentence'));
 
   // --- Settings Control Listeners ---
-    /* ... (keep existing theme, dark mode, sound, time, font size, autospeak, speed, reset listeners) ... */
-    DOMElements.themeOptions.forEach(option => { option.addEventListener('click', (e) => { const newTheme = e.target.dataset.theme; if (newTheme && newTheme !== globalSettings.theme) { playSound('click'); globalSettings.theme = newTheme; saveSettings(); applySettings(); updateSettingsUI(); } }); });
-    DOMElements.settingsThemeToggle.addEventListener('change', (e) => { globalSettings.darkMode = e.target.checked; saveSettings(); applySettings(); updateSettingsUI(); });
-    DOMElements.settingsSoundToggle.addEventListener('change', (e) => { globalSettings.sound = e.target.checked; saveSettings(); updateSettingsUI(); if (globalSettings.sound) playSound('click'); });
-    DOMElements.settingsDefaultTime.addEventListener('change', (e) => { globalSettings.defaultTime = parseInt(e.target.value) || 60; saveSettings(); if(activeGameInstance) activeGameInstance.updateDefaultTime(globalSettings.defaultTime); });
-    DOMElements.settingsFontSize.addEventListener('input', (e) => { globalSettings.fontSize = parseFloat(e.target.value).toFixed(1); DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`; applySettings(); }); DOMElements.settingsFontSize.addEventListener('change', saveSettings);
-    DOMElements.settingsAutoSpeakToggle.addEventListener('change', (e) => { globalSettings.autoSpeak = e.target.checked; saveSettings(); });
-    DOMElements.settingsSpeechRate.addEventListener('input', (e) => { globalSettings.speechRate = parseFloat(e.target.value).toFixed(1); DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`; DOMElements.speechRateSlider.value = globalSettings.speechRate; DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; }); DOMElements.settingsSpeechRate.addEventListener('change', saveSettings);
-    DOMElements.resetSettingsBtn.addEventListener('click', resetSettings);
+  DOMElements.themeOptions.forEach(option => {
+    option.addEventListener('click', (e) => {
+      const newTheme = e.target.dataset.theme;
+      if (newTheme && newTheme !== globalSettings.theme) {
+        playSound('click');
+        globalSettings.theme = newTheme;
+        saveSettings();
+        applySettings();
+        updateSettingsUI(); // Update selection highlights
+      }
+    });
+  });
+
+  DOMElements.settingsThemeToggle.addEventListener('change', (e) => {
+    globalSettings.darkMode = e.target.checked;
+    saveSettings();
+    applySettings();
+    updateSettingsUI(); // Update icon
+  });
+
+  DOMElements.settingsSoundToggle.addEventListener('change', (e) => {
+    globalSettings.sound = e.target.checked;
+    saveSettings();
+    updateSettingsUI(); // Update icon
+    if (globalSettings.sound) playSound('click');
+  });
+
+  DOMElements.settingsDefaultTime.addEventListener('change', (e) => {
+    globalSettings.defaultTime = parseInt(e.target.value) || 60;
+    saveSettings();
+    if(activeGameInstance) activeGameInstance.updateDefaultTime(globalSettings.defaultTime);
+  });
+
+  DOMElements.settingsFontSize.addEventListener('input', (e) => {
+    globalSettings.fontSize = parseFloat(e.target.value).toFixed(1);
+    DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
+    applySettings(); // Apply font size live
+  });
+  DOMElements.settingsFontSize.addEventListener('change', saveSettings); // Save on release
+
+  DOMElements.settingsAutoSpeakToggle.addEventListener('change', (e) => {
+    globalSettings.autoSpeak = e.target.checked;
+    saveSettings();
+  });
+
+  DOMElements.settingsSpeechRate.addEventListener('input', (e) => {
+    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
+    DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
+    // Sync in-game slider and indicator
+    DOMElements.speechRateSlider.value = globalSettings.speechRate;
+    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
+  });
+  DOMElements.settingsSpeechRate.addEventListener('change', saveSettings);
+
+  DOMElements.resetSettingsBtn.addEventListener('click', resetSettings);
 
 
   // --- DYNAMIC GAME LISTENERS ---
-    /* ... (keep existing game control listeners) ... */
-    DOMElements.startBtn.addEventListener('click', () => activeGameInstance.startGame());
-    DOMElements.homeBtn.addEventListener('click', () => activeGameInstance.goHome());
-    DOMElements.restartBtn.addEventListener('click', () => activeGameInstance.restartGame());
-    DOMElements.nextBtn.addEventListener('click', () => activeGameInstance.doNextWord());
-    DOMElements.backBtn.addEventListener('click', () => activeGameInstance.doPrevWord());
-    DOMElements.speakBtn.addEventListener('click', () => activeGameInstance.doSpeakWord());
+  // Connect buttons to the active game instance's methods
+  DOMElements.startBtn.addEventListener('click', () => activeGameInstance.startGame());
+  DOMElements.homeBtn.addEventListener('click', () => activeGameInstance.goHome());
+  DOMElements.restartBtn.addEventListener('click', () => activeGameInstance.restartGame());
+  DOMElements.nextBtn.addEventListener('click', () => activeGameInstance.doNextWord());
+  DOMElements.backBtn.addEventListener('click', () => activeGameInstance.doPrevWord());
+  DOMElements.speakBtn.addEventListener('click', () => activeGameInstance.doSpeakWord());
 
-  // In-Game Settings
-    /* ... (keep existing in-game speech rate, mute, theme listeners) ... */
-    DOMElements.speechRateSlider.addEventListener('input', (e) => { globalSettings.speechRate = parseFloat(e.target.value).toFixed(1); DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; updateSettingsUI(); }); DOMElements.speechRateSlider.addEventListener('change', () => { saveSettings(); activeGameInstance.doSpeakWord(); });
-    DOMElements.muteToggle.addEventListener('click', () => { playSound('click'); globalSettings.sound = !globalSettings.sound; saveSettings(); updateSettingsUI(); });
-    DOMElements.themeToggle.addEventListener('click', () => { playSound('click'); globalSettings.darkMode = !globalSettings.darkMode; saveSettings(); applySettings(); updateSettingsUI(); });
+  // In-Game Settings Listeners
+  DOMElements.speechRateSlider.addEventListener('input', (e) => {
+    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
+    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
+    updateSettingsUI(); // Sync main settings modal
+  });
+  DOMElements.speechRateSlider.addEventListener('change', () => {
+    saveSettings();
+    activeGameInstance.doSpeakWord(); // Speak current word at new speed
+  });
+
+  DOMElements.muteToggle.addEventListener('click', () => {
+    playSound('click'); // Play sound *before* toggling
+    globalSettings.sound = !globalSettings.sound;
+    saveSettings();
+    updateSettingsUI();
+  });
+
+  DOMElements.themeToggle.addEventListener('click', () => {
+    playSound('click');
+    globalSettings.darkMode = !globalSettings.darkMode;
+    saveSettings();
+    applySettings();
+    updateSettingsUI();
+  });
 
 
   // Global Keyboard Listener
-    /* ... (keep existing keyboard listener) ... */
-    document.addEventListener('keydown', (e) => { if (activeGameInstance) { if (e.target.tagName === 'INPUT') return; if (DOMElements.settingsBackdrop.classList.contains('visible') || DOMElements.aiHelperBackdrop.classList.contains('visible')) return; activeGameInstance.handleKeyDown(e); } });
+  document.addEventListener('keydown', (e) => {
+    if (activeGameInstance) {
+      // Ignore keypresses if an input is focused
+      if (e.target.tagName === 'INPUT') return;
+      // Ignore keypresses if a modal is open
+      if (DOMElements.settingsBackdrop.classList.contains('visible') ||
+          DOMElements.aiHelperBackdrop.classList.contains('visible')) {
+          return;
+      }
+      activeGameInstance.handleKeyDown(e);
+    }
+  });
 
   // --- Tab Navigation Logic ---
-    /* ... (keep existing tab listener) ... */
-    DOMElements.navTabs.forEach(tab => { tab.addEventListener('click', () => { playSound('click'); const targetGrade = tab.getAttribute('data-grade'); DOMElements.navTabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); if (activeGameInstance) { activeGameInstance.init(targetGrade); } }); });
+  DOMElements.navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      playSound('click');
+      const targetGrade = tab.getAttribute('data-grade');
+      // Update active tab highlight
+      DOMElements.navTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      // Initialize the game instance with the new grade
+      if (activeGameInstance) {
+        activeGameInstance.init(targetGrade);
+      }
+    });
+  });
 
   // --- Final Initialization ---
   activeGameInstance.init('prek'); // Initialize with Pre-K by default
@@ -1799,4 +2561,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 </html>
