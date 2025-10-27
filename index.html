@@ -650,45 +650,51 @@ button:active {
   margin-top: 4px;
 }
 
-/* --- Bottom Nav Bar (UPDATED) --- */
+/* --- Bottom Nav Bar (UPDATED for No Wrap) --- */
 #bottom-bar {
   height: auto;
   background: var(--card-bg);
   display: flex;
-  justify-content: center; /* Center buttons horizontally */
+  justify-content: space-evenly; /* Evenly space items */
   align-items: center;
-  flex-wrap: wrap; /* Allow wrapping */
-  gap: clamp(5px, 1vw, 8px); /* Add gap between wrapped buttons */
+  flex-wrap: nowrap; /* Prevent wrapping */
+  gap: clamp(5px, 1vw, 8px);
   box-shadow: 0 8px 30px var(--shadow-color);
   transition: all 0.3s ease;
   border-radius: 22px;
-  padding: clamp(8px, 1.5vh, 10px) clamp(10px, 2vw, 12px); /* Responsive padding */
+  padding: clamp(8px, 1.5vh, 10px) clamp(6px, 1.5vw, 10px); /* Adjusted horizontal padding */
   border: 1px solid var(--border-color);
   margin-top: auto; /* Push to bottom within flex container */
-  margin-bottom: clamp(5px, 1vh, 10px); /* Responsive bottom margin */
+  margin-bottom: clamp(5px, 1vh, 10px);
   flex-shrink: 0;
-  width: calc(100% - 20px); /* Adjust width to fit padding */
-  max-width: 680px; /* Match main wrapper max-width adjusted for padding */
-  position: relative; /* Needed if main-wrapper uses padding */
+  width: calc(100% - 20px);
+  max-width: 680px;
+  position: relative;
   left: 50%;
   transform: translateX(-50%);
+  overflow-x: auto; /* Allow horizontal scroll ONLY if buttons absolutely don't fit */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
 }
+#bottom-bar::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, Edge */
+}
+
 
 #bottom-bar button {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: #ffffff;
   font-weight: 600;
-  font-size: clamp(0.85rem, 2vw, 0.95rem); /* Responsive font size */
-  padding: clamp(8px, 1.5vh, 10px) clamp(10px, 1.8vw, 12px); /* Responsive padding */
+  font-size: clamp(0.8rem, 1.8vw, 0.9rem); /* Slightly smaller max font */
+  padding: clamp(7px, 1.3vh, 9px) clamp(8px, 1.5vw, 10px); /* Slightly smaller padding */
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px; /* Slightly smaller gap */
   box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
   letter-spacing: 0px;
-  flex-grow: 1; /* Allow buttons to grow */
-  flex-basis: auto; /* Let flexbox decide basis */
-  min-width: fit-content; /* Ensure text doesn't wrap too early */
-  margin: 2px; /* Small margin for wrapping */
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+  /* Remove flex-grow and flex-basis */
+  min-width: fit-content;
+  margin: 0 2px; /* Minimal margin */
   border-radius: 12px;
 }
 
@@ -699,9 +705,10 @@ button:active {
 
 #bottom-bar i {
   display: inline;
-  width: clamp(16px, 2.5vw, 18px); /* Responsive size */
-  height: clamp(16px, 2.5vw, 18px);
+  width: clamp(14px, 2.2vw, 16px); /* Slightly smaller icons */
+  height: clamp(14px, 2.2vw, 16px);
 }
+
 
 #keyboard-hint {
   font-size: 0.8rem;
@@ -1126,7 +1133,7 @@ input:checked + .slider:before {
 
   .nav-tab { font-size: 0.8rem; padding: 6px 10px; }
   .challenge-header h1 { font-size: 1.6rem; }
-  #bottom-bar button { font-size: 0.8rem; padding: 8px 6px; gap: 3px; }
+  /* Bottom bar buttons already adjusted with clamp */
   #bottom-bar i { width: 14px; height: 14px; }
   .icon-btn { width: 36px; height: 36px; }
   #settings-modal, #ai-helper-modal { padding: 15px; }
