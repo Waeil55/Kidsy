@@ -151,7 +151,8 @@ body.dark.theme-skyblue {
 
 /* Updated html/body for full coverage */
 html {
-  height: 100%; /* Use 100% instead of 100vh for html */
+  /* --- FIX: Removed height: 100% --- */
+  /* This allows the html element to grow with the body */
 }
 
 body {
@@ -1164,8 +1165,8 @@ input:checked + .slider:before {
       align-items: stretch;
       padding-top: 10px;
       padding-bottom: 10px;
-      height: 100%; /* Fill vertical space */
-      /* --- FIX: Removed max-height, flexbox layout will handle this --- */
+      /* --- FIX: Removed height: 100% --- */
+      /* This lets align-items: stretch on parent work */
       overflow: hidden; /* Prevent container itself from scrolling */
   }
 
@@ -1193,8 +1194,8 @@ input:checked + .slider:before {
   }
   .grade-section {
       padding-bottom: 0; /* Remove bottom padding */
-      height: 100%;
-      /* --- FIX: Removed max-height, flexbox layout will handle this --- */
+      /* --- FIX: Removed height: 100% --- */
+      /* This lets align-items: stretch on parent work */
   }
   .container {
       padding: clamp(15px, 2.5vh, 20px); /* Responsive padding */
@@ -1797,4 +1798,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 </body>
+</html>
 </html>
