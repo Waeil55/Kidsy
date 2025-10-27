@@ -149,14 +149,19 @@ body.dark.theme-skyblue {
   box-sizing: border-box;
 }
 
-html, body {
-  height: 100%;
-  overflow: hidden;
-  overscroll-behavior: none;
-  font-size: var(--base-font-size);
+/* Updated html/body for full coverage */
+html {
+  height: 100%; /* Use 100% instead of 100vh for html */
 }
 
 body {
+  min-height: 100vh; /* Ensure body takes *at least* full viewport height */
+  /* Fallback for browsers not supporting dvh */
+  min-height: -webkit-fill-available;
+  min-height: 100dvh; /* Use dynamic viewport height for better mobile coverage */
+  overflow: hidden; /* Still prevent scrolling on body */
+  overscroll-behavior: none;
+  font-size: var(--base-font-size);
   font-family: 'Poppins', sans-serif;
   text-align: center;
   background: var(--bg-gradient);
@@ -168,6 +173,10 @@ body {
   align-items: center;
   justify-content: flex-start;
   padding: 10px 0 0 0;
+  /* Add padding for iOS safe areas */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .main-wrapper {
@@ -178,7 +187,8 @@ body {
   flex-direction: column; /* Tabs on top */
   flex-grow: 1;
   overflow: hidden;
-  min-height: 0;
+  min-height: 0; /* Important for flex child */
+  /* Remove fixed height, let flex handle it */
 }
 
 /* --- Tab Navigation --- */
@@ -190,7 +200,21 @@ body {
   position: relative;
   flex-shrink: 0;
   width: 100%;
+  transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease, margin 0.3s ease; /* Add transitions */
+  z-index: 10;
 }
+
+/* Hide tabs in portrait when game is active */
+@media (orientation: portrait) {
+  body.game-active-portrait .nav-tabs-container {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+    height: 0; /* Collapse height */
+    margin-bottom: 0; /* Collapse margin */
+  }
+}
+
 
 .nav-tabs {
   display: flex;
@@ -243,8 +267,9 @@ body.dark .nav-tab:hover {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; /* Crucial: prevent this section from causing scroll */
   min-height: 0;
+  width: 100%;
   animation: slideIn 0.3s ease-out;
 }
 
@@ -254,7 +279,7 @@ body.dark .nav-tab:hover {
 }
 
 .container {
-  padding: 25px;
+  padding: clamp(15px, 3vh, 25px); /* Responsive padding */
   background: var(--card-bg);
   border-radius: 28px;
   box-shadow: 0 12px 45px var(--shadow-color);
@@ -263,12 +288,13 @@ body.dark .nav-tab:hover {
   position: relative;
   z-index: 1;
   border: 1px solid var(--border-color);
-  margin-bottom: 15px;
+  margin-bottom: clamp(10px, 2vh, 15px); /* Responsive margin */
+  flex-grow: 1; /* Allow container to fill vertical space */
   flex-shrink: 1;
-  /* This makes the container scrollable, not the whole page */
+  /* This makes the container scrollable IF content overflows */
   overflow-y: auto;
   overscroll-behavior: contain;
-  min-height: 0;
+  min-height: 0; /* Critical for scrolling within flex item */
 }
 
 /* --- Game UI Elements --- */
@@ -277,7 +303,8 @@ body.dark .nav-tab:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: clamp(15px, 3vh, 20px); /* Responsive margin */
+  flex-shrink: 0;
 }
 .challenge-header .icon-btn {
   position: absolute;
@@ -286,7 +313,7 @@ body.dark .nav-tab:hover {
   height: 38px;
 }
 .challenge-header h1 {
-  font-size: clamp(1.8rem, 7vw, 2.1rem);
+  font-size: clamp(1.8rem, 6vw, 2.1rem); /* Responsive font size */
   font-weight: 700;
   margin: 0;
   padding: 0 50px;
@@ -321,9 +348,10 @@ body.dark .nav-tab:hover {
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 15px;
+  margin-bottom: clamp(10px, 2vh, 15px); /* Responsive margin */
+  flex-shrink: 0; /* Prevent unwanted shrinking */
 }
-#word-display { width: 100%; }
+#word-display { width: 100%; min-height: clamp(70px, 15vh, 90px); /* Responsive min height */}
 #settings-section {
   width: 100%;
   max-width: 320px;
@@ -469,7 +497,7 @@ button:active {
   font-weight: 700;
   color: var(--accent-primary);
   text-shadow: none;
-  min-height: 90px;
+ /* min-height: 90px; */ /* Let flexbox handle height based on font size and container */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -635,10 +663,16 @@ button:active {
   border-radius: 22px;
   padding: 10px 8px;
   border: 1px solid var(--border-color);
-  margin-top: 15px;
-  margin-bottom: 10px;
+  margin-top: auto; /* Push to bottom within flex container */
+  margin-bottom: clamp(5px, 1vh, 10px); /* Responsive bottom margin */
   flex-shrink: 0;
+  width: calc(100% - 20px); /* Adjust width to fit padding */
+  max-width: 680px; /* Match main wrapper max-width adjusted for padding */
+  position: relative; /* Needed if main-wrapper uses padding */
+  left: 50%;
+  transform: translateX(-50%);
 }
+
 
 #bottom-bar button {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
@@ -1106,20 +1140,25 @@ input:checked + .slider:before {
       flex-direction: row; /* Tabs | Content */
       align-items: stretch;
       padding: 0 8px;
-      max-width: 98%;
+      max-width: 100%; /* Allow full width in landscape */
+      /* No height limit here, let body handle it */
   }
   .nav-tabs-container {
       flex-direction: column;
       justify-content: flex-start;
       width: auto;
-      flex-basis: 160px; /* Wider tabs */
+      flex-basis: clamp(140px, 20vw, 180px); /* Responsive width */
       flex-shrink: 0;
-      margin-right: 15px;
+      margin-right: clamp(10px, 1.5vw, 15px); /* Responsive margin */
       margin-bottom: 0;
       align-items: stretch;
       padding-top: 10px;
       padding-bottom: 10px;
+      height: 100%; /* Fill vertical space */
+      max-height: calc(100vh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); /* Adjust max height considering body padding and safe areas */
+      overflow: hidden; /* Prevent container itself from scrolling */
   }
+
   .nav-tabs {
       flex-direction: column;
       align-items: stretch;
@@ -1127,45 +1166,61 @@ input:checked + .slider:before {
       flex-wrap: nowrap;
       padding: 8px;
       justify-content: flex-start;
-      overflow-y: auto;
+      overflow-y: auto; /* Allow tabs list to scroll */
       overscroll-behavior: contain;
-      flex-shrink: 1;
+      flex-grow: 1; /* Take available space */
       min-height: 0;
       border-radius: 18px;
   }
    .nav-tab {
       width: 100%;
       text-align: left;
-      padding: 12px 18px;
-      margin: 4px 0;
-      font-size: 1.0rem;
+      padding: clamp(10px, 1.5vh, 12px) clamp(15px, 2vw, 18px); /* Responsive padding */
+      margin: 3px 0;
+      font-size: clamp(0.9rem, 2vh, 1.0rem); /* Responsive font size */
       flex-shrink: 0;
       border-radius: 14px;
   }
   .grade-section {
-      padding-bottom: 10px;
+      padding-bottom: 0; /* Remove bottom padding */
+      height: 100%;
+      max-height: calc(100vh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); /* Match nav container height */
   }
   .container {
-      padding: 20px;
+      padding: clamp(15px, 2.5vh, 20px); /* Responsive padding */
       min-height: 0;
       flex-grow: 1;
+      margin-bottom: clamp(5px, 1vh, 10px); /* Responsive margin */
+      height: calc(100% - 60px); /* Adjust based on bottom bar height + margins */
   }
-  /* Ensure centering in landscape too */
+  #bottom-bar {
+      margin-top: auto; /* Push to bottom */
+      margin-bottom: clamp(5px, 1vh, 10px); /* Consistent margin */
+      height: clamp(50px, 8vh, 55px); /* Responsive height */
+      padding: clamp(8px, 1.5vh, 10px) 8px;
+  }
+  #bottom-bar button {
+      padding: clamp(8px, 1.5vh, 10px) clamp(10px, 1.5vw, 12px);
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
+  }
   .timer-controls {
       grid-column: 1 / -1; /* Span full width */
       justify-content: center; /* Center horizontally */
       margin-left: 0;
   }
+   #mascot { bottom: clamp(10px, 1.5vh, 15px); right: clamp(10px, 1.5vw, 15px); }
+
 
   /* Specific adjustments for landscape on short screens */
   @media (max-height: 550px) {
       :root { --base-font-size: 15px; }
-      .container { padding: 12px; }
+      body { padding-top: 5px; }
+      .container { padding: 12px; height: calc(100% - 50px); }
       .challenge-header h1 { font-size: 1.4rem; margin-bottom: 10px; }
-      #bottom-bar { padding: 6px 4px; margin-top: 8px; margin-bottom: 5px; }
+      #bottom-bar { height: 45px; padding: 6px 4px; margin-top: 8px; margin-bottom: 5px; }
       #bottom-bar button { font-size: 0.8rem; padding: 7px 8px; gap: 3px; }
       #bottom-bar i { width: 14px; height: 14px; }
-      .nav-tabs-container { flex-basis: 140px; margin-right: 10px; }
+      .nav-tabs-container { flex-basis: clamp(120px, 18vw, 140px); margin-right: 10px; }
       .nav-tab { padding: 8px 12px; font-size: 0.9rem; }
       #start-btn, #speak-controls, #stats-grid, #score-display, #keyboard-hint, #progress-bar { margin-bottom: 8px; }
       .icon-btn { width: 36px; height: 36px; }
@@ -1642,10 +1697,10 @@ function createWordChallenge() { /* ... (keep existing setup and private functio
     function showStars(wpm) { const thresholds = STAR_THRESHOLDS[state.gradeKey] || [10, 20, 30]; let stars = 0; if (wpm >= thresholds[0]) stars = 1; if (wpm >= thresholds[1]) stars = 2; if (wpm >= thresholds[2]) stars = 3; let starHTML = ''; for(let i = 0; i < 3; i++) { starHTML += `<i data-lucide="star" ${i < stars ? 'style="fill: #ffc107;"' : ''}></i>`; } DOMElements.starRatingDisplay.innerHTML = starHTML; lucide.createIcons(); setTimeout(() => DOMElements.starRatingDisplay.classList.add('show-stars'), 100); }
 
     const publicMethods = {
-        init(gradeKey) { /* ... (keep existing) ... */ this.stopGame(); state.gradeKey = gradeKey; state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k']; currentGradeForAI = getGradeLevelString(gradeKey); DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge"; DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${gradeKey === 'prek' ? 'LPM' : 'WPM'}`; const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min'; const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read'; DOMElements.wordsReadLabel.textContent = wordsReadLabelText; DOMElements.wpmLabel.textContent = wpmLabelText; DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.style.opacity = 0; Mascot.idle(); },
-        startGame() { /* ... (keep existing) ... */ if (state.gameStarted) return; playSound('start'); Mascot.idle(); showCountdown(() => { state.gameStarted = true; state.score = -1; state.currentStreak = 0; state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime); state.timeLeft = state.totalTime; DOMElements.timer.textContent = state.timeLeft; DOMElements.startStateContent.style.display = "none"; DOMElements.gameStateContent.style.display = "block"; DOMElements.speakControls.style.display = "flex"; DOMElements.speakBtn.style.display = "inline-block"; DOMElements.bottomBar.style.display = "flex"; DOMElements.statsGrid.style.display = "grid"; DOMElements.wpmCard.style.display = "none"; DOMElements.streakCard.style.display = "flex"; DOMElements.wordsReadCard.style.display = "flex"; DOMElements.timerCard.style.display = "flex"; DOMElements.keyboardHint.style.display = "block"; DOMElements.scoreDisplay.innerHTML = ""; DOMElements.starRatingDisplay.innerHTML = ""; DOMElements.starRatingDisplay.classList.remove('show-stars'); DOMElements.timerCard.classList.remove('timer-low'); state.currentWordIndex = 0; state.shuffledWords = shuffle([...state.wordList]); DOMElements.progressFill.style.width = "100%"; updateTimer(); state.timerInterval = setInterval(updateTimer, 1000); showWord(); }); },
-        stopGame() { /* ... (keep existing) ... */ if (state.timerInterval) clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.textContent = "Press Start"; DOMElements.wordDisplay.className = ''; DOMElements.wordDisplay.style.opacity = 1; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${state.gradeKey === 'prek' ? 'LPM' : 'WPM'}`; Mascot.idle(); },
-        endGame() { /* ... (keep existing) ... */ clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; playSound('end'); Mascot.celebrate(); confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } }); const finalWPM = parseInt(DOMElements.wpm.textContent) || 0; const oldHighScore = getHighScore(state.gradeKey); let highScoreMessage = ''; if (finalWPM > oldHighScore) { setHighScore(state.gradeKey, finalWPM); highScoreMessage = "<br>🎉 New High Score! 🎉"; } showStars(finalWPM); DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "block"; DOMElements.startBtn.style.display = "inline-block"; DOMElements.settingsSection.style.display = "block"; DOMElements.bottomBar.style.display = "none"; DOMElements.speakControls.style.display = "none"; DOMElements.speakBtn.style.display = "none"; DOMElements.keyboardHint.style.display = "none"; DOMElements.wpmCard.style.display = "flex"; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.wordDisplay.textContent = "Time's Up!"; DOMElements.wordDisplay.className = 'pop-in'; DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${state.gradeKey === 'prek' ? 'letters' : 'words'}! ${highScoreMessage}`; },
+        init(gradeKey) { /* ... (keep existing) ... */ this.stopGame(); state.gradeKey = gradeKey; state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k']; currentGradeForAI = getGradeLevelString(gradeKey); DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge"; DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${gradeKey === 'prek' ? 'LPM' : 'WPM'}`; const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min'; const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read'; DOMElements.wordsReadLabel.textContent = wordsReadLabelText; DOMElements.wpmLabel.textContent = wpmLabelText; DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.style.opacity = 0; document.body.classList.remove('game-active-portrait'); Mascot.idle(); },
+        startGame() { /* ... (keep existing) ... */ if (state.gameStarted) return; playSound('start'); Mascot.idle(); document.body.classList.add('game-active-portrait'); showCountdown(() => { state.gameStarted = true; state.score = -1; state.currentStreak = 0; state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime); state.timeLeft = state.totalTime; DOMElements.timer.textContent = state.timeLeft; DOMElements.startStateContent.style.display = "none"; DOMElements.gameStateContent.style.display = "block"; DOMElements.speakControls.style.display = "flex"; DOMElements.speakBtn.style.display = "inline-block"; DOMElements.bottomBar.style.display = "flex"; DOMElements.statsGrid.style.display = "grid"; DOMElements.wpmCard.style.display = "none"; DOMElements.streakCard.style.display = "flex"; DOMElements.wordsReadCard.style.display = "flex"; DOMElements.timerCard.style.display = "flex"; DOMElements.keyboardHint.style.display = "block"; DOMElements.scoreDisplay.innerHTML = ""; DOMElements.starRatingDisplay.innerHTML = ""; DOMElements.starRatingDisplay.classList.remove('show-stars'); DOMElements.timerCard.classList.remove('timer-low'); state.currentWordIndex = 0; state.shuffledWords = shuffle([...state.wordList]); DOMElements.progressFill.style.width = "100%"; updateTimer(); state.timerInterval = setInterval(updateTimer, 1000); showWord(); }); },
+        stopGame() { /* ... (keep existing) ... */ if (state.timerInterval) clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; document.body.classList.remove('game-active-portrait'); DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.textContent = "Press Start"; DOMElements.wordDisplay.className = ''; DOMElements.wordDisplay.style.opacity = 1; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${state.gradeKey === 'prek' ? 'LPM' : 'WPM'}`; Mascot.idle(); },
+        endGame() { /* ... (keep existing) ... */ clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; document.body.classList.remove('game-active-portrait'); playSound('end'); Mascot.celebrate(); confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } }); const finalWPM = parseInt(DOMElements.wpm.textContent) || 0; const oldHighScore = getHighScore(state.gradeKey); let highScoreMessage = ''; if (finalWPM > oldHighScore) { setHighScore(state.gradeKey, finalWPM); highScoreMessage = "<br>🎉 New High Score! 🎉"; } showStars(finalWPM); DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "block"; DOMElements.startBtn.style.display = "inline-block"; DOMElements.settingsSection.style.display = "block"; DOMElements.bottomBar.style.display = "none"; DOMElements.speakControls.style.display = "none"; DOMElements.speakBtn.style.display = "none"; DOMElements.keyboardHint.style.display = "none"; DOMElements.wpmCard.style.display = "flex"; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.wordDisplay.textContent = "Time's Up!"; DOMElements.wordDisplay.className = 'pop-in'; DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${state.gradeKey === 'prek' ? 'letters' : 'words'}! ${highScoreMessage}`; },
         goHome() { playSound('click'); this.stopGame(); },
         restartGame() { playSound('click'); this.stopGame(); this.startGame(); },
         doNextWord() { if(state.gameStarted) nextWord(); },
