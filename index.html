@@ -1072,10 +1072,13 @@ input:checked + .slider:before {
   line-height: 1.6;
   font-size: 0.95rem;
   border: 1px solid var(--border-color);
-  white-space: pre-wrap; /* Show line breaks from AI */
+  white-space: pre-wrap; /* Show line breaks from API */
 }
-#ai-loading { /* No longer used, keep hidden */
-  display: none;
+#ai-loading { /* Display block again for API calls */
+  display: block;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  opacity: 0.7;
 }
 
 
@@ -1143,9 +1146,9 @@ input:checked + .slider:before {
       padding-bottom: 10px;
   }
   .container {
-       padding: 20px;
-       min-height: 0;
-       flex-grow: 1;
+      padding: 20px;
+      min-height: 0;
+      flex-grow: 1;
   }
   /* Ensure centering in landscape too */
   .timer-controls {
@@ -1404,7 +1407,7 @@ These are global and unchanged.
           <button id="ai-sentence-btn">Use in Sentence</button>
       </div>
       <div id="ai-result">Tap a button above...</div>
-      <!-- Loading indicator is no longer needed for offline lookup -->
+      <!-- Loading indicator is now visible again -->
       <div id="ai-loading" style="display: none;">Generating response...</div>
     </div>
   </div>
@@ -1449,31 +1452,6 @@ const GRADE_TITLES = {
   more: "🎯 More Grades (6+)"
 };
 
-// --- OFFLINE AI DATA (NEW) ---
-// Simple dictionary for offline definitions and sentences
-// NOTE: This is VERY limited and only includes a few Kindergarten words as an example.
-// Building a comprehensive offline dictionary is a large task.
-const OFFLINE_AI_DATA = {
-  'am': { definition: 'A word used with "I" to say something about yourself.', sentence: 'I am happy today.' },
-  'is': { definition: 'A word used to describe something or someone.', sentence: 'The cat is sleeping.' },
-  'it': { definition: 'A word used for a thing or an animal.', sentence: 'It is a sunny day.' },
-  'a': { definition: 'Used before a noun to mean one thing or person.', sentence: 'I see a dog.' },
-  'and': { definition: 'Used to connect words or ideas.', sentence: 'Mom and Dad are here.' },
-  'go': { definition: 'To move from one place to another.', sentence: 'Let\'s go to the park.' },
-  'me': { definition: 'Used when talking about yourself as the object.', sentence: 'Give the ball to me.' },
-  'my': { definition: 'Shows that something belongs to you.', sentence: 'This is my toy.' },
-  'see': { definition: 'To look at something with your eyes.', sentence: 'I see a bird in the tree.' },
-  'the': { definition: 'Used to point out a specific person or thing.', sentence: 'The sun is bright.' },
-  'to': { definition: 'Used to show direction or purpose.', sentence: 'I walk to school.' },
-  'up': { definition: 'Towards a higher place.', sentence: 'Look up at the sky.' },
-  'we': { definition: 'Used when talking about yourself and others.', sentence: 'We are playing a game.' },
-  'cat': { definition: 'A small furry animal often kept as a pet.', sentence: 'The cat likes to nap.' },
-  'dog': { definition: 'An animal often kept as a pet or for work.', sentence: 'My dog likes to fetch.' },
-  'big': { definition: 'Large in size.', sentence: 'That is a big truck.' },
-  'run': { definition: 'To move quickly using your legs.', sentence: 'I can run fast.' }
-};
-
-
 // --- GLOBAL STATE & SETTINGS ---
 const globalSynth = window.speechSynthesis;
 const SETTINGS_KEY = 'kidsySettings';
@@ -1492,7 +1470,7 @@ const defaultSettings = {
 let globalSettings = { ...defaultSettings };
 let activeGameInstance = null;
 let currentWordForAI = '';
-let currentGradeForAI = '';
+let currentGradeForAI = ''; // Keep track of grade for AI context (though dictionary API doesn't use it)
 
 // --- DOM Cache (Refactored) ---
 // Cache all DOM elements once
@@ -1575,532 +1553,108 @@ const DOMElements = {
   aiDefineBtn: document.getElementById('ai-define-btn'),
   aiSentenceBtn: document.getElementById('ai-sentence-btn'),
   aiResult: document.getElementById('ai-result'),
-  aiLoading: document.getElementById('ai-loading') // Kept for potential future use, but hidden
+  aiLoading: document.getElementById('ai-loading') // Keep for API loading state
 };
 
 
 // --- GLOBAL SETTINGS FUNCTIONS ---
-function saveSettings() {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings));
-  } catch (e) {
-    console.error("Could not save settings to localStorage", e);
-  }
-}
-
-function loadSettings() {
-  let loaded = {};
-  try {
-    const stored = localStorage.getItem(SETTINGS_KEY);
-    if (stored) {
-      loaded = JSON.parse(stored);
-    }
-  } catch (e) {
-    console.error("Could not parse settings from localStorage", e);
-  }
-  globalSettings = { ...defaultSettings, ...loaded };
-  applySettings();
-  updateSettingsUI();
-}
-
-function applySettings() {
-  // Apply Theme Class
-  document.body.className = ''; // Clear all classes
-  document.body.classList.add(`theme-${globalSettings.theme}`);
-
-  // Apply Dark Mode Class
-  document.body.classList.toggle('dark', globalSettings.darkMode);
-
-  // Apply Font Size
-  document.documentElement.style.setProperty('--word-font-size', `clamp(2em, ${globalSettings.fontSize * 2}vw, ${globalSettings.fontSize}em)`);
-
-  // Apply Default Time
-  DOMElements.timerInput.value = globalSettings.defaultTime;
-  DOMElements.timer.textContent = globalSettings.defaultTime;
-}
-
-function updateSettingsUI() {
-  // --- Update Modal UI ---
-  DOMElements.themeOptions.forEach(opt => {
-    opt.classList.toggle('selected', opt.dataset.theme === globalSettings.theme);
-  });
-
-  DOMElements.settingsThemeToggle.checked = globalSettings.darkMode;
-  DOMElements.settingsSoundToggle.checked = globalSettings.sound;
-  DOMElements.settingsDefaultTime.value = globalSettings.defaultTime;
-
-  DOMElements.settingsFontSize.value = globalSettings.fontSize;
-  DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
-
-  DOMElements.settingsAutoSpeakToggle.checked = globalSettings.autoSpeak;
-
-  DOMElements.settingsSpeechRate.value = globalSettings.speechRate;
-  DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
-
-  // --- Update In-Game UI Elements ---
-  DOMElements.speechRateSlider.value = globalSettings.speechRate;
-  DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
-
-  const isDark = globalSettings.darkMode;
-  DOMElements.themeToggle.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
-
-  const isMuted = !globalSettings.sound;
-  DOMElements.muteToggle.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>';
-
-  lucide.createIcons();
-}
-
-function resetSettings() {
-  // Use a custom modal later, for now, use confirm
-  if (confirm("Are you sure you want to reset all settings to their defaults?")) {
-    globalSettings = { ...defaultSettings };
-    saveSettings();
-    applySettings();
-    updateSettingsUI();
-    DOMElements.timerInput.value = globalSettings.defaultTime;
-    DOMElements.timer.textContent = globalSettings.defaultTime;
-  }
-}
+function saveSettings() { /* ... (keep existing) ... */ try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings)); } catch (e) { console.error("Could not save settings to localStorage", e); } }
+function loadSettings() { /* ... (keep existing) ... */ let loaded = {}; try { const stored = localStorage.getItem(SETTINGS_KEY); if (stored) { loaded = JSON.parse(stored); } } catch (e) { console.error("Could not parse settings from localStorage", e); } globalSettings = { ...defaultSettings, ...loaded }; applySettings(); updateSettingsUI(); }
+function applySettings() { /* ... (keep existing) ... */ document.body.className = ''; document.body.classList.add(`theme-${globalSettings.theme}`); document.body.classList.toggle('dark', globalSettings.darkMode); document.documentElement.style.setProperty('--word-font-size', `clamp(2em, ${globalSettings.fontSize * 2}vw, ${globalSettings.fontSize}em)`); DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; }
+function updateSettingsUI() { /* ... (keep existing) ... */ DOMElements.themeOptions.forEach(opt => { opt.classList.toggle('selected', opt.dataset.theme === globalSettings.theme); }); DOMElements.settingsThemeToggle.checked = globalSettings.darkMode; DOMElements.settingsSoundToggle.checked = globalSettings.sound; DOMElements.settingsDefaultTime.value = globalSettings.defaultTime; DOMElements.settingsFontSize.value = globalSettings.fontSize; DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`; DOMElements.settingsAutoSpeakToggle.checked = globalSettings.autoSpeak; DOMElements.settingsSpeechRate.value = globalSettings.speechRate; DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`; DOMElements.speechRateSlider.value = globalSettings.speechRate; DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; const isDark = globalSettings.darkMode; DOMElements.themeToggle.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>'; const isMuted = !globalSettings.sound; DOMElements.muteToggle.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>'; lucide.createIcons(); }
+function resetSettings() { /* ... (keep existing) ... */ if (confirm("Are you sure you want to reset all settings to their defaults?")) { globalSettings = { ...defaultSettings }; saveSettings(); applySettings(); updateSettingsUI(); DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; } }
 
 // --- GLOBAL SOUND FUNCTIONS ---
-function playSound(type) {
-  if (!globalSettings.sound || !Tone) return;
+function playSound(type) { /* ... (keep existing) ... */ if (!globalSettings.sound || !Tone) return; try { if (Tone.context.state !== 'running') { Tone.start(); } let synth; switch (type) { case 'click': synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('C5', '0.1'); break; case 'nav': synth = new Tone.Synth({oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('E5', '0.08'); break; case 'start': synth = new Tone.Synth().toDestination(); synth.triggerAttackRelease("G4", "8n", Tone.now()); synth.triggerAttackRelease("C5", "8n", Tone.now() + 0.1); synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2); break; case 'end': synth = new Tone.Synth().toDestination(); synth.triggerAttackRelease("C5", "8n", Tone.now()); synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2); synth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4); synth.triggerAttackRelease("C6", "8n", Tone.now() + 0.6); break; case 'countdown': synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('A4', '8n'); break; case 'countdownGo': synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }}).toDestination(); synth.triggerAttackRelease('C5', '4n'); break; } } catch(e) { console.error("Tone.js sound failed:", e); } }
+
+function speakWord(text, gradeKey) { /* ... (keep existing) ... */ if (!globalSynth || !text) return; globalSynth.cancel(); let textToSpeak = text; if (gradeKey === 'prek' && /^[A-Z]$/.test(text)) { textToSpeak = text; } const utterance = new SpeechSynthesisUtterance(textToSpeak); utterance.lang = 'en-US'; utterance.rate = globalSettings.speechRate; globalSynth.speak(utterance); }
+function shuffle(arr) { /* ... (keep existing) ... */ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+// --- FREE DICTIONARY API Helper Function (MODIFIED) ---
+async function callDictionaryApi(word, type) {
+  const apiUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
+
   try {
-    if (Tone.context.state !== 'running') {
-      Tone.start();
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+        if(response.status === 404) {
+             return `Sorry, I couldn't find "${word}" in the dictionary.`;
+        }
+      throw new Error(`Dictionary API Error: ${response.status} ${response.statusText}`);
+    }
+    const data = await response.json();
+
+    // Data structure: Array of entries -> meanings -> definitions
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return `Sorry, no dictionary results found for "${word}".`;
     }
 
-    let synth;
-    switch (type) {
-      case 'click':
-        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('C5', '0.1');
-        break;
-      case 'nav':
-        synth = new Tone.Synth({oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('E5', '0.08');
-        break;
-      case 'start':
-        synth = new Tone.Synth().toDestination();
-        synth.triggerAttackRelease("G4", "8n", Tone.now());
-        synth.triggerAttackRelease("C5", "8n", Tone.now() + 0.1);
-        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
-        break;
-      case 'end':
-        synth = new Tone.Synth().toDestination();
-        synth.triggerAttackRelease("C5", "8n", Tone.now());
-        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
-        synth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4);
-        synth.triggerAttackRelease("C6", "8n", Tone.now() + 0.6);
-        break;
-      case 'countdown':
-        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('A4', '8n');
-        break;
-      case 'countdownGo':
-        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('C5', '4n');
-        break;
+    // Try to find the first relevant definition or example
+    let resultText = `Sorry, I couldn't get the specific info for "${word}".`;
+    const entry = data[0]; // Use the first entry
+
+    if (entry.meanings && entry.meanings.length > 0) {
+      // Find the first meaning with definitions
+      const meaningWithDefs = entry.meanings.find(m => m.definitions && m.definitions.length > 0);
+      if (meaningWithDefs) {
+        const definitionData = meaningWithDefs.definitions[0]; // Use the first definition
+
+        if (type === 'define' && definitionData.definition) {
+          resultText = definitionData.definition;
+        } else if (type === 'sentence') {
+          // Try finding an example in *any* definition within this meaning first
+          let foundExample = null;
+          for(const def of meaningWithDefs.definitions) {
+              if (def.example) {
+                  foundExample = def.example;
+                  break; // Stop at the first example found
+              }
+          }
+           resultText = foundExample || `No example sentence found for "${word}", but the definition is: ${definitionData.definition || 'Not available'}`;
+        }
+      }
     }
-  } catch(e) { console.error("Tone.js sound failed:", e); }
-}
 
-function speakWord(text, gradeKey) {
-  if (!globalSynth || !text) return;
-  globalSynth.cancel();
-  let textToSpeak = text;
-  if (gradeKey === 'prek' && /^[A-Z]$/.test(text)) {
-    // Speak "A" as "Ay" not "A letter"
-    textToSpeak = text;
-  }
-  const utterance = new SpeechSynthesisUtterance(textToSpeak);
-  utterance.lang = 'en-US';
-  utterance.rate = globalSettings.speechRate;
-  globalSynth.speak(utterance);
-}
+    return resultText;
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-// --- OFFLINE AI Helper Function (MODIFIED) ---
-function getOfflineAiData(word, type) {
-  const lowerCaseWord = word.toLowerCase();
-  const data = OFFLINE_AI_DATA[lowerCaseWord];
-
-  if (!data) {
-    return "Sorry, I don't have offline information for that word yet!";
-  }
-
-  if (type === 'define' && data.definition) {
-    return data.definition;
-  } else if (type === 'sentence' && data.sentence) {
-    return data.sentence;
-  } else {
-    return `Sorry, I don't have a ${type} for "${word}" offline.`;
+  } catch (error) {
+    console.error("Error calling Dictionary API:", error);
+    return `Sorry, there was an error fetching information for "${word}". Please check your connection.`;
   }
 }
 
-
-function getGradeLevelString(gradeKey) {
-  switch (gradeKey) {
-    case 'prek': return 'Pre-K';
-    case 'k': return 'Kindergarten';
-    case 'first': return 'First Grade';
-    case 'second': return 'Second Grade';
-    case 'third': return 'Third Grade';
-    case 'fourth': return 'Fourth Grade';
-    case 'fifth': return 'Fifth Grade';
-    case 'more': return 'Sixth Grade or higher';
-    default: return 'the appropriate grade level';
-  }
-}
+function getGradeLevelString(gradeKey) { /* ... (keep existing) ... */ switch (gradeKey) { case 'prek': return 'Pre-K'; case 'k': return 'Kindergarten'; case 'first': return 'First Grade'; case 'second': return 'Second Grade'; case 'third': return 'Third Grade'; case 'fourth': return 'Fourth Grade'; case 'fifth': return 'Fifth Grade'; case 'more': return 'Sixth Grade or higher'; default: return 'the appropriate grade level'; } }
 
 // --- MASCOT CONTROLLER ---
-const Mascot = {
-  element: DOMElements.mascot,
-  setState(state) {
-    // state can be 'idle', 'cheer', 'worried', 'celebrate'
-    this.element.className = state;
-  },
-  cheer() {
-    this.setState('cheer');
-    setTimeout(() => this.setState('idle'), 500); // Reset after animation
-  },
-  celebrate() {
-    this.setState('celebrate');
-  },
-  worried() {
-    this.setState('worried');
-  },
-  idle() {
-    this.setState('idle');
-  }
-};
+const Mascot = { /* ... (keep existing) ... */ element: DOMElements.mascot, setState(state) { this.element.className = state; }, cheer() { this.setState('cheer'); setTimeout(() => this.setState('idle'), 500); }, celebrate() { this.setState('celebrate'); }, worried() { this.setState('worried'); }, idle() { this.setState('idle'); } };
 
 // --- GAME INSTANCE FACTORY (Refactored) ---
-function createWordChallenge() {
-  let state = {
-    gradeKey: 'prek',
-    wordList: [],
-    shuffledWords: [],
-    currentWordIndex: 0,
-    currentWord: '',
-    currentStreak: 0,
-    gameStarted: false,
-    timeLeft: 0,
-    totalTime: 0,
-    score: 0,
-    timerInterval: null
-  };
+function createWordChallenge() { /* ... (keep existing setup and private functions) ... */
+    let state = { gradeKey: 'prek', wordList: [], shuffledWords: [], currentWordIndex: 0, currentWord: '', currentStreak: 0, gameStarted: false, timeLeft: 0, totalTime: 0, score: 0, timerInterval: null };
+    function getHighScore(gradeKey) { return parseInt(localStorage.getItem(HIGHSCORE_KEY_PREFIX + gradeKey) || 0); }
+    function setHighScore(gradeKey, wpm) { localStorage.setItem(HIGHSCORE_KEY_PREFIX + gradeKey, wpm); }
+    function showWord() { if (state.currentWordIndex >= state.shuffledWords.length) state.currentWordIndex = 0; if (state.currentWordIndex < 0) state.currentWordIndex = state.shuffledWords.length - 1; state.currentWord = state.shuffledWords[state.currentWordIndex]; currentWordForAI = state.currentWord; DOMElements.wordDisplay.textContent = state.currentWord; DOMElements.wordDisplay.className = Math.random() > 0.5 ? 'swoosh-in' : 'pop-in'; state.score++; updateStats(); if (globalSettings.autoSpeak && state.gameStarted) { speakWord(state.currentWord, state.gradeKey); } }
+    function updateStats() { const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min'; const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read'; DOMElements.wordsRead.textContent = Math.max(0, state.score); DOMElements.streakCounter.textContent = `${state.currentStreak} 🔥`; DOMElements.wordsReadLabel.textContent = wordsReadLabelText; DOMElements.wpmLabel.textContent = wpmLabelText; const elapsed = state.totalTime - state.timeLeft; const wpm = elapsed > 0 ? Math.round((Math.max(0, state.score) / elapsed) * 60) : 0; DOMElements.wpm.textContent = wpm; }
+    function updateTimer() { if (!state.gameStarted) return; state.timeLeft--; if (state.timeLeft >= 0) { DOMElements.timer.textContent = state.timeLeft; const progress = (state.timeLeft / state.totalTime) * 100; DOMElements.progressFill.style.width = progress + '%'; } if (state.timeLeft <= 10 && state.timeLeft > 0) { DOMElements.timerCard.classList.add('timer-low'); Mascot.worried(); } if (state.timeLeft <= 0) { publicMethods.endGame(); } else { updateStats(); } }
+    function nextWord() { playSound('nav'); state.currentWordIndex++; state.currentStreak++; Mascot.cheer(); showWord(); }
+    function prevWord() { playSound('nav'); state.currentWordIndex--; state.score -= 2; state.currentStreak = 0; Mascot.idle(); showWord(); }
+    function showCountdown(callback) { let count = 3; DOMElements.countdownText.textContent = count; DOMElements.countdownOverlay.classList.add('visible'); DOMElements.countdownText.classList.add('show'); playSound('countdown'); const interval = setInterval(() => { DOMElements.countdownText.classList.remove('show'); setTimeout(() => { count--; if (count > 0) { DOMElements.countdownText.textContent = count; DOMElements.countdownText.classList.add('show'); playSound('countdown'); } else if (count === 0) { DOMElements.countdownText.textContent = "GO!"; DOMElements.countdownText.classList.add('show'); playSound('countdownGo'); } else { clearInterval(interval); DOMElements.countdownOverlay.classList.remove('visible'); DOMElements.countdownText.classList.remove('show'); callback(); } }, 150); }, 1000); }
+    function showStars(wpm) { const thresholds = STAR_THRESHOLDS[state.gradeKey] || [10, 20, 30]; let stars = 0; if (wpm >= thresholds[0]) stars = 1; if (wpm >= thresholds[1]) stars = 2; if (wpm >= thresholds[2]) stars = 3; let starHTML = ''; for(let i = 0; i < 3; i++) { starHTML += `<i data-lucide="star" ${i < stars ? 'style="fill: #ffc107;"' : ''}></i>`; } DOMElements.starRatingDisplay.innerHTML = starHTML; lucide.createIcons(); setTimeout(() => DOMElements.starRatingDisplay.classList.add('show-stars'), 100); }
 
-  // --- Private Functions ---
-  function getHighScore(gradeKey) {
-    return parseInt(localStorage.getItem(HIGHSCORE_KEY_PREFIX + gradeKey) || 0);
-  }
-
-  function setHighScore(gradeKey, wpm) {
-    localStorage.setItem(HIGHSCORE_KEY_PREFIX + gradeKey, wpm);
-  }
-
-  function showWord() {
-    if (state.currentWordIndex >= state.shuffledWords.length) state.currentWordIndex = 0;
-    if (state.currentWordIndex < 0) state.currentWordIndex = state.shuffledWords.length - 1;
-
-    state.currentWord = state.shuffledWords[state.currentWordIndex];
-    currentWordForAI = state.currentWord; // Update global AI word
-
-    DOMElements.wordDisplay.textContent = state.currentWord;
-
-    // Trigger animation
-    DOMElements.wordDisplay.className = Math.random() > 0.5 ? 'swoosh-in' : 'pop-in';
-
-    state.score++;
-    updateStats();
-
-    if (globalSettings.autoSpeak && state.gameStarted) {
-      speakWord(state.currentWord, state.gradeKey);
-    }
-  }
-
-  function updateStats() {
-    const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min';
-    const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
-
-    DOMElements.wordsRead.textContent = Math.max(0, state.score);
-    DOMElements.streakCounter.textContent = `${state.currentStreak} 🔥`;
-    DOMElements.wordsReadLabel.textContent = wordsReadLabelText;
-    DOMElements.wpmLabel.textContent = wpmLabelText;
-
-    const elapsed = state.totalTime - state.timeLeft;
-    const wpm = elapsed > 0 ? Math.round((Math.max(0, state.score) / elapsed) * 60) : 0;
-    DOMElements.wpm.textContent = wpm;
-  }
-
-  function updateTimer() {
-    if (!state.gameStarted) return;
-    state.timeLeft--;
-
-    if (state.timeLeft >= 0) {
-      DOMElements.timer.textContent = state.timeLeft;
-      const progress = (state.timeLeft / state.totalTime) * 100;
-      DOMElements.progressFill.style.width = progress + '%';
-    }
-
-    if (state.timeLeft <= 10 && state.timeLeft > 0) {
-        DOMElements.timerCard.classList.add('timer-low');
-        Mascot.worried();
-    }
-
-    if (state.timeLeft <= 0) {
-      publicMethods.endGame();
-    } else {
-      updateStats();
-    }
-  }
-
-  function nextWord() {
-    playSound('nav');
-    state.currentWordIndex++;
-    state.currentStreak++;
-    Mascot.cheer();
-    showWord();
-  }
-
-  function prevWord() {
-    playSound('nav');
-    state.currentWordIndex--;
-    state.score -= 2; // Penalize for going back
-    state.currentStreak = 0; // Reset streak
-    Mascot.idle(); // Reset mascot
-    showWord();
-  }
-
-  function showCountdown(callback) {
-    let count = 3;
-    DOMElements.countdownText.textContent = count;
-    DOMElements.countdownOverlay.classList.add('visible');
-    DOMElements.countdownText.classList.add('show');
-    playSound('countdown');
-
-    const interval = setInterval(() => {
-      DOMElements.countdownText.classList.remove('show');
-
-      setTimeout(() => {
-        count--;
-        if (count > 0) {
-          DOMElements.countdownText.textContent = count;
-          DOMElements.countdownText.classList.add('show');
-          playSound('countdown');
-        } else if (count === 0) {
-          DOMElements.countdownText.textContent = "GO!";
-          DOMElements.countdownText.classList.add('show');
-          playSound('countdownGo');
-        } else {
-          clearInterval(interval);
-          DOMElements.countdownOverlay.classList.remove('visible');
-          DOMElements.countdownText.classList.remove('show');
-          callback(); // Start the game
-        }
-      }, 150); // Small delay for fade out
-    }, 1000);
-  }
-
-  function showStars(wpm) {
-    const thresholds = STAR_THRESHOLDS[state.gradeKey] || [10, 20, 30];
-    let stars = 0;
-    if (wpm >= thresholds[0]) stars = 1;
-    if (wpm >= thresholds[1]) stars = 2;
-    if (wpm >= thresholds[2]) stars = 3;
-
-    let starHTML = '';
-    for(let i = 0; i < 3; i++) {
-      starHTML += `<i data-lucide="star" ${i < stars ? 'style="fill: #ffc107;"' : ''}></i>`;
-    }
-    DOMElements.starRatingDisplay.innerHTML = starHTML;
-    lucide.createIcons();
-    // Trigger animation
-    setTimeout(() => DOMElements.starRatingDisplay.classList.add('show-stars'), 100);
-  }
-
-  // --- Public Methods ---
-  const publicMethods = {
-    init(gradeKey) {
-      this.stopGame(); // Stop any previous game
-      state.gradeKey = gradeKey;
-      state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k'];
-      currentGradeForAI = getGradeLevelString(gradeKey);
-
-      // Update UI for this grade
-      DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge";
-      DOMElements.timerInput.value = globalSettings.defaultTime;
-      DOMElements.timer.textContent = globalSettings.defaultTime;
-      DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${gradeKey === 'prek' ? 'LPM' : 'WPM'}`;
-
-      // Set label text
-      const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min';
-      const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
-      DOMElements.wordsReadLabel.textContent = wordsReadLabelText;
-      DOMElements.wpmLabel.textContent = wpmLabelText;
-
-      // Show Start Screen
-      DOMElements.startStateContent.style.display = "block";
-      DOMElements.gameStateContent.style.display = "none";
-      DOMElements.bottomBar.style.display = "none";
-      DOMElements.wordDisplay.style.opacity = 0; // Hide word display initially
-      Mascot.idle();
-    },
-
-    startGame() {
-      if (state.gameStarted) return;
-
-      playSound('start');
-      Mascot.idle();
-
-      // Show countdown first
-      showCountdown(() => {
-        state.gameStarted = true;
-        state.score = -1; // Will be incremented to 0 on first word
-        state.currentStreak = 0;
-
-        state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime);
-        state.timeLeft = state.totalTime;
-        DOMElements.timer.textContent = state.timeLeft;
-
-        // Toggle UI
-        DOMElements.startStateContent.style.display = "none";
-        DOMElements.gameStateContent.style.display = "block";
-        DOMElements.speakControls.style.display = "flex";
-        DOMElements.speakBtn.style.display = "inline-block";
-        DOMElements.bottomBar.style.display = "flex";
-        DOMElements.statsGrid.style.display = "grid";
-        DOMElements.wpmCard.style.display = "none";
-        DOMElements.streakCard.style.display = "flex";
-        DOMElements.wordsReadCard.style.display = "flex";
-        DOMElements.timerCard.style.display = "flex";
-        DOMElements.keyboardHint.style.display = "block";
-        DOMElements.scoreDisplay.innerHTML = "";
-        DOMElements.starRatingDisplay.innerHTML = "";
-        DOMElements.starRatingDisplay.classList.remove('show-stars');
-        DOMElements.timerCard.classList.remove('timer-low');
-
-        state.currentWordIndex = 0;
-        state.shuffledWords = shuffle([...state.wordList]);
-        DOMElements.progressFill.style.width = "100%";
-
-        updateTimer();
-        state.timerInterval = setInterval(updateTimer, 1000);
-        showWord();
-      });
-    },
-
-    stopGame() {
-      if (state.timerInterval) clearInterval(state.timerInterval);
-      state.timerInterval = null;
-      state.gameStarted = false;
-      currentWordForAI = '';
-
-      // Show Start Screen
-      DOMElements.startStateContent.style.display = "block";
-      DOMElements.gameStateContent.style.display = "none";
-      DOMElements.bottomBar.style.display = "none";
-      DOMElements.wordDisplay.textContent = "Press Start";
-      DOMElements.wordDisplay.className = ''; // Clear animations
-      DOMElements.wordDisplay.style.opacity = 1;
-      DOMElements.timerCard.classList.remove('timer-low');
-
-      // Update high score on home screen
-      DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${state.gradeKey === 'prek' ? 'LPM' : 'WPM'}`;
-      Mascot.idle();
-    },
-
-    endGame() {
-      clearInterval(state.timerInterval);
-      state.timerInterval = null;
-      state.gameStarted = false;
-      currentWordForAI = '';
-
-      playSound('end');
-      Mascot.celebrate();
-      // CONGRATS!
-      confetti({
-        particleCount: 150,
-        spread: 90,
-        origin: { y: 0.6 }
-      });
-
-      // Calculate final WPM
-      const finalWPM = parseInt(DOMElements.wpm.textContent) || 0;
-
-      // Check High Score
-      const oldHighScore = getHighScore(state.gradeKey);
-      let highScoreMessage = '';
-      if (finalWPM > oldHighScore) {
-        setHighScore(state.gradeKey, finalWPM);
-        highScoreMessage = "<br>🎉 New High Score! 🎉";
-      }
-
-      // Show Stars
-      showStars(finalWPM);
-
-      // Toggle UI
-      DOMElements.startStateContent.style.display = "block";
-      DOMElements.gameStateContent.style.display = "block"; // Keep game content visible
-      DOMElements.startBtn.style.display = "inline-block"; // Show start button
-      DOMElements.settingsSection.style.display = "block"; // Show settings
-      DOMElements.bottomBar.style.display = "none";
-      DOMElements.speakControls.style.display = "none";
-      DOMElements.speakBtn.style.display = "none";
-      DOMElements.keyboardHint.style.display = "none";
-      DOMElements.wpmCard.style.display = "flex"; // Show WPM card
-      DOMElements.timerCard.classList.remove('timer-low');
-
-      DOMElements.wordDisplay.textContent = "Time's Up!";
-      DOMElements.wordDisplay.className = 'pop-in';
-      DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${state.gradeKey === 'prek' ? 'letters' : 'words'}! ${highScoreMessage}`;
-    },
-
-    // Public actions
-    goHome() { playSound('click'); this.stopGame(); },
-    restartGame() { playSound('click'); this.stopGame(); this.startGame(); },
-    doNextWord() { if(state.gameStarted) nextWord(); },
-    doPrevWord() { if(state.gameStarted) prevWord(); },
-    doSpeakWord() {
-      if (state.currentWord) {
-        playSound('click');
-        speakWord(state.currentWord, state.gradeKey);
-      }
-    },
-
-    // Keyboard handler
-    handleKeyDown(e) {
-      if (!state.gameStarted) {
-        if (e.key === ' ' || e.key === 'Enter') {
-          e.preventDefault();
-          playSound('click');
-          this.startGame();
-        }
-        return;
-      }
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextWord(); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); prevWord(); }
-      if (e.key === 's' || e.key === 'S') { e.preventDefault(); this.doSpeakWord(); }
-    },
-
-    // External settings update
-    updateDefaultTime(time) {
-      if (!state.gameStarted) {
-        DOMElements.timerInput.value = time;
-        DOMElements.timer.textContent = time;
-      }
-    }
-  };
-
-  return publicMethods;
+    const publicMethods = {
+        init(gradeKey) { /* ... (keep existing) ... */ this.stopGame(); state.gradeKey = gradeKey; state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k']; currentGradeForAI = getGradeLevelString(gradeKey); DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge"; DOMElements.timerInput.value = globalSettings.defaultTime; DOMElements.timer.textContent = globalSettings.defaultTime; DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${gradeKey === 'prek' ? 'LPM' : 'WPM'}`; const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min'; const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read'; DOMElements.wordsReadLabel.textContent = wordsReadLabelText; DOMElements.wpmLabel.textContent = wpmLabelText; DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.style.opacity = 0; Mascot.idle(); },
+        startGame() { /* ... (keep existing) ... */ if (state.gameStarted) return; playSound('start'); Mascot.idle(); showCountdown(() => { state.gameStarted = true; state.score = -1; state.currentStreak = 0; state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime); state.timeLeft = state.totalTime; DOMElements.timer.textContent = state.timeLeft; DOMElements.startStateContent.style.display = "none"; DOMElements.gameStateContent.style.display = "block"; DOMElements.speakControls.style.display = "flex"; DOMElements.speakBtn.style.display = "inline-block"; DOMElements.bottomBar.style.display = "flex"; DOMElements.statsGrid.style.display = "grid"; DOMElements.wpmCard.style.display = "none"; DOMElements.streakCard.style.display = "flex"; DOMElements.wordsReadCard.style.display = "flex"; DOMElements.timerCard.style.display = "flex"; DOMElements.keyboardHint.style.display = "block"; DOMElements.scoreDisplay.innerHTML = ""; DOMElements.starRatingDisplay.innerHTML = ""; DOMElements.starRatingDisplay.classList.remove('show-stars'); DOMElements.timerCard.classList.remove('timer-low'); state.currentWordIndex = 0; state.shuffledWords = shuffle([...state.wordList]); DOMElements.progressFill.style.width = "100%"; updateTimer(); state.timerInterval = setInterval(updateTimer, 1000); showWord(); }); },
+        stopGame() { /* ... (keep existing) ... */ if (state.timerInterval) clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "none"; DOMElements.bottomBar.style.display = "none"; DOMElements.wordDisplay.textContent = "Press Start"; DOMElements.wordDisplay.className = ''; DOMElements.wordDisplay.style.opacity = 1; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${state.gradeKey === 'prek' ? 'LPM' : 'WPM'}`; Mascot.idle(); },
+        endGame() { /* ... (keep existing) ... */ clearInterval(state.timerInterval); state.timerInterval = null; state.gameStarted = false; currentWordForAI = ''; playSound('end'); Mascot.celebrate(); confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } }); const finalWPM = parseInt(DOMElements.wpm.textContent) || 0; const oldHighScore = getHighScore(state.gradeKey); let highScoreMessage = ''; if (finalWPM > oldHighScore) { setHighScore(state.gradeKey, finalWPM); highScoreMessage = "<br>🎉 New High Score! 🎉"; } showStars(finalWPM); DOMElements.startStateContent.style.display = "block"; DOMElements.gameStateContent.style.display = "block"; DOMElements.startBtn.style.display = "inline-block"; DOMElements.settingsSection.style.display = "block"; DOMElements.bottomBar.style.display = "none"; DOMElements.speakControls.style.display = "none"; DOMElements.speakBtn.style.display = "none"; DOMElements.keyboardHint.style.display = "none"; DOMElements.wpmCard.style.display = "flex"; DOMElements.timerCard.classList.remove('timer-low'); DOMElements.wordDisplay.textContent = "Time's Up!"; DOMElements.wordDisplay.className = 'pop-in'; DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${state.gradeKey === 'prek' ? 'letters' : 'words'}! ${highScoreMessage}`; },
+        goHome() { playSound('click'); this.stopGame(); },
+        restartGame() { playSound('click'); this.stopGame(); this.startGame(); },
+        doNextWord() { if(state.gameStarted) nextWord(); },
+        doPrevWord() { if(state.gameStarted) prevWord(); },
+        doSpeakWord() { if (state.currentWord) { playSound('click'); speakWord(state.currentWord, state.gradeKey); } },
+        handleKeyDown(e) { if (!state.gameStarted) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); playSound('click'); this.startGame(); } return; } if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextWord(); } if (e.key === 'ArrowLeft') { e.preventDefault(); prevWord(); } if (e.key === 's' || e.key === 'S') { e.preventDefault(); this.doSpeakWord(); } },
+        updateDefaultTime(time) { if (!state.gameStarted) { DOMElements.timerInput.value = time; DOMElements.timer.textContent = time; } }
+    };
+    return publicMethods;
 }
 
 
@@ -2114,24 +1668,14 @@ document.addEventListener('DOMContentLoaded', () => {
   activeGameInstance = createWordChallenge();
 
   // --- Settings Modal Listeners ---
-  function openSettings() {
-    playSound('click');
-    updateSettingsUI();
-    DOMElements.settingsBackdrop.classList.add('visible');
-  }
-  function closeSettings() {
-    playSound('click');
-    DOMElements.settingsBackdrop.classList.remove('visible');
-  }
+  function openSettings() { /* ... (keep existing) ... */ playSound('click'); updateSettingsUI(); DOMElements.settingsBackdrop.classList.add('visible'); }
+  function closeSettings() { /* ... (keep existing) ... */ playSound('click'); DOMElements.settingsBackdrop.classList.remove('visible'); }
   DOMElements.globalSettingsBtns.forEach(btn => btn.addEventListener('click', openSettings));
   DOMElements.settingsCloseBtn.addEventListener('click', closeSettings);
   DOMElements.settingsBackdrop.addEventListener('click', (e) => { if (e.target === DOMElements.settingsBackdrop) closeSettings(); });
 
-  // --- AI Helper Modal Listeners (MODIFIED FOR OFFLINE) ---
-  function closeAiHelper() {
-    playSound('click');
-    DOMElements.aiHelperBackdrop.classList.remove('visible');
-  }
+  // --- AI Helper Modal Listeners (MODIFIED FOR Dictionary API) ---
+  function closeAiHelper() { /* ... (keep existing) ... */ playSound('click'); DOMElements.aiHelperBackdrop.classList.remove('visible'); }
 
   DOMElements.aiHelperBtn.addEventListener('click', () => {
     playSound('click');
@@ -2141,13 +1685,13 @@ document.addEventListener('DOMContentLoaded', () => {
       DOMElements.aiWelcomeMessage.style.display = 'none';
       DOMElements.aiButtons.style.display = 'flex';
       DOMElements.aiResult.textContent = 'Tap a button above...';
-      // DOMElements.aiLoading.style.display = 'none'; // No loading needed
+      DOMElements.aiLoading.style.display = 'none'; // Hide initially
     } else {
       DOMElements.aiWord.parentElement.style.display = 'none';
       DOMElements.aiWelcomeMessage.style.display = 'block';
       DOMElements.aiButtons.style.display = 'none';
       DOMElements.aiResult.textContent = '';
-      // DOMElements.aiLoading.style.display = 'none';
+      DOMElements.aiLoading.style.display = 'none';
     }
     DOMElements.aiHelperBackdrop.classList.add('visible');
   });
@@ -2155,132 +1699,57 @@ document.addEventListener('DOMContentLoaded', () => {
   DOMElements.aiHelperCloseBtn.addEventListener('click', closeAiHelper);
   DOMElements.aiHelperBackdrop.addEventListener('click', (e) => { if (e.target === DOMElements.aiHelperBackdrop) closeAiHelper(); });
 
-  // Modified function to handle offline data lookup
-  function handleAiRequest(type) {
+  // Modified function to handle Dictionary API call
+  async function handleAiRequest(type) {
     if (!currentWordForAI) return;
     playSound('click');
-    // DOMElements.aiLoading.style.display = 'none'; // Not needed
+    DOMElements.aiResult.textContent = ''; // Clear previous result
+    DOMElements.aiLoading.style.display = 'block'; // Show loading
 
-    const result = getOfflineAiData(currentWordForAI, type); // Get data locally
-    DOMElements.aiResult.textContent = result;
+    // Call the Dictionary API
+    const result = await callDictionaryApi(currentWordForAI, type);
+
+    DOMElements.aiLoading.style.display = 'none'; // Hide loading
+    DOMElements.aiResult.textContent = result; // Display result
   }
   DOMElements.aiDefineBtn.addEventListener('click', () => handleAiRequest('define'));
   DOMElements.aiSentenceBtn.addEventListener('click', () => handleAiRequest('sentence'));
 
   // --- Settings Control Listeners ---
-  DOMElements.themeOptions.forEach(option => {
-    option.addEventListener('click', (e) => {
-      const newTheme = e.target.dataset.theme;
-      if (newTheme && newTheme !== globalSettings.theme) {
-        playSound('click');
-        globalSettings.theme = newTheme;
-        saveSettings();
-        applySettings();
-        updateSettingsUI(); // Update selection highlight
-      }
-    });
-  });
-
-  DOMElements.settingsThemeToggle.addEventListener('change', (e) => {
-    globalSettings.darkMode = e.target.checked;
-    saveSettings(); applySettings(); updateSettingsUI();
-  });
-  DOMElements.settingsSoundToggle.addEventListener('change', (e) => {
-    globalSettings.sound = e.target.checked;
-    saveSettings(); updateSettingsUI();
-    if (globalSettings.sound) playSound('click');
-  });
-  DOMElements.settingsDefaultTime.addEventListener('change', (e) => {
-    globalSettings.defaultTime = parseInt(e.target.value) || 60;
-    saveSettings();
-    if(activeGameInstance) activeGameInstance.updateDefaultTime(globalSettings.defaultTime);
-  });
-
-  DOMElements.settingsFontSize.addEventListener('input', (e) => {
-    globalSettings.fontSize = parseFloat(e.target.value).toFixed(1);
-    DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
-    applySettings();
-  });
-  DOMElements.settingsFontSize.addEventListener('change', saveSettings);
-
-  DOMElements.settingsAutoSpeakToggle.addEventListener('change', (e) => {
-    globalSettings.autoSpeak = e.target.checked;
-    saveSettings();
-  });
-
-  DOMElements.settingsSpeechRate.addEventListener('input', (e) => {
-    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
-    DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
-    // Update all game sliders visually
-    DOMElements.speechRateSlider.value = globalSettings.speechRate;
-    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
-  });
-  DOMElements.settingsSpeechRate.addEventListener('change', saveSettings);
-  DOMElements.resetSettingsBtn.addEventListener('click', resetSettings);
+    /* ... (keep existing theme, dark mode, sound, time, font size, autospeak, speed, reset listeners) ... */
+    DOMElements.themeOptions.forEach(option => { option.addEventListener('click', (e) => { const newTheme = e.target.dataset.theme; if (newTheme && newTheme !== globalSettings.theme) { playSound('click'); globalSettings.theme = newTheme; saveSettings(); applySettings(); updateSettingsUI(); } }); });
+    DOMElements.settingsThemeToggle.addEventListener('change', (e) => { globalSettings.darkMode = e.target.checked; saveSettings(); applySettings(); updateSettingsUI(); });
+    DOMElements.settingsSoundToggle.addEventListener('change', (e) => { globalSettings.sound = e.target.checked; saveSettings(); updateSettingsUI(); if (globalSettings.sound) playSound('click'); });
+    DOMElements.settingsDefaultTime.addEventListener('change', (e) => { globalSettings.defaultTime = parseInt(e.target.value) || 60; saveSettings(); if(activeGameInstance) activeGameInstance.updateDefaultTime(globalSettings.defaultTime); });
+    DOMElements.settingsFontSize.addEventListener('input', (e) => { globalSettings.fontSize = parseFloat(e.target.value).toFixed(1); DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`; applySettings(); }); DOMElements.settingsFontSize.addEventListener('change', saveSettings);
+    DOMElements.settingsAutoSpeakToggle.addEventListener('change', (e) => { globalSettings.autoSpeak = e.target.checked; saveSettings(); });
+    DOMElements.settingsSpeechRate.addEventListener('input', (e) => { globalSettings.speechRate = parseFloat(e.target.value).toFixed(1); DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`; DOMElements.speechRateSlider.value = globalSettings.speechRate; DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; }); DOMElements.settingsSpeechRate.addEventListener('change', saveSettings);
+    DOMElements.resetSettingsBtn.addEventListener('click', resetSettings);
 
 
   // --- DYNAMIC GAME LISTENERS ---
-  // Game Controls
-  DOMElements.startBtn.addEventListener('click', () => activeGameInstance.startGame());
-  DOMElements.homeBtn.addEventListener('click', () => activeGameInstance.goHome());
-  DOMElements.restartBtn.addEventListener('click', () => activeGameInstance.restartGame());
-  DOMElements.nextBtn.addEventListener('click', () => activeGameInstance.doNextWord());
-  DOMElements.backBtn.addEventListener('click', () => activeGameInstance.doPrevWord());
-  DOMElements.speakBtn.addEventListener('click', () => activeGameInstance.doSpeakWord());
+    /* ... (keep existing game control listeners) ... */
+    DOMElements.startBtn.addEventListener('click', () => activeGameInstance.startGame());
+    DOMElements.homeBtn.addEventListener('click', () => activeGameInstance.goHome());
+    DOMElements.restartBtn.addEventListener('click', () => activeGameInstance.restartGame());
+    DOMElements.nextBtn.addEventListener('click', () => activeGameInstance.doNextWord());
+    DOMElements.backBtn.addEventListener('click', () => activeGameInstance.doPrevWord());
+    DOMElements.speakBtn.addEventListener('click', () => activeGameInstance.doSpeakWord());
 
   // In-Game Settings
-  DOMElements.speechRateSlider.addEventListener('input', (e) => {
-    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
-    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
-    updateSettingsUI(); // Sync with modal
-  });
-  DOMElements.speechRateSlider.addEventListener('change', () => {
-    saveSettings();
-    activeGameInstance.doSpeakWord(); // Speak current word with new speed
-  });
+    /* ... (keep existing in-game speech rate, mute, theme listeners) ... */
+    DOMElements.speechRateSlider.addEventListener('input', (e) => { globalSettings.speechRate = parseFloat(e.target.value).toFixed(1); DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`; updateSettingsUI(); }); DOMElements.speechRateSlider.addEventListener('change', () => { saveSettings(); activeGameInstance.doSpeakWord(); });
+    DOMElements.muteToggle.addEventListener('click', () => { playSound('click'); globalSettings.sound = !globalSettings.sound; saveSettings(); updateSettingsUI(); });
+    DOMElements.themeToggle.addEventListener('click', () => { playSound('click'); globalSettings.darkMode = !globalSettings.darkMode; saveSettings(); applySettings(); updateSettingsUI(); });
 
-  DOMElements.muteToggle.addEventListener('click', () => {
-    playSound('click');
-    globalSettings.sound = !globalSettings.sound;
-    saveSettings();
-    updateSettingsUI();
-  });
-
-  DOMElements.themeToggle.addEventListener('click', () => {
-    playSound('click');
-    globalSettings.darkMode = !globalSettings.darkMode;
-    saveSettings();
-    applySettings();
-    updateSettingsUI();
-  });
 
   // Global Keyboard Listener
-  document.addEventListener('keydown', (e) => {
-    if (activeGameInstance) {
-      // Don't interfere if user is typing in an input
-      if (e.target.tagName === 'INPUT') return;
-      // Don't interfere if a modal is open
-      if (DOMElements.settingsBackdrop.classList.contains('visible') || DOMElements.aiHelperBackdrop.classList.contains('visible')) return;
-
-      activeGameInstance.handleKeyDown(e);
-    }
-  });
+    /* ... (keep existing keyboard listener) ... */
+    document.addEventListener('keydown', (e) => { if (activeGameInstance) { if (e.target.tagName === 'INPUT') return; if (DOMElements.settingsBackdrop.classList.contains('visible') || DOMElements.aiHelperBackdrop.classList.contains('visible')) return; activeGameInstance.handleKeyDown(e); } });
 
   // --- Tab Navigation Logic ---
-  DOMElements.navTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      playSound('click');
-      const targetGrade = tab.getAttribute('data-grade');
-
-      DOMElements.navTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-
-      // Initialize the game for the new grade
-      if (activeGameInstance) {
-        activeGameInstance.init(targetGrade);
-      }
-    });
-  });
+    /* ... (keep existing tab listener) ... */
+    DOMElements.navTabs.forEach(tab => { tab.addEventListener('click', () => { playSound('click'); const targetGrade = tab.getAttribute('data-grade'); DOMElements.navTabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); if (activeGameInstance) { activeGameInstance.init(targetGrade); } }); });
 
   // --- Final Initialization ---
   activeGameInstance.init('prek'); // Initialize with Pre-K by default
