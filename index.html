@@ -2,23 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<!--
-  Viewport meta tag for responsive design and safe area coverage.
-  - width=device-width, initial-scale=1.0: Standard responsive setup.
-  - user-scalable=no: Prevents pinch-zooming, maintaining a native-app feel.
-  - viewport-fit=cover: Ensures the app fills the entire screen, including notch/safe areas.
--->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<!-- iOS specific meta tags for "Add to Home Screen" -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kidsy">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<!-- Placeholder icon for "Add to Home Screen" -->
 <link rel="apple-touch-icon" href="https://placehold.co/180x180/8e44ad/ffffff?text=Kidsy">
 
 <title>Kidsy</title>
-<!-- External Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/tone@14.8.39/build/Tone.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -166,23 +157,24 @@ body.dark.theme-skyblue {
 }
 
 /*
-  Removed fixed height: 100% to allow the html element to grow
-  with the body, which is important for the 100dvh strategy.
+  --- FIX: Set html height to 100% ---
+  This is needed for the body's 100dvh to be reliable.
 */
 html {
-  /* No height property here */
+  height: 100%;
+  overflow: hidden; /* Prevent html-level scroll/bounce */
 }
 
 body {
-  min-height: 100vh; /* Fallback for older browsers */
+  /* --- FIX: Use height instead of min-height --- */
+  /* This forces the app to the exact viewport size, 
+     preventing empty space at the bottom on iOS. */
+  height: 100vh; /* Fallback for older browsers */
   /* Fallback for Safari's dynamic UI bars */
-  min-height: -webkit-fill-available;
-  /*
-    --- FIX: Use 100dvh (dynamic viewport height) ---
-    This ensures the body *always* covers the full visible viewport,
-    even when mobile browser URL bars shrink or hide.
-  */
-  min-height: 100dvh;
+  height: -webkit-fill-available;
+  /* Modern standard: dynamic viewport height */
+  height: 100dvh;
+  
   overflow: hidden; /* Prevent body-level scrolling */
   overscroll-behavior: none; /* Disable "bounce" effect on scroll */
   font-size: var(--base-font-size);
@@ -1304,12 +1296,8 @@ input:checked + .slider:before {
 </style>
 
 </head>
-<body class="theme-default"> <!-- Default theme class -->
+<body class="theme-default"> <div class="main-wrapper">
 
-<!-- Main layout wrapper -->
-<div class="main-wrapper">
-
-  <!-- Top navigation tabs -->
   <div class="nav-tabs-container">
     <div class="nav-tabs">
       <button class="nav-tab active" data-grade="prek">Pre-K</button>
@@ -1323,12 +1311,9 @@ input:checked + .slider:before {
     </div>
   </div>
 
-  <!-- Main game engine section -->
   <div class="grade-section" id="game-engine">
-    <!-- Main content card -->
     <div class="container">
 
-      <!-- Header with settings button and title -->
       <div class="challenge-header">
         <button class="icon-btn global-settings-btn" aria-label="Open Settings">
           <i data-lucide="settings"></i>
@@ -1336,7 +1321,6 @@ input:checked + .slider:before {
         <h1 id="game-title">🎯 Pre-K Challenge</h1>
       </div>
 
-      <!-- Content shown before game starts -->
       <div id="start-state-content">
         <div id="settings-section">
           <label for="timer-input">⏱️ Set Time (seconds):</label>
@@ -1346,7 +1330,6 @@ input:checked + .slider:before {
         <button class="start-btn" id="start-btn">🚀 Start Challenge</button>
       </div>
 
-      <!-- Content shown during game -->
       <div id="game-state-content" style="display: none;">
         <div id="progress-bar">
           <div id="progress-fill"></div>
@@ -1354,18 +1337,15 @@ input:checked + .slider:before {
 
         <div id="word-display">Press Start</div>
 
-        <!-- Speak button and speed controls -->
         <div id="speak-controls">
           <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline">0.9x</span>
           <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider" min="0.5" max="1.5" step="0.1">
           <button class="speak-btn" id="speak-btn">🔊 Speak</button>
         </div>
 
-        <!-- Score and star rating display (shown at end) -->
         <p class="score-display" id="score-display"></p>
         <div id="star-rating-display"></div>
 
-        <!-- Stats grid for timer, words, streak, etc. -->
         <div class="stats-grid" id="stats-grid">
           <div class="stat-card" id="words-read-card">
             <div class="stat-number" id="words-read">0</div>
@@ -1381,13 +1361,11 @@ input:checked + .slider:before {
              <div class="stat-label">Streak</div>
           </div>
 
-          <!-- WPM card (shown at end) -->
           <div class="stat-card" id="wpm-card" style="display:none;">
             <div class="stat-number" id="wpm">0</div>
             <div class="stat-label">Letters/Min</div>
           </div>
 
-          <!-- In-game controls (AI, Mute, Theme) -->
           <div class="timer-controls">
             <button class="icon-btn ai-helper-btn" id="ai-helper-btn"><i data-lucide="brain"></i></button>
             <button class="icon-btn mute-toggle" id="mute-toggle"><i data-lucide="volume-2"></i></button>
@@ -1400,7 +1378,6 @@ input:checked + .slider:before {
         </p>
       </div>
 
-      <!-- CSS Mascot -->
       <div id="mascot">
         <div class="mascot-body">
           <div class="mascot-eye left"></div>
@@ -1411,7 +1388,6 @@ input:checked + .slider:before {
 
     </div>
 
-    <!-- Bottom bar for in-game navigation -->
     <div class="bottom-bar" id="bottom-bar" style="display:none;">
       <button id="home-btn"><i data-lucide="home"></i> Home</button>
       <button id="restart-btn"><i data-lucide="rotate-cw"></i> Restart</button>
@@ -1421,12 +1397,10 @@ input:checked + .slider:before {
   </div>
 </div>
 
-<!-- Countdown Overlay -->
 <div id="countdown-overlay">
   <div id="countdown-text">3</div>
 </div>
 
-<!-- Settings Modal -->
 <div id="settings-backdrop">
   <div id="settings-modal">
     <div class="settings-header">
@@ -1507,7 +1481,6 @@ input:checked + .slider:before {
   </div>
 </div>
 
-<!-- AI Helper Modal -->
 <div id="ai-helper-backdrop">
   <div id="ai-helper-modal">
     <div class="ai-helper-header">
@@ -2560,6 +2533,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 </body>
-</html>
-
 </html>
