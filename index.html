@@ -1,2536 +1,905 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Kidsy">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="https://placehold.co/180x180/8e44ad/ffffff?text=Kidsy">
-
-<title>Kidsy</title>
-<script src="https://cdn.jsdelivr.net/npm/tone@14.8.39/build/Tone.js"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
-<style>
-  /* Import Google Font */
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-:root {
-  /* --- Base Theme Variables (Vibrant & Colorful) --- */
-  --bg-gradient: linear-gradient(135deg, #a6c0fe 0%, #f68084 100%); /* Light Blue/Coral */
-  --text-primary: #3d336b; /* Dark Purple Text */
-  --card-bg: rgba(255, 255, 255, 0.98); /* Slightly transparent white card */
-  --accent-primary: #8e44ad; /* Purple */
-  --accent-secondary: #f39c12; /* Orange */
-  --accent-success: #2ecc71; /* Green */
-  --accent-danger: #e74c3c; /* Red */
-  --shadow-color: rgba(142, 68, 173, 0.18); /* Soft purple shadow */
-  --border-color: rgba(142, 68, 173, 0.09); /* Very light purple border */
-  --glow-color: rgba(243, 156, 18, 0.5); /* Orange glow for accents */
-
-  /* --- Responsive Typography --- */
-  /* Use clamp() for fluid font sizes based on viewport width */
-  --word-font-size: clamp(3em, 12vw, 5em);
-  --base-font-size: 17px;
-}
-
-/* --- Theme Definitions --- */
-/* Each theme overrides the root variables */
-
-body.theme-ocean {
-  --bg-gradient: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%);
-  --text-primary: #00394f;
-  --accent-primary: #36d1dc;
-  --accent-secondary: #5b86e5;
-  --shadow-color: rgba(54, 209, 220, 0.2);
-  --border-color: rgba(54, 209, 220, 0.1);
-  --glow-color: rgba(91, 134, 229, 0.6);
-}
-
-body.theme-sunset {
-  --bg-gradient: linear-gradient(135deg, #fe8c00 0%, #f83600 100%);
-  --text-primary: #611e00;
-  --accent-primary: #fc4a1a;
-  --accent-secondary: #f7b733;
-  --shadow-color: rgba(252, 74, 26, 0.2);
-  --border-color: rgba(252, 74, 26, 0.1);
-  --glow-color: rgba(247, 183, 51, 0.6);
-}
-
-body.theme-forest {
-  --bg-gradient: linear-gradient(135deg, #9ef5a5 0%, #5bb964 100%);
-  --text-primary: #1b5e20;
-  --accent-primary: #76b852;
-  --accent-secondary: #f7b733;
-  --shadow-color: rgba(118, 184, 82, 0.2);
-  --border-color: rgba(118, 184, 82, 0.1);
-  --glow-color: rgba(247, 183, 51, 0.6);
-}
-
-body.theme-pink {
-  --bg-gradient: linear-gradient(135deg, #f43b47 0%, #453a94 100%);
-  --text-primary: #f8f8f8; /* Light text for dark bg */
-  --card-bg: rgba(69, 58, 148, 0.85); /* Darker card for this theme */
-  --accent-primary: #ff7eb9;
-  --accent-secondary: #fed95f;
-  --shadow-color: rgba(244, 59, 71, 0.2);
-  --border-color: rgba(244, 59, 71, 0.1);
-  --glow-color: rgba(254, 217, 95, 0.6);
-}
-body.theme-purple {
-  --bg-gradient: linear-gradient(135deg, #9face6 0%, #74ebd5 100%);
-  --text-primary: #4a148c;
-  --accent-primary: #b06ab3;
-  --accent-secondary: #4568dc;
-  --shadow-color: rgba(176, 106, 179, 0.2);
-  --border-color: rgba(176, 106, 179, 0.1);
-  --glow-color: rgba(69, 104, 220, 0.6);
-}
-body.theme-skyblue {
-    --bg-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-    --text-primary: #0d47a1;
-    --accent-primary: #64b5f6;
-    --accent-secondary: #ffb74d;
-    --shadow-color: rgba(100, 181, 246, 0.2);
-    --border-color: rgba(100, 181, 246, 0.1);
-    --glow-color: rgba(255, 183, 77, 0.6);
-}
-
-/* --- Dark Mode Overrides --- */
-/* Applied when body has .dark class */
-body.dark {
-  --text-primary: #e0e0e0; /* Light text */
-  --card-bg: rgba(44, 62, 80, 0.97); /* Dark card */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --shadow-color: rgba(0,0,0,0.5); /* Deeper shadow */
-  --glow-color: var(--accent-secondary); /* Use secondary accent for glow */
-}
-/* Specific dark theme gradient overrides */
-body.dark.theme-default {
-  --bg-gradient: linear-gradient(135deg, #1f4037 0%, #99f2c8 100%);
-  --accent-primary: #6ab0de;
-  --accent-secondary: #c39bd3;
-}
-body.dark.theme-ocean {
-  --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-  --accent-primary: #64c8bc;
-  --accent-secondary: #4dd0e1;
-}
-body.dark.theme-sunset {
-  --bg-gradient: linear-gradient(135deg, #cb2d3e 0%, #ef473a 100%);
-  --accent-primary: #ffa88c;
-  --accent-secondary: #ffc9ba;
-}
-body.dark.theme-forest {
-  --bg-gradient: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
-  --accent-primary: #a5d6a7;
-  --accent-secondary: #c8e6c9;
-}
-body.dark.theme-pink {
-  --bg-gradient: linear-gradient(135deg, #cc2b5e 0%, #753a88 100%);
-  --text-primary: #f8f8f8; /* Keep light text */
-  --card-bg: rgba(117, 58, 136, 0.9); /* Darker card */
-  --accent-primary: #f48fb1;
-  --accent-secondary: #f8bbd0;
-}
-body.dark.theme-purple {
-  --bg-gradient: linear-gradient(135deg, #4776e6 0%, #8e54e9 100%);
-  --accent-primary: #b39ddb;
-  --accent-secondary: #e6ceff;
-}
-body.dark.theme-skyblue {
-    --bg-gradient: linear-gradient(135deg, #1fa2ff 0%, #12d8fa 50%, #a6ffcb 100%);
-    --accent-primary: #6ec6ff;
-    --accent-secondary: #b3e5fc;
-}
-
-/* --- Base Layout & Reset --- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  /* --- FIX: Disable tap highlight on iOS for a native app feel --- */
-  -webkit-tap-highlight-color: transparent;
-}
-
-/*
-  --- FIX: Set html height to 100% ---
-  This is needed for the body's 100dvh to be reliable.
-*/
-html {
-  height: 100%;
-  overflow: hidden; /* Prevent html-level scroll/bounce */
-}
-
-body {
-  /* --- FIX: Use height instead of min-height --- */
-  /* This forces the app to the exact viewport size, 
-     preventing empty space at the bottom on iOS. */
-  height: 100vh; /* Fallback for older browsers */
-  /* Fallback for Safari's dynamic UI bars */
-  height: -webkit-fill-available;
-  /* Modern standard: dynamic viewport height */
-  height: 100dvh;
-  
-  overflow: hidden; /* Prevent body-level scrolling */
-  overscroll-behavior: none; /* Disable "bounce" effect on scroll */
-  font-size: var(--base-font-size);
-  font-family: 'Poppins', sans-serif;
-  text-align: center;
-  background: var(--bg-gradient); /* Apply theme background */
-  color: var(--text-primary); /* Apply theme text color */
-  transition: background 0.3s ease, color 0.3s ease;
-  position: relative;
-  /* Use flexbox to structure the entire layout */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* Align content to the top */
-
-  /*
-    --- FIX: Add padding for iOS safe areas (notch/home bar) ---
-    `env(safe-area-inset-*)` provides the inset values.
-    We add 10px to the top for extra breathing room.
-  */
-  padding-top: calc(env(safe-area-inset-top) + 10px);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.main-wrapper {
-  max-width: 700px; /* Max width for large screens */
-  width: 100%;
-  padding: 0 10px; /* Small horizontal padding */
-  display: flex;
-  flex-direction: column; /* Default portrait layout (tabs on top) */
-  flex-grow: 1; /* Allow wrapper to fill remaining vertical space */
-  overflow: hidden; /* Prevent this wrapper from overflowing */
-  min-height: 0; /* --- FIX: Crucial for flex children to scroll properly --- */
-}
-
-/* --- Tab Navigation --- */
-.nav-tabs-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 15px;
-  position: relative;
-  flex-shrink: 0; /* Prevent this container from shrinking */
-  width: 100%;
-  transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease, margin 0.3s ease;
-  z-index: 10;
-}
-
-/*
-  --- FIX: Hide tabs in portrait when game is active ---
-  This reclaims vertical space for the game content.
-*/
-@media (orientation: portrait) {
-  body.game-active-portrait .nav-tabs-container {
-    opacity: 0;
-    transform: translateY(-20px);
-    pointer-events: none;
-    height: 0; /* Collapse height */
-    margin-bottom: 0; /* Collapse margin */
-  }
-}
-
-
-.nav-tabs {
-  display: flex;
-  flex-wrap: wrap; /* Allow tabs to wrap on small screens */
-  justify-content: center;
-  background: var(--card-bg);
-  border-radius: 22px;
-  padding: 8px;
-  box-shadow: 0 6px 25px var(--shadow-color);
-  border: 1px solid var(--border-color);
-  position: relative;
-  z-index: 2;
-}
-
-.nav-tab {
-  padding: 10px 18px;
-  margin: 5px;
-  border: none;
-  border-radius: 18px;
-  cursor: pointer;
-  font-size: 1.0rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  background: rgba(0, 0, 0, 0.05); /* Light background for tab */
-  color: var(--text-primary);
-}
-
-body.dark .nav-tab {
-  background: rgba(255, 255, 255, 0.08); /* Dark mode tab background */
-}
-
-.nav-tab:hover {
-  background: rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-body.dark .nav-tab:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.nav-tab.active {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: white;
-  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35); /* Shadow from accent */
-  transform: translateY(-2px) scale(1.02);
-}
-
-/* --- SINGLE Game Section --- */
-/* This section holds the entire game UI and swaps content */
-.grade-section {
-  display: flex;
-  flex-grow: 1; /* Fill remaining space */
-  flex-direction: column;
-  overflow: hidden; /* Prevent this section from causing scroll */
-  min-height: 0; /* --- FIX: Crucial for flex children --- */
-  width: 100%;
-  animation: slideIn 0.3s ease-out; /* Fade-in animation */
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(15px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Main game content card */
-.container {
-  /* --- FIX: Use clamp() for responsive padding --- */
-  padding: clamp(15px, 3vh, 25px);
-  background: var(--card-bg);
-  border-radius: 28px;
-  box-shadow: 0 12px 45px var(--shadow-color);
-  transition: all 0.2s ease;
-  backdrop-filter: blur(12px); /* Frosted glass effect */
-  position: relative;
-  z-index: 1;
-  border: 1px solid var(--border-color);
-  /* --- FIX: Use clamp() for responsive margin --- */
-  margin-bottom: clamp(10px, 2vh, 15px);
-  flex-grow: 1; /* Allow container to fill vertical space */
-  flex-shrink: 1;
-  /*
-    --- FIX: Allow this container to scroll internally ---
-    If content (like stats grid) overflows, the card itself scrolls,
-    not the whole page.
-  */
-  overflow-y: auto;
-  overscroll-behavior: contain; /* Prevent scroll-chaining */
-  min-height: 0; /* --- FIX: Critical for scrolling within flex item --- */
-}
-
-/* --- Game UI Elements --- */
-.challenge-header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* --- FIX: Use clamp() for responsive margin --- */
-  margin-bottom: clamp(15px, 3vh, 20px);
-  flex-shrink: 0; /* Prevent shrinking */
-}
-.challenge-header .icon-btn {
-  position: absolute; /* Position settings button */
-  left: 0;
-  width: 38px;
-  height: 38px;
-}
-.challenge-header h1 {
-  /* --- FIX: Use clamp() for responsive font size --- */
-  font-size: clamp(1.8rem, 6vw, 2.1rem);
-  font-weight: 700;
-  margin: 0;
-  padding: 0 50px; /* Space for settings button */
-  /* Gradient text */
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fadeIn 0.4s ease-out;
-  text-shadow: 0 0 15px hsla(from var(--accent-primary) h s l / 0.1);
-  letter-spacing: -0.5px;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* --- Centering All Game Content --- */
-/*
-  This block simplifies layout by making all primary UI elements
-  centered by default.
-*/
-#start-btn,
-#word-display,
-#settings-section,
-#speak-controls,
-#stats-grid,
-#score-display,
-#keyboard-hint,
-#progress-bar,
-#high-score-display,
-#star-rating-display,
-#countdown-overlay {
-  display: block;
-  width: fit-content; /* Size to content */
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  /* --- FIX: Use clamp() for responsive margin --- */
-  margin-bottom: clamp(10px, 2vh, 15px);
-  flex-shrink: 0; /* Prevent unwanted shrinking */
-}
-#word-display {
-  width: 100%; /* Take full width for centering text */
-  /* --- FIX: Use clamp() for responsive min height --- */
-  min-height: clamp(70px, 15vh, 90px);
-}
-#settings-section {
-  width: 100%;
-  max-width: 320px;
-  padding: 12px;
-}
-#speak-controls { width: fit-content; }
-#stats-grid { width: 100%; max-width: 400px; display: grid !important; }
-#progress-bar { width: 100%; max-width: 400px; }
-#high-score-display {
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--text-primary);
-  opacity: 0.8;
-}
-
-label {
-  font-weight: 600;
-  font-size: 1.0rem;
-  display: block;
-  margin-bottom: 10px;
-  color: var(--text-primary);
-  opacity: 0.9;
-}
-
-.timer-input {
-  width: 110px;
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  font-size: 1.0rem;
-  font-weight: 600;
-  text-align: center;
-  transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
-  background: var(--card-bg);
-  color: var(--text-primary);
-  display: inline-block;
-}
-
-.timer-input:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px hsla(from var(--accent-primary) h s l / 0.2);
-  transform: scale(1.03);
-}
-
-button {
-  padding: 12px 22px;
-  margin: 6px;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  font-size: 1.0rem;
-  font-weight: 600;
-  font-family: 'Poppins', sans-serif;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 12px var(--shadow-color);
-  position: relative;
-  overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--text-primary);
-}
-body.dark button {
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-button:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 18px hsla(from var(--shadow-color) h s l / 1.5);
-}
-
-button:active {
-  transform: translateY(0) scale(0.97); /* Squish effect */
-  box-shadow: 0 2px 8px var(--shadow-color);
-}
-
-#start-btn {
-  background: linear-gradient(135deg, var(--accent-success), #27ae60);
-  color: white;
-  font-size: 1.1rem;
-  padding: 14px 32px;
-  box-shadow: 0 5px 18px rgba(46, 204, 113, 0.35);
-}
-
-#speak-btn {
-  background: linear-gradient(135deg, #e67e22, #d35400);
-  color: white;
-  display: none; /* Hidden by default */
-  animation: pulse-orange 1.8s infinite;
-  padding: 11px 18px;
-  font-size: 1.0rem;
-  box-shadow: 0 5px 18px rgba(230, 126, 34, 0.35);
-}
-
-@keyframes pulse-orange {
-  0%, 100% { transform: scale(1); box-shadow: 0 5px 18px rgba(230, 126, 34, 0.35); }
-  50% { transform: scale(1.04); box-shadow: 0 7px 22px rgba(230, 126, 34, 0.55); }
-}
-
-#speak-controls {
-  display: none; /* Hidden by default */
-  align-items: center; /* Vertically align items */
-  justify-content: center;
-  gap: 8px;
-  margin: 10px auto;
-}
-
-.speech-rate-indicator-inline {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  opacity: 0.8;
-  min-width: 35px;
-  text-align: right;
-}
-
-.icon-btn {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  padding: 0;
-  margin: 0;
-  color: var(--text-primary);
-  opacity: 0.8;
-  flex-shrink: 0;
-  border: none;
-}
-
-.icon-btn:hover {
-  background: rgba(0, 0, 0, 0.1);
-  opacity: 1;
-  transform: rotate(10deg) scale(1.05);
-}
-
-#word-display {
-  font-size: var(--word-font-size); /* Use responsive variable */
-  font-weight: 700;
-  color: var(--accent-primary);
-  text-shadow: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 1.5px;
-  position: relative;
-  word-break: break-all; /* Prevent long words from overflowing */
-  /* Animation will be triggered by JS */
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-/* --- NEW: Word animation classes --- */
-#word-display.pop-in {
-  animation: wordPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-#word-display.swoosh-in {
-  animation: swooshIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes wordPop {
-  0% { transform: scale(0.8) rotateX(70deg); opacity: 0; }
-  60% { transform: scale(1.05) rotateX(-10deg); }
-  100% { transform: scale(1) rotateX(0deg); opacity: 1; }
-}
-
-@keyframes swooshIn {
-  0% { transform: translateX(-50px) scale(0.8); opacity: 0; }
-  100% { transform: translateX(0) scale(1); opacity: 1; }
-}
-
-.timer-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Center horizontally */
-  gap: 12px;
-  grid-column: 1 / -1; /* Make it span full grid width */
-  margin-top: 10px;
-}
-
-#score-display {
-  font-size: 1.2rem;
-  margin-top: 10px;
-  font-weight: 600;
-  color: var(--accent-secondary);
-  line-height: 1.5;
-}
-
-/* --- NEW: Star Rating --- */
-#star-rating-display {
-  font-size: 2.5rem;
-  color: #ffc107; /* Star yellow */
-  margin-top: -10px;
-}
-#star-rating-display i {
-  margin: 0 2px;
-  transform: scale(0);
-  opacity: 0;
-  transition: all 0.3s ease;
-}
-/* Animation for stars appearing one by one */
-#star-rating-display.show-stars i {
-  transform: scale(1);
-  opacity: 1;
-}
-#star-rating-display.show-stars i:nth-child(2) { transition-delay: 0.1s; }
-#star-rating-display.show-stars i:nth-child(3) { transition-delay: 0.2s; }
-
-
-#progress-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: none;
-}
-
-#progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-  transition: width 0.2s ease;
-  border-radius: 20px;
-  box-shadow: none;
-  position: relative;
-}
-
-/* --- Stats Grid --- */
-#stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns for cards */
-  gap: 12px;
-}
-
-.timer-card {
-  font-weight: 600;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-/* NEW: Timer pulse animation */
-@keyframes pulse-red {
-  0%, 100% { transform: scale(1); color: var(--accent-danger); }
-  50% { transform: scale(1.1); }
-}
-.timer-card.timer-low {
-  animation: pulse-red 1s infinite;
-  color: var(--accent-danger) !important;
-}
-
-.stat-card {
-  background: rgba(0, 0, 0, 0.03);
-  padding: 12px;
-  border-radius: 16px;
-  transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-card:hover {
-  transform: translateY(-3px) scale(1.02);
-  background: rgba(0, 0, 0, 0.06);
-  box-shadow: 0 5px 15px var(--shadow-color);
-}
-
-.stat-number {
-  font-size: 3rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1.1;
-}
-/* NEW: Streak Counter Style */
-#streak-counter {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--accent-secondary);
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  opacity: 0.7;
-  margin-top: 4px;
-}
-
-/* --- Bottom Nav Bar (UPDATED for No Wrap) --- */
-#bottom-bar {
-  height: auto;
-  background: var(--card-bg);
-  display: flex;
-  justify-content: space-evenly; /* Evenly space items */
-  align-items: center;
-  /* --- FIX: Prevent wrapping --- */
-  flex-wrap: nowrap;
-  /* --- FIX: Use clamp() for responsive gap/padding --- */
-  gap: clamp(5px, 1vw, 8px);
-  box-shadow: 0 8px 30px var(--shadow-color);
-  transition: all 0.3s ease;
-  border-radius: 22px;
-  padding: clamp(8px, 1.5vh, 10px) clamp(6px, 1.5vw, 10px);
-  border: 1px solid var(--border-color);
-  margin-top: auto; /* Push to bottom within flex container */
-  margin-bottom: clamp(5px, 1vh, 10px);
-  flex-shrink: 0;
-  /* --- FIX: Center bar and handle overflow --- */
-  width: calc(100% - 20px);
-  max-width: 680px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  /* Allow horizontal scroll ONLY if buttons absolutely don't fit */
-  overflow-x: auto;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-}
-#bottom-bar::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome, Safari, Edge */
-}
-
-
-#bottom-bar button {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: #ffffff;
-  font-weight: 600;
-  /* --- FIX: Use clamp() for responsive font/padding --- */
-  font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-  padding: clamp(7px, 1.3vh, 9px) clamp(8px, 1.5vw, 10px);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
-  letter-spacing: 0px;
-  /* --- FIX: Ensure buttons don't shrink --- */
-  flex-shrink: 0;
-  min-width: fit-content;
-  margin: 0 2px;
-  border-radius: 12px;
-}
-
-#bottom-bar button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 18px hsla(from var(--accent-primary) h s l / 0.35);
-}
-
-#bottom-bar i {
-  display: inline;
-  /* --- FIX: Use clamp() for responsive icons --- */
-  width: clamp(14px, 2.2vw, 16px);
-  height: clamp(14px, 2.2vw, 16px);
-}
-
-
-#keyboard-hint {
-  font-size: 0.8rem;
-  opacity: 0.6;
-  margin-top: 8px;
-}
-
-/* --- NEW: Countdown Overlay --- */
-#countdown-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20vw;
-  font-weight: 700;
-  color: white;
-  z-index: 199;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-#countdown-overlay.visible {
-  opacity: 1;
-  pointer-events: all;
-}
-#countdown-text {
-  transform: scale(0.5);
-  opacity: 0;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.4);
-}
-/* Animation for each number */
-#countdown-overlay.visible #countdown-text.show {
-  animation: countdown-pop 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-@keyframes countdown-pop {
-  0% { transform: scale(0.5); opacity: 0; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-
-/* --- NEW: CSS Mascot --- */
-#mascot {
-  width: 60px;
-  height: 60px;
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  z-index: 5;
-  transition: transform 0.3s ease;
-}
-.mascot-body {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, var(--accent-secondary), #f1c40f);
-  border-radius: 50% 50% 40% 40%;
-  position: relative;
-  border: 3px solid var(--card-bg);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  animation: mascot-idle 2s infinite ease-in-out;
-}
-.mascot-eye {
-  width: 12px;
-  height: 18px;
-  background: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 18px;
-  border: 2px solid #333;
-  animation: mascot-blink 4s infinite;
-}
-.mascot-eye::after { /* Pupil */
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: #333;
-  border-radius: 50%;
-  position: absolute;
-  top: 8px;
-  left: 3px;
-}
-.mascot-eye.left { left: 12px; }
-.mascot-eye.right { right: 12px; }
-
-.mascot-mouth {
-  width: 20px;
-  height: 10px;
-  background: #c0392b;
-  border: 2px solid #333;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: all 0.2s ease;
-}
-
-/* Mascot Animations */
-@keyframes mascot-idle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-@keyframes mascot-blink {
-  0%, 90% { transform: scaleY(1); }
-  95% { transform: scaleY(0.1); }
-  100% { transform: scaleY(1); }
-}
-
-/* Mascot States (triggered by JS) */
-#mascot.cheer {
-  animation: mascot-cheer-jump 0.5s ease;
-}
-#mascot.cheer .mascot-mouth { /* Big smile */
-  width: 25px;
-  height: 15px;
-  border-radius: 15px;
-  bottom: 10px;
-}
-@keyframes mascot-cheer-jump {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px) rotate(10deg) scale(1.1); }
-}
-
-#mascot.worried {
-  animation: mascot-worried-shake 0.5s infinite;
-}
-#mascot.worried .mascot-mouth { /* Worried mouth */
-  width: 15px;
-  height: 5px;
-  border-radius: 0;
-  border-top: 3px solid #333;
-  background: none;
-  bottom: 15px;
-}
-@keyframes mascot-worried-shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-3px); }
-  75% { transform: translateX(3px); }
-}
-
-#mascot.celebrate {
-  animation: mascot-celebrate-spin 1s infinite linear;
-}
-#mascot.celebrate .mascot-mouth { /* Open smile */
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  bottom: 10px;
-}
-@keyframes mascot-celebrate-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-
-/* --- SETTINGS MODAL --- */
-#settings-backdrop, #ai-helper-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(5px);
-  z-index: 99;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-#settings-backdrop.visible, #ai-helper-backdrop.visible {
-  opacity: 1;
-  pointer-events: all;
-}
-#settings-modal, #ai-helper-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
-  width: 90%;
-  max-width: 420px;
-  background: var(--card-bg);
-  border-radius: 22px;
-  box-shadow: 0 15px 50px var(--shadow-color);
-  border: 1px solid var(--border-color);
-  z-index: 100;
-  text-align: left;
-  padding: 25px;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-#settings-backdrop.visible #settings-modal,
-#ai-helper-backdrop.visible #ai-helper-modal {
-  opacity: 1;
-  pointer-events: all;
-  transform: translate(-50%, -50%) scale(1);
-}
-.settings-header, .ai-helper-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
-.settings-header h2, .ai-helper-header h2 {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin: 0;
-}
-.setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border-color);
-}
-.setting-item:last-of-type {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-.setting-label {
-  font-weight: 600;
-  font-size: 1.0rem;
-}
-.setting-label small {
-  display: block;
-  font-weight: 400;
-  opacity: 0.7;
-  font-size: 0.85rem;
-  margin-top: 3px;
-}
-.theme-selector {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap; /* Allow wrapping if many themes */
-}
-.theme-option {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 3px solid transparent;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  outline: 1px solid rgba(0,0,0,0.1);
-}
-body.dark .theme-option {
-    outline: 1px solid rgba(255,255,255,0.1);
-}
-.theme-option.selected {
-  border-color: var(--accent-primary);
-  transform: scale(1.1);
-}
-/* Updated theme previews */
-.theme-option[data-theme="default"] { background: linear-gradient(135deg, #a6c0fe, #f68084); }
-.theme-option[data-theme="ocean"] { background: linear-gradient(135deg, #48c6ef, #6f86d6); }
-.theme-option[data-theme="sunset"] { background: linear-gradient(135deg, #fe8c00, #f83600); }
-.theme-option[data-theme="forest"] { background: linear-gradient(135deg, #9ef5a5, #5bb964); }
-.theme-option[data-theme="pink"] { background: linear-gradient(135deg, #f43b47, #453a94); }
-.theme-option[data-theme="purple"] { background: linear-gradient(135deg, #9face6, #74ebd5); }
-.theme-option[data-theme="skyblue"] { background: linear-gradient(135deg, #00c6ff, #0072ff); }
-
-/* Toggle Switch Styles */
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 48px;
-  height: 26px;
-  flex-shrink: 0;
-}
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.15);
-  transition: .4s;
-  border-radius: 26px;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-input:checked + .slider {
-  background-color: var(--accent-primary);
-}
-input:checked + .slider:before {
-  transform: translateX(22px);
-}
-
-/* Range Slider Styles */
-.range-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 120px;
-  height: 8px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  outline: none;
-  opacity: 0.7;
-  transition: opacity .2s;
-}
-.range-slider:hover {
-  opacity: 1;
-}
-.range-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  background: var(--accent-primary);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 5px hsla(from var(--accent-primary) h s l / 0.4);
-}
-.range-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: var(--accent-primary);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 5px hsla(from var(--accent-primary) h s l / 0.4);
-}
-/* In-game speak slider */
-#speak-controls .range-slider {
-  background: rgba(230, 126, 34, 0.2);
-  width: 100px;
-}
-#speak-controls .range-slider::-webkit-slider-thumb {
-  background: #e67e22;
-  box-shadow: 0 2px 5px rgba(230, 126, 34, 0.4);
-}
-#speak-controls .range-slider::-moz-range-thumb {
-  background: #e67e22;
-  box-shadow: 0 2px 5px rgba(230, 126, 34, 0.4);
-}
-
-.setting-item .value-indicator {
-  font-size: 0.9rem;
-  margin-right: 10px;
-  width: 45px;
-  opacity: 0.8;
-}
-.setting-item .number-input {
-  width: 110px;
-  padding: 8px;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 0.95rem;
-}
-#reset-settings-btn {
-  background: linear-gradient(135deg, var(--accent-danger), #c0392b);
-  color: white;
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px;
-  font-size: 1.0rem;
-  box-shadow: 0 5px 18px rgba(231, 76, 60, 0.35);
-}
-
-/* --- AI Helper Modal Styles --- */
-#ai-helper-content {
-  margin-bottom: 20px;
-}
-#ai-helper-content p {
-  margin-bottom: 12px;
-  line-height: 1.6;
-  font-size: 1.0rem;
-}
-#ai-buttons {
-  display: flex; /* Make buttons flex */
-  gap: 10px;
-  margin-bottom: 12px;
-}
-#ai-buttons button {
-  font-size: 0.95rem;
-  padding: 12px 15px;
-  box-shadow: 0 4px 12px hsla(from var(--accent-primary) h s l / 0.25);
-  flex: 1; /* Make buttons share space */
-}
-#ai-result {
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 16px;
-  padding: 15px;
-  min-height: 70px;
-  line-height: 1.6;
-  font-size: 0.95rem;
-  border: 1px solid var(--border-color);
-  white-space: pre-wrap; /* Show line breaks from API */
-}
-#ai-loading {
-  display: block; /* Kept as block for simplicity */
-  font-size: 0.9rem;
-  margin-top: 10px;
-  opacity: 0.7;
-}
-
-
-/* --- RESPONSIVE STYLES --- */
-
-/* Adjustments for smaller phone screens */
-@media (max-width: 370px) {
-  :root { --base-font-size: 15px; } /* Smaller base font */
-
-  .nav-tab { font-size: 0.8rem; padding: 6px 10px; }
-  .challenge-header h1 { font-size: 1.6rem; }
-  /* Bottom bar buttons are already responsive with clamp() */
-  #bottom-bar i { width: 14px; height: 14px; }
-  .icon-btn { width: 36px; height: 36px; }
-  #settings-modal, #ai-helper-modal { padding: 15px; }
-  .settings-header h2, .ai-helper-header h2 { font-size: 1.4rem; }
-  .setting-label { font-size: 0.85rem; }
-  .stat-number { font-size: 2.5rem; }
-  #mascot { width: 50px; height: 50px; bottom: 5px; right: 5px; }
-}
-
-/* Landscape adjustments */
-@media (orientation: landscape) {
-  .main-wrapper {
-      flex-direction: row; /* Side-by-side: [Tabs | Content] */
-      align-items: stretch; /* Make children fill height */
-      padding: 0 8px;
-      max-width: 100%; /* Allow full width in landscape */
-  }
-  .nav-tabs-container {
-      flex-direction: column; /* Stack tabs vertically */
-      justify-content: flex-start;
-      width: auto;
-      /* --- FIX: Use clamp() for responsive tab bar width --- */
-      flex-basis: clamp(140px, 20vw, 180px);
-      flex-shrink: 0;
-      /* --- FIX: Use clamp() for responsive margin --- */
-      margin-right: clamp(10px, 1.5vw, 15px);
-      margin-bottom: 0;
-      align-items: stretch;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      /* --- FIX: Removed fixed height: 100% --- */
-      /* This lets align-items: stretch on parent work */
-      overflow: hidden; /* Prevent container itself from scrolling */
-  }
-
-  .nav-tabs {
-      flex-direction: column;
-      align-items: stretch; /* Make tabs full-width */
-      width: 100%;
-      flex-wrap: nowrap;
-      padding: 8px;
-      justify-content: flex-start;
-      overflow-y: auto; /* Allow tabs list to scroll if needed */
-      overscroll-behavior: contain;
-      flex-grow: 1; /* Take available space */
-      min-height: 0;
-      border-radius: 18px;
-  }
-   .nav-tab {
-      width: 100%;
-      text-align: left; /* Align tab text left */
-      padding: clamp(10px, 1.5vh, 12px) clamp(15px, 2vw, 18px);
-      margin: 3px 0;
-      font-size: clamp(0.9rem, 2vh, 1.0rem);
-      flex-shrink: 0;
-      border-radius: 14px;
-  }
-  .grade-section {
-      padding-bottom: 0;
-      /* --- FIX: Removed fixed height: 100% --- */
-  }
-  .container {
-      padding: clamp(15px, 2.5vh, 20px);
-      min-height: 0;
-      flex-grow: 1;
-      margin-bottom: clamp(5px, 1vh, 10px);
-      /* --- FIX: Removed fixed height --- */
-      /* flex-grow: 1 (inherited) will handle this */
-  }
-  #bottom-bar {
-      margin-top: auto; /* Push to bottom */
-      margin-bottom: clamp(5px, 1vh, 10px);
-      height: clamp(50px, 8vh, 55px);
-      padding: clamp(8px, 1.5vh, 10px) 8px;
-      flex-wrap: nowrap; /* Ensure no wrapping in landscape */
-      justify-content: space-evenly;
-  }
-  #bottom-bar button {
-      padding: clamp(8px, 1.5vh, 10px) clamp(10px, 1.5vw, 12px);
-      font-size: clamp(0.85rem, 2vw, 0.95rem);
-      flex-grow: 0; /* Don't grow buttons in landscape */
-  }
-  .timer-controls {
-      grid-column: 1 / -1; /* Span full width */
-      justify-content: center;
-      margin-left: 0;
-  }
-   #mascot {
-     bottom: clamp(10px, 1.5vh, 15px);
-     right: clamp(10px, 1.5vw, 15px);
-   }
-
-
-  /* Specific adjustments for landscape on SHORT screens (e.g., phones) */
-  @media (max-height: 550px) {
-      :root { --base-font-size: 15px; }
-      /* body padding already handled by safe-area */
-      .container { padding: 12px; }
-      .challenge-header h1 { font-size: 1.4rem; margin-bottom: 10px; }
-      #bottom-bar { height: 45px; padding: 6px 4px; margin-top: 8px; margin-bottom: 5px; }
-      #bottom-bar button { font-size: 0.8rem; padding: 7px 8px; gap: 3px; }
-      #bottom-bar i { width: 14px; height: 14px; }
-      .nav-tabs-container { flex-basis: clamp(120px, 18vw, 140px); margin-right: 10px; }
-      .nav-tab { padding: 8px 12px; font-size: 0.9rem; }
-      /* Reduce bottom margins to compress content */
-      #start-btn, #speak-controls, #stats-grid, #score-display, #keyboard-hint, #progress-bar { margin-bottom: 8px; }
-      .icon-btn { width: 36px; height: 36px; }
-      #mascot { width: 50px; height: 50px; }
-  }
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocabMaster Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom animations and base styles */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .zoom-in {
+            animation: zoomIn 0.3s ease-out forwards;
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Hide elements by default for simple routing */
+        .tab-content { display: none; }
+        .tab-content.active { display: flex; }
+        
+        /* Modal overlay styling */
+        #chat-modal {
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+        #chat-modal.active {
+            display: flex;
+        }
+    </style>
 </head>
-<body class="theme-default"> <div class="main-wrapper">
+<body class="bg-slate-50 antialiased text-slate-800">
 
-  <div class="nav-tabs-container">
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-grade="prek">Pre-K</button>
-      <button class="nav-tab" data-grade="k">Kindergarten</button>
-      <button class="nav-tab" data-grade="first">First Grade</button>
-      <button class="nav-tab" data-grade="second">Second Grade</button>
-      <button class="nav-tab" data-grade="third">Third Grade</button>
-      <button class="nav-tab" data-grade="fourth">Fourth Grade</button>
-      <button class="nav-tab" data-grade="fifth">Fifth Grade</button>
-      <button class="nav-tab" data-grade="more">More Grades (6+)</button>
-    </div>
-  </div>
-
-  <div class="grade-section" id="game-engine">
-    <div class="container">
-
-      <div class="challenge-header">
-        <button class="icon-btn global-settings-btn" aria-label="Open Settings">
-          <i data-lucide="settings"></i>
-        </button>
-        <h1 id="game-title">🎯 Pre-K Challenge</h1>
-      </div>
-
-      <div id="start-state-content">
-        <div id="settings-section">
-          <label for="timer-input">⏱️ Set Time (seconds):</label>
-          <input class="timer-input" id="timer-input" type="number" min="10" value="60">
-        </div>
-        <p id="high-score-display">Best: 0 WPM</p>
-        <button class="start-btn" id="start-btn">🚀 Start Challenge</button>
-      </div>
-
-      <div id="game-state-content" style="display: none;">
-        <div id="progress-bar">
-          <div id="progress-fill"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 flex flex-col h-[90vh] max-h-[850px]">
+        
+        <!-- Header Area -->
+        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white pt-8 pb-6 px-6 relative shrink-0">
+            <div class="absolute top-4 right-4 bg-orange-500/90 text-white px-3 py-1 rounded-full text-sm font-bold backdrop-blur-sm flex items-center gap-1 shadow-md">
+                <i data-lucide="flame" class="w-4 h-4 text-yellow-300" id="streak-icon"></i> 
+                Streak: <span id="streak-counter">0</span>
+            </div>
+            
+            <h1 class="text-3xl font-extrabold tracking-tight mb-2">VocabMaster Pro</h1>
+            <p class="text-blue-200 text-sm mb-6">Endless AI Learning Experience</p>
+            
+            <!-- Navigation Tabs -->
+            <div class="flex gap-2 bg-black/20 p-1.5 rounded-2xl backdrop-blur-md overflow-x-auto">
+                <button onclick="switchTab('study')" id="tab-btn-study" class="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all bg-white text-indigo-700 shadow-sm">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> Study
+                </button>
+                <button onclick="switchTab('sentences')" id="tab-btn-sentences" class="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i> Missing Word
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white">
+                    <i data-lucide="brain" class="w-4 h-4"></i> Def Match
+                </button>
+            </div>
         </div>
 
-        <div id="word-display">Press Start</div>
+        <div class="p-6 sm:p-8 flex-1 overflow-y-auto flex flex-col relative">
+            
+            <!-- STUDY TAB -->
+            <div id="tab-study" class="tab-content active flex-col items-center fade-in flex-1">
+                <div class="w-full flex justify-between items-center mb-2 text-slate-400 font-semibold text-sm uppercase tracking-wider">
+                    <span>Card <span id="study-current-idx">1</span> of <span id="study-total">10</span></span>
+                </div>
+                
+                <div class="text-center mb-8 w-full relative">
+                    <h2 id="study-word" class="text-4xl sm:text-5xl font-black text-slate-800 mb-6 capitalize tracking-tight"></h2>
+                    <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 min-h-[100px] flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                        <p id="study-definition" class="text-lg sm:text-xl text-slate-700 text-center w-full font-medium"></p>
+                        <button onclick="speakText(document.getElementById('study-definition').innerText)" class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-100 p-2 px-4 rounded-full transition-colors flex items-center gap-2 text-sm font-bold bg-white shadow-sm">
+                            <i data-lucide="volume-2" class="w-4 h-4"></i> Read Definition
+                        </button>
+                    </div>
+                </div>
 
-        <div id="speak-controls">
-          <span class="speech-rate-indicator-inline" id="speech-rate-indicator-inline">0.9x</span>
-          <input type="range" class="range-slider speech-rate-slider" id="speech-rate-slider" min="0.5" max="1.5" step="0.1">
-          <button class="speak-btn" id="speak-btn">🔊 Speak</button>
+                <div class="flex w-full gap-4 mb-6">
+                    <button onclick="speakText(document.getElementById('study-word').innerText)" class="flex-1 flex flex-col items-center justify-center py-4 sm:py-5 rounded-2xl border-2 bg-white border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm">
+                        <i data-lucide="volume-2" class="w-6 h-6 mb-2"></i>
+                        <span class="font-bold text-sm sm:text-base">Listen</span>
+                    </button>
+                    <button id="btn-practice-mic" onclick="togglePracticeRecording()" class="flex-1 flex flex-col items-center justify-center py-4 sm:py-5 rounded-2xl border-2 transition-all shadow-sm bg-white border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300">
+                        <i data-lucide="mic" id="icon-practice-mic" class="w-6 h-6 mb-2"></i>
+                        <span id="text-practice-mic" class="font-bold text-sm sm:text-base">Practice Saying It</span>
+                    </button>
+                </div>
+
+                <!-- Pronunciation Feedback Container -->
+                <div id="pronunciation-feedback" class="hidden w-full p-4 rounded-xl items-center gap-4 border">
+                    <!-- Icon injected via JS -->
+                    <div id="feedback-icon-container" class="shrink-0"></div>
+                    <div>
+                        <p id="feedback-title" class="font-bold"></p>
+                        <p class="text-sm opacity-80">Heard: "<span id="feedback-heard"></span>"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MISSING WORD TAB (ENDLESS) -->
+            <div id="tab-sentences" class="tab-content flex-col items-center w-full flex-1">
+                <div class="w-full mb-8">
+                    <h3 class="text-lg font-bold text-slate-500 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i> Fill in the blank
+                    </h3>
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100 shadow-inner">
+                        <p id="sentence-display" class="text-xl sm:text-2xl text-slate-800 font-medium leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <div class="w-full flex flex-col sm:flex-row gap-3 mb-6">
+                    <div class="relative flex-1">
+                        <input type="text" id="sentence-input" placeholder="Type or speak the missing word..." class="w-full pl-4 pr-12 py-3 sm:py-4 bg-white border-2 border-slate-200 rounded-xl focus:border-amber-400 focus:ring-0 text-base sm:text-lg font-medium outline-none transition-colors disabled:bg-slate-50">
+                        <button id="btn-sentence-mic" onclick="toggleSentenceRecording()" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 disabled:opacity-50">
+                            <i data-lucide="mic" id="icon-sentence-mic" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <button id="btn-check-sentence" onclick="checkSentenceAnswer()" disabled class="bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-sm">
+                        Check
+                    </button>
+                    <button id="btn-next-sentence" onclick="generateNewSentenceQuestion()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
+                        Next <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div id="sentence-feedback" class="hidden w-full p-4 rounded-xl flex items-center gap-3 border font-bold">
+                    <div id="sentence-feedback-icon" class="shrink-0"></div>
+                    <span id="sentence-feedback-text"></span>
+                </div>
+            </div>
+
+            <!-- DEFINITION MATCH TAB (ENDLESS) -->
+            <div id="tab-quiz" class="tab-content flex-col w-full flex-1">
+                <div class="w-full mb-8">
+                    <h3 class="text-lg font-bold text-slate-500 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                        <i data-lucide="target" class="w-4 h-4"></i> Which word is this?
+                    </h3>
+                    <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-inner min-h-[120px] flex items-center justify-center text-center relative">
+                        <p id="quiz-definition" class="text-xl sm:text-2xl text-slate-800 font-medium italic z-10"></p>
+                        <button onclick="speakText(document.getElementById('quiz-definition').innerText)" class="absolute bottom-2 right-2 text-emerald-600 hover:bg-emerald-100 p-2 rounded-full transition-colors">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-6">
+                    <!-- Options injected via JS -->
+                </div>
+
+                <div id="quiz-next-container" class="hidden flex justify-center w-full zoom-in">
+                    <button onclick="generateNewQuizQuestion()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2 text-lg">
+                        Next Question <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Controls & Hints -->
+            <div class="mt-auto border-t border-slate-100 pt-6">
+                
+                <!-- AI Hint Display -->
+                <div id="ai-hint-display" class="hidden mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-800 text-sm zoom-in flex flex-col sm:flex-row items-start gap-3">
+                    <i data-lucide="lightbulb" class="shrink-0 mt-0.5 text-yellow-500 w-5 h-5"></i>
+                    <p><strong>Hint:</strong> <span id="ai-hint-text"></span></p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <!-- Study Nav -->
+                    <div id="study-nav-controls" class="flex gap-2 w-full sm:w-auto justify-center">
+                        <button onclick="prevStudyWord()" class="p-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
+                            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                        </button>
+                        <button onclick="nextStudyWord()" class="p-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
+                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    <!-- Endless Indicator -->
+                    <div id="endless-indicator" class="hidden text-slate-400 text-sm font-medium flex items-center gap-2 w-full sm:w-auto justify-center">
+                        <i data-lucide="brain" class="w-4 h-4"></i> Endless Practice Mode Active
+                    </div>
+
+                    <div class="flex gap-3 w-full sm:w-auto justify-center">
+                        <button id="btn-ai-hint" onclick="getSmartHint()" class="hidden flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded-xl font-bold text-sm transition-colors disabled:opacity-50">
+                            <i data-lucide="lightbulb" class="w-4 h-4" id="icon-hint"></i>
+                            <span id="text-hint">AI Hint</span>
+                        </button>
+                        
+                        <button onclick="openChat()" class="flex flex-1 sm:flex-none items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white font-bold py-2 px-5 rounded-xl shadow-md transition-all text-sm">
+                            <i data-lucide="message-square" class="w-4 h-4"></i>
+                            Ask AI Tutor
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
+    </div>
 
-        <p class="score-display" id="score-display"></p>
-        <div id="star-rating-display"></div>
+    <!-- AI Chat Modal -->
+    <div id="chat-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md h-[80vh] max-h-[600px] flex flex-col overflow-hidden zoom-in">
+            <div class="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white p-5 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="font-bold text-xl flex items-center gap-2">
+                        <i data-lucide="message-square" class="w-5 h-5"></i> AI Tutor
+                    </h3>
+                    <p class="text-violet-100 text-sm font-medium">Discussing: <span id="chat-context-word"></span></p>
+                </div>
+                <button onclick="closeChat()" class="p-2 hover:bg-white/20 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
 
-        <div class="stats-grid" id="stats-grid">
-          <div class="stat-card" id="words-read-card">
-            <div class="stat-number" id="words-read">0</div>
-            <div class="stat-label">Letters Read</div>
-          </div>
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-5 flex flex-col gap-4 bg-slate-50">
+                <!-- Messages injected here -->
+            </div>
 
-          <div class="stat-card timer-card" id="timer-card">
-            <span>⏱️ Time: <span class="timer-display-value" id="timer">60</span>s</span>
-          </div>
-
-          <div class="stat-card" id="streak-card">
-             <div class="stat-number" id="streak-counter">0 🔥</div>
-             <div class="stat-label">Streak</div>
-          </div>
-
-          <div class="stat-card" id="wpm-card" style="display:none;">
-            <div class="stat-number" id="wpm">0</div>
-            <div class="stat-label">Letters/Min</div>
-          </div>
-
-          <div class="timer-controls">
-            <button class="icon-btn ai-helper-btn" id="ai-helper-btn"><i data-lucide="brain"></i></button>
-            <button class="icon-btn mute-toggle" id="mute-toggle"><i data-lucide="volume-2"></i></button>
-            <button class="icon-btn theme-toggle" id="theme-toggle"><i data-lucide="moon"></i></button>
-          </div>
+            <form id="chat-form" class="p-4 bg-white border-t border-slate-100 flex gap-2 items-center shrink-0">
+                <button type="button" id="btn-chat-mic" onclick="toggleChatRecording()" class="p-3 rounded-full transition-colors flex items-center justify-center bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-50">
+                    <i data-lucide="mic" id="icon-chat-mic" class="w-5 h-5"></i>
+                </button>
+                <input type="text" id="chat-input" placeholder="Type or speak a question..." class="flex-1 bg-slate-100 border-transparent focus:bg-white focus:border-violet-400 focus:ring-0 rounded-full px-4 py-3 text-sm font-medium transition-colors outline-none border-2">
+                <button type="submit" id="btn-chat-send" disabled class="bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white p-3 rounded-full transition-colors shadow-sm shrink-0">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </form>
         </div>
-
-        <p class="keyboard-hint" id="keyboard-hint">
-          ⌨️ Arrow Keys or Space • S to speak
-        </p>
-      </div>
-
-      <div id="mascot">
-        <div class="mascot-body">
-          <div class="mascot-eye left"></div>
-          <div class="mascot-eye right"></div>
-          <div class="mascot-mouth"></div>
-        </div>
-      </div>
-
     </div>
 
-    <div class="bottom-bar" id="bottom-bar" style="display:none;">
-      <button id="home-btn"><i data-lucide="home"></i> Home</button>
-      <button id="restart-btn"><i data-lucide="rotate-cw"></i> Restart</button>
-      <button id="back-btn"><i data-lucide="arrow-left-circle"></i> Back</button>
-      <button id="next-btn"><i data-lucide="arrow-right-circle"></i> Next</button>
-    </div>
-  </div>
-</div>
-
-<div id="countdown-overlay">
-  <div id="countdown-text">3</div>
-</div>
-
-<div id="settings-backdrop">
-  <div id="settings-modal">
-    <div class="settings-header">
-      <h2>Settings</h2>
-      <button class="icon-btn" id="settings-close-btn" aria-label="Close Settings">
-        <i data-lucide="x"></i>
-      </button>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-label">Theme</div>
-      <div class="theme-selector">
-        <span class="theme-option" data-theme="default" title="Default"></span>
-        <span class="theme-option" data-theme="ocean" title="Ocean"></span>
-        <span class="theme-option" data-theme="sunset" title="Sunset"></span>
-        <span class="theme-option" data-theme="forest" title="Forest"></span>
-        <span class="theme-option" data-theme="pink" title="Pink"></span>
-        <span class="theme-option" data-theme="purple" title="Purple"></span>
-        <span class="theme-option" data-theme="skyblue" title="Sky Blue"></span>
-      </div>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-label">Dark Mode</div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="settings-theme-toggle">
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-label">Sound</div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="settings-sound-toggle">
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-label">
-        Default Time <small>Challenge timer (seconds)</small>
-      </div>
-      <input type="number" class="number-input" id="settings-default-time" min="10" step="5">
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-label">
-        Word Font Size <small>Size of the challenge word</small>
-      </div>
-      <div>
-        <span class="value-indicator" id="font-size-indicator">3.5em</span>
-        <input type="range" class="range-slider" id="settings-font-size" min="2" max="6" step="0.1">
-      </div>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-label">
-        Auto-Speak Word <small>Speak new word automatically</small>
-      </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="settings-autospeak-toggle">
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-label">Voice Speed</div>
-        <div>
-        <span class="value-indicator" id="speech-rate-indicator">0.9x</span>
-        <input type="range" class="range-slider" id="settings-speech-rate" min="0.5" max="1.5" step="0.1">
-      </div>
-    </div>
-
-    <button id="reset-settings-btn">
-      <i data-lucide="trash-2" style="width:18px; height:18px; margin-right: 8px;"></i>
-      Reset to Defaults
-    </button>
-  </div>
-</div>
-
-<div id="ai-helper-backdrop">
-  <div id="ai-helper-modal">
-    <div class="ai-helper-header">
-      <h2><i data-lucide="brain" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: bottom;"></i> AI Helper</h2>
-      <button class="icon-btn" id="ai-helper-close-btn" aria-label="Close AI Helper">
-        <i data-lucide="x"></i>
-      </button>
-    </div>
-    <div id="ai-helper-content">
-      <p style="display: block;">Get help with the word: <strong id="ai-word">...</strong></p>
-      <p id="ai-welcome-message" style="display:none; font-style: italic; opacity: 0.8;">Hi! I'm your AI helper. Start the challenge, and I can help you define words or use them in sentences!</p>
-      <div id="ai-buttons">
-          <button id="ai-define-btn">Define</button>
-          <button id="ai-sentence-btn">Use in Sentence</button>
-      </div>
-      <div id="ai-result">Tap a button above...</div>
-      <div id="ai-loading" style="display: none;">Generating response...</div>
-    </div>
-  </div>
-</div>
-
-
-<script>
-// --- WORD LISTS ---
-// (Kept here for single-file simplicity)
-// These lists provide the content for each grade level.
-const WORD_LISTS = {
-  prek: [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"],
-  k: ["am","an","as","at","be","by","do","go","he","hi","if","in","is","it","me","my","no","of","on","or","so","to","up","us","we","a","and","are","bad","bag","bat","bed","big","bit","box","boy","bug","bun","but","buy","can","cap","car","cat","cow","cry","cub","cut","dad","day","did","dig","dip","dog","dot","dry","eat","egg","end","fan","far","fat","few","fin","fit","fix","fly","for","fog","fun","fur","get","got","gum","gun","had","has","hat","hen","her","him","his","hit","hot","how","hug","hut","ice","ink","its","jam","jar","jet","job","jog","joy","jug","key","kid","kit","lab","lad","lap","lay","led","leg","let","lid","lip","lit","log","lot","low","mad","man","map","mat","may","men","met","mix","mom","mop","mud","mug","nap","net","new","nod","not","now","nut","off","old","one","our","out","owl","own","pad","pan","pat","pay","peg","pen","pet","pig","pin","pit","pod","pop","pot","put","rag","ram","ran","rap","rat","red","rib","rid","rim","rip","rod","rot","rub","rug","run","rut","sad","sap","sat","saw","say","see","set","sew","she","shy","sin","sip","sit","six","ski","sky","sob","son","sow","sub","sue","sum","sun","tab","tag","tan","tap","tax","tea","ten","the","tie","tin","tip","toe","tom","top","toy","try","tub","tug","two","use","van","vet","war","was","wax","way","web","wed","wet","who","why","wig","win","wit","won","yes","yet","you","zip","zoo"],
-  first: ["like","look","see","with","they","you","said","was","have","from","word","but","what","all","were","when","your","can","use","each","which","she","how","their","will","up","other","about","out","many","then","them","these","so","some","her","would","make","him","into","time","has","more","write","go","number","no","way","could","people","my","than","first","water","been","call","who","oil","now","find","long","down","day","get","come","made","may","part","after","again","an","any","as","ask","by","every","fly","give","giving","had","just","know","let","live","of","old","once","open","over","put","round","stop","take","thank","think","walk"],
-  second: ["mat","bad","fix","ham","rig","wig","bib","sap","six","rat","sit","tag","fig","Tim","map","hat","hip","it","rap","pig","pan","in","bit","fan","kid","cab","pad","at","lad","rip","bam","big","can","rim","van","tip","dad","gap","rag","sad","fin","tin","nag","him","set","did","bed","sum","yes","hog","rut","not","jam","Ned","bud","cod","mug","fit","lab","jot","cap","pin","rug","cop","kit","gut","get","rod","met","sat","pod","cat","got","beg","wet","sub","dot","zip","puff","the","go","talk","by","friend","look","no","walk","my","because","I","book","so","could","one","woman","is","are","goes","would","once","women","a","was","says","should","two","move","as","she","or","does","both","said","what","we","for","any","four","to","have","they","there","many","fourth","do","your","their","where","been","forty","of","want","were","who","into","people","see","he","be","me","pretty","above","month","honest","toward","young","nothing","among","hour","honor","through","touch","other","again","minute","truth","learn","rough","another","against","Monday","truly","earth","tough","mother","door","Wednesday","busy","early","enough","brother","poor","February","build","buy","father","floor","eye","built","guy","water","won","heart","sure","guess","very","son","about","laugh","guest","today","always","answer","whom","guide","almost","whose","tan","nap","going","had","red","gave","good","and","give","five","veah","say","live","goe","saw","has"],
-  third: ["better","bring","carry","clean","complete","cut","done","draw","drink","eight","fall","far","full","grow","hold","hot","hurt","if","keep","kind","light","long","much","myself","never","only","own","pick","seven","shall","show","six","small","start","ten","together","try","warm","around","before","best","call","cold","don't","fast","five","found","green","its","made","off","pull","read","right","sing","sleep","tell","these","those","upon","us","use","wash","wish","work","write","your","apple","baby","back","ball","bear","bird","birthday","boat","boy","bread","brother","cake","chair","chicken","children","coat","corn","cow","doll","duck","egg","eye","farm","farmer","father","feet","fire","fish","flower","game","garden","girl","goodbye","grass","ground","hand","head","hill","home","horse","house","kitty","leg","letter","man","men","milk","money","morning","mother","name","nest","night","paper","party","picture","pig","rabbit","rain","ring","robin","school","seed","sheep","shoe","sister","snow","song","squirrel","stick","street","sun","table","thing","top","toy","tree","watch","way","wind","window","wood"],
-  fourth: ["accident","actual","address","appear","arrive","bicycle","breath","breathe","business","calendar","caught","center","century","certain","circle","consider","continue","describe","difficult","disappear","exercise","experience","experiment","extreme","favorite","February","forward","fruit","grammar","group","guard","guide","height","imagine","important","increase","interest","island","knowledge","length","library","material","medicine","mention","natural","neither","notice","often","opposite","ordinary","particular","peculiar","perhaps","popular","position","possess","possible","potatoes","promise","purpose","quarter","question","recent","regular","reign","remember","sentence","separate","special","straight","strange","strength","suppose","surprise","therefore","though","thought","various","weight","woman","women","although","area","argue","brain","brought","captain","chief","church","clothes","company","country","course","daughter","discover","division","during","either","eleven","energy","engine","England","Europe","evening","except","expect","explain","finally","forest","future","general","heavy","hospital","however","include","instead","journey","language","listen","little","machine","measure","middle","million","mountain","music","nation"],
-  fifth: ["achieve","ancient","apparent","appreciate","approach","approve","average","awkward","bargain","barrier","borrow","boundary","brilliant","budget","burden","calculate","campaign","capacity","category","challenge","character","characteristic","chorus","citizen","column","combination","command","committee","communicate","community","compare","compete","competition","compose","concern","conclude","concrete","condition","conduct","confident","connect","conscious","consist","construct","contain","contrast","contribute","control","convince","correspond","courage","create","creature","criticize","culture","current","deceive","definite","delicious","depend","design","destroy","determine","develop","dictionary","direct","disaster","discuss","disease","distant","distribute","divide","dozen","drama","jealous","judgment","league","leisure","lightning","likely","liquid","lonely","luxury","magazine","maintain","major","manage","manual","manufacture","maximum","mischief","modern","moist","muscle","mystery","necessary","neighbor","nuisance","occupy","occur","opportunity","parliament","persuade","physical","prejudice","privilege","profession","program","pronounce","queue","recognize","recommend","relevant","restaurant","rhyme","rhythm","sacrifice","secretary","shoulder","signature","sincere","soldier","stomach","sufficient","suggest","symbol","system","temperature","thorough","twelfth","variety","vegetable","vehicle","yacht"],
-  more: ["abundant","accumulate","accurate","adapt","adequate","adjacent","adjust","advantage","advocate","affect","aggravate","amateur","ambitious","ample","analyze","anxious","appeal","appropriate","approximate","arrogant","artificial","ascend","assist","attempt","attentive","authentic","benefit","bias","brief","brutal","capable","cautious","cease","chaos","chronological","clarify","classify","coarse","coherent","colossal","commence","comment","comfortable","complex","component","comprehend","conceal","concise","condemn","conflict","consecutive","consensus","consent","conspicuous","context","continuous","convenient","crucial","data","debate","debt","deceitful","declare","decline","deficient","dense","depict","desist","despise","destitute","detect","deter","diligent","diminish","disrupt","distinct","distort","diverse","dominant","drastic","drowsy","dubious","durable","eager","eccentric","edible","eerie","effect","efficient","elaborate","elegant","eligible","elite","eloquent","embark","emerge","emphasis","encounter","endeavor","endorse","endure","energetic","enhance","enigma","entice","era","essential","evade","evident","evolve","exceed","excel","exempt","exotic","expand","expert","explicit","extol","extract","extravagant","facetious","fallacy","feasible","feeble","feud","fickle","fiery","final","flagrant","flaw","flee","flimsy","fluctuate","fluent","foe","formal","frantic","frequent","frugal","futile","genuine","gigantic","glare","glum","gradual","grasp","gravity","greedy","grievance","grim","groggy","grudge","habitable","haphazard","harsh","hasty","hazardous","hesitate","hideous","hoax","hostile","identical","idle","illegible","illicit","imitate","immense","impartial","impede","implicit","imply","incessant","increment","independent","indicate","indignant","indispensable","induce","inept","inevitable","infamous","infer","infinite","infuriate","ingenious","inherent","inhibit","initial","inquiry","integral","intricate","intuitive","irate","irrelevant","jeopardize","jubilant","judicious","justify","keen","labyrinth","lack","legible","lenient","lethal","listless","literal","loathe","logical","lucid","lucrative","ludicrous","lurk","majestic","meager","mediocre","melancholy","mellow","meticulous","mimic","moderate","modest","monotonous","morbid","mundane","multitude","nimble","nonchalant","notify","numerous","nutritious","oblivious","obscure","obsolete","obstacle","ominous","opportune","ordeal","ornate","orthodox","overlap","overt","parody","passive","persist","pertinent","plausible","plea","plentiful","ponder","potent","precise","predominant","preliminary","presume","prevail","prevalent","prior","probe","proceed","prohibit","prominent","propel","profound","prolific","prospect","prudent","query","quest","radiant","random","rational","realistic","reasonable","rebel","recall","reciprocate","reckless","redundant","refuge","regime","relevant","reluctant","remote","repel","resent","resolute","respond","restrict","reveal","rigid","rigorous","rural","scarce","scatter","skeptical","scheme","scope","significant","simultaneous","sinister","slack","sleazy","slight","sluggish","solitary","sparse","spontaneous","sporadic","stable","stagnant","sterile","stern","subtle","superficial","superfluous","supplement","suppress","surpass","surplus","tangible","tedious","temperate","tentative","terminate","terrain","terse","thorough","timid","toxic","tranquil","transient","transparent","trivial","turbulent","unanimous","uncouth","unique","valid","vague","versatile","viable","vibrant","vigilant","vigorous","vivid","weary","wholesome","widespread","wily","wither","yearn","zest"]
-};
-
-// --- NEW: Star Rating Thresholds (WPM or LPM for Pre-K) ---
-const STAR_THRESHOLDS = {
-  prek: [15, 30, 45], // 1, 2, 3 stars (Letters Per Minute)
-  k: [10, 20, 35],    // (Words Per Minute)
-  first: [20, 35, 50],
-  second: [30, 50, 70],
-  third: [40, 65, 85],
-  fourth: [50, 80, 100],
-  fifth: [60, 90, 120],
-  more: [70, 100, 130]
-};
-
-// --- NEW: Grade Titles ---
-const GRADE_TITLES = {
-  prek: "🎯 Pre-K Challenge",
-  k: "🎯 Kindergarten Challenge",
-  first: "🎯 First Grade Challenge",
-  second: "🎯 Second Grade Challenge",
-  third: "🎯 Third Grade Challenge",
-  fourth: "🎯 Fourth Grade Challenge",
-  fifth: "🎯 Fifth Grade Challenge",
-  more: "🎯 More Grades (6+)"
-};
-
-// --- GLOBAL STATE & SETTINGS ---
-const globalSynth = window.speechSynthesis;
-const SETTINGS_KEY = 'kidsySettings'; // localStorage key for settings
-const HIGHSCORE_KEY_PREFIX = 'kidsy-highscore-'; // Prefix for highscore keys
-
-// Default settings
-const defaultSettings = {
-  theme: 'default',
-  darkMode: false,
-  sound: true,
-  defaultTime: 60,
-  fontSize: 3.5,
-  autoSpeak: false,
-  speechRate: 0.9
-};
-
-let globalSettings = { ...defaultSettings };
-let activeGameInstance = null; // Holds the single game instance
-let currentWordForAI = ''; // Stores the current word for the AI helper
-let currentGradeForAI = ''; // Stores the current grade level string for AI context
-
-// --- DOM Cache ---
-// Cache all DOM elements once on load for performance
-const DOMElements = {
-  // Navigation
-  navTabs: document.querySelectorAll('.nav-tab'),
-
-  // Game UI
-  gameTitle: document.getElementById('game-title'),
-  startStateContent: document.getElementById('start-state-content'),
-  gameStateContent: document.getElementById('game-state-content'),
-  settingsSection: document.getElementById('settings-section'),
-  highScoreDisplay: document.getElementById('high-score-display'),
-  startBtn: document.getElementById('start-btn'),
-
-  // In-Game
-  progressBar: document.getElementById('progress-bar'),
-  progressFill: document.getElementById('progress-fill'),
-  wordDisplay: document.getElementById('word-display'),
-  speakControls: document.getElementById('speak-controls'),
-  speechRateIndicatorInline: document.getElementById('speech-rate-indicator-inline'),
-  speechRateSlider: document.getElementById('speech-rate-slider'),
-  speakBtn: document.getElementById('speak-btn'),
-  scoreDisplay: document.getElementById('score-display'),
-  starRatingDisplay: document.getElementById('star-rating-display'),
-
-  // Stats Grid
-  statsGrid: document.getElementById('stats-grid'),
-  wordsReadCard: document.getElementById('words-read-card'),
-  wordsReadLabel: document.querySelector('#words-read-card .stat-label'),
-  wordsRead: document.getElementById('words-read'),
-  timerCard: document.getElementById('timer-card'),
-  timer: document.getElementById('timer'),
-  streakCard: document.getElementById('streak-card'),
-  streakCounter: document.getElementById('streak-counter'),
-  wpmCard: document.getElementById('wpm-card'),
-  wpm: document.getElementById('wpm'),
-  wpmLabel: document.querySelector('#wpm-card .stat-label'),
-
-  // Controls
-  timerInput: document.getElementById('timer-input'),
-  aiHelperBtn: document.getElementById('ai-helper-btn'),
-  muteToggle: document.getElementById('mute-toggle'),
-  themeToggle: document.getElementById('theme-toggle'),
-  keyboardHint: document.getElementById('keyboard-hint'),
-  bottomBar: document.getElementById('bottom-bar'),
-  homeBtn: document.getElementById('home-btn'),
-  restartBtn: document.getElementById('restart-btn'),
-  backBtn: document.getElementById('back-btn'),
-  nextBtn: document.getElementById('next-btn'),
-
-  // Mascot
-  mascot: document.getElementById('mascot'),
-
-  // Countdown
-  countdownOverlay: document.getElementById('countdown-overlay'),
-  countdownText: document.getElementById('countdown-text'),
-
-  // Settings Modal
-  settingsBackdrop: document.getElementById('settings-backdrop'),
-  globalSettingsBtns: document.querySelectorAll('.global-settings-btn'),
-  settingsCloseBtn: document.getElementById('settings-close-btn'),
-  themeOptions: document.querySelectorAll('.theme-option'),
-  settingsThemeToggle: document.getElementById('settings-theme-toggle'),
-  settingsSoundToggle: document.getElementById('settings-sound-toggle'),
-  settingsDefaultTime: document.getElementById('settings-default-time'),
-  settingsFontSize: document.getElementById('settings-font-size'),
-  fontSizeIndicator: document.getElementById('font-size-indicator'),
-  settingsAutoSpeakToggle: document.getElementById('settings-autospeak-toggle'),
-  settingsSpeechRate: document.getElementById('settings-speech-rate'),
-  speechRateIndicator: document.getElementById('speech-rate-indicator'),
-  resetSettingsBtn: document.getElementById('reset-settings-btn'),
-
-  // AI Modal
-  aiHelperBackdrop: document.getElementById('ai-helper-backdrop'),
-  aiHelperCloseBtn: document.getElementById('ai-helper-close-btn'),
-  aiWord: document.getElementById('ai-word'),
-  aiWelcomeMessage: document.getElementById('ai-welcome-message'),
-  aiButtons: document.getElementById('ai-buttons'),
-  aiDefineBtn: document.getElementById('ai-define-btn'),
-  aiSentenceBtn: document.getElementById('ai-sentence-btn'),
-  aiResult: document.getElementById('ai-result'),
-  aiLoading: document.getElementById('ai-loading')
-};
-
-
-// --- GLOBAL SETTINGS FUNCTIONS ---
-
-/**
- * Saves the current globalSettings object to localStorage.
- */
-function saveSettings() {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(globalSettings));
-  } catch (e) {
-    console.error("Could not save settings to localStorage", e);
-  }
-}
-
-/**
- * Loads settings from localStorage, merges with defaults, and applies them.
- */
-function loadSettings() {
-  let loaded = {};
-  try {
-    const stored = localStorage.getItem(SETTINGS_KEY);
-    if (stored) {
-      loaded = JSON.parse(stored);
-    }
-  } catch (e) {
-    console.error("Could not parse settings from localStorage", e);
-  }
-  // Merge loaded settings with defaults to ensure all keys exist
-  globalSettings = { ...defaultSettings, ...loaded };
-  applySettings();
-  updateSettingsUI();
-}
-
-/**
- * Applies settings to the DOM (theme, dark mode, font size).
- */
-function applySettings() {
-  // Apply theme and dark mode
-  document.body.className = ''; // Clear existing classes
-  document.body.classList.add(`theme-${globalSettings.theme}`);
-  document.body.classList.toggle('dark', globalSettings.darkMode);
-
-  // Apply word font size using clamp()
-  document.documentElement.style.setProperty(
-    '--word-font-size',
-    `clamp(2em, ${globalSettings.fontSize * 2}vw, ${globalSettings.fontSize}em)`
-  );
-
-  // Update default time in UI
-  DOMElements.timerInput.value = globalSettings.defaultTime;
-  DOMElements.timer.textContent = globalSettings.defaultTime;
-}
-
-/**
- * Updates the settings modal UI to reflect current globalSettings.
- */
-function updateSettingsUI() {
-  // Update theme selectors
-  DOMElements.themeOptions.forEach(opt => {
-    opt.classList.toggle('selected', opt.dataset.theme === globalSettings.theme);
-  });
-
-  // Update toggles
-  DOMElements.settingsThemeToggle.checked = globalSettings.darkMode;
-  DOMElements.settingsSoundToggle.checked = globalSettings.sound;
-  DOMElements.settingsAutoSpeakToggle.checked = globalSettings.autoSpeak;
-
-  // Update inputs and sliders
-  DOMElements.settingsDefaultTime.value = globalSettings.defaultTime;
-  DOMElements.settingsFontSize.value = globalSettings.fontSize;
-  DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
-  DOMElements.settingsSpeechRate.value = globalSettings.speechRate;
-  DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
-
-  // Sync in-game speech rate slider
-  DOMElements.speechRateSlider.value = globalSettings.speechRate;
-  DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
-
-  // Update in-game theme/mute icons
-  const isDark = globalSettings.darkMode;
-  DOMElements.themeToggle.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
-  const isMuted = !globalSettings.sound;
-  DOMElements.muteToggle.innerHTML = isMuted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>';
-
-  // Re-render icons
-  lucide.createIcons();
-}
-
-/**
- * Resets all settings to default values.
- */
-function resetSettings() {
-  // Use a simple confirm dialog
-  if (confirm("Are you sure you want to reset all settings to their defaults?")) {
-    globalSettings = { ...defaultSettings };
-    saveSettings();
-    applySettings();
-    updateSettingsUI();
-    // Also update the main timer input
-    DOMElements.timerInput.value = globalSettings.defaultTime;
-    DOMElements.timer.textContent = globalSettings.defaultTime;
-  }
-}
-
-// --- GLOBAL SOUND FUNCTIONS ---
-
-/**
- * Plays a sound effect using Tone.js based on type.
- * @param {string} type - The type of sound to play ('click', 'nav', 'start', 'end', 'countdown', 'countdownGo').
- */
-function playSound(type) {
-  if (!globalSettings.sound || !Tone) return;
-  try {
-    // Start Tone.js context if not already running (required by browsers)
-    if (Tone.context.state !== 'running') {
-      Tone.start();
-    }
-    let synth;
-    switch (type) {
-      case 'click':
-        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('C5', '0.1');
-        break;
-      case 'nav':
-        synth = new Tone.Synth({oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('E5', '0.08');
-        break;
-      case 'start':
-        synth = new Tone.Synth().toDestination();
-        synth.triggerAttackRelease("G4", "8n", Tone.now());
-        synth.triggerAttackRelease("C5", "8n", Tone.now() + 0.1);
-        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
-        break;
-      case 'end': // A celebratory sound
-        synth = new Tone.Synth().toDestination();
-        synth.triggerAttackRelease("C5", "8n", Tone.now());
-        synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
-        synth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4);
-        synth.triggerAttackRelease("C6", "8n", Tone.now() + 0.6);
-        break;
-      case 'countdown':
-        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('A4', '8n');
-        break;
-      case 'countdownGo':
-        synth = new Tone.Synth({oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }}).toDestination();
-        synth.triggerAttackRelease('C5', '4n');
-        break;
-    }
-  } catch(e) {
-    console.error("Tone.js sound failed:", e);
-  }
-}
-
-/**
- * Uses the browser's SpeechSynthesis API to speak a word.
- * @param {string} text - The word or text to speak.
- * @param {string} gradeKey - The current grade key (e.g., 'prek').
- */
-function speakWord(text, gradeKey) {
-  if (!globalSynth || !text) return;
-  globalSynth.cancel(); // Stop any previous speech
-
-  let textToSpeak = text;
-  // Special case for Pre-K: just speak the letter name
-  if (gradeKey === 'prek' && /^[A-Z]$/.test(text)) {
-    textToSpeak = text; // Speaks "A", "B", etc.
-  }
-
-  const utterance = new SpeechSynthesisUtterance(textToSpeak);
-  utterance.lang = 'en-US';
-  utterance.rate = globalSettings.speechRate;
-  globalSynth.speak(utterance);
-}
-
-/**
- * Shuffles an array in place (Fisher-Yates algorithm).
- * @param {Array} arr - The array to shuffle.
- * @returns {Array} The shuffled array.
- */
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-// --- FREE DICTIONARY API Helper Function ---
-/**
- * Calls the free dictionary API to get definitions or sentences.
- * @param {string} word - The word to look up.
- * @param {string} type - 'define' or 'sentence'.
- * @returns {Promise<string>} A string with the result or an error message.
- */
-async function callDictionaryApi(word, type) {
-  const apiUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
-
-  try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-        if(response.status === 404) {
-             return `Sorry, I couldn't find "${word}" in the dictionary.`;
-        }
-      throw new Error(`Dictionary API Error: ${response.status} ${response.statusText}`);
-    }
-    const data = await response.json();
-
-    // Data structure: Array of entries -> meanings -> definitions
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      return `Sorry, no dictionary results found for "${word}".`;
-    }
-
-    let resultText = `Sorry, I couldn't get the specific info for "${word}".`;
-    const entry = data[0]; // Use the first entry
-
-    if (entry.meanings && entry.meanings.length > 0) {
-      // Find the first meaning that has definitions
-      const meaningWithDefs = entry.meanings.find(m => m.definitions && m.definitions.length > 0);
-      if (meaningWithDefs) {
-        const definitionData = meaningWithDefs.definitions[0]; // Use the first definition
-
-        if (type === 'define' && definitionData.definition) {
-          resultText = definitionData.definition;
-        } else if (type === 'sentence') {
-          // Try finding an example in *any* definition within this meaning
-          let foundExample = null;
-          for(const def of meaningWithDefs.definitions) {
-              if (def.example) {
-                  foundExample = def.example;
-                  break; // Stop at the first example found
-              }
-          }
-          // Fallback to definition if no example is found
-           resultText = foundExample || `No example sentence found for "${word}", but the definition is: ${definitionData.definition || 'Not available'}`;
-        }
-      }
-    }
-    return resultText;
-
-  } catch (error) {
-    console.error("Error calling Dictionary API:", error);
-    return `Sorry, there was an error fetching information for "${word}". Please check your connection.`;
-  }
-}
-
-
-/**
- * Converts a grade key (e.g., 'first') to a display string.
- * @param {string} gradeKey - The grade key.
- * @returns {string} A user-friendly string.
- */
-function getGradeLevelString(gradeKey) {
-  switch (gradeKey) {
-    case 'prek': return 'Pre-K';
-    case 'k': return 'Kindergarten';
-    case 'first': return 'First Grade';
-    case 'second': return 'Second Grade';
-    case 'third': return 'Third Grade';
-    case 'fourth': return 'Fourth Grade';
-    case 'fifth': return 'Fifth Grade';
-    case 'more': return 'Sixth Grade or higher';
-    default: return 'the appropriate grade level';
-  }
-}
-
-// --- MASCOT CONTROLLER ---
-// A simple object to control the mascot's CSS state.
-const Mascot = {
-  element: DOMElements.mascot,
-  setState(state) {
-    this.element.className = state;
-  },
-  cheer() {
-    this.setState('cheer');
-    setTimeout(() => this.setState('idle'), 500); // Return to idle after animation
-  },
-  celebrate() {
-    this.setState('celebrate'); // Stays celebrating until explicitly changed
-  },
-  worried() {
-    this.setState('worried'); // Stays worried
-  },
-  idle() {
-    this.setState('idle'); // Default state
-  }
-};
-
-// --- GAME INSTANCE FACTORY ---
-/**
- * Creates a new game instance. This factory pattern encapsulates
- * all game state and logic within a single object.
- * @returns {object} A game instance with public methods.
- */
-function createWordChallenge() {
-    // --- Private Game State ---
-    let state = {
-        gradeKey: 'prek',
-        wordList: [],
-        shuffledWords: [],
-        currentWordIndex: 0,
-        currentWord: '',
-        currentStreak: 0,
-        gameStarted: false,
-        timeLeft: 0,
-        totalTime: 0,
-        score: 0, // Words or letters read
-        timerInterval: null
-    };
-
-    // --- Private Helper Functions ---
-    function getHighScore(gradeKey) {
-        return parseInt(localStorage.getItem(HIGHSCORE_KEY_PREFIX + gradeKey) || 0);
-    }
-
-    function setHighScore(gradeKey, wpm) {
-        localStorage.setItem(HIGHSCORE_KEY_PREFIX + gradeKey, wpm);
-    }
-
-    /**
-     * Displays the current word and handles audio/animation.
-     */
-    function showWord() {
-        // Loop word list if end is reached
-        if (state.currentWordIndex >= state.shuffledWords.length) {
-            state.currentWordIndex = 0;
-        }
-        // Loop backwards
-        if (state.currentWordIndex < 0) {
-            state.currentWordIndex = state.shuffledWords.length - 1;
-        }
-
-        state.currentWord = state.shuffledWords[state.currentWordIndex];
-        currentWordForAI = state.currentWord; // Update global AI helper variable
-
-        DOMElements.wordDisplay.textContent = state.currentWord;
-        // Apply a random pop-in animation
-        DOMElements.wordDisplay.className = Math.random() > 0.5 ? 'swoosh-in' : 'pop-in';
-        state.score++;
-        updateStats();
-
-        // Auto-speak if setting is enabled and game is running
-        if (globalSettings.autoSpeak && state.gameStarted) {
-            speakWord(state.currentWord, state.gradeKey);
-        }
-    }
-
-    /**
-     * Updates all stat displays (score, streak, WPM).
-     */
-    function updateStats() {
-        // Adjust labels for Pre-K (Letters) vs. other grades (Words)
-        const wpmLabelText = state.gradeKey === 'prek' ? 'Letters/Min' : 'Words/Min';
-        const wordsReadLabelText = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
-
-        DOMElements.wordsRead.textContent = Math.max(0, state.score); // Score can be negative on 'back'
-        DOMElements.streakCounter.textContent = `${state.currentStreak} 🔥`;
-        DOMElements.wordsReadLabel.textContent = wordsReadLabelText;
-        DOMElements.wpmLabel.textContent = wpmLabelText;
-
-        // Calculate WPM (or LPM)
-        const elapsed = state.totalTime - state.timeLeft;
-        const wpm = elapsed > 0 ? Math.round((Math.max(0, state.score) / elapsed) * 60) : 0;
-        DOMElements.wpm.textContent = wpm;
-    }
-
-    /**
-     * The main game loop, called every second by setInterval.
-     */
-    function updateTimer() {
-        if (!state.gameStarted) return;
-        state.timeLeft--;
-
-        if (state.timeLeft >= 0) {
-            DOMElements.timer.textContent = state.timeLeft;
-            const progress = (state.timeLeft / state.totalTime) * 100;
-            DOMElements.progressFill.style.width = progress + '%';
-        }
-
-        // Timer pulse and mascot worry state
-        if (state.timeLeft <= 10 && state.timeLeft > 0) {
-            DOMElements.timerCard.classList.add('timer-low');
-            Mascot.worried();
-        }
-
-        if (state.timeLeft <= 0) {
-            publicMethods.endGame();
-        } else {
-            updateStats(); // Update WPM every second
-        }
-    }
-
-    /**
-     * Advances to the next word.
-     */
-    function nextWord() {
-        playSound('nav');
-        state.currentWordIndex++;
-        state.currentStreak++;
-        Mascot.cheer();
-        showWord();
-    }
-
-    /**
-     * Goes to the previous word.
-     */
-    function prevWord() {
-        playSound('nav');
-        state.currentWordIndex--;
-        state.score -= 2; // Penalize score for going back
-        state.currentStreak = 0; // Reset streak
-        Mascot.idle();
-        showWord();
-    }
-
-    /**
-     * Shows the 3, 2, 1, GO! countdown.
-     * @param {function} callback - Function to call after countdown finishes.
-     */
-    function showCountdown(callback) {
-        let count = 3;
-        DOMElements.countdownText.textContent = count;
-        DOMElements.countdownOverlay.classList.add('visible');
-        DOMElements.countdownText.classList.add('show'); // Trigger animation
-        playSound('countdown');
-
-        const interval = setInterval(() => {
-            DOMElements.countdownText.classList.remove('show'); // Hide old number
-            setTimeout(() => { // Wait for hide animation
-                count--;
-                if (count > 0) {
-                    DOMElements.countdownText.textContent = count;
-                    DOMElements.countdownText.classList.add('show');
-                    playSound('countdown');
-                } else if (count === 0) {
-                    DOMElements.countdownText.textContent = "GO!";
-                    DOMElements.countdownText.classList.add('show');
-                    playSound('countdownGo');
-                } else {
-                    // --- GO! ---
-                    clearInterval(interval);
-                    DOMElements.countdownOverlay.classList.remove('visible');
-                    DOMElements.countdownText.classList.remove('show');
-                    callback(); // Start the game
+    <script>
+        // --- DATA ---
+        const vocabList = [
+            { 
+                word: "privilege", 
+                definition: "a special benefit enjoyed only under certain circumstances",
+                sentences: ["Driving a car is a _________, not a right.", "Having access to clean drinking water is a _________ that many take for granted.", "It was a huge _________ to meet the famous author in person.", "As the team captain, she had the _________ of choosing the new jersey colors."]
+            },
+            { 
+                word: "elegant", 
+                definition: "something that is high quality and fancy",
+                sentences: ["She wore an _________ gown to the royal ball.", "The hotel lobby was decorated in a very _________ and modern style.", "The mathematician wrote an _________ proof that was incredibly simple but brilliant.", "The swan looked incredibly _________ as it glided silently across the lake."]
+            },
+            { 
+                word: "calculate", 
+                definition: "to determine the answer",
+                sentences: ["The math teacher asked us to _________ the area of the circle.", "We need to carefully _________ the total cost of the trip before we book it.", "The supercomputer can _________ complex equations in milliseconds.", "It is difficult to _________ exactly how much paint we will need for this room."]
+            },
+            { 
+                word: "grumble", 
+                definition: "to complain about something in a quiet voice",
+                sentences: ["My stomach started to _________ loudly because I missed breakfast.", "The old man would always _________ about the cold weather in the winter.", "\"I hate waking up this early,\" she began to _________ under her breath.", "We could hear the thunder begin to _________ over the distant mountains."]
+            },
+            { 
+                word: "assemble", 
+                definition: "to put together",
+                sentences: ["It took us three hours to _________ the new furniture we bought from the store.", "The principal asked all the students to _________ in the auditorium for a special assembly.", "We need to _________ a team of experts to tackle this difficult project.", "The factory workers can _________ thousands of cars every single day."]
+            },
+            { 
+                word: "pledge", 
+                definition: "a promise or agreement to do or not to do something",
+                sentences: ["Every morning, the students stand up to say the _________ of allegiance.", "The knights made a solemn _________ of loyalty to their king.", "We ask everyone to _________ a small donation to help the local animal shelter.", "She made a personal _________ to always tell the truth, no matter what.", "I made a _________ to myself that I would exercise every day this year.", "The club members had to take a secret _________ before joining.", "He gave his _________ that he would keep the information confidential."]
+            },
+            { 
+                word: "specific", 
+                definition: "to be particular or precise",
+                sentences: ["Can you be more _________ about what time we are meeting tomorrow?", "This recipe calls for a very _________ type of flour that is hard to find.", "I am looking for a _________ book about the history of the Roman Empire.", "The doctor gave me _________ instructions on how to take the new medication.", "We need a _________ tool to fix this engine problem.", "There is no _________ reason why I chose this color; I just like it.", "She gave _________ details about the suspect to the police officer."]
+            },
+            { 
+                word: "defend", 
+                definition: "to prove by giving evidence",
+                sentences: ["The lawyer will fiercely _________ her client in the courtroom today.", "The army is fully prepared to _________ the borders of the country.", "You must be able to _________ your scientific argument with solid facts.", "The goalie made an amazing dive to _________ the net from the soccer ball.", "It is important to _________ your friends when people say bad things about them.", "The castle was built with high walls to _________ against enemy attacks.", "He had to _________ his thesis in front of a panel of professors."]
+            },
+            { 
+                word: "research", 
+                definition: "to study a specific subject",
+                sentences: ["He needs to do a lot more _________ before writing his final science essay.", "The university scientists are conducting new _________ on a cure for the disease.", "I spent the entire afternoon doing _________ at the city library.", "Medical _________ has advanced significantly in the last ten years.", "Her _________ focuses on the behavior of deep-sea creatures.", "We need to gather more _________ before making a final decision.", "The internet makes it very easy to do _________ for school projects."]
+            },
+            { 
+                word: "fragile", 
+                definition: "easily broken or damaged",
+                sentences: ["Please be extremely careful with that glass vase, it is very _________.", "The beautiful butterfly's wings look incredibly thin and _________.", "The peace agreement between the two countries is still very _________ and could break.", "These historical documents are too _________ to be handled without special gloves.", "The bird's eggs are very _________ and must be kept safe.", "Handle the package with care; the contents are highly _________.", "He felt very emotionally _________ after hearing the bad news."]
+            }
+        ];
+
+        // --- STATE ---
+        let studyList = [];
+        let activeTab = 'study';
+        let streak = 0;
+        
+        let studyCurrentIndex = 0;
+        
+        let sentenceQuestion = null;
+        let sentenceResult = null; // null, 'correct', 'incorrect'
+        
+        let quizQuestion = null;
+        let quizResult = null; // string (selected option)
+        
+        let chatHistory = [];
+        let isChatLoading = false;
+        
+        let aiHint = "";
+        let isLoadingHint = false;
+
+        // --- SPEECH RECOGNITION INSTANCES ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let practiceRec = null, sentenceRec = null, chatRec = null;
+        let isPracticeRecording = false, isSentenceRecording = false, isChatRecording = false;
+
+        // --- UTILS ---
+        const shuffleArray = (array) => {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+
+        const updateStreakUI = () => {
+            document.getElementById('streak-counter').innerText = streak;
+            const icon = document.getElementById('streak-icon');
+            if(streak > 0) {
+                icon.classList.add('text-yellow-300', 'animate-pulse');
+                icon.classList.remove('text-orange-200');
+            } else {
+                icon.classList.remove('text-yellow-300', 'animate-pulse');
+                icon.classList.add('text-orange-200');
+            }
+        };
+
+        const updateHintUI = () => {
+            const hintDisplay = document.getElementById('ai-hint-display');
+            if (aiHint) {
+                hintDisplay.classList.remove('hidden');
+                hintDisplay.classList.add('flex');
+                document.getElementById('ai-hint-text').innerText = aiHint;
+            } else {
+                hintDisplay.classList.add('hidden');
+                hintDisplay.classList.remove('flex');
+            }
+
+            const btnHint = document.getElementById('btn-ai-hint');
+            const iconHint = document.getElementById('icon-hint');
+            const textHint = document.getElementById('text-hint');
+
+            if (isLoadingHint) {
+                btnHint.disabled = true;
+                iconHint.outerHTML = `<div id="icon-hint" class="animate-spin h-4 w-4 border-2 border-yellow-800 border-t-transparent rounded-full"></div>`;
+            } else {
+                // Re-create lucide icon element
+                iconHint.outerHTML = `<i data-lucide="lightbulb" class="w-4 h-4" id="icon-hint"></i>`;
+                lucide.createIcons();
+                
+                let disableHint = false;
+                if(activeTab === 'sentences' && sentenceResult !== null) disableHint = true;
+                if(activeTab === 'quiz' && quizResult !== null) disableHint = true;
+                btnHint.disabled = disableHint;
+            }
+        };
+
+        const resetStudyFeedback = () => {
+            const fb = document.getElementById('pronunciation-feedback');
+            fb.classList.add('hidden');
+            fb.classList.remove('flex', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-800', 'bg-amber-50', 'border-amber-200', 'text-amber-800');
+            window.speechSynthesis.cancel();
+            aiHint = "";
+            updateHintUI();
+        };
+
+        const getCurrentContextItem = () => {
+            if (activeTab === 'sentences' && sentenceQuestion) return sentenceQuestion;
+            if (activeTab === 'quiz' && quizQuestion) return quizQuestion;
+            return studyList[studyCurrentIndex];
+        };
+
+        // --- TTS (NATIVE) ---
+        const speakText = (text) => {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; 
+            window.speechSynthesis.speak(utterance);
+        };
+
+        // --- INITIALIZATION ---
+        const initSpeechRecognition = () => {
+            if (!SpeechRecognition) return;
+
+            // Practice Rec
+            practiceRec = new SpeechRecognition();
+            practiceRec.continuous = false;
+            practiceRec.interimResults = true;
+            practiceRec.lang = 'en-US';
+            
+            practiceRec.onstart = () => {
+                isPracticeRecording = true;
+                const btn = document.getElementById('btn-practice-mic');
+                btn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-600', 'animate-pulse');
+                btn.classList.remove('bg-white', 'border-emerald-200', 'text-emerald-600');
+                document.getElementById('icon-practice-mic').outerHTML = `<i data-lucide="mic-off" id="icon-practice-mic" class="w-6 h-6 mb-2"></i>`;
+                document.getElementById('text-practice-mic').innerText = 'Stop';
+                lucide.createIcons();
+                resetStudyFeedback();
+            };
+            
+            let finalPracticeTranscript = "";
+            practiceRec.onresult = (e) => {
+                finalPracticeTranscript = Array.from(e.results).map(r => r[0].transcript).join('');
+            };
+            
+            practiceRec.onend = () => {
+                isPracticeRecording = false;
+                const btn = document.getElementById('btn-practice-mic');
+                btn.classList.remove('bg-rose-50', 'border-rose-500', 'text-rose-600', 'animate-pulse');
+                btn.classList.add('bg-white', 'border-emerald-200', 'text-emerald-600');
+                document.getElementById('icon-practice-mic').outerHTML = `<i data-lucide="mic" id="icon-practice-mic" class="w-6 h-6 mb-2"></i>`;
+                document.getElementById('text-practice-mic').innerText = 'Practice Saying It';
+                lucide.createIcons();
+
+                if (finalPracticeTranscript && activeTab === 'study') {
+                    handlePronunciationResult(finalPracticeTranscript);
                 }
-            }, 150); // Delay for fade out
-        }, 1000);
-    }
+                finalPracticeTranscript = "";
+            };
+            practiceRec.onerror = () => practiceRec.stop();
 
-    /**
-     * Displays the star rating at the end of the game.
-     * @param {number} wpm - The final WPM/LPM score.
-     */
-    function showStars(wpm) {
-        const thresholds = STAR_THRESHOLDS[state.gradeKey] || [10, 20, 30];
-        let stars = 0;
-        if (wpm >= thresholds[0]) stars = 1;
-        if (wpm >= thresholds[1]) stars = 2;
-        if (wpm >= thresholds[2]) stars = 3;
+            // Sentence Rec
+            sentenceRec = new SpeechRecognition();
+            sentenceRec.continuous = false;
+            sentenceRec.interimResults = true;
+            sentenceRec.lang = 'en-US';
+            
+            sentenceRec.onstart = () => {
+                isSentenceRecording = true;
+                const btn = document.getElementById('btn-sentence-mic');
+                btn.classList.add('bg-rose-100', 'text-rose-600');
+                btn.classList.remove('bg-slate-100', 'text-slate-500');
+            };
+            
+            sentenceRec.onresult = (e) => {
+                const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+                const input = document.getElementById('sentence-input');
+                input.value = transcript;
+                checkInputState(); // update check button
+            };
+            
+            sentenceRec.onend = () => {
+                isSentenceRecording = false;
+                const btn = document.getElementById('btn-sentence-mic');
+                btn.classList.remove('bg-rose-100', 'text-rose-600');
+                btn.classList.add('bg-slate-100', 'text-slate-500');
+            };
+            sentenceRec.onerror = () => sentenceRec.stop();
 
-        let starHTML = '';
-        for(let i = 0; i < 3; i++) {
-            // Add inline style for filled stars
-            starHTML += `<i data-lucide="star" ${i < stars ? 'style="fill: #ffc107;"' : ''}></i>`;
-        }
-        DOMElements.starRatingDisplay.innerHTML = starHTML;
-        lucide.createIcons();
-        // Add class to trigger star animation
-        setTimeout(() => DOMElements.starRatingDisplay.classList.add('show-stars'), 100);
-    }
+            // Chat Rec
+            chatRec = new SpeechRecognition();
+            chatRec.continuous = false;
+            chatRec.interimResults = true;
+            chatRec.lang = 'en-US';
+            
+            chatRec.onstart = () => {
+                isChatRecording = true;
+                const btn = document.getElementById('btn-chat-mic');
+                btn.classList.add('bg-rose-100', 'text-rose-600', 'animate-pulse');
+                btn.classList.remove('bg-slate-100', 'text-slate-600');
+                document.getElementById('icon-chat-mic').outerHTML = `<i data-lucide="mic-off" id="icon-chat-mic" class="w-5 h-5"></i>`;
+                lucide.createIcons();
+            };
+            
+            let currentChatVal = "";
+            chatRec.onresult = (e) => {
+                const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+                document.getElementById('chat-input').value = currentChatVal + " " + transcript;
+                checkChatInputState();
+            };
+            
+            chatRec.onend = () => {
+                isChatRecording = false;
+                const btn = document.getElementById('btn-chat-mic');
+                btn.classList.remove('bg-rose-100', 'text-rose-600', 'animate-pulse');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+                document.getElementById('icon-chat-mic').outerHTML = `<i data-lucide="mic" id="icon-chat-mic" class="w-5 h-5"></i>`;
+                lucide.createIcons();
+                currentChatVal = document.getElementById('chat-input').value;
+            };
+            chatRec.onerror = () => chatRec.stop();
+        };
 
-    // --- Public Methods ---
-    const publicMethods = {
-        /**
-         * Initializes the game for a specific grade level.
-         * @param {string} gradeKey - 'prek', 'k', etc.
-         */
-        init(gradeKey) {
-            this.stopGame(); // Ensure any running game is stopped
-            state.gradeKey = gradeKey;
-            state.wordList = WORD_LISTS[gradeKey] || WORD_LISTS['k'];
-            currentGradeForAI = getGradeLevelString(gradeKey);
+        const togglePracticeRecording = () => isPracticeRecording ? practiceRec.stop() : practiceRec.start();
+        const toggleSentenceRecording = () => isSentenceRecording ? sentenceRec.stop() : sentenceRec.start();
+        const toggleChatRecording = () => isChatRecording ? chatRec.stop() : chatRec.start();
 
-            // Update UI for the new grade
-            DOMElements.gameTitle.textContent = GRADE_TITLES[gradeKey] || "🎯 Kidsy Challenge";
-            DOMElements.timerInput.value = globalSettings.defaultTime;
-            DOMElements.timer.textContent = globalSettings.defaultTime;
-            const wpmLabel = state.gradeKey === 'prek' ? 'LPM' : 'WPM';
-            DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(gradeKey)} ${wpmLabel}`;
-            DOMElements.wordsReadLabel.textContent = state.gradeKey === 'prek' ? 'Letters Read' : 'Words Read';
-            DOMElements.wpmLabel.textContent = wpmLabel;
+        const handlePronunciationResult = (transcript) => {
+            const cleanTranscript = transcript.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"").trim();
+            const cleanTarget = studyList[studyCurrentIndex].word.toLowerCase();
+            const isSuccess = cleanTranscript.includes(cleanTarget) || cleanTranscript === cleanTarget;
+            
+            const fb = document.getElementById('pronunciation-feedback');
+            const iconContainer = document.getElementById('feedback-icon-container');
+            const title = document.getElementById('feedback-title');
+            
+            fb.classList.remove('hidden');
+            fb.classList.add('flex');
+            
+            if (isSuccess) {
+                fb.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+                iconContainer.innerHTML = `<i data-lucide="check-circle" class="w-7 h-7 text-emerald-500"></i>`;
+                title.innerText = 'Perfect pronunciation!';
+            } else {
+                fb.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-800');
+                iconContainer.innerHTML = `<i data-lucide="x-circle" class="w-7 h-7 text-amber-500"></i>`;
+                title.innerText = 'Not quite right.';
+            }
+            document.getElementById('feedback-heard').innerText = transcript;
+            lucide.createIcons();
+        };
 
-            // Show start screen, hide game screen
-            DOMElements.startStateContent.style.display = "block";
-            DOMElements.gameStateContent.style.display = "none";
-            DOMElements.bottomBar.style.display = "none";
-            DOMElements.wordDisplay.style.opacity = 0;
-            document.body.classList.remove('game-active-portrait');
-            Mascot.idle();
-        },
+        // --- UI UPDATERS ---
+        const updateStudyUI = () => {
+            const word = studyList[studyCurrentIndex];
+            document.getElementById('study-word').innerText = word.word;
+            document.getElementById('study-definition').innerText = word.definition;
+            document.getElementById('study-current-idx').innerText = studyCurrentIndex + 1;
+            document.getElementById('study-total').innerText = studyList.length;
+            resetStudyFeedback();
+            resetChatContext();
+        };
 
-        /**
-         * Starts the game countdown and then the game itself.
-         */
-        startGame() {
-            if (state.gameStarted) return;
-            playSound('start');
-            Mascot.idle();
-            // Add class to hide tabs in portrait mode
-            document.body.classList.add('game-active-portrait');
+        const prevStudyWord = () => {
+            studyCurrentIndex = (studyCurrentIndex - 1 + studyList.length) % studyList.length;
+            updateStudyUI();
+        };
 
-            showCountdown(() => {
-                // --- Game Starts NOW ---
-                state.gameStarted = true;
-                state.score = -1; // Start at -1, first word call will make it 0
-                state.currentStreak = 0;
-                state.totalTime = Math.max(10, parseInt(DOMElements.timerInput.value) || globalSettings.defaultTime);
-                state.timeLeft = state.totalTime;
+        const nextStudyWord = () => {
+            studyCurrentIndex = (studyCurrentIndex + 1) % studyList.length;
+            updateStudyUI();
+        };
 
-                // Configure UI for game state
-                DOMElements.timer.textContent = state.timeLeft;
-                DOMElements.startStateContent.style.display = "none";
-                DOMElements.gameStateContent.style.display = "block";
-                DOMElements.speakControls.style.display = "flex";
-                DOMElements.speakBtn.style.display = "inline-block";
-                DOMElements.bottomBar.style.display = "flex";
-                DOMElements.statsGrid.style.display = "grid";
-                DOMElements.wpmCard.style.display = "none"; // Hide WPM until end
-                DOMElements.streakCard.style.display = "flex";
-                DOMElements.wordsReadCard.style.display = "flex";
-                DOMElements.timerCard.style.display = "flex";
-                DOMElements.keyboardHint.style.display = "block";
-                DOMElements.scoreDisplay.innerHTML = "";
-                DOMElements.starRatingDisplay.innerHTML = "";
-                DOMElements.starRatingDisplay.classList.remove('show-stars');
-                DOMElements.timerCard.classList.remove('timer-low');
+        // --- SENTENCE LOGIC ---
+        const generateNewSentenceQuestion = () => {
+            const randomWord = vocabList[Math.floor(Math.random() * vocabList.length)];
+            const randomSentence = randomWord.sentences[Math.floor(Math.random() * randomWord.sentences.length)];
+            sentenceQuestion = { word: randomWord.word, sentence: randomSentence, definition: randomWord.definition };
+            sentenceResult = null;
+            aiHint = "";
+            
+            document.getElementById('sentence-input').value = "";
+            document.getElementById('sentence-input').disabled = false;
+            document.getElementById('btn-sentence-mic').disabled = false;
+            
+            document.getElementById('btn-check-sentence').classList.remove('hidden');
+            document.getElementById('btn-check-sentence').disabled = true;
+            document.getElementById('btn-next-sentence').classList.add('hidden');
+            
+            const fb = document.getElementById('sentence-feedback');
+            fb.classList.add('hidden');
+            fb.classList.remove('flex', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-700', 'bg-rose-50', 'border-rose-200', 'text-rose-700');
 
-                state.currentWordIndex = 0;
-                state.shuffledWords = shuffle([...state.wordList]);
-                DOMElements.progressFill.style.width = "100%";
+            updateHintUI();
+            renderSentenceDisplay();
+            resetChatContext();
+        };
 
-                // Start the timer interval
-                updateTimer(); // Call once immediately
-                state.timerInterval = setInterval(updateTimer, 1000);
-                showWord(); // Show the first word
+        const renderSentenceDisplay = () => {
+            const container = document.getElementById('sentence-display');
+            container.innerHTML = '';
+            
+            const parts = sentenceQuestion.sentence.split('_________');
+            parts.forEach((part, i) => {
+                container.appendChild(document.createTextNode(part));
+                if (i < parts.length - 1) {
+                    const span = document.createElement('span');
+                    span.className = `inline-block border-b-2 w-16 sm:w-24 mx-2 transition-colors ${sentenceResult === 'correct' ? 'border-emerald-500 text-emerald-600 font-bold text-center' : 'border-slate-400'}`;
+                    span.innerText = sentenceResult === 'correct' ? sentenceQuestion.word : '';
+                    container.appendChild(span);
+                }
             });
-        },
+        };
 
-        /**
-         * Stops the game timer and resets the UI to the pre-game state.
-         */
-        stopGame() {
-            if (state.timerInterval) clearInterval(state.timerInterval);
-            state.timerInterval = null;
-            state.gameStarted = false;
-            currentWordForAI = ''; // Clear AI word
-            document.body.classList.remove('game-active-portrait');
+        const checkInputState = () => {
+            const val = document.getElementById('sentence-input').value.trim();
+            document.getElementById('btn-check-sentence').disabled = val.length === 0;
+        };
 
-            // Reset UI
-            DOMElements.startStateContent.style.display = "block";
-            DOMElements.gameStateContent.style.display = "none";
-            DOMElements.bottomBar.style.display = "none";
-            DOMElements.wordDisplay.textContent = "Press Start";
-            DOMElements.wordDisplay.className = ''; // Clear animations
-            DOMElements.wordDisplay.style.opacity = 1;
-            DOMElements.timerCard.classList.remove('timer-low');
-            // Update high score display
-            const wpmLabel = state.gradeKey === 'prek' ? 'LPM' : 'WPM';
-            DOMElements.highScoreDisplay.textContent = `Best: ${getHighScore(state.gradeKey)} ${wpmLabel}`;
-            Mascot.idle();
-        },
+        document.getElementById('sentence-input').addEventListener('input', checkInputState);
 
-        /**
-         * Called when the timer runs out. Stops the game and shows results.
-         */
-        endGame() {
-            clearInterval(state.timerInterval);
-            state.timerInterval = null;
-            state.gameStarted = false;
-            currentWordForAI = '';
-            document.body.classList.remove('game-active-portrait');
+        const checkSentenceAnswer = () => {
+            const inputVal = document.getElementById('sentence-input').value.toLowerCase().trim();
+            const isCorrect = inputVal === sentenceQuestion.word.toLowerCase();
+            sentenceResult = isCorrect ? 'correct' : 'incorrect';
+            
+            if (isCorrect) streak++;
+            else streak = 0;
+            updateStreakUI();
 
-            playSound('end');
-            Mascot.celebrate();
-            // Trigger confetti
-            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+            document.getElementById('sentence-input').disabled = true;
+            document.getElementById('btn-sentence-mic').disabled = true;
+            
+            document.getElementById('btn-check-sentence').classList.add('hidden');
+            document.getElementById('btn-next-sentence').classList.remove('hidden');
 
-            const finalWPM = parseInt(DOMElements.wpm.textContent) || 0;
-            const oldHighScore = getHighScore(state.gradeKey);
-            let highScoreMessage = '';
-            if (finalWPM > oldHighScore) {
-                setHighScore(state.gradeKey, finalWPM);
-                highScoreMessage = "<br>🎉 New High Score! 🎉";
+            const fb = document.getElementById('sentence-feedback');
+            const icon = document.getElementById('sentence-feedback-icon');
+            const text = document.getElementById('sentence-feedback-text');
+            
+            fb.classList.remove('hidden');
+            fb.classList.add('flex');
+
+            if (isCorrect) {
+                fb.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-700');
+                icon.innerHTML = `<i data-lucide="check-circle" class="w-6 h-6"></i>`;
+                text.innerText = 'Correct! Keep the streak going!';
+            } else {
+                fb.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-700');
+                icon.innerHTML = `<i data-lucide="x-circle" class="w-6 h-6"></i>`;
+                text.innerText = `Incorrect. The correct word is "${sentenceQuestion.word}".`;
             }
+            
+            lucide.createIcons();
+            renderSentenceDisplay();
+            updateHintUI();
+        };
 
-            showStars(finalWPM); // Display star rating
-
-            // Show end-game UI
-            DOMElements.startStateContent.style.display = "block"; // Show start button again
-            DOMElements.gameStateContent.style.display = "block"; // Keep game content visible
-            DOMElements.startBtn.style.display = "inline-block";
-            DOMElements.settingsSection.style.display = "block";
-            DOMElements.bottomBar.style.display = "none"; // Hide game nav
-            DOMElements.speakControls.style.display = "none";
-            DOMElements.speakBtn.style.display = "none";
-            DOMElements.keyboardHint.style.display = "none";
-            DOMElements.wpmCard.style.display = "flex"; // Show final WPM card
-            DOMElements.timerCard.classList.remove('timer-low');
-            DOMElements.wordDisplay.textContent = "Time's Up!";
-            DOMElements.wordDisplay.className = 'pop-in';
-            const wordLabel = state.gradeKey === 'prek' ? 'letters' : 'words';
-            DOMElements.scoreDisplay.innerHTML = `You read ${state.score} ${wordLabel}! ${highScoreMessage}`;
-        },
-
-        // --- Public Event Handlers ---
-        goHome() {
-            playSound('click');
-            this.stopGame();
-        },
-        restartGame() {
-            playSound('click');
-            this.stopGame();
-            this.startGame();
-        },
-        doNextWord() {
-            if(state.gameStarted) nextWord();
-        },
-        doPrevWord() {
-            if(state.gameStarted) prevWord();
-        },
-        doSpeakWord() {
-            if (state.currentWord) {
-                playSound('click');
-                speakWord(state.currentWord, state.gradeKey);
-            }
-        },
-
-        /**
-         * Handles global keydown events for game controls.
-         * @param {KeyboardEvent} e - The keydown event.
-         */
-        handleKeyDown(e) {
-            if (!state.gameStarted) {
-                // Start game with Space or Enter
-                if (e.key === ' ' || e.key === 'Enter') {
-                    e.preventDefault();
-                    playSound('click');
-                    this.startGame();
+        // --- QUIZ LOGIC ---
+        const generateNewQuizQuestion = () => {
+            const randomWord = vocabList[Math.floor(Math.random() * vocabList.length)];
+            let options = [randomWord.word];
+            
+            while (options.length < 4) {
+                const randomDistractor = vocabList[Math.floor(Math.random() * vocabList.length)].word;
+                if (!options.includes(randomDistractor)) {
+                    options.push(randomDistractor);
                 }
-                return;
             }
-            // In-game controls
-            if (e.key === 'ArrowRight' || e.key === ' ') {
-                e.preventDefault();
-                nextWord();
+            
+            quizQuestion = { 
+                word: randomWord.word, 
+                definition: randomWord.definition, 
+                options: shuffleArray(options) 
+            };
+            quizResult = null;
+            aiHint = "";
+            
+            document.getElementById('quiz-definition').innerText = `"${quizQuestion.definition}"`;
+            document.getElementById('quiz-next-container').classList.add('hidden');
+            document.getElementById('quiz-next-container').classList.remove('flex');
+            
+            updateHintUI();
+            renderQuizOptions();
+            resetChatContext();
+        };
+
+        const renderQuizOptions = () => {
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+            
+            quizQuestion.options.forEach((opt) => {
+                let btnStyle = "bg-white border-2 border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-emerald-50";
+                
+                if (quizResult !== null) {
+                    if (opt === quizQuestion.word) {
+                        btnStyle = "bg-emerald-500 border-emerald-600 text-white shadow-md scale-[1.02]"; 
+                    } else if (opt === quizResult && quizResult !== quizQuestion.word) {
+                        btnStyle = "bg-rose-500 border-rose-600 text-white shadow-inner";
+                    } else {
+                        btnStyle = "bg-slate-100 border-slate-200 text-slate-400 opacity-60"; 
+                    }
+                }
+
+                const btn = document.createElement('button');
+                btn.className = `p-4 rounded-xl text-lg font-bold capitalize transition-all shadow-sm ${btnStyle}`;
+                btn.innerText = opt;
+                btn.disabled = quizResult !== null;
+                btn.onclick = () => handleQuizSelection(opt);
+                container.appendChild(btn);
+            });
+        };
+
+        const handleQuizSelection = (selectedWord) => {
+            quizResult = selectedWord;
+            const isCorrect = selectedWord === quizQuestion.word;
+            
+            if (isCorrect) streak++;
+            else streak = 0;
+            updateStreakUI();
+
+            renderQuizOptions();
+            document.getElementById('quiz-next-container').classList.remove('hidden');
+            document.getElementById('quiz-next-container').classList.add('flex');
+            updateHintUI();
+        };
+
+        // --- NAVIGATION ---
+        const switchTab = (tabId) => {
+            activeTab = tabId;
+            resetStudyFeedback();
+            
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active', 'flex');
+                el.classList.add('hidden'); // Ensure flex styles don't fight
+            });
+            
+            // Show target
+            const target = document.getElementById(`tab-${tabId}`);
+            target.classList.add('active', 'flex');
+            target.classList.remove('hidden');
+
+            // Style buttons
+            ['study', 'sentences', 'quiz'].forEach(id => {
+                const btn = document.getElementById(`tab-btn-${id}`);
+                if (id === tabId) {
+                    btn.className = `flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all bg-white text-indigo-700 shadow-sm`;
+                } else {
+                    btn.className = `flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white`;
+                }
+            });
+
+            // Bottom Nav Visibility
+            if (tabId === 'study') {
+                document.getElementById('study-nav-controls').classList.remove('hidden');
+                document.getElementById('study-nav-controls').classList.add('flex');
+                document.getElementById('endless-indicator').classList.add('hidden');
+                document.getElementById('endless-indicator').classList.remove('flex');
+                document.getElementById('btn-ai-hint').classList.add('hidden');
+                document.getElementById('btn-ai-hint').classList.remove('flex');
+            } else {
+                document.getElementById('study-nav-controls').classList.add('hidden');
+                document.getElementById('study-nav-controls').classList.remove('flex');
+                document.getElementById('endless-indicator').classList.remove('hidden');
+                document.getElementById('endless-indicator').classList.add('flex');
+                document.getElementById('btn-ai-hint').classList.remove('hidden');
+                document.getElementById('btn-ai-hint').classList.add('flex', 'sm:flex-none');
             }
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                prevWord();
+            
+            resetChatContext();
+        };
+
+        // --- AI INTEGRATIONS ---
+        const getSmartHint = async () => {
+            isLoadingHint = true;
+            updateHintUI();
+            
+            const contextItem = getCurrentContextItem();
+            const contextText = activeTab === 'sentences' ? contextItem.sentence : (activeTab === 'quiz' ? contextItem.definition : contextItem.definition);
+            
+            try {
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: `Give me a clever, 1-sentence hint for the word "${contextItem.word}" without actually using the word itself. The current context is: ${contextText}` }] }],
+                };
+                // API Key is intentionally left blank for Canvas environment
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                aiHint = result.candidates?.[0]?.content?.parts?.[0]?.text || "No hint available right now.";
+            } catch (error) {
+                aiHint = "Could not load hint.";
+            } finally {
+                isLoadingHint = false;
+                updateHintUI();
             }
-            if (e.key === 's' || e.key === 'S') {
-                e.preventDefault();
-                this.doSpeakWord();
+        };
+
+        const resetChatContext = () => {
+            const contextItem = getCurrentContextItem();
+            if(!contextItem) return;
+            document.getElementById('chat-context-word').innerText = contextItem.word;
+            chatHistory = [{
+                role: "model",
+                parts: [{ text: `Hi! I see you are looking at the word **${contextItem.word}**. Do you need an example sentence, synonyms, or help understanding it?` }]
+            }];
+            renderChatMessages();
+        };
+
+        const renderChatMessages = () => {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            
+            chatHistory.forEach(msg => {
+                const isUser = msg.role === 'user';
+                const text = msg.parts[0].text;
+                
+                // Simple markdown bold parsing
+                const htmlText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                const wrapper = document.createElement('div');
+                wrapper.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+                
+                const bubble = document.createElement('div');
+                bubble.className = `max-w-[85%] p-4 rounded-2xl text-[15px] shadow-sm leading-relaxed ${
+                    isUser ? 'bg-violet-500 text-white rounded-tr-sm' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'
+                }`;
+                bubble.innerHTML = htmlText;
+                
+                wrapper.appendChild(bubble);
+                container.appendChild(wrapper);
+            });
+
+            if (isChatLoading) {
+                const loadingWrapper = document.createElement('div');
+                loadingWrapper.className = 'flex justify-start';
+                loadingWrapper.innerHTML = `
+                    <div class="bg-white border border-slate-200 text-slate-500 p-4 rounded-2xl rounded-tl-sm text-sm shadow-sm flex items-center gap-2">
+                        <div class="animate-spin h-4 w-4 border-2 border-slate-500 border-t-transparent rounded-full"></div>
+                        Thinking...
+                    </div>
+                `;
+                container.appendChild(loadingWrapper);
             }
-        },
+            
+            container.scrollTop = container.scrollHeight;
+        };
 
-        /**
-         * Updates the timer display when changed in settings.
-         * @param {number} time - The new default time.
-         */
-        updateDefaultTime(time) {
-            if (!state.gameStarted) {
-                DOMElements.timerInput.value = time;
-                DOMElements.timer.textContent = time;
+        const openChat = () => {
+            document.getElementById('chat-modal').classList.add('active');
+            renderChatMessages();
+        };
+        
+        const closeChat = () => {
+            document.getElementById('chat-modal').classList.remove('active');
+        };
+
+        const checkChatInputState = () => {
+            const val = document.getElementById('chat-input').value.trim();
+            document.getElementById('btn-chat-send').disabled = val.length === 0 || isChatLoading;
+        };
+
+        document.getElementById('chat-input').addEventListener('input', checkChatInputState);
+
+        document.getElementById('chat-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const inputEl = document.getElementById('chat-input');
+            const message = inputEl.value.trim();
+            if (!message || isChatLoading) return;
+
+            inputEl.value = "";
+            checkChatInputState();
+            
+            chatHistory.push({ role: "user", parts: [{ text: message }] });
+            isChatLoading = true;
+            renderChatMessages();
+
+            const contextItem = getCurrentContextItem();
+
+            try {
+                const payload = {
+                    contents: chatHistory,
+                    systemInstruction: { parts: [{ text: `You are an encouraging English tutor. The user is currently studying the word "${contextItem.word}" (${contextItem.definition}). Keep answers short (1-3 sentences). Help them understand how to use it in context.` }] },
+                };
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                chatHistory.push({ role: "model", parts: [{ text: text || "Try asking differently." }] });
+            } catch (error) {
+                chatHistory.push({ role: "model", parts: [{ text: "Connection error. Please try again." }] });
+            } finally {
+                isChatLoading = false;
+                renderChatMessages();
+                checkChatInputState(); // re-eval disable state
             }
-        }
-    };
-    return publicMethods;
-}
+        });
 
+        // --- INIT APP ---
+        window.onload = () => {
+            lucide.createIcons();
+            initSpeechRecognition();
+            
+            studyList = shuffleArray(vocabList);
+            updateStudyUI();
+            
+            generateNewSentenceQuestion();
+            generateNewQuizQuestion();
+            
+            switchTab('study'); // Ensure correct initial state
+        };
 
-// --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', () => {
-
-  // Load settings from localStorage
-  loadSettings();
-
-  // Create the single game instance
-  activeGameInstance = createWordChallenge();
-
-  // --- Settings Modal Listeners ---
-  function openSettings() {
-    playSound('click');
-    updateSettingsUI(); // Ensure modal UI is in sync
-    DOMElements.settingsBackdrop.classList.add('visible');
-  }
-  function closeSettings() {
-    playSound('click');
-    DOMElements.settingsBackdrop.classList.remove('visible');
-  }
-  DOMElements.globalSettingsBtns.forEach(btn => btn.addEventListener('click', openSettings));
-  DOMElements.settingsCloseBtn.addEventListener('click', closeSettings);
-  // Close modal by clicking on the backdrop
-  DOMElements.settingsBackdrop.addEventListener('click', (e) => {
-    if (e.target === DOMElements.settingsBackdrop) closeSettings();
-  });
-
-  // --- AI Helper Modal Listeners (MODIFIED FOR Dictionary API) ---
-  function closeAiHelper() {
-    playSound('click');
-    DOMElements.aiHelperBackdrop.classList.remove('visible');
-  }
-
-  DOMElements.aiHelperBtn.addEventListener('click', () => {
-    playSound('click');
-    if (activeGameInstance && currentWordForAI) {
-      // Game is active, show word and buttons
-      DOMElements.aiWord.textContent = currentWordForAI;
-      DOMElements.aiWord.parentElement.style.display = 'block';
-      DOMElements.aiWelcomeMessage.style.display = 'none';
-      DOMElements.aiButtons.style.display = 'flex';
-      DOMElements.aiResult.textContent = 'Tap a button above...';
-      DOMElements.aiLoading.style.display = 'none';
-    } else {
-      // Game not active, show welcome message
-      DOMElements.aiWord.parentElement.style.display = 'none';
-      DOMElements.aiWelcomeMessage.style.display = 'block';
-      DOMElements.aiButtons.style.display = 'none';
-      DOMElements.aiResult.textContent = '';
-      DOMElements.aiLoading.style.display = 'none';
-    }
-    DOMElements.aiHelperBackdrop.classList.add('visible');
-  });
-
-  DOMElements.aiHelperCloseBtn.addEventListener('click', closeAiHelper);
-  DOMElements.aiHelperBackdrop.addEventListener('click', (e) => {
-    if (e.target === DOMElements.aiHelperBackdrop) closeAiHelper();
-  });
-
-  // Modified function to handle Dictionary API call
-  async function handleAiRequest(type) {
-    if (!currentWordForAI) return;
-    playSound('click');
-    DOMElements.aiResult.textContent = ''; // Clear previous result
-    DOMElements.aiLoading.style.display = 'block'; // Show loading
-
-    // Call the Dictionary API
-    const result = await callDictionaryApi(currentWordForAI, type);
-
-    DOMElements.aiLoading.style.display = 'none'; // Hide loading
-    DOMElements.aiResult.textContent = result; // Display result
-  }
-  DOMElements.aiDefineBtn.addEventListener('click', () => handleAiRequest('define'));
-  DOMElements.aiSentenceBtn.addEventListener('click', () => handleAiRequest('sentence'));
-
-  // --- Settings Control Listeners ---
-  DOMElements.themeOptions.forEach(option => {
-    option.addEventListener('click', (e) => {
-      const newTheme = e.target.dataset.theme;
-      if (newTheme && newTheme !== globalSettings.theme) {
-        playSound('click');
-        globalSettings.theme = newTheme;
-        saveSettings();
-        applySettings();
-        updateSettingsUI(); // Update selection highlights
-      }
-    });
-  });
-
-  DOMElements.settingsThemeToggle.addEventListener('change', (e) => {
-    globalSettings.darkMode = e.target.checked;
-    saveSettings();
-    applySettings();
-    updateSettingsUI(); // Update icon
-  });
-
-  DOMElements.settingsSoundToggle.addEventListener('change', (e) => {
-    globalSettings.sound = e.target.checked;
-    saveSettings();
-    updateSettingsUI(); // Update icon
-    if (globalSettings.sound) playSound('click');
-  });
-
-  DOMElements.settingsDefaultTime.addEventListener('change', (e) => {
-    globalSettings.defaultTime = parseInt(e.target.value) || 60;
-    saveSettings();
-    if(activeGameInstance) activeGameInstance.updateDefaultTime(globalSettings.defaultTime);
-  });
-
-  DOMElements.settingsFontSize.addEventListener('input', (e) => {
-    globalSettings.fontSize = parseFloat(e.target.value).toFixed(1);
-    DOMElements.fontSizeIndicator.textContent = `${globalSettings.fontSize}em`;
-    applySettings(); // Apply font size live
-  });
-  DOMElements.settingsFontSize.addEventListener('change', saveSettings); // Save on release
-
-  DOMElements.settingsAutoSpeakToggle.addEventListener('change', (e) => {
-    globalSettings.autoSpeak = e.target.checked;
-    saveSettings();
-  });
-
-  DOMElements.settingsSpeechRate.addEventListener('input', (e) => {
-    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
-    DOMElements.speechRateIndicator.textContent = `${globalSettings.speechRate}x`;
-    // Sync in-game slider and indicator
-    DOMElements.speechRateSlider.value = globalSettings.speechRate;
-    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
-  });
-  DOMElements.settingsSpeechRate.addEventListener('change', saveSettings);
-
-  DOMElements.resetSettingsBtn.addEventListener('click', resetSettings);
-
-
-  // --- DYNAMIC GAME LISTENERS ---
-  // Connect buttons to the active game instance's methods
-  DOMElements.startBtn.addEventListener('click', () => activeGameInstance.startGame());
-  DOMElements.homeBtn.addEventListener('click', () => activeGameInstance.goHome());
-  DOMElements.restartBtn.addEventListener('click', () => activeGameInstance.restartGame());
-  DOMElements.nextBtn.addEventListener('click', () => activeGameInstance.doNextWord());
-  DOMElements.backBtn.addEventListener('click', () => activeGameInstance.doPrevWord());
-  DOMElements.speakBtn.addEventListener('click', () => activeGameInstance.doSpeakWord());
-
-  // In-Game Settings Listeners
-  DOMElements.speechRateSlider.addEventListener('input', (e) => {
-    globalSettings.speechRate = parseFloat(e.target.value).toFixed(1);
-    DOMElements.speechRateIndicatorInline.textContent = `${globalSettings.speechRate}x`;
-    updateSettingsUI(); // Sync main settings modal
-  });
-  DOMElements.speechRateSlider.addEventListener('change', () => {
-    saveSettings();
-    activeGameInstance.doSpeakWord(); // Speak current word at new speed
-  });
-
-  DOMElements.muteToggle.addEventListener('click', () => {
-    playSound('click'); // Play sound *before* toggling
-    globalSettings.sound = !globalSettings.sound;
-    saveSettings();
-    updateSettingsUI();
-  });
-
-  DOMElements.themeToggle.addEventListener('click', () => {
-    playSound('click');
-    globalSettings.darkMode = !globalSettings.darkMode;
-    saveSettings();
-    applySettings();
-    updateSettingsUI();
-  });
-
-
-  // Global Keyboard Listener
-  document.addEventListener('keydown', (e) => {
-    if (activeGameInstance) {
-      // Ignore keypresses if an input is focused
-      if (e.target.tagName === 'INPUT') return;
-      // Ignore keypresses if a modal is open
-      if (DOMElements.settingsBackdrop.classList.contains('visible') ||
-          DOMElements.aiHelperBackdrop.classList.contains('visible')) {
-          return;
-      }
-      activeGameInstance.handleKeyDown(e);
-    }
-  });
-
-  // --- Tab Navigation Logic ---
-  DOMElements.navTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      playSound('click');
-      const targetGrade = tab.getAttribute('data-grade');
-      // Update active tab highlight
-      DOMElements.navTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      // Initialize the game instance with the new grade
-      if (activeGameInstance) {
-        activeGameInstance.init(targetGrade);
-      }
-    });
-  });
-
-  // --- Final Initialization ---
-  activeGameInstance.init('prek'); // Initialize with Pre-K by default
-  Mascot.idle(); // Start mascot
-  updateSettingsUI(); // Initial icon render
-});
-</script>
-
+    </script>
 </body>
 </html>
+
