@@ -50,14 +50,21 @@
         #chat-modal.active {
             display: flex;
         }
+
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent body scrolling */
+            height: 100dvh; /* Use dynamic viewport height for mobile browsers */
+            width: 100vw;
+        }
     </style>
 </head>
-<body class="bg-slate-50 antialiased text-slate-800">
+<body class="bg-slate-50 antialiased text-slate-800 flex items-center justify-center p-0 sm:p-4">
 
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 flex flex-col h-[90vh] max-h-[850px]">
+    <div class="bg-white shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 flex flex-col h-full sm:h-[95dvh] sm:max-h-[900px] sm:rounded-3xl">
         
         <!-- Header Area -->
-        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white pt-8 pb-6 px-6 relative shrink-0">
+        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white pt-6 pb-4 px-4 sm:px-6 relative shrink-0">
             <div class="absolute top-4 right-4 bg-orange-500/90 text-white px-3 py-1 rounded-full text-sm font-bold backdrop-blur-sm flex items-center gap-1 shadow-md">
                 <i data-lucide="flame" class="w-4 h-4 text-yellow-300" id="streak-icon"></i> 
                 Streak: <span id="streak-counter">0</span>
@@ -67,151 +74,152 @@
             <p class="text-blue-200 text-sm mb-6">Endless AI Learning Experience</p>
             
             <!-- Navigation Tabs -->
-            <div class="flex gap-2 bg-black/20 p-1.5 rounded-2xl backdrop-blur-md overflow-x-auto">
-                <button onclick="switchTab('study')" id="tab-btn-study" class="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all bg-white text-indigo-700 shadow-sm">
+            <div class="flex gap-2 bg-black/20 p-1.5 rounded-2xl backdrop-blur-md overflow-x-auto mt-4">
+                <button onclick="switchTab('study')" id="tab-btn-study" class="flex-1 min-w-[100px] sm:min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-xl text-sm font-medium transition-all bg-white text-indigo-700 shadow-sm">
                     <i data-lucide="book-open" class="w-4 h-4"></i> Study
                 </button>
-                <button onclick="switchTab('sentences')" id="tab-btn-sentences" class="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white">
-                    <i data-lucide="edit-3" class="w-4 h-4"></i> Missing Word
+                <button onclick="switchTab('sentences')" id="tab-btn-sentences" class="flex-1 min-w-[100px] sm:min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i> Missing
                 </button>
-                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white">
-                    <i data-lucide="brain" class="w-4 h-4"></i> Def Match
+                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="flex-1 min-w-[100px] sm:min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white">
+                    <i data-lucide="brain" class="w-4 h-4"></i> Match
                 </button>
             </div>
         </div>
 
-        <div class="p-6 sm:p-8 flex-1 overflow-y-auto flex flex-col relative">
+        <div class="p-4 sm:p-6 flex-1 overflow-y-auto flex flex-col relative h-full">
             
             <!-- STUDY TAB -->
-            <div id="tab-study" class="tab-content active flex-col items-center fade-in flex-1">
-                <div class="w-full flex justify-between items-center mb-2 text-slate-400 font-semibold text-sm uppercase tracking-wider">
+            <div id="tab-study" class="tab-content active flex-col items-center fade-in flex-1 h-full justify-between">
+                
+                <div class="w-full flex justify-between items-center mb-1 text-slate-400 font-semibold text-xs sm:text-sm uppercase tracking-wider shrink-0">
                     <span>Card <span id="study-current-idx">1</span> of <span id="study-total">10</span></span>
                 </div>
                 
-                <div class="text-center mb-8 w-full relative">
-                    <h2 id="study-word" class="text-4xl sm:text-5xl font-black text-slate-800 mb-6 capitalize tracking-tight"></h2>
-                    <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 min-h-[100px] flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+                <div class="text-center w-full relative flex-1 flex flex-col justify-center min-h-0">
+                    <h2 id="study-word" class="text-3xl sm:text-5xl font-black text-slate-800 mb-4 capitalize tracking-tight shrink-0"></h2>
+                    <div class="bg-indigo-50/50 p-4 sm:p-6 rounded-2xl border border-indigo-100 flex flex-col items-center justify-center gap-3 relative overflow-y-auto max-h-[40vh]">
                         <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
-                        <p id="study-definition" class="text-lg sm:text-xl text-slate-700 text-center w-full font-medium"></p>
-                        <button onclick="speakText(document.getElementById('study-definition').innerText)" class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-100 p-2 px-4 rounded-full transition-colors flex items-center gap-2 text-sm font-bold bg-white shadow-sm">
-                            <i data-lucide="volume-2" class="w-4 h-4"></i> Read Definition
-                        </button>
+                        <p id="study-definition" class="text-base sm:text-xl text-slate-700 text-center w-full font-medium m-0"></p>
                     </div>
+                     <button onclick="speakText(document.getElementById('study-definition').innerText)" class="mt-4 mx-auto text-indigo-600 hover:text-indigo-800 hover:bg-indigo-100 p-2 px-4 rounded-full transition-colors flex items-center justify-center gap-2 text-sm font-bold bg-white shadow-sm border border-indigo-50 shrink-0 w-max">
+                        <i data-lucide="volume-2" class="w-4 h-4"></i> Read Definition
+                    </button>
                 </div>
 
-                <div class="flex w-full gap-4 mb-6">
-                    <button onclick="speakText(document.getElementById('study-word').innerText)" class="flex-1 flex flex-col items-center justify-center py-4 sm:py-5 rounded-2xl border-2 bg-white border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm">
-                        <i data-lucide="volume-2" class="w-6 h-6 mb-2"></i>
-                        <span class="font-bold text-sm sm:text-base">Listen</span>
+                <div class="flex w-full gap-3 mt-4 shrink-0">
+                    <button onclick="speakText(document.getElementById('study-word').innerText)" class="flex-1 flex flex-col items-center justify-center py-3 sm:py-4 rounded-xl border-2 bg-white border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm">
+                        <i data-lucide="volume-2" class="w-5 h-5 mb-1"></i>
+                        <span class="font-bold text-xs sm:text-sm">Listen</span>
                     </button>
-                    <button id="btn-practice-mic" onclick="togglePracticeRecording()" class="flex-1 flex flex-col items-center justify-center py-4 sm:py-5 rounded-2xl border-2 transition-all shadow-sm bg-white border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300">
-                        <i data-lucide="mic" id="icon-practice-mic" class="w-6 h-6 mb-2"></i>
-                        <span id="text-practice-mic" class="font-bold text-sm sm:text-base">Practice Saying It</span>
+                    <button id="btn-practice-mic" onclick="togglePracticeRecording()" class="flex-1 flex flex-col items-center justify-center py-3 sm:py-4 rounded-xl border-2 transition-all shadow-sm bg-white border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300">
+                        <i data-lucide="mic" id="icon-practice-mic" class="w-5 h-5 mb-1"></i>
+                        <span id="text-practice-mic" class="font-bold text-xs sm:text-sm">Practice</span>
                     </button>
                 </div>
 
                 <!-- Pronunciation Feedback Container -->
-                <div id="pronunciation-feedback" class="hidden w-full p-4 rounded-xl items-center gap-4 border">
+                <div id="pronunciation-feedback" class="hidden w-full p-3 mt-3 rounded-xl items-center gap-3 border shrink-0">
                     <!-- Icon injected via JS -->
                     <div id="feedback-icon-container" class="shrink-0"></div>
                     <div>
-                        <p id="feedback-title" class="font-bold"></p>
-                        <p class="text-sm opacity-80">Heard: "<span id="feedback-heard"></span>"</p>
+                        <p id="feedback-title" class="font-bold text-sm m-0"></p>
+                        <p class="text-xs opacity-80 m-0 mt-0.5">Heard: "<span id="feedback-heard"></span>"</p>
                     </div>
                 </div>
             </div>
 
             <!-- MISSING WORD TAB (ENDLESS) -->
-            <div id="tab-sentences" class="tab-content flex-col items-center w-full flex-1">
-                <div class="w-full mb-8">
-                    <h3 class="text-lg font-bold text-slate-500 mb-4 flex items-center gap-2 uppercase tracking-wider">
+            <div id="tab-sentences" class="tab-content flex-col items-center w-full flex-1 h-full justify-between">
+                <div class="w-full flex-1 flex flex-col justify-center min-h-0">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-500 mb-3 flex items-center gap-2 uppercase tracking-wider shrink-0">
                         <i data-lucide="edit-3" class="w-4 h-4"></i> Fill in the blank
                     </h3>
-                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100 shadow-inner">
-                        <p id="sentence-display" class="text-xl sm:text-2xl text-slate-800 font-medium leading-relaxed"></p>
+                    <div class="bg-amber-50 p-4 sm:p-6 rounded-2xl border border-amber-100 shadow-inner overflow-y-auto max-h-[50vh]">
+                        <p id="sentence-display" class="text-lg sm:text-2xl text-slate-800 font-medium leading-relaxed m-0"></p>
                     </div>
                 </div>
 
-                <div class="w-full flex flex-col sm:flex-row gap-3 mb-6">
-                    <div class="relative flex-1">
-                        <input type="text" id="sentence-input" placeholder="Type or speak the missing word..." class="w-full pl-4 pr-12 py-3 sm:py-4 bg-white border-2 border-slate-200 rounded-xl focus:border-amber-400 focus:ring-0 text-base sm:text-lg font-medium outline-none transition-colors disabled:bg-slate-50">
+                <div class="w-full flex flex-col gap-3 mt-4 shrink-0">
+                    <div class="relative w-full">
+                        <input type="text" id="sentence-input" placeholder="Type or speak word..." class="w-full pl-4 pr-12 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-amber-400 focus:ring-0 text-base font-medium outline-none transition-colors disabled:bg-slate-50">
                         <button id="btn-sentence-mic" onclick="toggleSentenceRecording()" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 disabled:opacity-50">
-                            <i data-lucide="mic" id="icon-sentence-mic" class="w-5 h-5"></i>
+                            <i data-lucide="mic" id="icon-sentence-mic" class="w-4 h-4"></i>
                         </button>
                     </div>
                     
-                    <button id="btn-check-sentence" onclick="checkSentenceAnswer()" disabled class="bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-sm">
-                        Check
+                    <button id="btn-check-sentence" onclick="checkSentenceAnswer()" disabled class="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-sm">
+                        Check Answer
                     </button>
-                    <button id="btn-next-sentence" onclick="generateNewSentenceQuestion()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <button id="btn-next-sentence" onclick="generateNewSentenceQuestion()" class="hidden w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
                         Next <i data-lucide="arrow-right" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <div id="sentence-feedback" class="hidden w-full p-4 rounded-xl flex items-center gap-3 border font-bold">
+                <div id="sentence-feedback" class="hidden w-full p-3 mt-3 rounded-xl flex items-center gap-3 border font-bold text-sm shrink-0">
                     <div id="sentence-feedback-icon" class="shrink-0"></div>
                     <span id="sentence-feedback-text"></span>
                 </div>
             </div>
 
             <!-- DEFINITION MATCH TAB (ENDLESS) -->
-            <div id="tab-quiz" class="tab-content flex-col w-full flex-1">
-                <div class="w-full mb-8">
-                    <h3 class="text-lg font-bold text-slate-500 mb-4 flex items-center gap-2 uppercase tracking-wider">
+            <div id="tab-quiz" class="tab-content flex-col w-full flex-1 h-full justify-between">
+                <div class="w-full shrink-0">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-500 mb-3 flex items-center gap-2 uppercase tracking-wider mt-2">
                         <i data-lucide="target" class="w-4 h-4"></i> Which word is this?
                     </h3>
-                    <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-inner min-h-[120px] flex items-center justify-center text-center relative">
-                        <p id="quiz-definition" class="text-xl sm:text-2xl text-slate-800 font-medium italic z-10"></p>
+                    <div class="bg-emerald-50 p-4 sm:p-6 rounded-2xl border border-emerald-100 shadow-inner min-h-[100px] flex items-center justify-center text-center relative mb-4">
+                        <p id="quiz-definition" class="text-lg sm:text-xl text-slate-800 font-medium italic z-10 m-0"></p>
                         <button onclick="speakText(document.getElementById('quiz-definition').innerText)" class="absolute bottom-2 right-2 text-emerald-600 hover:bg-emerald-100 p-2 rounded-full transition-colors">
-                            <i data-lucide="volume-2" class="w-5 h-5"></i>
+                            <i data-lucide="volume-2" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
 
-                <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-6">
+                <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full flex-1 min-h-0 overflow-y-auto">
                     <!-- Options injected via JS -->
                 </div>
 
-                <div id="quiz-next-container" class="hidden flex justify-center w-full zoom-in">
-                    <button onclick="generateNewQuizQuestion()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2 text-lg">
-                        Next Question <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                <div id="quiz-next-container" class="hidden flex justify-center w-full zoom-in mt-4 shrink-0">
+                    <button onclick="generateNewQuizQuestion()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2 text-base">
+                        Next <i data-lucide="arrow-right" class="w-5 h-5"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Bottom Controls & Hints -->
-            <div class="mt-auto border-t border-slate-100 pt-6">
+            <div class="mt-4 border-t border-slate-100 pt-4 shrink-0 bg-white z-10 pb-2">
                 
                 <!-- AI Hint Display -->
-                <div id="ai-hint-display" class="hidden mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-800 text-sm zoom-in flex flex-col sm:flex-row items-start gap-3">
-                    <i data-lucide="lightbulb" class="shrink-0 mt-0.5 text-yellow-500 w-5 h-5"></i>
-                    <p><strong>Hint:</strong> <span id="ai-hint-text"></span></p>
+                <div id="ai-hint-display" class="hidden mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-800 text-xs sm:text-sm zoom-in flex flex-row items-start gap-2">
+                    <i data-lucide="lightbulb" class="shrink-0 mt-0.5 text-yellow-500 w-4 h-4"></i>
+                    <p class="m-0"><strong>Hint:</strong> <span id="ai-hint-text"></span></p>
                 </div>
 
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex flex-row items-center justify-between gap-2">
                     <!-- Study Nav -->
-                    <div id="study-nav-controls" class="flex gap-2 w-full sm:w-auto justify-center">
-                        <button onclick="prevStudyWord()" class="p-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
-                            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                    <div id="study-nav-controls" class="flex gap-2 justify-center">
+                        <button onclick="prevStudyWord()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
                         </button>
-                        <button onclick="nextStudyWord()" class="p-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
-                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                        <button onclick="nextStudyWord()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
                         </button>
                     </div>
                     <!-- Endless Indicator -->
-                    <div id="endless-indicator" class="hidden text-slate-400 text-sm font-medium flex items-center gap-2 w-full sm:w-auto justify-center">
-                        <i data-lucide="brain" class="w-4 h-4"></i> Endless Practice Mode Active
+                    <div id="endless-indicator" class="hidden text-slate-400 text-xs sm:text-sm font-medium flex items-center gap-1.5 justify-center">
+                        <i data-lucide="infinity" class="w-4 h-4"></i> Endless
                     </div>
 
-                    <div class="flex gap-3 w-full sm:w-auto justify-center">
-                        <button id="btn-ai-hint" onclick="getSmartHint()" class="hidden flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded-xl font-bold text-sm transition-colors disabled:opacity-50">
+                    <div class="flex gap-2 justify-end flex-1">
+                        <button id="btn-ai-hint" onclick="getSmartHint()" class="hidden flex items-center justify-center gap-1.5 px-3 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded-xl font-bold text-xs sm:text-sm transition-colors disabled:opacity-50">
                             <i data-lucide="lightbulb" class="w-4 h-4" id="icon-hint"></i>
-                            <span id="text-hint">AI Hint</span>
+                            <span id="text-hint" class="hidden sm:inline">Hint</span>
                         </button>
                         
-                        <button onclick="openChat()" class="flex flex-1 sm:flex-none items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white font-bold py-2 px-5 rounded-xl shadow-md transition-all text-sm">
+                        <button onclick="openChat()" class="flex items-center justify-center gap-1.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-all text-xs sm:text-sm">
                             <i data-lucide="message-square" class="w-4 h-4"></i>
-                            Ask AI Tutor
+                            Tutor
                         </button>
                     </div>
                 </div>
@@ -221,28 +229,14 @@
     </div>
 
     <!-- AI Chat Modal -->
-    <div id="chat-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md h-[80vh] max-h-[600px] flex flex-col overflow-hidden zoom-in">
-            <div class="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white p-5 flex justify-between items-center shrink-0">
-                <div>
-                    <h3 class="font-bold text-xl flex items-center gap-2">
-                        <i data-lucide="message-square" class="w-5 h-5"></i> AI Tutor
-                    </h3>
-                    <p class="text-violet-100 text-sm font-medium">Discussing: <span id="chat-context-word"></span></p>
-                </div>
-                <button onclick="closeChat()" class="p-2 hover:bg-white/20 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-5 flex flex-col gap-4 bg-slate-50">
-                <!-- Messages injected here -->
-            </div>
-
-            <form id="chat-form" class="p-4 bg-white border-t border-slate-100 flex gap-2 items-center shrink-0">
-                <button type="button" id="btn-chat-mic" onclick="toggleChatRecording()" class="p-3 rounded-full transition-colors flex items-center justify-center bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-50">
+    <div id="chat-modal" class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center sm:p-4 z-50">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md h-[85vh] sm:h-[80vh] max-h-[700px] flex flex-col overflow-hidden zoom-in slide-up-mobile">
+            <form id="chat-form" class="p-3 sm:p-4 bg-white border-t border-slate-100 flex gap-2 items-center shrink-0 pb-6 sm:pb-4">
+                <button type="button" id="btn-chat-mic" onclick="toggleChatRecording()" class="p-2.5 rounded-full transition-colors flex items-center justify-center bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-50">
                     <i data-lucide="mic" id="icon-chat-mic" class="w-5 h-5"></i>
                 </button>
-                <input type="text" id="chat-input" placeholder="Type or speak a question..." class="flex-1 bg-slate-100 border-transparent focus:bg-white focus:border-violet-400 focus:ring-0 rounded-full px-4 py-3 text-sm font-medium transition-colors outline-none border-2">
-                <button type="submit" id="btn-chat-send" disabled class="bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white p-3 rounded-full transition-colors shadow-sm shrink-0">
+                <input type="text" id="chat-input" placeholder="Ask a question..." class="flex-1 bg-slate-100 border-transparent focus:bg-white focus:border-violet-400 focus:ring-0 rounded-full px-4 py-2.5 text-sm font-medium transition-colors outline-none border-2">
+                <button type="submit" id="btn-chat-send" disabled class="bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white p-2.5 rounded-full transition-colors shadow-sm shrink-0">
                     <i data-lucide="send" class="w-5 h-5"></i>
                 </button>
             </form>
@@ -250,6 +244,20 @@
     </div>
 
     <script>
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @media (max-width: 639px) {
+                .slide-up-mobile {
+                    animation: slideUp 0.3s ease-out forwards;
+                }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(100%); }
+                to { transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
         // --- DATA ---
         const vocabList = [
             { 
@@ -690,7 +698,7 @@
                 }
 
                 const btn = document.createElement('button');
-                btn.className = `p-4 rounded-xl text-lg font-bold capitalize transition-all shadow-sm ${btnStyle}`;
+                btn.className = `p-3 sm:p-4 rounded-xl text-base sm:text-lg font-bold capitalize transition-all shadow-sm ${btnStyle}`;
                 btn.innerText = opt;
                 btn.disabled = quizResult !== null;
                 btn.onclick = () => handleQuizSelection(opt);
@@ -732,9 +740,9 @@
             ['study', 'sentences', 'quiz'].forEach(id => {
                 const btn = document.getElementById(`tab-btn-${id}`);
                 if (id === tabId) {
-                    btn.className = `flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all bg-white text-indigo-700 shadow-sm`;
+                    btn.className = `flex-1 min-w-[100px] sm:min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-xl text-sm font-medium transition-all bg-white text-indigo-700 shadow-sm`;
                 } else {
-                    btn.className = `flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white`;
+                    btn.className = `flex-1 min-w-[100px] sm:min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-xl text-sm font-medium transition-all text-white/80 hover:bg-white/10 hover:text-white`;
                 }
             });
 
