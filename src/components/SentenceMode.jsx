@@ -34,7 +34,6 @@ export default function SentenceMode({
   const [aiHint, setAiHint] = useState("");
   const [isLoadingHint, setIsLoadingHint] = useState(false);
 
-  // Load a random sentence question from active deck
   const loadQuestion = () => {
     playPop();
     if (!items || items.length === 0) return;
@@ -101,8 +100,6 @@ export default function SentenceMode({
       } catch (e) {
         setIsRecording(false);
       }
-    } else {
-      alert("Microphone speech recognition is not supported in this browser.");
     }
   };
 
@@ -116,14 +113,13 @@ export default function SentenceMode({
 
     const apiKey = getGeminiApiKey();
     if (!apiKey) {
-      // Offline fallback smart hint
-      setAiHint(question.hint || `Clue: The first letter is "${question.word[0].toUpperCase()}" and it has ${question.word.length} letters!`);
+      setAiHint(question.hint || `Clue: Starts with "${question.word[0].toUpperCase()}" and means: ${question.definition}`);
       return;
     }
 
     setIsLoadingHint(true);
     try {
-      const prompt = `Give a 1-sentence kid-friendly hint for a 3rd grader to fill in the blank: "${question.selectedSentence}". Target word: "${question.word}". DO NOT use the target word itself. Talk directly to the child.`;
+      const prompt = `Give a 1-sentence kid-friendly clue for a 3rd grader for: "${question.selectedSentence}". Target word: "${question.word}". DO NOT use the target word itself. Talk directly to the student.`;
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -141,36 +137,52 @@ export default function SentenceMode({
 
   if (!question) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-4">
         <p className="font-bold text-slate-400">Loading sentence puzzle...</p>
       </div>
     );
   }
 
-  // Render sentence with styled blank
   const parts = question.selectedSentence.split('_________');
 
   return (
-    <section className="flex-1 flex flex-col fade-in w-full max-w-xl mx-auto py-2">
+    <section className="flex-1 min-h-0 flex flex-col justify-between overflow-hidden py-1 w-full max-w-lg mx-auto">
       
-      {/* Subject & Mode Header */}
-      <div className="flex justify-between items-center mb-3 px-2">
-        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-tealsoft-700 bg-tealsoft-50 px-3 py-1 rounded-full border border-tealsoft-200">
-          <Puzzle className="w-3.5 h-3.5" />
-          <span>Fill in the Blank</span>
-        </div>
-        <span className="text-xs font-bold text-slate-400">{question.category}</span>
+      {/* Top Category Bar */}
+      <div className="flex justify-between items-center px-1 shrink-0 mb-1">
+        <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black uppercase flex items-center gap-1">
+          <Puzzle className="w-3 h-3 text-amber-600" />
+          <span>{question.category}</span>
+        </span>
+        <button
+          onClick={() => speakText(question.selectedSentence.replace('_________', 'blank'))}
+          className="text-tealsoft-700 text-[11px] font-extrabold flex items-center gap-1 btn-press"
+        >
+          <Volume2 className="w-3 h-3" />
+          <span>Read Aloud</span>
+        </button>
       </div>
 
-      {/* Main Sentence Card */}
-      <div className="flex-1 flex flex-col justify-center min-h-[220px]">
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-rosebloom-200/80 shadow-xl shadow-slate-900/5 relative overflow-hidden pop">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-rosebloom-100/50 rounded-bl-[100px] pointer-events-none -z-0" />
-          
-          <p className="text-2xl sm:text-3xl text-slate-800 font-extrabold leading-relaxed z-10 relative">
+      {/* Main Sentence Card with Photo / Emoji Header */}
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center bg-white rounded-3xl p-4 border-2 border-amber-200/90 shadow-lg relative overflow-hidden my-1">
+        
+        {/* Photo Banner if available */}
+        {question.imageUrl && (
+          <div className="w-full h-20 sm:h-28 rounded-2xl overflow-hidden mb-2 border border-slate-100 shadow-xs shrink-0">
+            <img 
+              src={question.imageUrl} 
+              alt={question.word} 
+              className="w-full h-full object-cover" 
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          </div>
+        )}
+
+        <div className="text-center my-auto">
+          <p className="text-lg sm:text-2xl text-slate-800 font-extrabold leading-relaxed">
             {parts[0]}
             {isAnswered ? (
-              <span className={`inline-block px-3 py-1 mx-1 rounded-xl font-black text-xl sm:text-2xl border-2 ${
+              <span className={`inline-block px-2.5 py-0.5 mx-1 rounded-xl font-black text-lg sm:text-xl border-2 ${
                 isCorrect 
                   ? 'bg-emerald-100 text-emerald-800 border-emerald-400 pop' 
                   : 'bg-rose-100 text-rose-800 border-rose-400 line-through'
@@ -178,42 +190,52 @@ export default function SentenceMode({
                 {question.word}
               </span>
             ) : (
-              <span className="inline-block border-b-4 border-rosebloom-400 bg-rosebloom-50/50 min-w-[100px] sm:min-w-[130px] h-8 mx-1 align-middle rounded-sm animate-pulse" />
+              <span className="inline-block border-b-4 border-amber-400 bg-amber-50 min-w-[90px] sm:min-w-[120px] h-7 mx-1 align-middle rounded-sm animate-pulse" />
             )}
             {parts[1] || ""}
           </p>
-
-          <button
-            onClick={() => speakText(question.selectedSentence.replace('_________', 'blank'))}
-            className="mt-4 text-xs font-bold text-tealsoft-700 hover:text-tealsoft-800 bg-tealsoft-50 hover:bg-tealsoft-100 px-3 py-1 rounded-full border border-tealsoft-200 inline-flex items-center gap-1.5 btn-press transition-colors"
-          >
-            <Volume2 className="w-3.5 h-3.5" />
-            <span>Read Sentence Out Loud</span>
-          </button>
         </div>
+
+        {/* Feedback notification if answered */}
+        {isAnswered && (
+          <div className={`mt-2 py-1.5 px-3 rounded-2xl flex items-center gap-2 border w-full shrink-0 pop ${
+            isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-rose-50 border-rose-300 text-rose-900'
+          }`}>
+            {isCorrect ? <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> : <XCircle className="w-4 h-4 text-rose-600 shrink-0" />}
+            <span className="text-xs font-black">{isCorrect ? 'Awesome job! You got it!' : `Answer: "${question.word}"`}</span>
+          </div>
+        )}
       </div>
 
-      {/* Input & Action Area */}
-      <div className="mt-4 flex flex-col gap-3">
+      {/* AI Hint Box (if shown) */}
+      {aiHint && (
+        <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs shadow-xs pop shrink-0 flex items-start gap-1.5 my-1">
+          <Lightbulb className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="line-clamp-2"><strong className="font-black">Hint:</strong> {aiHint}</p>
+        </div>
+      )}
+
+      {/* Input Action Controls (Pinned, Never Missed!) */}
+      <div className="shrink-0 mt-1">
         {!isAnswered ? (
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <div className="relative flex-1">
               <input
                 type="text"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleCheck(); }}
-                placeholder="Type or speak the missing word..."
-                className="w-full pl-4 pr-12 py-3.5 bg-white border-2 border-slate-200 rounded-2xl focus:border-rosebloom-400 focus:ring-4 focus:ring-rosebloom-100 text-base sm:text-lg font-extrabold outline-none shadow-sm transition-all"
+                placeholder="Type or speak missing word..."
+                className="w-full pl-3 pr-10 py-2.5 bg-white border-2 border-slate-200 rounded-2xl focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-sm sm:text-base font-extrabold outline-none shadow-xs"
                 autoFocus
               />
               <button
                 type="button"
                 onClick={handleToggleMic}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-colors btn-press ${
-                  isRecording ? 'bg-rose-600 text-white animate-pulse' : 'bg-slate-100 text-slate-500 hover:text-rosebloom-600'
+                className={`absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded-xl transition-colors btn-press ${
+                  isRecording ? 'bg-rose-600 text-white animate-pulse' : 'bg-slate-100 text-slate-500 hover:text-amber-600'
                 }`}
-                title="Speak your answer"
+                title="Speak answer"
               >
                 {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
               </button>
@@ -222,7 +244,7 @@ export default function SentenceMode({
             <button
               onClick={handleCheck}
               disabled={!userAnswer.trim()}
-              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rosebloom-500 to-rosebloom-600 hover:from-rosebloom-600 text-white font-black text-base shadow-md shadow-rosebloom-500/20 disabled:opacity-50 btn-press transition-all"
+              className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 text-white font-black text-sm shadow-md shadow-amber-500/20 disabled:opacity-40 btn-press"
             >
               Check
             </button>
@@ -230,64 +252,30 @@ export default function SentenceMode({
         ) : (
           <button
             onClick={loadQuestion}
-            className="w-full py-4 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-lg shadow-lg flex items-center justify-center gap-2 btn-press pop"
+            className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md flex items-center justify-center gap-1.5 btn-press pop"
           >
             <span>Next Sentence</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
-        )}
-
-        {/* Feedback Alert */}
-        {isAnswered && (
-          <div className={`p-4 rounded-2xl flex items-center gap-3 border-2 pop shadow-xs ${
-            isCorrect 
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-900' 
-              : 'bg-rose-50 border-rose-300 text-rose-900'
-          }`}>
-            {isCorrect ? (
-              <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-            ) : (
-              <XCircle className="w-6 h-6 text-rose-500 shrink-0" />
-            )}
-            <div>
-              <p className="font-black text-base">
-                {isCorrect ? 'Awesome job! You nailed it!' : `Oops! The correct word is "${question.word}".`}
-              </p>
-              <p className="text-xs font-semibold opacity-85 mt-0.5">
-                {question.definition}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* AI Hint Section */}
-        {aiHint && (
-          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-sm shadow-xs pop flex items-start gap-2.5">
-            <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <strong className="block font-black text-amber-800 mb-0.5">Super Hint:</strong>
-              <p className="leading-relaxed font-medium">{aiHint}</p>
-            </div>
-          </div>
         )}
       </div>
 
-      {/* Footer Helper Controls */}
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
+      {/* Bottom Dock: Hint & Tutor Buttons (Pinned, Never Missed!) */}
+      <div className="flex items-center justify-between shrink-0 pt-1.5 border-t border-slate-200/80 mt-1">
         <button
           onClick={handleGetHint}
           disabled={isLoadingHint}
-          className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 hover:bg-amber-200 text-amber-800 rounded-xl text-xs font-extrabold border border-amber-300 btn-press transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-xs font-black border border-amber-300 btn-press"
         >
-          <Lightbulb className="w-4 h-4 text-amber-600" />
+          <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
           <span>{isLoadingHint ? "Thinking..." : (aiHint ? "Hide Hint" : "Get Hint")}</span>
         </button>
 
         <button
           onClick={() => { playPop(); onOpenChat(); }}
-          className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 text-white rounded-xl text-xs font-extrabold shadow-sm btn-press"
+          className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 text-white rounded-xl text-xs font-black shadow-xs btn-press"
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
           <span>Ask Tutor</span>
         </button>
       </div>

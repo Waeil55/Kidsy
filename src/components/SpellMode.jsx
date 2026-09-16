@@ -26,14 +26,13 @@ export default function SpellMode({
 }) {
   const [question, setQuestion] = useState(null);
   const [inputChars, setInputChars] = useState([]);
-  const [status, setStatus] = useState(null); // 'correct' | 'incorrect' | 'revealed' | null
+  const [status, setStatus] = useState(null);
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
   const loadQuestion = () => {
     playPop();
     if (!items || items.length === 0) return;
     const target = items[Math.floor(Math.random() * items.length)];
-    // Clean word for spelling (alphanumeric only)
     const cleanedTargetWord = target.word.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
     setQuestion({
@@ -72,7 +71,7 @@ export default function SpellMode({
     if (!question) return;
     if (enteredWord.toLowerCase() === question.cleanWord.toLowerCase()) {
       setStatus('correct');
-      setFeedbackMsg("Genius Speller & Solver! 🌟");
+      setFeedbackMsg("Super Solver! 🌟");
       onStreakUpdate(true);
       playCorrect();
       fireConfetti(false);
@@ -87,7 +86,7 @@ export default function SpellMode({
         setStatus(null);
         setInputChars([]);
         setFeedbackMsg("");
-      }, 1200);
+      }, 1000);
     }
   };
 
@@ -102,7 +101,7 @@ export default function SpellMode({
 
   if (!question) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-4">
         <p className="font-bold text-slate-400">Loading spelling challenge...</p>
       </div>
     );
@@ -119,39 +118,41 @@ export default function SpellMode({
   ].filter(Boolean);
 
   return (
-    <section className="flex-1 flex flex-col fade-in w-full max-w-xl mx-auto py-2">
+    <section className="flex-1 min-h-0 flex flex-col justify-between overflow-hidden py-1 w-full max-w-lg mx-auto">
       
-      {/* Subject & Instructions Header */}
-      <div className="flex justify-between items-center mb-3 px-2">
-        <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rosebloom-700 bg-rosebloom-50 px-3 py-1 rounded-full border border-rosebloom-200">
-          <Keyboard className="w-3.5 h-3.5" />
-          <span>Spell & Solve</span>
+      {/* Top Clue & Audio Row */}
+      <div className="flex justify-between items-center px-1 shrink-0 mb-1">
+        <span className="px-2 py-0.5 rounded-full bg-pink-100 text-pink-800 text-[10px] font-black uppercase">
+          {question.category}
+        </span>
+        <div className="flex gap-1">
+          <button
+            onClick={() => { playPop(); speakText(question.word); }}
+            className="px-2 py-0.5 rounded-full bg-tealsoft-600 text-white font-extrabold text-[10px] flex items-center gap-1 btn-press"
+          >
+            <Volume2 className="w-3 h-3" />
+            <span>Hear</span>
+          </button>
+          <button
+            onClick={() => { playPop(); speakText(question.definition); }}
+            className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-extrabold text-[10px] flex items-center gap-1 btn-press"
+          >
+            <BookOpen className="w-3 h-3 text-rosebloom-500" />
+            <span>Meaning</span>
+          </button>
         </div>
-        <span className="text-xs font-bold text-slate-400">{question.category}</span>
       </div>
 
-      {/* Target Word Clue & Audio Buttons */}
-      <div className="bg-white rounded-3xl p-5 border border-rosebloom-100 shadow-sm flex items-center justify-center gap-3 mb-4">
-        <button
-          onClick={() => { playPop(); speakText(question.word); }}
-          className="px-5 py-2.5 rounded-2xl bg-tealsoft-600 hover:bg-tealsoft-500 text-white font-extrabold text-xs shadow-md shadow-tealsoft-600/20 flex items-center gap-2 btn-press transition-all"
-        >
-          <Volume2 className="w-4 h-4" />
-          <span>Listen</span>
-        </button>
-
-        <button
-          onClick={() => { playPop(); speakText(question.definition); }}
-          className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 flex items-center gap-1.5 btn-press transition-all"
-        >
-          <BookOpen className="w-4 h-4 text-rosebloom-500" />
-          <span>Meaning</span>
-        </button>
+      {/* Clue Prompt & Meaning Summary */}
+      <div className="px-3 py-1.5 rounded-2xl bg-white border border-rosebloom-200 text-center shrink-0 my-0.5 shadow-xs">
+        <p className="text-xs text-slate-700 font-bold line-clamp-2">
+          "{question.definition}"
+        </p>
       </div>
 
       {/* Letter Boxes Container */}
-      <div className="flex-1 flex flex-col items-center justify-center min-h-[110px] my-2">
-        <div className="flex flex-wrap justify-center gap-2 px-2 max-w-full">
+      <div className="flex flex-col items-center justify-center my-auto py-1 shrink-0">
+        <div className="flex flex-wrap justify-center gap-1.5 px-1 max-w-full">
           {targetChars.map((targetChar, idx) => {
             let char = inputChars[idx] || '';
             let boxClass = '';
@@ -169,7 +170,10 @@ export default function SpellMode({
             }
 
             return (
-              <div key={idx} className={`letter-box ${boxClass}`}>
+              <div 
+                key={idx} 
+                className={`letter-box w-9 h-11 sm:w-10 sm:h-12 text-lg sm:text-xl rounded-xl ${boxClass}`}
+              >
                 {char}
               </div>
             );
@@ -178,43 +182,39 @@ export default function SpellMode({
 
         {/* Feedback Banner */}
         {feedbackMsg && (
-          <div className={`mt-3 px-4 py-1.5 rounded-full text-xs font-black pop inline-flex items-center gap-1.5 ${
-            status === 'correct' 
-              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
-              : (status === 'revealed' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-rose-100 text-rose-800 border border-rose-300')
+          <div className={`mt-1.5 px-3 py-0.5 rounded-full text-[11px] font-black pop inline-flex items-center gap-1 ${
+            status === 'correct' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
           }`}>
-            {status === 'correct' && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-            {status === 'incorrect' && <XCircle className="w-4 h-4 text-rose-600" />}
-            {status === 'revealed' && <HelpCircle className="w-4 h-4 text-amber-600" />}
+            {status === 'correct' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <XCircle className="w-3.5 h-3.5 text-rose-600" />}
             <span>{feedbackMsg}</span>
           </div>
         )}
       </div>
 
-      {/* Next Question button if finished */}
+      {/* Next Question Button if correct */}
       {(status === 'correct' || status === 'revealed') && (
-        <div className="my-2 pop">
+        <div className="shrink-0 my-1 pop">
           <button
             onClick={loadQuestion}
-            className="w-full py-3.5 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-base shadow-lg flex items-center justify-center gap-2 btn-press"
+            className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 btn-press"
           >
             <span>Next Word</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      {/* Virtual Keyboard */}
-      <div className="bg-slate-100/90 p-2 sm:p-3 rounded-3xl border border-slate-200/90 shadow-inner mt-auto">
-        <div className="flex flex-col gap-1.5 items-center">
+      {/* Compact Virtual Keyboard (Pinned, Never Missed!) */}
+      <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shrink-0 mt-auto">
+        <div className="flex flex-col gap-1 items-center">
           {keyboardRows.map((row, rowIdx) => (
-            <div key={rowIdx} className="flex justify-center gap-1 sm:gap-1.5 w-full">
+            <div key={rowIdx} className="flex justify-center gap-1 w-full">
               {row.split('').map((k) => (
                 <button
                   key={k}
                   onClick={() => handleKeyPress(k)}
                   disabled={status === 'correct' || status === 'revealed'}
-                  className="flex-1 max-w-[38px] sm:max-w-[44px] h-11 sm:h-12 bg-white border border-slate-200 rounded-xl text-slate-800 font-extrabold text-base hover:bg-rosebloom-50 hover:border-rosebloom-300 hover:text-rosebloom-600 active:scale-95 shadow-xs transition-all flex items-center justify-center btn-press disabled:opacity-40"
+                  className="flex-1 max-w-[34px] sm:max-w-[40px] h-9 sm:h-10 bg-white border border-slate-200 rounded-lg text-slate-800 font-black text-xs sm:text-sm hover:bg-pink-50 hover:border-pink-300 active:scale-95 transition-all flex items-center justify-center btn-press shadow-xs disabled:opacity-40"
                 >
                   {k}
                 </button>
@@ -224,32 +224,32 @@ export default function SpellMode({
         </div>
       </div>
 
-      {/* Bottom Actions: Backspace, Reveal, Ask Tutor */}
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-200">
-        <div className="flex items-center gap-2">
+      {/* Bottom Controls: Backspace, Reveal, Ask Tutor (Pinned, Never Missed!) */}
+      <div className="flex items-center justify-between shrink-0 pt-1.5 border-t border-slate-200/80 mt-1">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={handleBackspace}
             disabled={inputChars.length === 0 || status !== null}
-            className="p-3 bg-slate-200/80 hover:bg-slate-300 text-slate-700 rounded-xl font-bold btn-press disabled:opacity-30 transition-colors"
+            className="p-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold btn-press disabled:opacity-30"
             title="Backspace"
           >
-            <Delete className="w-5 h-5" />
+            <Delete className="w-4 h-4" />
           </button>
 
           <button
             onClick={handleReveal}
             disabled={status !== null}
-            className="px-3.5 py-2.5 bg-white border border-rosebloom-200 text-rosebloom-700 rounded-xl font-extrabold text-xs hover:bg-rosebloom-50 btn-press disabled:opacity-40 transition-colors"
+            className="px-2.5 py-1.5 bg-white border border-rosebloom-200 text-rosebloom-700 rounded-xl font-extrabold text-[11px] hover:bg-rosebloom-50 btn-press disabled:opacity-30"
           >
-            Give Up
+            Reveal
           </button>
         </div>
 
         <button
           onClick={() => { playPop(); onOpenChat(); }}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 text-white rounded-xl text-xs font-extrabold shadow-sm btn-press"
+          className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 text-white rounded-xl text-xs font-black shadow-xs btn-press"
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
           <span>Ask Tutor</span>
         </button>
       </div>

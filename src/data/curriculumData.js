@@ -6,37 +6,37 @@ export const DEFAULT_CURRICULUM = {
       category: "Power Words",
       word: "privilege",
       displayTitle: "Privilege",
-      definition: "A special benefit or honor enjoyed only under certain circumstances.",
+      definition: "A special honor, benefit, or opportunity enjoyed under special circumstances.",
       sentences: [
-        "Driving a car is a _________, not a right.",
-        "Having clean water to drink is a wonderful _________.",
+        "Driving a car is a _________, not an automatic right.",
+        "Having access to clean, fresh water is a wonderful _________.",
         "It was a huge _________ to meet the astronaut at school.",
-        "She earned the _________ of being line leader today."
+        "She earned the _________ of leading the school parade today."
       ],
       quizOptions: ["privilege", "grumble", "fragile", "calculate"],
       image: "👑",
-      imageUrl: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=80",
-      funFact: "Kings and queens in history had special privileges, but today being kind gives you the honor of great friendships!",
-      hint: "Think of something special you earn or are lucky to have!"
+      imageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&auto=format&fit=crop&q=80",
+      funFact: "Kings and queens had special privileges, but kindness earns you the greatest privilege: true friends!",
+      hint: "A special honor or advantage you earn or receive."
     },
     {
       id: "eng-2",
       subject: "english",
-      category: "Descriptive Words",
+      category: "Descriptive",
       word: "elegant",
       displayTitle: "Elegant",
-      definition: "Something that is graceful, high quality, stylish, and fancy.",
+      definition: "Graceful, stylish, and high quality in appearance or manner.",
       sentences: [
-        "She wore an _________ dress to the piano recital.",
-        "The hotel lobby was decorated in an _________ style.",
-        "He wrote an _________ and neat solution on the board.",
-        "The swan looked incredibly _________ gliding across the lake."
+        "She wore an _________ sparkling dress to the concert.",
+        "The hotel lobby looked very fancy and _________.",
+        "He wrote an _________ and clever solution on the board.",
+        "The white swan looked incredibly _________ on the lake."
       ],
       quizOptions: ["elegant", "fragile", "assemble", "defend"],
       image: "🦢",
-      imageUrl: "https://images.unsplash.com/photo-1516641396056-0ce60a85d49f?w=600&auto=format&fit=crop&q=80",
-      funFact: "Swans move so smoothly because their waterproof feathers lock together perfectly!",
-      hint: "Think of fancy clothes or graceful movements."
+      imageUrl: "https://images.unsplash.com/photo-1516641396056-0ce60a85d49f?w=400&auto=format&fit=crop&q=80",
+      funFact: "Swans glide smoothly because their feathers lock together to repel water perfectly!",
+      hint: "Fancy, graceful, and stylish."
     },
     {
       id: "eng-3",
@@ -44,18 +44,18 @@ export const DEFAULT_CURRICULUM = {
       category: "Action Words",
       word: "calculate",
       displayTitle: "Calculate",
-      definition: "To determine an answer or figure out a problem using math.",
+      definition: "To figure out or determine an answer using mathematics or reasoning.",
       sentences: [
-        "We need to _________ the total cost of the books.",
-        "Please _________ how many minutes are left until recess.",
-        "A supercomputer can _________ billions of equations per second.",
-        "Can you _________ the perimeter of this rectangle?"
+        "We need to _________ the total cost of all the supplies.",
+        "Please _________ how many minutes are left until lunch.",
+        "A supercomputer can _________ millions of problems every second.",
+        "Can you _________ the perimeter of this triangle?"
       ],
       quizOptions: ["calculate", "research", "pledge", "specific"],
       image: "🧮",
-      imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=600&auto=format&fit=crop&q=80",
-      funFact: "The word calculate comes from 'calculus', which meant a small pebble used for counting in ancient Rome!",
-      hint: "It is what you do when you add, subtract, or multiply numbers."
+      imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=400&auto=format&fit=crop&q=80",
+      funFact: "The word calculate comes from 'calculus', which meant a counting pebble in ancient Rome!",
+      hint: "What you do when adding, multiplying, or doing math."
     },
     {
       id: "eng-4",
@@ -63,18 +63,18 @@ export const DEFAULT_CURRICULUM = {
       category: "Feelings & Sounds",
       word: "grumble",
       displayTitle: "Grumble",
-      definition: "To complain about something in a quiet, low, unhappy voice.",
+      definition: "To complain in a low, quiet, unhappy voice or make a rumbling sound.",
       sentences: [
-        "His tummy started to _________ because he skipped breakfast.",
-        "Don't _________ when it is time to clean your room.",
-        "\"I hate doing chores,\" he began to _________ softly.",
-        "We heard dark storm clouds _________ in the distance."
+        "His tummy started to _________ loudly right before lunch.",
+        "Try not to _________ when it is time to put away your toys.",
+        "\"I dislike rainy days,\" she began to _________ under her breath.",
+        "We heard dark thunderclouds _________ across the sky."
       ],
       quizOptions: ["grumble", "assemble", "privilege", "defend"],
       image: "🐻",
-      imageUrl: "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=600&auto=format&fit=crop&q=80",
-      funFact: "Tummy grumbling is called 'borborygmi'—it is air and fluid moving through your stomach!",
-      hint: "A quiet complaint or a rumbling noise."
+      imageUrl: "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=400&auto=format&fit=crop&q=80",
+      funFact: "A rumbling stomach is called 'borborygmi'—it is air and fluid moving around!",
+      hint: "To mutter an unhappy complaint or a rumbling sound."
     },
     {
       id: "eng-5",
@@ -82,151 +82,113 @@ export const DEFAULT_CURRICULUM = {
       category: "Action Words",
       word: "assemble",
       displayTitle: "Assemble",
-      definition: "To put parts together or bring people together into a group.",
+      definition: "To gather together in one place, or to build something by connecting parts.",
       sentences: [
-        "It took an hour to _________ the new lego spaceship.",
-        "The third graders will _________ in the cafeteria.",
-        "Let us _________ our team to solve the mystery.",
-        "Robots in factories help _________ electric cars quickly."
+        "It took an hour to _________ the wooden toy castle.",
+        "The third-graders will _________ in the school gymnasium.",
+        "Let us _________ our team to finish the science project.",
+        "Factory robots _________ hundreds of computers daily."
       ],
       quizOptions: ["assemble", "calculate", "fragile", "pledge"],
       image: "🧩",
-      imageUrl: "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=600&auto=format&fit=crop&q=80",
-      funFact: "NASA engineers assemble spaceships inside a giant building so tall that rain clouds could form inside!",
-      hint: "Opposite of taking apart."
+      imageUrl: "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=400&auto=format&fit=crop&q=80",
+      funFact: "NASA engineers assemble spaceships in a hall so tall that rain clouds could form inside!",
+      hint: "To put pieces together or gather people."
     },
     {
       id: "eng-6",
       subject: "english",
-      category: "Descriptive Words",
+      category: "Descriptive",
       word: "fragile",
       displayTitle: "Fragile",
-      definition: "Easily broken, cracked, or damaged; delicate.",
+      definition: "Easily broken, delicate, or easily damaged if not handled with care.",
       sentences: [
-        "Be very careful holding the glass cup, it is _________.",
-        "A butterfly's wings are colorful but extremely _________.",
-        "The museum displayed ancient, _________ dinosaur bones.",
+        "Hold the porcelain teacup with two hands, it is _________.",
+        "A butterfly's wings are gorgeous but extremely _________.",
+        "The museum displayed ancient and _________ pottery.",
         "Soap bubbles are so _________ they pop with a gentle tap."
       ],
       quizOptions: ["fragile", "elegant", "specific", "research"],
       image: "🫧",
-      imageUrl: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&auto=format&fit=crop&q=80",
-      funFact: "Eggshells are strong enough to protect baby birds, but fragile enough for them to peck out when ready!",
-      hint: "Handle with extra care or it might shatter."
+      imageUrl: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400&auto=format&fit=crop&q=80",
+      funFact: "Spider silk is thin and looks fragile, but pound-for-pound it is stronger than steel!",
+      hint: "Handle with extreme care so it does not crack."
     },
     {
       id: "eng-7",
       subject: "english",
-      category: "Learning Words",
+      category: "Learning",
       word: "research",
       displayTitle: "Research",
-      definition: "To study, investigate, and collect facts about a specific topic.",
+      definition: "The careful study and investigation of a subject to discover facts.",
       sentences: [
-        "She went to the library to do _________ on sharks.",
-        "Scientists do clinical _________ to discover new medicines.",
-        "Our teacher asked us to do _________ on Mars.",
-        "Before building the treehouse, Dad did some safety _________."
+        "She visited the library to do _________ on dolphins.",
+        "Scientists do clinical _________ to find new cures.",
+        "Our teacher asked us to do _________ on space exploration.",
+        "Before building the treehouse, Dad did safety _________."
       ],
       quizOptions: ["research", "calculate", "defend", "privilege"],
       image: "🔬",
-      imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&auto=format&fit=crop&q=80",
-      funFact: "Marie Curie spent years doing research on radiation and won two Nobel Prizes!",
-      hint: "Looking up facts in books or on the computer."
+      imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&auto=format&fit=crop&q=80",
+      funFact: "Marie Curie spent years doing research and won two Nobel Prizes in two different sciences!",
+      hint: "Digging up facts and studying a topic."
     },
     {
       id: "eng-8",
       subject: "english",
-      category: "Action Words",
+      category: "Bravery & Action",
       word: "defend",
       displayTitle: "Defend",
-      definition: "To protect from harm or prove a point with evidence and facts.",
+      definition: "To protect from danger, attack, or harm, or support with facts.",
       sentences: [
-        "The castle guards were ready to _________ the fortress.",
-        "You should always _________ your opinions with strong examples.",
-        "A mother bear will bravely _________ her cubs.",
-        "The goalie leaped sideways to _________ the goal."
+        "The stone castle walls helped _________ the kingdom.",
+        "Always _________ your ideas with strong reasons and facts.",
+        "A mother eagle will fiercely _________ her baby chicks.",
+        "The goalkeeper made a diving save to _________ the net."
       ],
       quizOptions: ["defend", "grumble", "assemble", "pledge"],
       image: "🛡️",
-      imageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&auto=format&fit=crop&q=80",
-      funFact: "Porcupines defend themselves with up to 30,000 sharp quills!",
-      hint: "Shielding someone or standing up for what is right."
+      imageUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80",
+      funFact: "Armadillos defend themselves by rolling into an armored, impenetrable ball!",
+      hint: "To shield or protect from harm."
     },
     {
       id: "eng-9",
       subject: "english",
-      category: "Descriptive Words",
-      word: "specific",
-      displayTitle: "Specific",
-      definition: "Clear, exact, and pointing to one particular thing.",
+      category: "Character",
+      word: "courage",
+      displayTitle: "Courage",
+      definition: "Bravery and determination to do what is right even when you feel scared.",
       sentences: [
-        "Please be _________ about which page you are reading.",
-        "She had a _________ flavor of ice cream in mind: mint chip!",
-        "The mechanic needs a _________ wrench to tighten the bolt.",
-        "He gave _________ directions on how to reach the secret treehouse."
+        "It took great _________ to sing her solo on the big stage.",
+        "Firefighters show heroic _________ every single day.",
+        "She had the _________ to admit when she made a mistake.",
+        "True _________ means doing the right thing even when scared."
       ],
-      quizOptions: ["specific", "fragile", "calculate", "elegant"],
-      image: "🎯",
-      imageUrl: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=600&auto=format&fit=crop&q=80",
-      funFact: "Sniffer dogs have such specific senses of smell they can detect a single drop of scent in an Olympic pool!",
-      hint: "Exact and detailed, not vague."
+      quizOptions: ["courage", "calculate", "grumble", "fragile"],
+      image: "🦁",
+      imageUrl: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=400&auto=format&fit=crop&q=80",
+      funFact: "Courage comes from the Latin word 'cor', which literally means 'heart'!",
+      hint: "Being brave even with butterflies in your tummy."
     },
     {
       id: "eng-10",
       subject: "english",
-      category: "Promise Words",
-      word: "pledge",
-      displayTitle: "Pledge",
-      definition: "A solemn, serious promise or agreement to do something.",
-      sentences: [
-        "Every morning students stand and recite the _________ of Allegiance.",
-        "The scouts made a _________ to protect our parks and trails.",
-        "I give my _________ to always tell the truth to my friends.",
-        "They made a _________ to plant ten trees every spring."
-      ],
-      quizOptions: ["pledge", "defend", "research", "assemble"],
-      image: "🤝",
-      imageUrl: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=600&auto=format&fit=crop&q=80",
-      funFact: "In ancient times, knights sealed a pledge by shaking right hands to show they carried no weapon!",
-      hint: "A pinky-promise or official vow."
-    },
-    {
-      id: "eng-11",
-      subject: "english",
-      category: "Character & Bravery",
-      word: "courage",
-      displayTitle: "Courage",
-      definition: "Bravery and strength in the face of pain, fear, or difficulty.",
-      sentences: [
-        "It took great _________ to stand up on stage and give the speech.",
-        "Firefighters show incredible _________ every single day.",
-        "She had the _________ to apologize when she made a mistake.",
-        "True _________ means feeling scared but still doing what is right."
-      ],
-      quizOptions: ["courage", "calculate", "grumble", "fragile"],
-      image: "🦁",
-      imageUrl: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=600&auto=format&fit=crop&q=80",
-      funFact: "Courage comes from the Latin word 'cor', which means 'heart'!",
-      hint: "Being brave even when butterflies are in your tummy."
-    },
-    {
-      id: "eng-12",
-      subject: "english",
-      category: "Explorer Words",
+      category: "Curiosity",
       word: "curious",
       displayTitle: "Curious",
-      definition: "Eager to learn, know, or investigate interesting things.",
+      definition: "Eager to learn, know, or find out about things around you.",
       sentences: [
-        "The _________ kitten peeked inside the cardboard box.",
-        "Scientists are always _________ about how the universe works.",
-        "I was _________ to discover who left the mysterious letter.",
-        "A _________ mind asks lots of great questions."
+        "The _________ kitten explored every nook of the garden.",
+        "Scientists are always _________ about how stars are born.",
+        "I was _________ to see what surprised was wrapped in the box.",
+        "A _________ mind asks wonderful questions."
       ],
       quizOptions: ["curious", "elegant", "pledge", "specific"],
       image: "🔍",
-      imageUrl: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=600&auto=format&fit=crop&q=80",
-      funFact: "The Mars Rover named 'Curiosity' has been exploring the red planet since 2012!",
-      hint: "Wanting to find out why and how things happen."
+      imageUrl: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=400&auto=format&fit=crop&q=80",
+      funFact: "NASA named their famous Mars Rover 'Curiosity', and it has explored Mars for over 10 years!",
+      hint: "Always wanting to know 'why' and explore."
     }
   ],
 
@@ -237,19 +199,19 @@ export const DEFAULT_CURRICULUM = {
       category: "Multiplication",
       word: "24",
       displayTitle: "4 × 6 = ?",
-      definition: "Multiplication is repeated addition: 4 groups of 6 equals 24.",
+      definition: "Multiplication is equal groups: 4 rows of 6 items equals 24.",
       sentences: [
-        "If you have 4 boxes with 6 crayons each, you have _________ crayons.",
+        "4 boxes with 6 markers each gives a total of _________ markers.",
         "4 multiplied by 6 equals _________.",
-        "A chocolate bar with 4 rows and 6 columns has _________ delicious squares.",
-        "If 6 children each bring 4 cookies, the total is _________ cookies."
+        "A chocolate bar with 4 rows and 6 columns has _________ pieces.",
+        "6 children with 4 stickers each have _________ stickers."
       ],
       quizOptions: ["24", "20", "28", "18"],
-      image: "✖️",
-      imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&auto=format&fit=crop&q=80",
-      funFact: "Did you know that 4 × 6 is the exact same as 6 × 4? That is the Commutative Property!",
+      image: "⭐",
+      imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&auto=format&fit=crop&q=80",
+      funFact: "4 × 6 is the same as 6 × 4! This is called the Commutative Property.",
       mathVisual: { type: "grid", rows: 4, cols: 6, emoji: "⭐" },
-      hint: "Count by 6s four times: 6, 12, 18, ..."
+      hint: "Count by 6s four times: 6, 12, 18, 24!"
     },
     {
       id: "math-2",
@@ -257,19 +219,19 @@ export const DEFAULT_CURRICULUM = {
       category: "Fractions",
       word: "fraction",
       displayTitle: "What is a Fraction?",
-      definition: "A fraction represents equal parts of a whole item or group.",
+      definition: "A number that represents equal parts of a whole shape or set.",
       sentences: [
-        "When you cut a pizza into 4 equal slices, each slice is a _________.",
-        "One-half and three-quarters are both examples of a _________.",
-        "In the _________ 3/4, the bottom number tells total parts.",
-        "Sharing fair equal pieces means each friend gets a true _________."
+        "When you slice a pizza into equal pieces, each piece is a _________.",
+        "One-half (1/2) and three-quarters (3/4) are both examples of a _________.",
+        "In a _________, the bottom denominator shows total equal parts.",
+        "Sharing equally means each friend receives a fair _________."
       ],
       quizOptions: ["fraction", "perimeter", "digit", "product"],
       image: "🍕",
-      imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&auto=format&fit=crop&q=80",
       funFact: "The word fraction comes from the Latin 'fractio', meaning 'to break into pieces'!",
       mathVisual: { type: "fraction", num: 1, den: 2, emoji: "🍕" },
-      hint: "Like a slice of pie or pizza cut into equal pieces."
+      hint: "Equal parts of a whole object, like a slice of pie."
     },
     {
       id: "math-3",
@@ -277,19 +239,19 @@ export const DEFAULT_CURRICULUM = {
       category: "Geometry",
       word: "perimeter",
       displayTitle: "Perimeter",
-      definition: "The total distance all the way around the outside of a 2D shape.",
+      definition: "The total distance all the way around the outside boundary of a 2D shape.",
       sentences: [
-        "To build a fence around the garden, we calculate the _________.",
-        "Add all the side lengths together to find the _________ of a rectangle.",
-        "A square with 5-inch sides has a _________ of 20 inches.",
-        "The runner raced around the track along its outer _________."
+        "To build a fence around the garden, we measure the _________.",
+        "Add all four sides together to find the _________ of a rectangle.",
+        "A square with 5-foot sides has a _________ of 20 feet.",
+        "The runners ran around the gym track along its outer _________."
       ],
       quizOptions: ["perimeter", "area", "volume", "fraction"],
       image: "📐",
-      imageUrl: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=600&auto=format&fit=crop&q=80",
-      funFact: "'Peri' means around, and 'meter' means measure—so perimeter literally means 'measuring around'!",
+      imageUrl: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=400&auto=format&fit=crop&q=80",
+      funFact: "'Peri' means around, and 'meter' means measure—so perimeter means 'measuring around'!",
       mathVisual: { type: "shape", shape: "rectangle", l: 6, w: 4 },
-      hint: "Add up all the sides around the rim like a fence."
+      hint: "Think of a fence around a yard: add up all sides."
     },
     {
       id: "math-4",
@@ -297,19 +259,19 @@ export const DEFAULT_CURRICULUM = {
       category: "Multiplication",
       word: "56",
       displayTitle: "7 × 8 = ?",
-      definition: "7 times 8 equals 56. An essential Grade 3 times-table math fact!",
+      definition: "7 times 8 equals 56. One of the most famous Grade 3 math facts!",
       sentences: [
-        "Seven groups of eight make _________.",
-        "Remember the counting rhythm: 5, 6, 7, 8 -> _________ = 7 × 8!",
-        "7 multiplied by 8 gives the product _________.",
-        "If a garden has 7 rows with 8 carrots in each row, there are _________ carrots."
+        "Seven groups of eight equal _________.",
+        "Remember the counting trick: 5, 6, 7, 8 -> _________ = 7 × 8!",
+        "7 multiplied by 8 yields the product _________.",
+        "8 boxes holding 7 apples each hold _________ apples."
       ],
       quizOptions: ["56", "54", "64", "48"],
-      image: "🥕",
-      imageUrl: "https://images.unsplash.com/photo-1447175008436-054170c2e979?w=600&auto=format&fit=crop&q=80",
-      funFact: "Memory trick: Just count in order: 5, 6, 7, 8! (56 = 7 × 8)!",
-      mathVisual: { type: "grid", rows: 7, cols: 8, emoji: "🥕" },
-      hint: "Use the trick: 5, 6, 7, 8... 56 = 7 × 8!"
+      image: "🍎",
+      imageUrl: "https://images.unsplash.com/photo-1447175008436-054170c2e979?w=400&auto=format&fit=crop&q=80",
+      funFact: "Memory trick: 5, 6, 7, 8! That means 56 = 7 × 8!",
+      mathVisual: { type: "grid", rows: 7, cols: 8, emoji: "🍎" },
+      hint: "Just remember 5, 6, 7, 8... 56 = 7 × 8!"
     },
     {
       id: "math-5",
@@ -317,19 +279,19 @@ export const DEFAULT_CURRICULUM = {
       category: "Division",
       word: "7",
       displayTitle: "35 ÷ 5 = ?",
-      definition: "Division is splitting a big number into equal groups. 35 split among 5 groups gives 7 in each.",
+      definition: "Division means sharing equally into groups: 35 split into 5 equal groups gives 7.",
       sentences: [
-        "When you share 35 stickers equally among 5 friends, each friend receives _________.",
+        "If you divide 35 candies among 5 friends, each friend gets _________.",
         "35 divided by 5 equals _________.",
-        "Since 5 × _________ = 35, division is the reverse of multiplication.",
-        "A week has _________ days, and 5 weeks have 35 days."
+        "Because 5 × _________ = 35, division is the opposite of multiplication.",
+        "There are 35 days in 5 weeks because each week has _________ days."
       ],
       quizOptions: ["7", "6", "8", "9"],
-      image: "➗",
-      imageUrl: "https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&auto=format&fit=crop&q=80",
-      funFact: "Multiplication and division are math twins—they undo each other!",
+      image: "🍬",
+      imageUrl: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=400&auto=format&fit=crop&q=80",
+      funFact: "Multiplication and division are math partners—they undo each other!",
       mathVisual: { type: "groups", total: 35, groups: 5, perGroup: 7, emoji: "🍬" },
-      hint: "What number times 5 gives 35? Count by 5s!"
+      hint: "What number times 5 equals 35? Count by 5s!"
     },
     {
       id: "math-6",
@@ -337,39 +299,38 @@ export const DEFAULT_CURRICULUM = {
       category: "Geometry",
       word: "area",
       displayTitle: "Area",
-      definition: "The amount of flat space inside a shape, measured in square units.",
+      definition: "The amount of flat surface space covered inside a 2D shape in square units.",
       sentences: [
-        "To find the _________ of a rug, multiply length times width.",
-        "A rug that is 3 feet by 5 feet has an _________ of 15 square feet.",
-        "The tiles covering the bathroom floor show the _________ of the room.",
-        "While perimeter is the fence, _________ is the grass inside the yard."
+        "To find the _________ of a floor, multiply length times width.",
+        "A rug that is 3 feet by 5 feet covers an _________ of 15 square feet.",
+        "Tiles on a classroom floor show the total _________ of the room.",
+        "While perimeter is the fence, _________ is the grass inside."
       ],
       quizOptions: ["area", "perimeter", "digit", "angle"],
       image: "🟩",
-      imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&auto=format&fit=crop&q=80",
-      funFact: "Area is always measured in 'squares', like square inches or square meters!",
+      imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&auto=format&fit=crop&q=80",
+      funFact: "Area is always measured in square units, like square inches or square meters!",
       mathVisual: { type: "grid", rows: 3, cols: 5, emoji: "🟩" },
-      hint: "Multiply length by width to measure the space inside."
+      hint: "Multiply length by width to measure space inside."
     },
     {
       id: "math-7",
       subject: "math",
-      category: "Place Value",
-      word: "hundreds",
-      displayTitle: "Place Value: Hundreds",
-      definition: "In a 3-digit number like 472, the 4 is in the hundreds place and represents 400.",
+      category: "Fractions",
+      word: "numerator",
+      displayTitle: "Numerator",
+      definition: "The top number in a fraction that shows how many parts you have.",
       sentences: [
-        "In the number 842, the digit 8 is in the _________ place.",
-        "Ten groups of ten equal one _________.",
-        "Rounding 389 to the nearest _________ gives 400.",
-        "In 519, there are 5 _________, 1 ten, and 9 ones."
+        "In the fraction 3/4, the number 3 is the _________.",
+        "The _________ tells how many slices of pizza were eaten.",
+        "If you take 2 parts out of 5, 2 is the _________.",
+        "The top number is called the _________, while bottom is denominator."
       ],
-      quizOptions: ["hundreds", "tens", "thousands", "ones"],
-      image: "💯",
-      imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&auto=format&fit=crop&q=80",
-      funFact: "Our base-10 number system was inspired by humans counting on their 10 fingers!",
-      mathVisual: { type: "blocks", hundreds: 3, tens: 4, ones: 2 },
-      hint: "It comes right before thousands and right after tens."
+      quizOptions: ["numerator", "denominator", "perimeter", "product"],
+      image: "🔝",
+      imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&auto=format&fit=crop&q=80",
+      funFact: "'Numerator' means 'counter'—it counts how many pieces you have!",
+      hint: "The number on TOP of the fraction line."
     }
   ],
 
@@ -377,21 +338,21 @@ export const DEFAULT_CURRICULUM = {
     {
       id: "sci-1",
       subject: "science",
-      category: "Space & Astronomy",
+      category: "Space & Solar",
       word: "solar",
       displayTitle: "Solar System",
-      definition: "Our Sun and the eight planets, moons, asteroids, and comets that orbit around it.",
+      definition: "Our central Sun and the eight planets, moons, asteroids, and comets orbiting it.",
       sentences: [
-        "The earth is the third planet from the sun in our _________ system.",
-        "Plants use energy from _________ light to make their food.",
-        "A _________ eclipse happens when the Moon blocks the Sun's light.",
-        "Astronomers use telescopes to study planets in our _________ neighborhood."
+        "Earth is the third planet from the sun in our _________ system.",
+        "Plants use energy from _________ light to create their food.",
+        "A _________ eclipse occurs when the Moon passes in front of the Sun.",
+        "Telescopes help astronomers map our _________ neighborhood."
       ],
       quizOptions: ["solar", "habitat", "liquid", "magnet"],
       image: "☀️",
-      imageUrl: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=600&auto=format&fit=crop&q=80",
-      funFact: "The Sun is so huge that more than 1 million Earths could fit inside it!",
-      hint: "Anything related to the Sun!"
+      imageUrl: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&auto=format&fit=crop&q=80",
+      funFact: "The Sun contains 99.8% of all the mass in the entire solar system!",
+      hint: "Anything relating to our Sun!"
     },
     {
       id: "sci-2",
@@ -399,18 +360,18 @@ export const DEFAULT_CURRICULUM = {
       category: "Ecosystems",
       word: "habitat",
       displayTitle: "Animal Habitat",
-      definition: "The natural home, environment, and shelter where an animal or plant lives and thrives.",
+      definition: "The natural home, environment, and shelter where an organism lives and thrives.",
       sentences: [
-        "A polar bear's natural icy _________ is the freezing Arctic.",
-        "A clownfish finds its cozy _________ inside a sea anemone.",
-        "Cutting down rainforest trees destroys the native _________ of monkeys.",
-        "Every good _________ provides animals with food, water, and shelter."
+        "A polar bear's icy natural _________ is the freezing Arctic.",
+        "The clownfish makes its safe _________ inside sea anemones.",
+        "Cutting down rainforest trees destroys the native _________ of parrots.",
+        "Every healthy _________ provides animals with food, water, and shelter."
       ],
       quizOptions: ["habitat", "gravity", "solid", "friction"],
       image: "🌴",
-      imageUrl: "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=600&auto=format&fit=crop&q=80",
-      funFact: "Deserts, rainforests, coral reefs, and grasslands are all major habitats called biomes!",
-      hint: "The special natural place an animal calls home."
+      imageUrl: "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=400&auto=format&fit=crop&q=80",
+      funFact: "Coral reefs cover less than 1% of the ocean floor but are habitats for 25% of all marine life!",
+      hint: "The natural home where an animal lives."
     },
     {
       id: "sci-3",
@@ -418,18 +379,18 @@ export const DEFAULT_CURRICULUM = {
       category: "States of Matter",
       word: "solid",
       displayTitle: "Solid State",
-      definition: "Matter that has a fixed shape and volume because its molecules are packed tightly together.",
+      definition: "Matter that has a definite shape and volume because its particles are locked in place.",
       sentences: [
         "Ice is the cold, frozen _________ state of water.",
-        "A wooden desk and a metal spoon are examples of a _________.",
-        "When ice melts into liquid water, it is no longer a _________.",
-        "A _________ keeps its shape unless you cut, break, or bend it."
+        "A wooden ruler and a metal coin are both examples of a _________.",
+        "When ice melts into liquid water, it stops being a _________.",
+        "A _________ keeps its fixed shape until bent, cut, or heated."
       ],
       quizOptions: ["solid", "liquid", "gas", "plasma"],
       image: "🧊",
-      imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80",
-      funFact: "Glass looks solid, but its atoms are arranged like a frozen liquid!",
-      hint: "It has a definite shape and does not flow like juice."
+      imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80",
+      funFact: "Diamonds are the hardest natural solids known on Earth!",
+      hint: "Firm and holds its own shape, like ice or rock."
     },
     {
       id: "sci-4",
@@ -437,37 +398,37 @@ export const DEFAULT_CURRICULUM = {
       category: "States of Matter",
       word: "liquid",
       displayTitle: "Liquid State",
-      definition: "Matter that flows, takes the shape of its container, and has a definite volume.",
+      definition: "Matter that flows, takes the shape of its container, and has a fixed volume.",
       sentences: [
-        "Milk and apple juice are both in the _________ state of matter.",
-        "When heated, solid chocolate melts into a gooey _________.",
-        "A _________ flows smoothly and pours into cups of any shape.",
+        "Water, milk, and apple juice are all in the _________ state of matter.",
+        "When heated in a pot, butter melts into a warm _________.",
+        "A _________ pours smoothly into cups, bottles, or bowls of any shape.",
         "Rain falling from storm clouds is water in its _________ form."
       ],
       quizOptions: ["liquid", "solid", "gas", "gravity"],
       image: "💧",
-      imageUrl: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=600&auto=format&fit=crop&q=80",
-      funFact: "Water is the only substance naturally found on Earth as a solid, liquid, AND gas!",
-      hint: "You can drink it or pour it."
+      imageUrl: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80",
+      funFact: "Water is the only natural substance on Earth that exists as solid, liquid, and gas!",
+      hint: "Flows, pours, and takes the shape of your glass."
     },
     {
       id: "sci-5",
       subject: "science",
-      category: "Plant Biology",
+      category: "Plant Life",
       word: "photosynthesis",
       displayTitle: "Photosynthesis",
-      definition: "The process green plants use to turn sunlight, water, and air into sugar food and clean oxygen.",
+      definition: "The process green plants use to convert sunlight, carbon dioxide, and water into food and oxygen.",
       sentences: [
-        "Green leaves use _________ to make energy from sunlight.",
+        "Green leaves use _________ to make food using sunshine.",
         "During _________, plants produce the fresh oxygen we breathe.",
-        "Chlorophyll in leaves catches solar energy for _________.",
-        "Without _________, plants would not have food to grow."
+        "Green chlorophyll in leaves catches sunlight needed for _________.",
+        "Without _________, Earth would not have clean air to breathe."
       ],
       quizOptions: ["photosynthesis", "evaporation", "gravity", "adaptation"],
       image: "🌱",
-      imageUrl: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=600&auto=format&fit=crop&q=80",
-      funFact: "Algae in our oceans produce over 50% of the world's oxygen through photosynthesis!",
-      hint: "How green plants make food with sunbeams!"
+      imageUrl: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&auto=format&fit=crop&q=80",
+      funFact: "Ocean phytoplankton produce over 50% of the oxygen in our atmosphere!",
+      hint: "How green leaves cook up food using sunlight."
     },
     {
       id: "sci-6",
@@ -475,18 +436,18 @@ export const DEFAULT_CURRICULUM = {
       category: "Forces & Motion",
       word: "gravity",
       displayTitle: "Gravity",
-      definition: "The invisible force of attraction that pulls objects toward the center of the Earth.",
+      definition: "The invisible force of attraction pulling objects toward each other, like toward Earth's center.",
       sentences: [
-        "When you toss an apple into the air, _________ pulls it back down.",
-        "Astronauts float in space because they experience micro-_________.",
-        "The Earth's _________ keeps the Moon in orbit around us.",
-        "Sir Isaac Newton studied _________ after an apple fell from a tree."
+        "When you drop a ball, _________ pulls it downward to the floor.",
+        "Astronauts float in space where they experience micro-_________.",
+        "Earth's strong _________ keeps our atmosphere and oceans in place.",
+        "Sir Isaac Newton famously studied _________ after an apple fell."
       ],
       quizOptions: ["gravity", "friction", "magnet", "habitat"],
-      image: "🍎",
-      imageUrl: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=600&auto=format&fit=crop&q=80",
-      funFact: "If you weighed 60 pounds on Earth, you would weigh only 10 pounds on the Moon due to lower gravity!",
-      hint: "The force that keeps our feet planted on the ground."
+      image: "🍏",
+      imageUrl: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=400&auto=format&fit=crop&q=80",
+      funFact: "Because the Moon has less gravity, you can jump six times higher there than on Earth!",
+      hint: "The invisible pull that keeps our shoes on the ground."
     },
     {
       id: "sci-7",
@@ -494,18 +455,97 @@ export const DEFAULT_CURRICULUM = {
       category: "Forces & Motion",
       word: "magnet",
       displayTitle: "Magnets & Poles",
-      definition: "An object that produces a magnetic field and attracts metals like iron, nickel, and cobalt.",
+      definition: "An object that produces a magnetic field and attracts metals like iron and nickel.",
       sentences: [
-        "Opposite poles of a _________ attract, while like poles repel.",
-        "A compass needle points North because it is a tiny _________.",
-        "She used a fridge _________ to hang her 100% math test on the refrigerator.",
-        "Paperclips made of iron will stick right to a strong _________."
+        "Opposite poles of a _________ attract, while identical poles push apart.",
+        "A compass needle points north because it is a tiny, balanced _________.",
+        "She used a decorative _________ to stick her artwork on the fridge.",
+        "Iron paperclips stick tightly to a powerful _________."
       ],
       quizOptions: ["magnet", "solar", "solid", "fraction"],
       image: "🧲",
-      imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80",
-      funFact: "Planet Earth itself acts like one giant magnet with North and South magnetic poles!",
-      hint: "It sticks to the refrigerator door."
+      imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80",
+      funFact: "Planet Earth itself acts like a giant magnet with magnetic North and South poles!",
+      hint: "It sticks to your refrigerator door!"
+    }
+  ],
+
+  social: [
+    {
+      id: "soc-1",
+      subject: "social",
+      category: "Geography",
+      word: "continent",
+      displayTitle: "7 Continents",
+      definition: "One of the Earth's seven largest continuous expanses of land.",
+      sentences: [
+        "Africa, Asia, and North America are each a distinct _________.",
+        "There are seven total _________ land masses on planet Earth.",
+        "Penguins live mainly on the icy, southern _________ of Antarctica.",
+        "Asia is the largest _________ by both size and population."
+      ],
+      quizOptions: ["continent", "ocean", "equator", "peninsula"],
+      image: "🗺️",
+      imageUrl: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400&auto=format&fit=crop&q=80",
+      funFact: "All seven continents were once joined together in one supercontinent called Pangaea!",
+      hint: "One of the 7 big land masses on Earth."
+    },
+    {
+      id: "soc-2",
+      subject: "social",
+      category: "Geography",
+      word: "equator",
+      displayTitle: "The Equator",
+      definition: "The imaginary horizontal line circling the middle of the Earth halfway between the poles.",
+      sentences: [
+        "Countries located near the warm _________ experience hot weather year-round.",
+        "The _________ divides Earth into the Northern and Southern hemispheres.",
+        "Tropical rainforests thrive in regions close to the _________.",
+        "The sun shines most directly along Earth's sunny _________."
+      ],
+      quizOptions: ["equator", "continent", "border", "island"],
+      image: "🌐",
+      imageUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&auto=format&fit=crop&q=80",
+      funFact: "At the equator, daylight and night are almost exactly 12 hours long every day of the year!",
+      hint: "The imaginary belt around Earth's middle."
+    },
+    {
+      id: "soc-3",
+      subject: "social",
+      category: "Community",
+      word: "citizen",
+      displayTitle: "Good Citizen",
+      definition: "A member of a community, state, or nation with rights, duties, and responsibilities.",
+      sentences: [
+        "A good _________ follows laws and treats neighbors with kindness.",
+        "Every _________ has a voice in choosing community leaders by voting.",
+        "Helping clean up the city park is a great way to be an active _________.",
+        "Students learn how to be responsible _________ at school."
+      ],
+      quizOptions: ["citizen", "equator", "tourist", "inventor"],
+      image: "🤝",
+      imageUrl: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=400&auto=format&fit=crop&q=80",
+      funFact: "Volunteering to help others is one of the most powerful things any citizen can do!",
+      hint: "A helpful, respectful member of a community."
+    },
+    {
+      id: "soc-4",
+      subject: "social",
+      category: "Geography",
+      word: "compass",
+      displayTitle: "Compass Rose",
+      definition: "A tool or map symbol that shows cardinal directions: North, South, East, and West.",
+      sentences: [
+        "Look at the map's _________ rose to find which way is North.",
+        "A magnetic _________ needle always points toward magnetic North.",
+        "Navigators used a star chart and a _________ to sail the oceans.",
+        "East is to the right on a standard _________."
+      ],
+      quizOptions: ["compass", "globe", "scale", "legend"],
+      image: "🧭",
+      imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80",
+      funFact: "Memory phrase for compass directions: Never Eat Soggy Waffles (North, East, South, West)!",
+      hint: "Points North, South, East, and West."
     }
   ]
 };

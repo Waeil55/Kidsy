@@ -32,12 +32,10 @@ export default function QuizMode({
     if (!items || items.length === 0) return;
     const targetItem = items[Math.floor(Math.random() * items.length)];
 
-    // Generate 4 distinct options from current deck if possible
     const otherWords = items
       .map(i => i.word)
       .filter(w => w.toLowerCase() !== targetItem.word.toLowerCase());
     
-    // Shuffle other words
     const shuffledOthers = [...otherWords].sort(() => 0.5 - Math.random());
     
     const pickedOptions = [targetItem.word];
@@ -46,7 +44,6 @@ export default function QuizMode({
       if (!pickedOptions.includes(w)) pickedOptions.push(w);
     }
 
-    // If deck has fewer than 4 items, fall back to target's pre-configured quizOptions
     if (pickedOptions.length < 4 && targetItem.quizOptions) {
       for (let w of targetItem.quizOptions) {
         if (pickedOptions.length >= 4) break;
@@ -54,7 +51,6 @@ export default function QuizMode({
       }
     }
 
-    // Final shuffle of options
     const finalOptions = [...pickedOptions].sort(() => 0.5 - Math.random());
 
     setQuestion(targetItem);
@@ -87,52 +83,59 @@ export default function QuizMode({
 
   if (!question) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-4">
         <p className="font-bold text-slate-400">Loading Quiz Question...</p>
       </div>
     );
   }
 
   return (
-    <section className="flex-1 flex flex-col fade-in w-full max-w-xl mx-auto py-2">
+    <section className="flex-1 min-h-0 flex flex-col justify-between overflow-hidden py-1 w-full max-w-lg mx-auto">
       
-      {/* Subject & Category Pill */}
-      <div className="flex justify-between items-center mb-3 px-2">
-        <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-          <Target className="w-3.5 h-3.5" />
-          <span>Match the Concept</span>
-        </div>
-        <span className="text-xs font-bold text-slate-400">{question.category}</span>
+      {/* Top Category Bar */}
+      <div className="flex justify-between items-center px-1 shrink-0 mb-1">
+        <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase flex items-center gap-1">
+          <Target className="w-3 h-3 text-emerald-600" />
+          <span>{question.category}</span>
+        </span>
+        <button
+          onClick={() => speakText(question.definition)}
+          className="text-emerald-700 text-[11px] font-extrabold flex items-center gap-1 btn-press"
+        >
+          <Volume2 className="w-3 h-3" />
+          <span>Hear Question</span>
+        </button>
       </div>
 
-      {/* Question Prompt Card */}
-      <div className="flex-1 flex flex-col justify-center min-h-[190px]">
-        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-tealsoft-200/80 shadow-xl shadow-slate-900/5 text-center relative overflow-hidden pop">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-tealsoft-500 to-emerald-500 rounded-b-full" />
-          
-          <span className="text-3xl mb-2 inline-block">{question.image || "🎯"}</span>
-          
-          <p className="text-lg sm:text-2xl text-slate-800 font-extrabold leading-relaxed mb-3">
+      {/* Main Question Box with Picture */}
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center bg-white rounded-3xl p-3 sm:p-4 border-2 border-emerald-200/90 shadow-lg relative overflow-hidden my-1">
+        
+        {/* Photo Preview if available */}
+        {question.imageUrl && (
+          <div className="w-full h-20 sm:h-28 rounded-2xl overflow-hidden mb-2 border border-slate-100 shadow-xs shrink-0">
+            <img 
+              src={question.imageUrl} 
+              alt={question.word} 
+              className="w-full h-full object-cover" 
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          </div>
+        )}
+
+        <div className="text-center my-auto">
+          <p className="text-sm sm:text-lg text-slate-800 font-extrabold leading-relaxed">
             "{question.definition}"
           </p>
-
-          <button
-            onClick={() => speakText(question.definition)}
-            className="text-xs font-bold text-tealsoft-700 hover:text-tealsoft-800 bg-tealsoft-50 hover:bg-tealsoft-100 px-3 py-1 rounded-full border border-tealsoft-200 inline-flex items-center gap-1.5 btn-press transition-colors"
-          >
-            <Volume2 className="w-3.5 h-3.5" />
-            <span>Hear Definition</span>
-          </button>
         </div>
       </div>
 
-      {/* 4 Multi-Choice Option Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+      {/* 4 Multi-Choice Option Buttons in 2x2 Grid (Super Colorful!) */}
+      <div className="grid grid-cols-2 gap-2 shrink-0 my-1">
         {options.map((opt, idx) => {
           const isChosen = selectedOption === opt;
           const isTarget = opt.toLowerCase() === question.word.toLowerCase();
           
-          let btnClass = "bg-white border-2 border-slate-200 text-slate-800 hover:border-tealsoft-400 hover:bg-tealsoft-50/50 shadow-xs";
+          let btnClass = "bg-white border-2 border-slate-200 text-slate-800 hover:border-emerald-400 hover:bg-emerald-50/50 shadow-xs";
 
           if (selectedOption !== null) {
             if (isTarget) {
@@ -149,7 +152,7 @@ export default function QuizMode({
               key={idx}
               onClick={() => handleSelectOption(opt)}
               disabled={selectedOption !== null}
-              className={`p-4 rounded-2xl text-base sm:text-lg font-black capitalize transition-all flex items-center justify-center btn-press ${btnClass}`}
+              className={`py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-black capitalize transition-all flex items-center justify-center btn-press ${btnClass}`}
             >
               <span>{opt}</span>
             </button>
@@ -157,45 +160,42 @@ export default function QuizMode({
         })}
       </div>
 
-      {/* Next Question Button once answered */}
+      {/* Next Question Button (Pinned when answered) */}
       {selectedOption !== null && (
-        <div className="mt-4 pop">
+        <div className="shrink-0 my-1 pop">
           <button
             onClick={loadQuestion}
-            className="w-full py-4 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-lg shadow-lg flex items-center justify-center gap-2 btn-press"
+            className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md flex items-center justify-center gap-1.5 btn-press"
           >
             <span>Next Question</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {/* Hint Accordion */}
       {hintShown && (
-        <div className="mt-3 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-sm shadow-xs pop flex items-start gap-2">
-          <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div>
-            <strong className="block font-black text-amber-800 mb-0.5">Hint:</strong>
-            <p className="leading-snug">{question.hint || `The word begins with "${question.word[0].toUpperCase()}"!`}</p>
-          </div>
+        <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs shadow-xs pop shrink-0 flex items-start gap-1 my-0.5">
+          <Lightbulb className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="line-clamp-2"><strong className="font-black">Hint:</strong> {question.hint || `Starts with "${question.word[0].toUpperCase()}"!`}</p>
         </div>
       )}
 
-      {/* Footer Tools */}
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
+      {/* Bottom Dock: Hint & Tutor Buttons (Pinned, Never Missed!) */}
+      <div className="flex items-center justify-between shrink-0 pt-1.5 border-t border-slate-200/80 mt-1">
         <button
           onClick={() => { playPop(); setHintShown(!hintShown); }}
-          className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 hover:bg-amber-200 text-amber-800 rounded-xl text-xs font-extrabold border border-amber-300 btn-press transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-xs font-black border border-amber-300 btn-press"
         >
-          <Lightbulb className="w-4 h-4 text-amber-600" />
-          <span>{hintShown ? "Hide Hint" : "Need a Hint?"}</span>
+          <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
+          <span>{hintShown ? "Hide Hint" : "Hint"}</span>
         </button>
 
         <button
           onClick={() => { playPop(); onOpenChat(); }}
-          className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 text-white rounded-xl text-xs font-extrabold shadow-sm btn-press"
+          className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 text-white rounded-xl text-xs font-black shadow-xs btn-press"
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
           <span>Ask Tutor</span>
         </button>
       </div>

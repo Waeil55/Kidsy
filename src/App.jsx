@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import StartScreen from './components/StartScreen';
 import StudyMode from './components/StudyMode';
@@ -24,8 +24,9 @@ import {
 
 export default function App() {
   const [isStarted, setIsStarted] = useState(false);
-  const [activeSubject, setActiveSubject] = useState('english'); // 'english' | 'math' | 'science' | 'custom'
+  const [activeSubject, setActiveSubject] = useState('english'); // 'english' | 'math' | 'science' | 'social' | 'custom'
   const [activeTab, setActiveTab] = useState('study'); // 'study' | 'sentences' | 'quiz' | 'spell'
+  const [selectedCategory, setSelectedCategory] = useState('all');
   
   const [customCards, setCustomCards] = useState(getStoredCustomCards());
   const [studyIndex, setStudyIndex] = useState(0);
@@ -35,10 +36,22 @@ export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isParentOpen, setIsParentOpen] = useState(false);
 
-  // Determine active item list
-  const activeDeck = activeSubject === 'custom' 
+  // Raw list for active subject
+  const rawSubjectDeck = activeSubject === 'custom' 
     ? customCards 
     : (DEFAULT_CURRICULUM[activeSubject] || []);
+
+  // Compute unique categories for active subject
+  const categories = useMemo(() => {
+    const cats = new Set(rawSubjectDeck.map(item => item.category).filter(Boolean));
+    return Array.from(cats);
+  }, [rawSubjectDeck]);
+
+  // Filtered deck based on topic filter chip
+  const activeDeck = useMemo(() => {
+    if (selectedCategory === 'all') return rawSubjectDeck;
+    return rawSubjectDeck.filter(item => item.category === selectedCategory);
+  }, [rawSubjectDeck, selectedCategory]);
 
   const currentItem = activeDeck.length > 0 ? activeDeck[studyIndex % activeDeck.length] : null;
 
@@ -50,7 +63,6 @@ export default function App() {
 
   const handleStreakUpdate = (won) => {
     const container = document.getElementById('streak-container');
-    const icon = document.getElementById('streak-icon');
 
     if (won) {
       const nextStreak = streak + 1;
@@ -62,15 +74,14 @@ export default function App() {
         container.classList.add('scale-110', 'border-amber-400', 'bg-amber-100');
         setTimeout(() => {
           container.classList.remove('scale-110', 'border-amber-400', 'bg-amber-100');
-        }, 800);
+        }, 700);
       }
 
-      // Milestone celebrations
       if (nextStreak > 0 && nextStreak % 5 === 0) {
         fireConfetti(true);
         setTimeout(() => {
           speakText(`Amazing! A streak of ${nextStreak}! You are unstoppable!`, 1.1, 1.25);
-        }, 600);
+        }, 500);
       }
     } else {
       setStreak(0);
@@ -78,7 +89,7 @@ export default function App() {
         container.classList.add('shake', 'border-rose-400', 'bg-rose-50');
         setTimeout(() => {
           container.classList.remove('shake', 'border-rose-400', 'bg-rose-50');
-        }, 600);
+        }, 500);
       }
     }
   };
@@ -87,45 +98,51 @@ export default function App() {
     setStudyIndex(Math.floor(Math.random() * (activeDeck.length || 1)));
   };
 
+  const handleSubjectChange = (sub) => {
+    setActiveSubject(sub);
+    setSelectedCategory('all');
+    setStudyIndex(0);
+  };
+
   return (
-    <div className="relative min-h-screen h-screen overflow-hidden flex flex-col bg-executive-mesh bg-grid-pattern select-none text-slate-900 font-sans">
+    <div className="relative h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col bg-executive-mesh select-none text-slate-900 font-sans">
       
-      {/* Soft Teal & Rose Ambient Blooms */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-gradient-to-tr from-tealsoft-200/25 via-rosebloom-100/35 to-emerald-200/20 rounded-full blur-3xl -z-10 pointer-events-none" />
-      <div className="absolute top-20 right-10 w-72 h-72 bg-rosebloom-100/30 rounded-full blur-3xl -z-10 pointer-events-none" />
+      {/* Soft Ambient Blooms */}
+      <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-tealsoft-200/25 via-rosebloom-100/35 to-amber-200/20 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute top-10 right-5 w-60 h-60 bg-rosebloom-100/25 rounded-full blur-2xl -z-10 pointer-events-none" />
 
       {/* Start Gateway Modal */}
       {!isStarted && <StartScreen onStart={handleStart} />}
 
-      {/* App Header & Subject/Tab Navigation */}
+      {/* App Header & Navigation */}
       <Navbar
         activeSubject={activeSubject}
-        onSelectSubject={(sub) => {
-          setActiveSubject(sub);
-          setStudyIndex(0);
-        }}
+        onSelectSubject={handleSubjectChange}
         activeTab={activeTab}
         onSelectTab={setActiveTab}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
         streak={streak}
         onOpenChat={() => setIsChatOpen(true)}
         onOpenParent={() => setIsParentOpen(true)}
         customCount={customCards.length}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto px-4 py-3 flex flex-col justify-start max-w-4xl mx-auto w-full no-scrollbar">
+      {/* Main Game Screen Area (Zero Scroll, Always Fits!) */}
+      <main className="flex-1 min-h-0 overflow-hidden flex flex-col justify-between px-2 sm:px-3 py-1 max-w-2xl mx-auto w-full">
         {activeDeck.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center glass-card-light rounded-3xl my-auto border border-rosebloom-200/70 shadow-sm max-w-md mx-auto">
-            <span className="text-4xl mb-3">📁</span>
-            <h3 className="text-lg font-black text-slate-800">Your Custom Deck is Empty</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-xs leading-relaxed font-medium">
-              Parents can open the Parent Studio to snap photos of worksheets, upload files, or create cards!
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center glass-card-light rounded-3xl my-auto border border-rosebloom-200 shadow-sm max-w-sm mx-auto">
+            <span className="text-3xl mb-2">📁</span>
+            <h3 className="text-base font-black text-slate-800">No Cards Found in Topic</h3>
+            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              Try choosing "All" topics above, or open Parent Studio to create cards!
             </p>
             <button
-              onClick={() => setIsParentOpen(true)}
-              className="mt-5 px-5 py-2.5 rounded-2xl bg-tealsoft-600 hover:bg-tealsoft-500 text-white font-black text-xs shadow-md shadow-tealsoft-600/20 btn-press"
+              onClick={() => setSelectedCategory('all')}
+              className="mt-3 px-4 py-2 rounded-xl bg-tealsoft-600 text-white font-black text-xs btn-press"
             >
-              Open Parent Studio
+              Show All Topics
             </button>
           </div>
         ) : (
