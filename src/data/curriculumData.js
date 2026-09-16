@@ -13,7 +13,8 @@ export const DEFAULT_CURRICULUM = {
         "It was a huge _________ to meet the astronaut at school.",
         "She earned the _________ of leading the school parade today."
       ],
-      quizOptions: ["privilege", "grumble", "fragile", "calculate"],
+      quizOptions: ["privilege", "pledge", "courage", "curious"],
+      contextOptions: ["privilege", "pledge", "courage", "habit"],
       image: "👑",
       imageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&auto=format&fit=crop&q=80",
       funFact: "Kings and queens had special privileges, but kindness earns you the greatest privilege: true friends!",
@@ -32,7 +33,8 @@ export const DEFAULT_CURRICULUM = {
         "He wrote an _________ and clever solution on the board.",
         "The white swan looked incredibly _________ on the lake."
       ],
-      quizOptions: ["elegant", "fragile", "assemble", "defend"],
+      quizOptions: ["elegant", "fragile", "specific", "courageous"],
+      contextOptions: ["elegant", "fragile", "specific", "clumsy"],
       image: "🦢",
       imageUrl: "https://images.unsplash.com/photo-1516641396056-0ce60a85d49f?w=400&auto=format&fit=crop&q=80",
       funFact: "Swans glide smoothly because their feathers lock together to repel water perfectly!",
@@ -51,7 +53,8 @@ export const DEFAULT_CURRICULUM = {
         "A supercomputer can _________ millions of problems every second.",
         "Can you _________ the perimeter of this triangle?"
       ],
-      quizOptions: ["calculate", "research", "pledge", "specific"],
+      quizOptions: ["calculate", "research", "assemble", "defend"],
+      contextOptions: ["calculate", "research", "assemble", "grumble"],
       image: "🧮",
       imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=400&auto=format&fit=crop&q=80",
       funFact: "The word calculate comes from 'calculus', which meant a counting pebble in ancient Rome!",
@@ -70,7 +73,8 @@ export const DEFAULT_CURRICULUM = {
         "\"I dislike rainy days,\" she began to _________ under her breath.",
         "We heard dark thunderclouds _________ across the sky."
       ],
-      quizOptions: ["grumble", "assemble", "privilege", "defend"],
+      quizOptions: ["grumble", "defend", "whisper", "assemble"],
+      contextOptions: ["grumble", "defend", "calculate", "pledge"],
       image: "🐻",
       imageUrl: "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=400&auto=format&fit=crop&q=80",
       funFact: "A rumbling stomach is called 'borborygmi'—it is air and fluid moving around!",
@@ -89,7 +93,8 @@ export const DEFAULT_CURRICULUM = {
         "Let us _________ our team to finish the science project.",
         "Factory robots _________ hundreds of computers daily."
       ],
-      quizOptions: ["assemble", "calculate", "fragile", "pledge"],
+      quizOptions: ["assemble", "calculate", "defend", "research"],
+      contextOptions: ["assemble", "defend", "grumble", "divide"],
       image: "🧩",
       imageUrl: "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=400&auto=format&fit=crop&q=80",
       funFact: "NASA engineers assemble spaceships in a hall so tall that rain clouds could form inside!",
@@ -108,7 +113,8 @@ export const DEFAULT_CURRICULUM = {
         "The museum displayed ancient and _________ pottery.",
         "Soap bubbles are so _________ they pop with a gentle tap."
       ],
-      quizOptions: ["fragile", "elegant", "specific", "research"],
+      quizOptions: ["fragile", "elegant", "specific", "tough"],
+      contextOptions: ["fragile", "elegant", "solid", "precious"],
       image: "🫧",
       imageUrl: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400&auto=format&fit=crop&q=80",
       funFact: "Spider silk is thin and looks fragile, but pound-for-pound it is stronger than steel!",
@@ -128,6 +134,7 @@ export const DEFAULT_CURRICULUM = {
         "Before building the treehouse, Dad did safety _________."
       ],
       quizOptions: ["research", "calculate", "defend", "privilege"],
+      contextOptions: ["research", "calculate", "assemble", "rumor"],
       image: "🔬",
       imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&auto=format&fit=crop&q=80",
       funFact: "Marie Curie spent years doing research and won two Nobel Prizes in two different sciences!",
@@ -147,6 +154,7 @@ export const DEFAULT_CURRICULUM = {
         "The goalkeeper made a diving save to _________ the net."
       ],
       quizOptions: ["defend", "grumble", "assemble", "pledge"],
+      contextOptions: ["defend", "attack", "assemble", "pledge"],
       image: "🛡️",
       imageUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80",
       funFact: "Armadillos defend themselves by rolling into an armored, impenetrable ball!",
@@ -165,7 +173,8 @@ export const DEFAULT_CURRICULUM = {
         "She had the _________ to admit when she made a mistake.",
         "True _________ means doing the right thing even when scared."
       ],
-      quizOptions: ["courage", "calculate", "grumble", "fragile"],
+      quizOptions: ["courage", "privilege", "grumble", "curiosity"],
+      contextOptions: ["courage", "privilege", "pledge", "fear"],
       image: "🦁",
       imageUrl: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=400&auto=format&fit=crop&q=80",
       funFact: "Courage comes from the Latin word 'cor', which literally means 'heart'!",
@@ -181,10 +190,11 @@ export const DEFAULT_CURRICULUM = {
       sentences: [
         "The _________ kitten explored every nook of the garden.",
         "Scientists are always _________ about how stars are born.",
-        "I was _________ to see what surprised was wrapped in the box.",
+        "I was _________ to see what surprise was wrapped in the box.",
         "A _________ mind asks wonderful questions."
       ],
       quizOptions: ["curious", "elegant", "pledge", "specific"],
+      contextOptions: ["curious", "courageous", "fragile", "indifferent"],
       image: "🔍",
       imageUrl: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=400&auto=format&fit=crop&q=80",
       funFact: "NASA named their famous Mars Rover 'Curiosity', and it has explored Mars for over 10 years!",
@@ -206,7 +216,8 @@ export const DEFAULT_CURRICULUM = {
         "A chocolate bar with 4 rows and 6 columns has _________ pieces.",
         "6 children with 4 stickers each have _________ stickers."
       ],
-      quizOptions: ["24", "20", "28", "18"],
+      quizOptions: ["24", "28", "20", "18"],
+      contextOptions: ["24", "28", "20", "18"],
       image: "⭐",
       imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&auto=format&fit=crop&q=80",
       funFact: "4 × 6 is the same as 6 × 4! This is called the Commutative Property.",
@@ -227,6 +238,7 @@ export const DEFAULT_CURRICULUM = {
         "Sharing equally means each friend receives a fair _________."
       ],
       quizOptions: ["fraction", "perimeter", "digit", "product"],
+      contextOptions: ["fraction", "decimal", "perimeter", "whole"],
       image: "🍕",
       imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&auto=format&fit=crop&q=80",
       funFact: "The word fraction comes from the Latin 'fractio', meaning 'to break into pieces'!",
@@ -246,7 +258,8 @@ export const DEFAULT_CURRICULUM = {
         "A square with 5-foot sides has a _________ of 20 feet.",
         "The runners ran around the gym track along its outer _________."
       ],
-      quizOptions: ["perimeter", "area", "volume", "fraction"],
+      quizOptions: ["perimeter", "area", "volume", "diameter"],
+      contextOptions: ["perimeter", "area", "volume", "length"],
       image: "📐",
       imageUrl: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=400&auto=format&fit=crop&q=80",
       funFact: "'Peri' means around, and 'meter' means measure—so perimeter means 'measuring around'!",
@@ -267,6 +280,7 @@ export const DEFAULT_CURRICULUM = {
         "8 boxes holding 7 apples each hold _________ apples."
       ],
       quizOptions: ["56", "54", "64", "48"],
+      contextOptions: ["56", "54", "64", "49"],
       image: "🍎",
       imageUrl: "https://images.unsplash.com/photo-1447175008436-054170c2e979?w=400&auto=format&fit=crop&q=80",
       funFact: "Memory trick: 5, 6, 7, 8! That means 56 = 7 × 8!",
@@ -287,6 +301,7 @@ export const DEFAULT_CURRICULUM = {
         "There are 35 days in 5 weeks because each week has _________ days."
       ],
       quizOptions: ["7", "6", "8", "9"],
+      contextOptions: ["7", "6", "8", "5"],
       image: "🍬",
       imageUrl: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=400&auto=format&fit=crop&q=80",
       funFact: "Multiplication and division are math partners—they undo each other!",
@@ -306,7 +321,8 @@ export const DEFAULT_CURRICULUM = {
         "Tiles on a classroom floor show the total _________ of the room.",
         "While perimeter is the fence, _________ is the grass inside."
       ],
-      quizOptions: ["area", "perimeter", "digit", "angle"],
+      quizOptions: ["area", "perimeter", "volume", "angle"],
+      contextOptions: ["area", "perimeter", "volume", "border"],
       image: "🟩",
       imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&auto=format&fit=crop&q=80",
       funFact: "Area is always measured in square units, like square inches or square meters!",
@@ -326,7 +342,8 @@ export const DEFAULT_CURRICULUM = {
         "If you take 2 parts out of 5, 2 is the _________.",
         "The top number is called the _________, while bottom is denominator."
       ],
-      quizOptions: ["numerator", "denominator", "perimeter", "product"],
+      quizOptions: ["numerator", "denominator", "quotient", "product"],
+      contextOptions: ["numerator", "denominator", "fraction", "divisor"],
       image: "🔝",
       imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&auto=format&fit=crop&q=80",
       funFact: "'Numerator' means 'counter'—it counts how many pieces you have!",
@@ -348,7 +365,8 @@ export const DEFAULT_CURRICULUM = {
         "A _________ eclipse occurs when the Moon passes in front of the Sun.",
         "Telescopes help astronomers map our _________ neighborhood."
       ],
-      quizOptions: ["solar", "habitat", "liquid", "magnet"],
+      quizOptions: ["solar", "lunar", "stellar", "polar"],
+      contextOptions: ["solar", "lunar", "gravity", "atmosphere"],
       image: "☀️",
       imageUrl: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&auto=format&fit=crop&q=80",
       funFact: "The Sun contains 99.8% of all the mass in the entire solar system!",
@@ -367,7 +385,8 @@ export const DEFAULT_CURRICULUM = {
         "Cutting down rainforest trees destroys the native _________ of parrots.",
         "Every healthy _________ provides animals with food, water, and shelter."
       ],
-      quizOptions: ["habitat", "gravity", "solid", "friction"],
+      quizOptions: ["habitat", "climate", "biome", "ecosystem"],
+      contextOptions: ["habitat", "ecosystem", "climate", "burrow"],
       image: "🌴",
       imageUrl: "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=400&auto=format&fit=crop&q=80",
       funFact: "Coral reefs cover less than 1% of the ocean floor but are habitats for 25% of all marine life!",
@@ -387,6 +406,7 @@ export const DEFAULT_CURRICULUM = {
         "A _________ keeps its fixed shape until bent, cut, or heated."
       ],
       quizOptions: ["solid", "liquid", "gas", "plasma"],
+      contextOptions: ["solid", "liquid", "gas", "mineral"],
       image: "🧊",
       imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80",
       funFact: "Diamonds are the hardest natural solids known on Earth!",
@@ -405,7 +425,8 @@ export const DEFAULT_CURRICULUM = {
         "A _________ pours smoothly into cups, bottles, or bowls of any shape.",
         "Rain falling from storm clouds is water in its _________ form."
       ],
-      quizOptions: ["liquid", "solid", "gas", "gravity"],
+      quizOptions: ["liquid", "solid", "gas", "vapor"],
+      contextOptions: ["liquid", "solid", "gas", "fluid"],
       image: "💧",
       imageUrl: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80",
       funFact: "Water is the only natural substance on Earth that exists as solid, liquid, and gas!",
@@ -424,7 +445,8 @@ export const DEFAULT_CURRICULUM = {
         "Green chlorophyll in leaves catches sunlight needed for _________.",
         "Without _________, Earth would not have clean air to breathe."
       ],
-      quizOptions: ["photosynthesis", "evaporation", "gravity", "adaptation"],
+      quizOptions: ["photosynthesis", "evaporation", "respiration", "germination"],
+      contextOptions: ["photosynthesis", "evaporation", "respiration", "pollination"],
       image: "🌱",
       imageUrl: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&auto=format&fit=crop&q=80",
       funFact: "Ocean phytoplankton produce over 50% of the oxygen in our atmosphere!",
@@ -443,7 +465,8 @@ export const DEFAULT_CURRICULUM = {
         "Earth's strong _________ keeps our atmosphere and oceans in place.",
         "Sir Isaac Newton famously studied _________ after an apple fell."
       ],
-      quizOptions: ["gravity", "friction", "magnet", "habitat"],
+      quizOptions: ["gravity", "friction", "magnetism", "velocity"],
+      contextOptions: ["gravity", "friction", "magnetism", "inertia"],
       image: "🍏",
       imageUrl: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=400&auto=format&fit=crop&q=80",
       funFact: "Because the Moon has less gravity, you can jump six times higher there than on Earth!",
@@ -462,7 +485,8 @@ export const DEFAULT_CURRICULUM = {
         "She used a decorative _________ to stick her artwork on the fridge.",
         "Iron paperclips stick tightly to a powerful _________."
       ],
-      quizOptions: ["magnet", "solar", "solid", "fraction"],
+      quizOptions: ["magnet", "conductor", "battery", "circuit"],
+      contextOptions: ["magnet", "compass", "metal", "battery"],
       image: "🧲",
       imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80",
       funFact: "Planet Earth itself acts like a giant magnet with magnetic North and South poles!",
@@ -484,7 +508,8 @@ export const DEFAULT_CURRICULUM = {
         "Penguins live mainly on the icy, southern _________ of Antarctica.",
         "Asia is the largest _________ by both size and population."
       ],
-      quizOptions: ["continent", "ocean", "equator", "peninsula"],
+      quizOptions: ["continent", "country", "hemisphere", "peninsula"],
+      contextOptions: ["continent", "country", "island", "hemisphere"],
       image: "🗺️",
       imageUrl: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400&auto=format&fit=crop&q=80",
       funFact: "All seven continents were once joined together in one supercontinent called Pangaea!",
@@ -503,7 +528,8 @@ export const DEFAULT_CURRICULUM = {
         "Tropical rainforests thrive in regions close to the _________.",
         "The sun shines most directly along Earth's sunny _________."
       ],
-      quizOptions: ["equator", "continent", "border", "island"],
+      quizOptions: ["equator", "prime meridian", "axis", "latitude"],
+      contextOptions: ["equator", "prime meridian", "border", "tropic"],
       image: "🌐",
       imageUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&auto=format&fit=crop&q=80",
       funFact: "At the equator, daylight and night are almost exactly 12 hours long every day of the year!",
@@ -522,7 +548,8 @@ export const DEFAULT_CURRICULUM = {
         "Helping clean up the city park is a great way to be an active _________.",
         "Students learn how to be responsible _________ at school."
       ],
-      quizOptions: ["citizen", "equator", "tourist", "inventor"],
+      quizOptions: ["citizen", "resident", "tourist", "volunteer"],
+      contextOptions: ["citizen", "tourist", "leader", "neighbor"],
       image: "🤝",
       imageUrl: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=400&auto=format&fit=crop&q=80",
       funFact: "Volunteering to help others is one of the most powerful things any citizen can do!",
@@ -541,7 +568,8 @@ export const DEFAULT_CURRICULUM = {
         "Navigators used a star chart and a _________ to sail the oceans.",
         "East is to the right on a standard _________."
       ],
-      quizOptions: ["compass", "globe", "scale", "legend"],
+      quizOptions: ["compass", "scale", "legend", "atlas"],
+      contextOptions: ["compass", "scale", "legend", "telescope"],
       image: "🧭",
       imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80",
       funFact: "Memory phrase for compass directions: Never Eat Soggy Waffles (North, East, South, West)!",
