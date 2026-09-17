@@ -1,16 +1,29 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getState, setState } from '../lib/db';
 
+const defaultGiftGoal = {
+  category: 'toy',
+  title: 'Cosmic Robot 🧸',
+  icon: '🧸',
+  targetQuestions: 20,
+  progress: 0,
+  isUnlocked: false,
+  answeredQuestionIds: [],
+  hasPicked: false
+};
+
 const demoChild = {
   id: 'merola',
   name: 'Merola',
   grade: '3',
-  avatar: '🦊',
+  avatar: '🦖',
+  avatarId: 'rex',
   xp: 450,
   streak: 5,
   completed: ['3-week5-0', '3-week5-1'],
   minutes: 35,
-  dailyGoal: 20
+  dailyGoal: 20,
+  giftGoal: defaultGiftGoal
 };
 
 const AppContext = createContext(null);
@@ -22,10 +35,15 @@ export function AppProvider({ children }) {
   const [role, setRole] = useState('parent');
 
   useEffect(() => {
-    getState('children', [demoChild]).then(v => {
+    getState('children', [demoChild]).then((v) => {
       const list = Array.isArray(v) && v.length ? v : [demoChild];
-      setKids(list);
-      setActiveId(list[0].id);
+      // Ensure each child has a giftGoal
+      const populated = list.map((k) => ({
+        ...k,
+        giftGoal: k.giftGoal || { ...defaultGiftGoal }
+      }));
+      setKids(populated);
+      setActiveId(populated[0].id);
     });
     getState('role', 'parent').then(setRole);
 
@@ -50,12 +68,12 @@ export function AppProvider({ children }) {
   }, [role]);
 
   const child = useMemo(() => {
-    return kids.find(k => k.id === activeId) || kids[0] || demoChild;
+    return kids.find((k) => k.id === activeId) || kids[0] || demoChild;
   }, [kids, activeId]);
 
   const complete = (lessonId, xp, minutes) => {
-    setKids(prev =>
-      prev.map(k => {
+    setKids((prev) =>
+      prev.map((k) => {
         if (k.id !== child.id) return k;
         const alreadyDone = k.completed.includes(lessonId);
         return {
@@ -69,13 +87,77 @@ export function AppProvider({ children }) {
     );
   };
 
+  const setGiftGoal = (newGoal) => {
+    setKids((prev) =>
+      prev.map((k) => {
+        if (k.id !== child.id) return k;
+        return {
+          ...k,
+          giftGoal: {
+            ...k.giftGoal,
+            ...newGoal,
+            isUnlocked: false,
+            hasPicked: true
+          }
+        };
+      })
+    );
+  };
+
+  const advanceGiftProgress = (questionId, isCorrect = true) => {
+    setKids((prev) =>
+      prev.map((k) => {
+        if (k.id !== child.id) return k;
+        const currentGoal = k.giftGoal || defaultGiftGoal;
+        const answered = currentGoal.answeredQuestionIds || [];
+        const nextAnswered = questionId ? [...answered, questionId] : answered;
+        const nextProg = currentGoal.progress + (isCorrect ? 1 : 0);
+        const unlocked = nextProg >= currentGoal.targetQuestions;
+
+        return {
+          ...k,
+          xp: k.xp + (isCorrect ? 15 : 0),
+          giftGoal: {
+            ...currentGoal,
+            progress: nextProg,
+            isUnlocked: unlocked,
+            answeredQuestionIds: nextAnswered
+          }
+        };
+      })
+    );
+  };
+
+  const claimGift = () => {
+    setKids((prev) =>
+      prev.map((k) => {
+        if (k.id !== child.id) return k;
+        const currentGoal = k.giftGoal || defaultGiftGoal;
+        return {
+          ...k,
+          xp: k.xp + 100, // Grand gift unlock bonus!
+          giftGoal: {
+            ...currentGoal,
+            progress: 0,
+            isUnlocked: false,
+            answeredQuestionIds: []
+          }
+        };
+      })
+    );
+  };
+
   const addChild = (newChild) => {
-    setKids(prev => [...prev, newChild]);
-    setActiveId(newChild.id);
+    const withGoal = {
+      ...newChild,
+      giftGoal: newChild.giftGoal || { ...defaultGiftGoal }
+    };
+    setKids((prev) => [...prev, withGoal]);
+    setActiveId(withGoal.id);
   };
 
   const updateChild = (id, partial) => {
-    setKids(prev => prev.map(k => (k.id === id ? { ...k, ...partial } : k)));
+    setKids((prev) => prev.map((k) => (k.id === id ? { ...k, ...partial } : k)));
   };
 
   const value = useMemo(
@@ -86,6 +168,9 @@ export function AppProvider({ children }) {
       addChild,
       updateChild,
       complete,
+      setGiftGoal,
+      advanceGiftProgress,
+      claimGift,
       online,
       role,
       setRole
