@@ -1,13 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import StartScreen from './components/StartScreen';
+import JourneyMap from './components/JourneyMap';
+import AssessmentHub from './components/AssessmentHub';
+import EnterpriseTelemetry from './components/EnterpriseTelemetry';
+import CompanionSuite from './components/CompanionSuite';
 import StudyMode from './components/StudyMode';
-import SentenceMode from './components/SentenceMode';
-import QuizMode from './components/QuizMode';
-import SpellMode from './components/SpellMode';
-import SynAntMode from './components/SynAntMode';
 import AITutorModal from './components/AITutorModal';
 import ParentStudio from './components/ParentStudio';
+import SeatSwitcherModal from './components/SeatSwitcherModal';
+import EducatorGateModal from './components/EducatorGateModal';
 import { DEFAULT_CURRICULUM } from './data/curriculumData';
 import { 
   initAudioSystem, 
@@ -15,7 +17,10 @@ import {
   playCorrect, 
   playIncorrect, 
   fireConfetti, 
-  speakText 
+  speakText,
+  triggerAudioTone,
+  toggleAudioSFX,
+  isAudioMuted
 } from './utils/audio';
 import { 
   getStoredCustomCards, 
@@ -26,16 +31,54 @@ import {
 export default function App() {
   const [isStarted, setIsStarted] = useState(false);
   const [activeSubject, setActiveSubject] = useState('week5'); // 'week5' | 'english' | 'math' | 'science' | 'social' | 'custom'
-  const [activeTab, setActiveTab] = useState('study'); // 'study' | 'sentences' | 'synant' | 'quiz' | 'spell'
+  const [activeTab, setActiveTab] = useState('journey'); // 'journey' | 'assessments' | 'telemetry' | 'companion' | 'study'
   const [selectedCategory, setSelectedCategory] = useState('all');
   
+  // Multi-Seat Profile State
+  const [activeSeat, setActiveSeat] = useState({
+    id: 'seat-1',
+    seatNum: '01',
+    name: 'Merola [STUDENT_4082]',
+    emoji: '🦊',
+    cohort: 'COHORT_ALPHA'
+  });
+  const [isSeatModalOpen, setIsSeatModalOpen] = useState(false);
+
+  // Companion State
+  const [companionEmoji, setCompanionEmoji] = useState('🦊');
+  const [companionName, setCompanionName] = useState('Captain Pip');
+  const [companionHat, setCompanionHat] = useState('👑');
+
+  // Score & Economy State
+  const [score, setScore] = useState(100);
+  const [gems, setGems] = useState(450);
+  const [penalties, setPenalties] = useState(0);
+  const [telemetryLogs, setTelemetryLogs] = useState([]);
+
+  // Educator Governance & Settings
+  const [isEducatorGateOpen, setIsEducatorGateOpen] = useState(false);
+  const [isPenaltyEnabled, setIsPenaltyEnabled] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isMuted, setIsMuted] = useState(isAudioMuted());
+
+  // Existing cards & stats
   const [customCards, setCustomCards] = useState(getStoredCustomCards());
   const [studyIndex, setStudyIndex] = useState(0);
   const [streak, setStreak] = useState(0);
   const [stats, setStats] = useState(getStoredStats());
 
+  // Modals
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isParentOpen, setIsParentOpen] = useState(false);
+
+  // Synchronize dark mode class
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   // Raw list for active subject
   const rawSubjectDeck = activeSubject === 'custom' 
@@ -62,21 +105,34 @@ export default function App() {
     playPop();
   };
 
-  const handleStreakUpdate = (won) => {
-    const container = document.getElementById('streak-container');
+  // Enterprise Score & Penalty Engine with floating chip delta
+  const handleScoreAdjustment = (delta, reason = 'Exam Activity') => {
+    // If penalty system is disabled and delta is negative, ignore
+    if (delta < 0 && !isPenaltyEnabled) return;
 
-    if (won) {
+    setScore(prev => Math.max(0, prev + delta));
+
+    const chip = document.getElementById('hud-delta-chip');
+    if (chip) {
+      if (delta < 0) {
+        chip.textContent = `${delta}`;
+        chip.className = 'absolute -top-3 -right-2 font-fredoka text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-rose-500 text-white shadow-md transition-all duration-300 scale-125 opacity-100 z-30';
+      } else {
+        chip.textContent = `+${delta}`;
+        chip.className = 'absolute -top-3 -right-2 font-fredoka text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500 text-white shadow-md transition-all duration-300 scale-125 opacity-100 z-30';
+      }
+      setTimeout(() => {
+        chip.classList.remove('scale-125', 'opacity-100');
+        chip.classList.add('opacity-0');
+      }, 1100);
+    }
+
+    if (delta > 0) {
+      setGems(prev => prev + 2);
       const nextStreak = streak + 1;
       setStreak(nextStreak);
       const updatedStats = updateStoredStats(nextStreak);
       setStats(updatedStats);
-
-      if (container) {
-        container.classList.add('scale-110', 'border-amber-400', 'bg-amber-100');
-        setTimeout(() => {
-          container.classList.remove('scale-110', 'border-amber-400', 'bg-amber-100');
-        }, 700);
-      }
 
       if (nextStreak > 0 && nextStreak % 5 === 0) {
         fireConfetti(true);
@@ -85,7 +141,34 @@ export default function App() {
         }, 500);
       }
     } else {
+      setPenalties(prev => prev + 1);
       setStreak(0);
+    }
+
+    // Append to live session telemetry stream
+    setTelemetryLogs(prev => [
+      {
+        text: reason,
+        result: delta > 0 ? `+${delta} Pts (Success)` : `${delta} Pt (Penalty)`,
+        isWin: delta > 0
+      },
+      ...prev
+    ]);
+  };
+
+  const handleStreakUpdate = (won) => {
+    const container = document.getElementById('streak-container');
+
+    if (won) {
+      handleScoreAdjustment(10, 'Assessment Verified');
+      if (container) {
+        container.classList.add('scale-110', 'border-amber-400', 'bg-amber-100');
+        setTimeout(() => {
+          container.classList.remove('scale-110', 'border-amber-400', 'bg-amber-100');
+        }, 700);
+      }
+    } else {
+      handleScoreAdjustment(-1, 'Assessment Miss');
       if (container) {
         container.classList.add('shake', 'border-rose-400', 'bg-rose-50');
         setTimeout(() => {
@@ -105,17 +188,24 @@ export default function App() {
     setStudyIndex(0);
   };
 
+  const handleToggleAudio = () => {
+    const active = toggleAudioSFX();
+    setIsMuted(!active);
+  };
+
   return (
-    <div className="relative h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col bg-executive-mesh select-none text-slate-900 font-sans">
+    <div className={`relative h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col select-none transition-colors duration-300 font-sans ${
+      isDarkMode ? 'bg-kid-night text-slate-100' : 'bg-executive-mesh text-slate-900'
+    }`}>
       
-      {/* Soft Ambient Blooms */}
-      <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-tealsoft-200/25 via-rosebloom-100/35 to-amber-200/20 rounded-full blur-3xl -z-10 pointer-events-none" />
-      <div className="absolute top-10 right-5 w-60 h-60 bg-rosebloom-100/25 rounded-full blur-2xl -z-10 pointer-events-none" />
+      {/* Soft Ambient Glows */}
+      <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-tealsoft-200/20 via-indigo-500/15 to-purple-500/15 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute top-10 right-5 w-60 h-60 bg-pink-500/10 rounded-full blur-2xl -z-10 pointer-events-none" />
 
       {/* Start Gateway Modal */}
       {!isStarted && <StartScreen onStart={handleStart} />}
 
-      {/* App Header & Navigation */}
+      {/* Institutional Enterprise Header & Navigation */}
       <Navbar
         activeSubject={activeSubject}
         onSelectSubject={handleSubjectChange}
@@ -125,29 +215,94 @@ export default function App() {
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
         streak={streak}
+        score={score}
+        gems={gems}
+        activeSeat={activeSeat}
+        onOpenSeatSwitcher={() => setIsSeatModalOpen(true)}
+        onOpenEducatorGate={() => setIsEducatorGateOpen(true)}
         onOpenChat={() => setIsChatOpen(true)}
-        onOpenParent={() => setIsParentOpen(true)}
         customCount={customCards.length}
       />
 
-      {/* Main Game Screen Area (Zero Scroll, Always Fits!) */}
+      {/* Main Workspace Area (Zero Scroll, Always Fits!) */}
       <main className="flex-1 min-h-0 overflow-hidden flex flex-col justify-between px-2 sm:px-3 py-1 max-w-2xl mx-auto w-full">
         {activeDeck.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center glass-card-light rounded-3xl my-auto border border-rosebloom-200 shadow-sm max-w-sm mx-auto">
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center glass-card-light dark:bg-kid-nightCard rounded-3xl my-auto border border-indigo-200 dark:border-indigo-800 shadow-sm max-w-sm mx-auto">
             <span className="text-3xl mb-2">📁</span>
-            <h3 className="text-base font-black text-slate-800">No Cards Found in Topic</h3>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-              Try choosing "All" topics above, or open Parent Studio to create cards!
+            <h3 className="text-base font-fredoka font-bold text-slate-800 dark:text-white">No Cards Found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed font-fredoka">
+              Try selecting "All" topics above, or launch Parent Studio to add cards!
             </p>
             <button
               onClick={() => setSelectedCategory('all')}
-              className="mt-3 px-4 py-2 rounded-xl bg-tealsoft-600 text-white font-black text-xs btn-press"
+              className="mt-3 px-4 py-2 rounded-xl bg-indigo-600 text-white font-fredoka font-bold text-xs squish-btn shadow-squish-indigo"
             >
               Show All Topics
             </button>
           </div>
         ) : (
           <>
+            {/* Page 1: Curriculum Journey Map (Roadmap) */}
+            {activeTab === 'journey' && (
+              <JourneyMap
+                activeSubject={activeSubject}
+                items={activeDeck}
+                activeStageIndex={studyIndex}
+                onSelectStage={(idx) => {
+                  setStudyIndex(idx);
+                  setActiveTab('assessments');
+                }}
+                onLaunchExam={() => setActiveTab('assessments')}
+                companionEmoji={companionEmoji}
+                companionName={companionName}
+                companionHat={companionHat}
+              />
+            )}
+
+            {/* Page 2: Enterprise Assessment Hub (7 Exam Labs) */}
+            {activeTab === 'assessments' && (
+              <AssessmentHub
+                items={activeDeck}
+                onStreakUpdate={handleStreakUpdate}
+                onScoreUpdate={handleScoreAdjustment}
+                onOpenChat={() => setIsChatOpen(true)}
+                initialMode="spelling"
+              />
+            )}
+
+            {/* Page 3: Enterprise Telemetry & Institutional Analytics */}
+            {activeTab === 'telemetry' && (
+              <EnterpriseTelemetry
+                stats={stats}
+                telemetryLogs={telemetryLogs}
+                activeStudentName={activeSeat.name}
+                cohort={activeSeat.cohort}
+                score={score}
+                penalties={penalties}
+                onResetStats={() => {
+                  setScore(100);
+                  setGems(450);
+                  setPenalties(0);
+                  setTelemetryLogs([]);
+                }}
+              />
+            )}
+
+            {/* Page 4: Mascot Companion & Customizer Suite */}
+            {activeTab === 'companion' && (
+              <CompanionSuite
+                companionEmoji={companionEmoji}
+                setCompanionEmoji={setCompanionEmoji}
+                companionName={companionName}
+                setCompanionName={setCompanionName}
+                companionHat={companionHat}
+                setCompanionHat={setCompanionHat}
+                gems={gems}
+                score={score}
+              />
+            )}
+
+            {/* Page 5: Flashcard Study Lab */}
             {activeTab === 'study' && (
               <StudyMode
                 items={activeDeck}
@@ -159,41 +314,35 @@ export default function App() {
                 onOpenChat={() => setIsChatOpen(true)}
               />
             )}
-
-            {activeTab === 'sentences' && (
-              <SentenceMode
-                items={activeDeck}
-                onStreakUpdate={handleStreakUpdate}
-                onOpenChat={() => setIsChatOpen(true)}
-              />
-            )}
-
-            {activeTab === 'synant' && (
-              <SynAntMode
-                items={activeDeck}
-                onStreakUpdate={handleStreakUpdate}
-                onOpenChat={() => setIsChatOpen(true)}
-              />
-            )}
-
-            {activeTab === 'quiz' && (
-              <QuizMode
-                items={activeDeck}
-                onStreakUpdate={handleStreakUpdate}
-                onOpenChat={() => setIsChatOpen(true)}
-              />
-            )}
-
-            {activeTab === 'spell' && (
-              <SpellMode
-                items={activeDeck}
-                onStreakUpdate={handleStreakUpdate}
-                onOpenChat={() => setIsChatOpen(true)}
-              />
-            )}
           </>
         )}
       </main>
+
+      {/* Multi-Seat Switcher Modal */}
+      <SeatSwitcherModal
+        isOpen={isSeatModalOpen}
+        onClose={() => setIsSeatModalOpen(false)}
+        activeSeat={activeSeat}
+        setActiveSeat={setActiveSeat}
+      />
+
+      {/* Educator & Parent Institutional Governance Gate Modal */}
+      <EducatorGateModal
+        isOpen={isEducatorGateOpen}
+        onClose={() => setIsEducatorGateOpen(false)}
+        isPenaltyEnabled={isPenaltyEnabled}
+        setIsPenaltyEnabled={setIsPenaltyEnabled}
+        isDarkMode={isDarkMode}
+        setIsDarkMode={setIsDarkMode}
+        isMuted={isMuted}
+        onToggleAudio={handleToggleAudio}
+        onOpenParentStudio={() => setIsParentOpen(true)}
+        onResetStats={() => {
+          setScore(100);
+          setGems(450);
+          setPenalties(0);
+        }}
+      />
 
       {/* AI Super Tutor Modal */}
       <AITutorModal
