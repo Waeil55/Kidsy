@@ -134,7 +134,14 @@ export default function StudyMode({
         
         {/* Top Header inside Card */}
         <div className="w-full flex items-center justify-between gap-2 shrink-0">
-          <span className="text-2xl">{currentItem.image || "🌟"}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-2xl">{currentItem.image || "🌟"}</span>
+            {currentItem.partOfSpeech && (
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-tealsoft-100 text-tealsoft-800 border border-tealsoft-200">
+                {currentItem.partOfSpeech}
+              </span>
+            )}
+          </div>
           <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rosebloom-500 to-pink-600 text-white shadow-xs">
             {currentItem.subject.toUpperCase()}
           </span>
@@ -142,7 +149,7 @@ export default function StudyMode({
 
         {/* Prominent Photo or Math Visual */}
         {currentItem.imageUrl ? (
-          <div className="w-full h-24 sm:h-32 rounded-2xl overflow-hidden border-2 border-slate-100 shadow-xs my-1 relative shrink-0">
+          <div className="w-full h-20 sm:h-28 rounded-2xl overflow-hidden border-2 border-slate-100 shadow-xs my-1 relative shrink-0">
             <img 
               src={currentItem.imageUrl} 
               alt={currentItem.word}
@@ -170,32 +177,61 @@ export default function StudyMode({
 
         {/* Word / Question Title */}
         <div className="text-center my-auto py-0.5">
-          <h2 className="text-2xl sm:text-4xl font-black font-display text-slate-900 tracking-tight capitalize drop-shadow-xs leading-tight">
+          <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900 tracking-tight capitalize drop-shadow-xs leading-tight">
             {currentItem.displayTitle || currentItem.word}
           </h2>
         </div>
 
+        {/* Synonyms & Antonyms Pills Row (If available) */}
+        {(currentItem.synonyms?.length > 0 || currentItem.antonyms?.length > 0) && (
+          <div className="w-full flex flex-wrap items-center justify-center gap-1.5 py-0.5 shrink-0">
+            {currentItem.synonyms?.length > 0 && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[10px] font-bold">
+                <span className="font-black text-emerald-700 uppercase">Syn:</span>
+                <span>{currentItem.synonyms.join(', ')}</span>
+              </div>
+            )}
+            {currentItem.antonyms?.length > 0 && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-[10px] font-bold">
+                <span className="font-black text-purple-700 uppercase">Ant:</span>
+                <span>{currentItem.antonyms.join(', ')}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Definition / Explanation Box */}
-        <div className="w-full p-2.5 sm:p-3 rounded-2xl bg-gradient-to-br from-rosebloom-50/80 via-white to-tealsoft-50/50 border border-rosebloom-200 text-center shrink-0">
+        <div className="w-full p-2 sm:p-2.5 rounded-2xl bg-gradient-to-br from-rosebloom-50/80 via-white to-tealsoft-50/50 border border-rosebloom-200 text-center shrink-0">
           <p className="text-xs sm:text-sm text-slate-800 font-bold leading-relaxed line-clamp-2">
             "{currentItem.definition}"
           </p>
           <button
             onClick={handleReadDefinition}
-            className="mt-1 text-tealsoft-700 hover:text-tealsoft-800 text-[11px] font-extrabold inline-flex items-center gap-1 btn-press"
+            className="mt-0.5 text-tealsoft-700 hover:text-tealsoft-800 text-[11px] font-extrabold inline-flex items-center gap-1 btn-press"
           >
             <Volume2 className="w-3 h-3" />
             <span>Hear Meaning</span>
           </button>
         </div>
 
-        {/* Optional Fun Fact Pill */}
-        {currentItem.funFact && (
+        {/* Teacher Example Sentence Pill */}
+        {currentItem.teacherSentence ? (
+          <div className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] shrink-0 mt-1">
+            <p className="italic line-clamp-1 text-slate-700">"{currentItem.teacherSentence}"</p>
+            <button
+              onClick={() => { playPop(); speakText(currentItem.teacherSentence); }}
+              className="p-0.5 text-tealsoft-700 hover:text-tealsoft-800 shrink-0"
+              title="Hear Sentence"
+            >
+              <Volume2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : currentItem.funFact ? (
           <div className="w-full flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-medium shrink-0 mt-1">
             <Lightbulb className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <p className="line-clamp-1"><strong className="font-black">Fact:</strong> {currentItem.funFact}</p>
           </div>
-        )}
+        ) : null}
 
       </div>
 

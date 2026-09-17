@@ -5,6 +5,7 @@ import StudyMode from './components/StudyMode';
 import SentenceMode from './components/SentenceMode';
 import QuizMode from './components/QuizMode';
 import SpellMode from './components/SpellMode';
+import SynAntMode from './components/SynAntMode';
 import AITutorModal from './components/AITutorModal';
 import ParentStudio from './components/ParentStudio';
 import { DEFAULT_CURRICULUM } from './data/curriculumData';
@@ -24,8 +25,8 @@ import {
 
 export default function App() {
   const [isStarted, setIsStarted] = useState(false);
-  const [activeSubject, setActiveSubject] = useState('english'); // 'english' | 'math' | 'science' | 'social' | 'custom'
-  const [activeTab, setActiveTab] = useState('study'); // 'study' | 'sentences' | 'quiz' | 'spell'
+  const [activeSubject, setActiveSubject] = useState('week5'); // 'week5' | 'english' | 'math' | 'science' | 'social' | 'custom'
+  const [activeTab, setActiveTab] = useState('study'); // 'study' | 'sentences' | 'synant' | 'quiz' | 'spell'
   const [selectedCategory, setSelectedCategory] = useState('all');
   
   const [customCards, setCustomCards] = useState(getStoredCustomCards());
@@ -161,6 +162,14 @@ export default function App() {
 
             {activeTab === 'sentences' && (
               <SentenceMode
+                items={activeDeck}
+                onStreakUpdate={handleStreakUpdate}
+                onOpenChat={() => setIsChatOpen(true)}
+              />
+            )}
+
+            {activeTab === 'synant' && (
+              <SynAntMode
                 items={activeDeck}
                 onStreakUpdate={handleStreakUpdate}
                 onOpenChat={() => setIsChatOpen(true)}

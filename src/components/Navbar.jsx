@@ -11,7 +11,9 @@ import {
   FolderHeart, 
   Edit3, 
   Target, 
-  Keyboard 
+  Keyboard,
+  Star,
+  ArrowLeftRight
 } from 'lucide-react';
 import { playPop } from '../utils/audio';
 
@@ -29,6 +31,7 @@ export default function Navbar({
   customCount = 0
 }) {
   const subjects = [
+    { id: 'week5', label: '⭐ Week 5', icon: Star, color: 'text-amber-500', active: 'bg-gradient-to-r from-amber-500 via-rosebloom-500 to-purple-600 text-white shadow-amber-500/25' },
     { id: 'english', label: 'Vocab', icon: BookOpen, color: 'text-cyan-600', active: 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-teal-500/25' },
     { id: 'math', label: 'Math', icon: Calculator, color: 'text-rose-500', active: 'bg-gradient-to-r from-rosebloom-500 to-pink-600 text-white shadow-rosebloom-500/25' },
     { id: 'science', label: 'Science', icon: Atom, color: 'text-emerald-600', active: 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/25' },
@@ -39,6 +42,7 @@ export default function Navbar({
   const tabs = [
     { id: 'study', label: 'Study', icon: BookOpen, color: 'text-teal-600' },
     { id: 'sentences', label: 'Context', icon: Edit3, color: 'text-amber-600' },
+    { id: 'synant', label: 'Syn & Ant', icon: ArrowLeftRight, color: 'text-purple-600' },
     { id: 'quiz', label: 'Match', icon: Target, color: 'text-emerald-600' },
     { id: 'spell', label: 'Spell', icon: Keyboard, color: 'text-pink-600' },
   ];
