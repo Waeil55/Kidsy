@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Search, CheckCircle2, Play, ArrowLeft, Volume2, Sparkles, Star, Tag } from 'lucide-react';
 import { Card } from '../components/Card';
 import { getLessons, grades, subjects } from '../data/curriculum';
@@ -11,6 +11,12 @@ export function Learn({ initialSubject = 'all' }) {
   const [subject, setSubject] = useState(initialSubject);
   const [query, setQuery] = useState('');
   const [activeLesson, setActiveLesson] = useState(null);
+
+  useEffect(() => {
+    if (initialSubject) {
+      setSubject(initialSubject);
+    }
+  }, [initialSubject]);
 
   const list = useMemo(() => {
     return getLessons(grade, subject === 'all' ? undefined : subject).filter((l) => {

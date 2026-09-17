@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { DinoAvatarVector } from '../components/illustrations/KidsVectors';
 import { playPop, playCorrect } from '../utils/audio';
 
 const AGE_GRADE_OPTIONS = [
@@ -11,11 +12,11 @@ const AGE_GRADE_OPTIONS = [
 ];
 
 const AVATAR_OPTIONS = [
-  { id: 'dino1', emoji: '🦖', label: 'T-Rex' },
-  { id: 'dino2', emoji: '🦕', label: 'Bronto' },
-  { id: 'fox', emoji: '🦊', label: 'Foxy' },
-  { id: 'bunny', emoji: '🐰', label: 'Bunny' },
-  { id: 'owl', emoji: '🦉', label: 'Owl' },
+  { id: 'rex', emoji: '🦖', label: 'T-Rex Explorer' },
+  { id: 'tricera', emoji: '🦕', label: 'Triceratops' },
+  { id: 'stego', emoji: '🐊', label: 'Stegosaurus' },
+  { id: 'bronto', emoji: '🐢', label: 'Brontosaurus' },
+  { id: 'fox', emoji: '🦊', label: 'Foxy Scout' },
   { id: 'dragon', emoji: '🐉', label: 'Dragon' }
 ];
 
@@ -23,16 +24,18 @@ export function Onboarding({ done, onBack }) {
   const { addChild } = useApp();
   const [name, setName] = useState('');
   const [grade, setGrade] = useState('3'); // Default to Grade 3 for MerolaApp
-  const [selectedAvatar, setSelectedAvatar] = useState('🦖');
+  const [selectedAvatarId, setSelectedAvatarId] = useState('rex');
 
   const handleCreate = () => {
     if (!name.trim()) return;
     playCorrect();
+    const avatarObj = AVATAR_OPTIONS.find((a) => a.id === selectedAvatarId) || AVATAR_OPTIONS[0];
     addChild({
       id: crypto.randomUUID(),
       name: name.trim(),
       grade: grade,
-      avatar: selectedAvatar,
+      avatar: avatarObj.emoji,
+      avatarId: selectedAvatarId,
       xp: 450,
       streak: 5,
       completed: ['3-week5-0'],
@@ -98,14 +101,15 @@ export function Onboarding({ done, onBack }) {
             <button
               key={av.id}
               type="button"
-              className={`avatarCard ${selectedAvatar === av.emoji ? 'active' : ''}`}
+              className={`avatarCard ${selectedAvatarId === av.id ? 'active' : ''}`}
               onClick={() => {
                 playPop();
-                setSelectedAvatar(av.emoji);
+                setSelectedAvatarId(av.id);
               }}
               title={av.label}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}
             >
-              <span>{av.emoji}</span>
+              <DinoAvatarVector id={av.id} className="w-12 h-12" />
             </button>
           ))}
         </div>

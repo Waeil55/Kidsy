@@ -1,4 +1,5 @@
 import React from 'react';
+import { RocketSceneIllustration } from '../components/illustrations/KidsVectors';
 import { playPop, playCorrect } from '../utils/audio';
 
 export function WelcomeSplash({ onContinue, onSkip }) {
@@ -6,12 +7,12 @@ export function WelcomeSplash({ onContinue, onSkip }) {
     <div className="splashScreen">
       {/* Background Floating Study Doodles */}
       <div className="splashDoodles">
-        <span className="doodleItem" style={{ top: '8%', left: '8%', fontSize: '24px' }}>💡</span>
-        <span className="doodleItem" style={{ top: '6%', right: '10%', fontSize: '26px' }}>🪐</span>
-        <span className="doodleItem" style={{ top: '22%', left: '4%', fontSize: '22px' }}>📖</span>
-        <span className="doodleItem" style={{ top: '20%', right: '5%', fontSize: '22px' }}>🎨</span>
-        <span className="doodleItem" style={{ top: '34%', left: '8%', fontSize: '20px' }}>⭐</span>
-        <span className="doodleItem" style={{ top: '32%', right: '8%', fontSize: '22px' }}>🎵</span>
+        <span className="doodleItem" style={{ top: '8%', left: '8%', fontSize: '26px' }}>💡</span>
+        <span className="doodleItem" style={{ top: '6%', right: '10%', fontSize: '28px' }}>🪐</span>
+        <span className="doodleItem" style={{ top: '22%', left: '4%', fontSize: '24px' }}>📖</span>
+        <span className="doodleItem" style={{ top: '20%', right: '5%', fontSize: '24px' }}>🎨</span>
+        <span className="doodleItem" style={{ top: '34%', left: '8%', fontSize: '22px' }}>⭐</span>
+        <span className="doodleItem" style={{ top: '32%', right: '8%', fontSize: '24px' }}>🎵</span>
       </div>
 
       {/* Top Header */}
@@ -19,17 +20,9 @@ export function WelcomeSplash({ onContinue, onSkip }) {
         <h1>Fun activities<br />for your child</h1>
       </div>
 
-      {/* Central Illustration: Rocket + Fox + Bunny + Owl on Grassy Hill */}
-      <div className="splashHeroArt">
-        <div className="grassyHill" />
-        <div className="charactersCluster">
-          {/* Rocket in Center */}
-          <div className="rocketLaunch">🚀</div>
-          {/* Friendly Animal Companions */}
-          <div className="foxChar" title="Foxy Explorer">🦊</div>
-          <div className="bunnyChar" title="Smart Bunny">🐰</div>
-          <div className="owlChar" title="Wise Owl">🦉</div>
-        </div>
+      {/* Central Illustration: High-End Vector Rocket, Fox, Bunny & Owl Scene */}
+      <div className="splashHeroArt" style={{ width: '100%', marginBottom: '10px' }}>
+        <RocketSceneIllustration />
       </div>
 
       {/* Bottom Action Area */}

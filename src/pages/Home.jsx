@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
-import { Settings, Lock, HelpCircle } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { AskDidiModal } from '../components/AskDidiModal';
 import { HabitsModal } from '../components/HabitsModal';
+import {
+  DidiExplorerHero,
+  Palette3DIcon,
+  Shapes3DIcon,
+  Jellyfish3DIcon,
+  NumberBlocks3DIcon,
+  Tooth3DIcon,
+  Clock3DIcon,
+  Moon3DIcon,
+  Bulb3DIcon,
+  DinoAvatarVector
+} from '../components/illustrations/KidsVectors';
 import { playPop, playCorrect } from '../utils/audio';
 
 export function Home({ go, openSubject }) {
@@ -23,16 +35,16 @@ export function Home({ go, openSubject }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div
             style={{
-              width: '36px',
-              height: '36px',
+              width: '38px',
+              height: '38px',
               borderRadius: '50%',
               background: '#e0f2fe',
               display: 'grid',
               placeItems: 'center',
-              fontSize: '20px'
+              overflow: 'hidden'
             }}
           >
-            {child.avatar || '🦖'}
+            <DinoAvatarVector id={child.avatarId || 'rex'} className="w-9 h-9" />
           </div>
           <div>
             <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
@@ -56,34 +68,24 @@ export function Home({ go, openSubject }) {
         </button>
       </div>
 
-      {/* Top Mascot Hero Card: Didi the Explorer with "Ask ?" Button */}
-      <div className="explorerHeroCard">
-        <div className="explorerBadge">Didi the Explorer</div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
-          <div className="didiCharacter" title="Didi the Dinosaur Explorer">
-            🦖
-          </div>
-        </div>
+      {/* Top Mascot Hero Card: Custom Vector Didi the Explorer with "Ask ?" Button */}
+      <DidiExplorerHero
+        onAsk={() => {
+          playCorrect();
+          setIsAskOpen(true);
+        }}
+      />
 
-        <button
-          className="askBtn"
-          onClick={() => {
-            playCorrect();
-            setIsAskOpen(true);
-          }}
-        >
-          <HelpCircle size={17} /> Ask ?
-        </button>
-      </div>
-
-      {/* 2x2 Large Rounded Colorful Gradient Activity Cards (Matching Screenshot) */}
+      {/* 2x2 Large Rounded Colorful Gradient Activity Cards with 3D Vector Icons */}
       <div className="activitiesGrid">
         {/* 1. Top Left: Colors & Week 5 Vocab (Warm Yellow / Orange Gradient) */}
         <button
           className="activityTile tile-colors"
           onClick={() => handleTileClick('week5')}
         >
-          <div className="tileIcon">🎨</div>
+          <div className="tileIcon">
+            <Palette3DIcon className="w-14 h-14" />
+          </div>
           <div>
             <h3>Colors & Words</h3>
             <p className="tileSub">⭐ Week 5 Focus</p>
@@ -95,7 +97,9 @@ export function Home({ go, openSubject }) {
           className="activityTile tile-shapes"
           onClick={() => handleTileClick('math')}
         >
-          <div className="tileIcon">🧊</div>
+          <div className="tileIcon">
+            <Shapes3DIcon className="w-14 h-14" />
+          </div>
           <div>
             <h3>Shapes & Math</h3>
             <p className="tileSub">Grade 3 Challenges</p>
@@ -107,9 +111,11 @@ export function Home({ go, openSubject }) {
           className="activityTile tile-animals"
           onClick={() => handleTileClick('science')}
         >
-          <div className="tileIcon">🐙</div>
+          <div className="tileIcon">
+            <Jellyfish3DIcon className="w-14 h-14" />
+          </div>
           <div className="tileBadge">
-            <span style={{ fontSize: '13px' }}>★</span>
+            <span style={{ fontSize: '12px' }}>★</span>
           </div>
           <div>
             <h3>Animals & Nature</h3>
@@ -122,9 +128,11 @@ export function Home({ go, openSubject }) {
           className="activityTile tile-numbers"
           onClick={() => handleTileClick('social')}
         >
-          <div className="tileIcon">🔢</div>
+          <div className="tileIcon">
+            <NumberBlocks3DIcon className="w-14 h-14" />
+          </div>
           <div className="tileBadge">
-            <span style={{ fontSize: '13px' }}>★</span>
+            <span style={{ fontSize: '12px' }}>★</span>
           </div>
           <div>
             <h3>Numbers & World</h3>
@@ -142,7 +150,9 @@ export function Home({ go, openSubject }) {
             setHabitType('teeth');
           }}
         >
-          <div className="routineCircle">🦷</div>
+          <div className="routineCircle">
+            <Tooth3DIcon className="w-7 h-7" />
+          </div>
           <span>Brushing<br />teeth</span>
         </button>
 
@@ -153,7 +163,9 @@ export function Home({ go, openSubject }) {
             setHabitType('routine');
           }}
         >
-          <div className="routineCircle">⏰</div>
+          <div className="routineCircle">
+            <Clock3DIcon className="w-7 h-7" />
+          </div>
           <span>Daily<br />routine</span>
         </button>
 
@@ -164,7 +176,9 @@ export function Home({ go, openSubject }) {
             setHabitType('night');
           }}
         >
-          <div className="routineCircle">🌙</div>
+          <div className="routineCircle">
+            <Moon3DIcon className="w-7 h-7" />
+          </div>
           <span>Good<br />night</span>
         </button>
 
@@ -175,7 +189,9 @@ export function Home({ go, openSubject }) {
             setHabitType('light');
           }}
         >
-          <div className="routineCircle">💡</div>
+          <div className="routineCircle">
+            <Bulb3DIcon className="w-7 h-7" />
+          </div>
           <span>Blue<br />light</span>
         </button>
       </div>
