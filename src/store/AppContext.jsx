@@ -5,7 +5,7 @@ const defaultGiftGoal = {
   category: 'toy',
   title: 'Cosmic Robot 🧸',
   icon: '🧸',
-  targetQuestions: 20,
+  targetQuestions: 70,
   progress: 0,
   isUnlocked: false,
   answeredQuestionIds: [],
@@ -110,15 +110,21 @@ export function AppProvider({ children }) {
         if (k.id !== child.id) return k;
         const currentGoal = k.giftGoal || defaultGiftGoal;
         const answered = currentGoal.answeredQuestionIds || [];
-        const nextAnswered = questionId ? [...answered, questionId] : answered;
-        const nextProg = currentGoal.progress + (isCorrect ? 1 : 0);
-        const unlocked = nextProg >= currentGoal.targetQuestions;
+        // Correct: +1 point and mark answered
+        // Wrong: -1 point penalty to avoid guessing without studying! Do not mark answered so it re-appears.
+        const nextAnswered = isCorrect && questionId ? [...new Set([...answered, questionId])] : answered;
+        const nextProg = isCorrect
+          ? currentGoal.progress + 1
+          : Math.max(0, currentGoal.progress - 1);
+        const targetQ = currentGoal.targetQuestions || 70;
+        const unlocked = nextProg >= targetQ;
 
         return {
           ...k,
-          xp: k.xp + (isCorrect ? 15 : 0),
+          xp: Math.max(0, k.xp + (isCorrect ? 15 : -5)),
           giftGoal: {
             ...currentGoal,
+            targetQuestions: targetQ,
             progress: nextProg,
             isUnlocked: unlocked,
             answeredQuestionIds: nextAnswered

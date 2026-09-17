@@ -9,21 +9,24 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
   const gift = child.giftGoal || {
     title: 'Awesome Toy',
     icon: '🧸',
-    targetQuestions: 20,
+    targetQuestions: 70,
     progress: 0,
     answeredQuestionIds: []
   };
 
-  // Load a shuffled batch of non-repeated questions
+  const targetGoal = gift.targetQuestions || 70;
+
+  // Load a shuffled batch of non-repeated questions from the Week 5 master bank
   const [questions, setQuestions] = useState(() => {
     return getChallengeBatch(
-      Math.max(15, gift.targetQuestions),
+      Math.max(70, targetGoal),
       gift.answeredQuestionIds || []
     );
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState(null);
+  const [lastAnswerWasWrong, setLastAnswerWasWrong] = useState(false);
   const [answeredCount, setAnsweredCount] = useState(0);
 
   const currentQ = questions[currentIndex] || questions[0];
@@ -40,18 +43,21 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
     const isCorrect = choiceIdx === currentQ.answer;
 
     if (isCorrect) {
+      setLastAnswerWasWrong(false);
       playCorrect();
-      // Advance the gift progress in state
+      // Advance the gift progress in state (+1 point)
       advanceGiftProgress(currentQ.id, true);
       setAnsweredCount((v) => v + 1);
 
       // Check if unlocked
-      if (gift.progress + 1 >= gift.targetQuestions) {
+      if (gift.progress + 1 >= targetGoal) {
         setTimeout(() => {
           if (onRewardUnlocked) onRewardUnlocked();
         }, 1200);
       }
     } else {
+      // PENALTY: lost 1 point to prevent answering without studying!
+      setLastAnswerWasWrong(true);
       playIncorrect();
       advanceGiftProgress(currentQ.id, false);
     }
@@ -59,12 +65,13 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
 
   const handleNext = () => {
     playPop();
+    setLastAnswerWasWrong(false);
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((v) => v + 1);
       setSelectedChoice(null);
     } else {
-      // Reload another shuffled batch if the child wants to keep learning endlessly!
-      const nextBatch = getChallengeBatch(20, gift.answeredQuestionIds || []);
+      // Reload another shuffled batch from the 105+ Week 5 question bank
+      const nextBatch = getChallengeBatch(70, gift.answeredQuestionIds || []);
       setQuestions(nextBatch);
       setCurrentIndex(0);
       setSelectedChoice(null);
@@ -72,53 +79,54 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
   };
 
   // Progress to gift
-  const currentProg = Math.min(gift.targetQuestions, gift.progress);
-  const pct = Math.min(100, Math.round((currentProg / gift.targetQuestions) * 100));
-  const remaining = Math.max(0, gift.targetQuestions - currentProg);
+  const currentProg = Math.min(targetGoal, Math.max(0, gift.progress || 0));
+  const pct = Math.min(100, Math.round((currentProg / targetGoal) * 100));
+  const remaining = Math.max(0, targetGoal - currentProg);
 
   return (
-    <div className="modal" style={{ zIndex: 90 }}>
+    <div className="modal" style={{ zIndex: 90, padding: '10px' }}>
       <div
         className="modalPanel"
         style={{
-          maxWidth: '560px',
-          maxHeight: '94vh',
-          padding: '24px 20px',
+          maxWidth: '520px',
+          maxHeight: 'min(760px, 96dvh)',
+          padding: '16px 16px',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          overflowY: 'auto'
         }}
       >
         <div>
           {/* Top Header Row: Exit + Gift Tracker */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <button
               className="back"
               onClick={() => {
                 playPop();
                 onClose();
               }}
-              style={{ fontSize: '13px', padding: '6px 12px', background: '#f1f5f9', borderRadius: '12px' }}
+              style={{ fontSize: '12.5px', padding: '5px 10px', background: '#f1f5f9', borderRadius: '10px' }}
             >
-              <ArrowLeft size={15} /> Exit Challenge
+              <ArrowLeft size={14} /> Exit Quest
             </button>
 
             {/* Gift Icon & Count */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fef3c7', padding: '6px 12px', borderRadius: '14px', border: '1px solid #fde68a' }}>
-              <span style={{ fontSize: '18px' }}>{gift.icon}</span>
-              <span style={{ fontSize: '12px', fontWeight: 800, color: '#92400e' }}>
-                {currentProg} / {gift.targetQuestions} Solved
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fef3c7', padding: '5px 10px', borderRadius: '12px', border: '1px solid #fde68a' }}>
+              <span style={{ fontSize: '16px' }}>{gift.icon}</span>
+              <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#92400e' }}>
+                {currentProg} / {targetGoal} Points
               </span>
             </div>
           </div>
 
           {/* Animated Gift Milestone Progress Bar */}
-          <div style={{ marginBottom: '18px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 800, color: '#64748b', marginBottom: '5px' }}>
-              <span>Target: {gift.title}</span>
-              <span>{remaining === 0 ? '🎉 Unlocked!' : `${remaining} left to win!`}</span>
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 800, color: '#64748b', marginBottom: '4px' }}>
+              <span>Prize: {gift.title}</span>
+              <span>{remaining === 0 ? '🎉 Unlocked!' : `${remaining} points left!`}</span>
             </div>
-            <div style={{ width: '100%', height: '12px', background: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '10px', background: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
               <div
                 style={{
                   width: `${pct}%`,
@@ -132,12 +140,12 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
           </div>
 
           {/* Question Category & Audio Speaker */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span
               className="pill"
               style={{
-                fontSize: '11.5px',
-                padding: '4px 12px',
+                fontSize: '11px',
+                padding: '3px 10px',
                 background: '#e0f2fe',
                 color: '#0369a1',
                 fontWeight: 800
@@ -150,35 +158,35 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
               className="iconBtn"
               onClick={handleReadAloud}
               title="Read aloud"
-              style={{ width: '36px', height: '36px' }}
+              style={{ width: '32px', height: '32px' }}
             >
-              <Volume2 size={16} />
+              <Volume2 size={15} />
             </button>
           </div>
 
           {/* Question Title & Prompt */}
-          <h2 style={{ fontSize: '18px', fontWeight: 850, margin: '0 0 8px', color: '#0f172a' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 850, margin: '0 0 6px', color: '#0f172a' }}>
             {currentQ.title}
           </h2>
           <div
             style={{
-              fontSize: '15px',
+              fontSize: '13.5px',
               fontWeight: 650,
               color: '#334155',
-              lineHeight: 1.45,
+              lineHeight: 1.4,
               whiteSpace: 'pre-line',
               background: '#f8fafc',
-              padding: '14px 16px',
-              borderRadius: '16px',
+              padding: '10px 12px',
+              borderRadius: '14px',
               border: '1px solid #e2e8f0',
-              marginBottom: '16px'
+              marginBottom: '10px'
             }}
           >
             {currentQ.prompt}
           </div>
 
-          {/* 4 Interactive Multiple-Choice Buttons */}
-          <div className="choices">
+          {/* Interactive Multiple-Choice Buttons */}
+          <div className="choices" style={{ display: 'grid', gap: '7px' }}>
             {currentQ.choices.map((choiceText, cIdx) => {
               let btnClass = '';
               if (selectedChoice !== null) {
@@ -191,9 +199,10 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
                   className={btnClass}
                   onClick={() => handleSelectChoice(cIdx)}
                   style={{
-                    padding: '13px 16px',
-                    fontSize: '14px',
-                    lineHeight: 1.3
+                    padding: '10px 14px',
+                    fontSize: '13px',
+                    lineHeight: 1.25,
+                    borderRadius: '12px'
                   }}
                 >
                   {choiceText}
@@ -202,22 +211,38 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
             })}
           </div>
 
-          {/* Explanation & Next Button */}
+          {/* Explanation & Penalty Warning */}
           {selectedChoice !== null && (
-            <div className="feedback" style={{ marginTop: '14px' }}>
-              <strong>
-                {selectedChoice === currentQ.answer ? '🎉 Fantastic Thinking!' : '💡 Good Try! Keep Going!'}
-              </strong>
-              <span style={{ fontSize: '13px', color: '#334155' }}>
+            <div
+              className="feedback"
+              style={{
+                marginTop: '10px',
+                padding: '10px 14px',
+                background: selectedChoice === currentQ.answer ? '#f0fdf4' : '#fef2f2',
+                border: selectedChoice === currentQ.answer ? '1.5px solid #86efac' : '1.5px solid #fca5a5',
+                borderRadius: '14px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <strong style={{ color: selectedChoice === currentQ.answer ? '#166534' : '#991b1b', fontSize: '13.5px' }}>
+                  {selectedChoice === currentQ.answer ? '🎉 Correct! +1 Point!' : '⚠️ Wrong Answer! -1 Point Penalty!'}
+                </strong>
+                {lastAnswerWasWrong && (
+                  <span style={{ fontSize: '11px', background: '#fee2e2', color: '#b91c1c', padding: '2px 8px', borderRadius: '6px', fontWeight: 800 }}>
+                    -1 pt (Study!)
+                  </span>
+                )}
+              </div>
+              <span style={{ fontSize: '12.5px', color: '#334155', lineHeight: 1.35, display: 'block' }}>
                 {currentQ.explanation}
               </span>
               <button
                 className="primary"
                 onClick={handleNext}
-                style={{ marginTop: '6px' }}
+                style={{ marginTop: '8px', padding: '9px 16px', fontSize: '13.5px', width: '100%', justifyContent: 'center' }}
               >
                 {remaining === 1 && selectedChoice === currentQ.answer
-                  ? '🎁 Unlock My Gift!'
+                  ? '🎁 Unlock My 70-Question Prize!'
                   : 'Next Challenge →'}
               </button>
             </div>

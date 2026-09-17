@@ -1,1221 +1,1620 @@
 // ============================================================================
-// MASSIVE GRADE 3 CHALLENGE BANK (200+ Multi-Modal Questions)
-// Categories:
-//  - week5: Dedicated Not So Wimpy Teacher Week 5 words (oppose, snide, heap, diverse, origin)
-//  - story: 3-sentence reading comprehension stories
-//  - vocab: Grade 3 power words, definitions, phonics, syllables
-//  - fill_blank: Sentence context clues
-//  - syn_ant: Synonyms and antonyms
-//  - math: Multiplication, fractions, division, geometry, word problems
-//  - science: Solar system, matter, animal habitats, photosynthesis, gravity, magnets
-//  - social: 7 Continents, equator, maps, citizenship
-//  - riddle: Logic and brain teasers
+// WEEK 5 TEACHER GUIDE MASTER EXAM BANK (105+ Multi-Modal Questions)
+//
+// 100% EXCLUSIVELY FOCUSED ON THE 5 WORDS FROM TEACHER GUIDE:
+// 1. oppose (verb) - to be against something
+//    Sentence: Dad doesn't like sand, so he will oppose mom's idea to go to the beach.
+//    Synonyms: disagree, fight | Antonyms: agree, consent
+//
+// 2. snide (adjective) - to do something in a way that is mean or nasty
+//    Sentence: Her snide look made it clear that she did not trip me on accident.
+//    Synonyms: nasty, mean | Antonyms: kind, nice
+//
+// 3. heap (noun) - a large collection of things thrown into a pile
+//    Sentence: The laundry lay in a heap on the floor.
+//    Synonyms: pile, stack | Antonyms: one, little
+//
+// 4. diverse (adjective) - different from one another
+//    Sentence: The restaurant has a very diverse menu with many kinds of food.
+//    Synonyms: different, unlike | Antonyms: same, alike
+//
+// 5. origin (noun) - the start of something
+//    Sentence: The origin of the river was a spring high in the mountains.
+//    Synonyms: beginning, start | Antonyms: finish, end
 // ============================================================================
 
 export const MASSIVE_CHALLENGES = [
   // --------------------------------------------------------------------------
-  // WEEK 5 TEACHER GUIDE: OPPOSE, SNIDE, HEAP, DIVERSE, ORIGIN
+  // 1. DEFINITIONS: WORD TO DEFINITION
   // --------------------------------------------------------------------------
   {
-    id: "w5-q1",
-    type: "week5",
-    category: "⭐ Week 5 Focus",
-    title: "Word Meaning: Oppose",
-    prompt: "What does the verb \"oppose\" mean?",
+    id: "def-oppose-1",
+    type: "definition",
+    category: "⭐ Week 5 Meaning",
+    title: "Definition: Oppose",
+    prompt: "What does the word \"oppose\" mean?",
     choices: [
       "To be against something",
-      "To agree happily with a friend",
-      "To run very fast in gym class",
-      "To paint a beautiful picture"
+      "To be very happy and cheerful",
+      "To build a tall Lego tower",
+      "To run around in circles"
     ],
     answer: 0,
-    explanation: "\"Oppose\" means to disagree with or be against something, such as opposing a rule."
+    explanation: "\"Oppose\" means to be against something, such as opposing an unfair rule."
   },
   {
-    id: "w5-q2",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Sentence Lab: Oppose",
-    prompt: "Complete the sentence:\n\"Dad doesn't like sand, so he will _________ mom's idea to go to the beach.\"",
-    choices: ["oppose", "agree", "support", "consent"],
-    answer: 0,
-    explanation: "Dad dislikes sand, so he will oppose (be against) going to the beach."
-  },
-  {
-    id: "w5-q3",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Antonym Check: Oppose",
-    prompt: "Which word is an ANTONYM (opposite) of \"oppose\"?",
-    choices: ["agree", "fight", "disagree", "clash"],
-    answer: 0,
-    explanation: "The opposite of opposing something is agreeing or consenting to it."
-  },
-  {
-    id: "w5-q4",
-    type: "week5",
-    category: "⭐ Week 5 Focus",
-    title: "Word Meaning: Snide",
-    prompt: "If someone makes a \"snide\" remark, how are they acting?",
+    id: "def-snide-1",
+    type: "definition",
+    category: "⭐ Week 5 Meaning",
+    title: "Definition: Snide",
+    prompt: "What does the word \"snide\" mean?",
     choices: [
-      "Mean, nasty, or sarcastic",
-      "Extremely polite and helpful",
-      "Quiet and sleepy",
-      "Excited and jumping with joy"
+      "To do something in a way that is mean or nasty",
+      "To do something very politely and gently",
+      "To move at the speed of lightning",
+      "To bake a sweet chocolate cake"
     ],
     answer: 0,
-    explanation: "\"Snide\" is an adjective meaning mean, unkind, or nasty in words or manner."
+    explanation: "\"Snide\" means doing something in a mean, nasty, or mocking way."
   },
   {
-    id: "w5-q5",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Sentence Lab: Snide",
-    prompt: "Fill in the blank:\n\"Her _________ look made it clear that she did not trip me on accident.\"",
-    choices: ["snide", "gentle", "friendly", "polite"],
-    answer: 0,
-    explanation: "A snide look is mean and intentional."
-  },
-  {
-    id: "w5-q6",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Synonym Match: Snide",
-    prompt: "Which word is a SYNONYM (same meaning) for \"snide\"?",
-    choices: ["nasty", "kind", "caring", "generous"],
-    answer: 0,
-    explanation: "Nasty and mean are synonyms of snide."
-  },
-  {
-    id: "w5-q7",
-    type: "week5",
-    category: "⭐ Week 5 Focus",
-    title: "Word Meaning: Heap",
-    prompt: "What is a \"heap\"?",
+    id: "def-heap-1",
+    type: "definition",
+    category: "⭐ Week 5 Meaning",
+    title: "Definition: Heap",
+    prompt: "What does the word \"heap\" mean?",
     choices: [
       "A large collection of things thrown into a pile",
-      "A tiny single grain of sand",
-      "A fast moving river",
-      "A shiny metal coin"
+      "A tiny single speck of sand",
+      "A straight line of soldiers",
+      "A shiny silver coin"
     ],
     answer: 0,
-    explanation: "A heap is a big messy pile or stack of objects."
+    explanation: "\"Heap\" means a large collection of things thrown into a pile."
   },
   {
-    id: "w5-q8",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Sentence Lab: Heap",
-    prompt: "Complete the sentence:\n\"The laundry lay in a messy _________ on the bedroom floor.\"",
-    choices: ["heap", "single", "drop", "slice"],
-    answer: 0,
-    explanation: "A heap of clothes means a big pile waiting to be folded!"
-  },
-  {
-    id: "w5-q9",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Synonym Match: Heap",
-    prompt: "Which word means the same as \"heap\"?",
-    choices: ["pile", "one", "tiny", "few"],
-    answer: 0,
-    explanation: "A pile and a stack are synonyms of heap."
-  },
-  {
-    id: "w5-q10",
-    type: "week5",
-    category: "⭐ Week 5 Focus",
-    title: "Word Meaning: Diverse",
-    prompt: "What does \"diverse\" mean?",
+    id: "def-diverse-1",
+    type: "definition",
+    category: "⭐ Week 5 Meaning",
+    title: "Definition: Diverse",
+    prompt: "What does the word \"diverse\" mean?",
     choices: [
-      "Different from one another with great variety",
-      "Completely identical and uniform",
-      "Broken into tiny crumbs",
-      "Frozen like an ice cube"
+      "Different from one another",
+      "Completely the exact same",
+      "Very small and invisible",
+      "Extremely cold like winter"
     ],
     answer: 0,
-    explanation: "\"Diverse\" means showing lots of different types, cultures, or varieties."
+    explanation: "\"Diverse\" means different from one another, with lots of variety."
   },
   {
-    id: "w5-q11",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Sentence Lab: Diverse",
-    prompt: "Fill in the blank:\n\"The restaurant has a very _________ menu with foods from all over the world.\"",
-    choices: ["diverse", "identical", "alike", "single"],
-    answer: 0,
-    explanation: "Having foods from many cultures makes the menu diverse."
-  },
-  {
-    id: "w5-q12",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Antonym Match: Diverse",
-    prompt: "Which word is the opposite of \"diverse\"?",
-    choices: ["identical", "different", "unlike", "varied"],
-    answer: 0,
-    explanation: "Identical (or same) is the opposite of diverse."
-  },
-  {
-    id: "w5-q13",
-    type: "week5",
-    category: "⭐ Week 5 Focus",
-    title: "Word Meaning: Origin",
-    prompt: "What is the \"origin\" of something?",
+    id: "def-origin-1",
+    type: "definition",
+    category: "⭐ Week 5 Meaning",
+    title: "Definition: Origin",
+    prompt: "What does the word \"origin\" mean?",
     choices: [
-      "The start, source, or beginning of something",
-      "The final ending or conclusion",
-      "The heavy weight of a rock",
-      "The speed of a train"
+      "The start of something",
+      "The final finish line",
+      "The price tag on an item",
+      "A type of fast sports car"
     ],
     answer: 0,
-    explanation: "Origin means where something starts or comes from."
-  },
-  {
-    id: "w5-q14",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Sentence Lab: Origin",
-    prompt: "Complete the sentence:\n\"The _________ of the river was a tiny freshwater spring high in the mountains.\"",
-    choices: ["origin", "finish", "conclusion", "exit"],
-    answer: 0,
-    explanation: "The origin is where the river begins its journey."
-  },
-  {
-    id: "w5-q15",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Antonym Match: Origin",
-    prompt: "Which word is an ANTONYM (opposite) of \"origin\"?",
-    choices: ["end", "beginning", "source", "start"],
-    answer: 0,
-    explanation: "The end or finish is the opposite of origin."
+    explanation: "\"Origin\" means the start, beginning, or source of something."
   },
 
   // --------------------------------------------------------------------------
-  // STORIES & READING COMPREHENSION (3-Sentence Passages)
+  // 2. REVERSE DEFINITIONS: DEFINITION TO WORD
   // --------------------------------------------------------------------------
   {
-    id: "story-1",
-    type: "story",
-    category: "📖 Story Time",
-    title: "Leo's Lost Puppy",
-    prompt: "Read the short story:\n\"Leo heard a faint whimpering sound behind the garden shed. When he peeked, he found a fluffy brown puppy shivering under a heap of autumn leaves. Leo offered the puppy a warm piece of turkey, and its tail began to wag happily.\"\n\nWhere was the puppy hiding?",
-    choices: [
-      "Under a heap of autumn leaves",
-      "Up inside an apple tree",
-      "In Leo's backpack",
-      "Under the kitchen table"
-    ],
+    id: "rev-def-1",
+    type: "reverse_def",
+    category: "⭐ Week 5 Meaning",
+    title: "Match Word: Against Something",
+    prompt: "Which Week 5 word has the definition: \"to be against something\"?",
+    choices: ["oppose", "snide", "diverse", "origin"],
     answer: 0,
-    explanation: "The story states the puppy was shivering under a heap of autumn leaves."
+    explanation: "\"Oppose\" is the verb that means to be against something."
   },
   {
-    id: "story-2",
-    type: "story",
-    category: "📖 Story Time",
-    title: "The Recess Vote",
-    prompt: "Read the story:\n\"The class held a vote on whether to play soccer or kickball. Maya opposed playing soccer because the grass field was soaked in thick mud. After discussing, the class agreed that kickball on the dry blacktop was much safer.\"\n\nWhy did Maya oppose playing soccer?",
-    choices: [
-      "Because the grass field was soaked in mud",
-      "Because she forgot her sneakers",
-      "Because she hates sports",
-      "Because it was raining snow"
-    ],
+    id: "rev-def-2",
+    type: "reverse_def",
+    category: "⭐ Week 5 Meaning",
+    title: "Match Word: Mean or Nasty",
+    prompt: "Which Week 5 word has the definition: \"to do something in a way that is mean or nasty\"?",
+    choices: ["snide", "heap", "oppose", "diverse"],
     answer: 0,
-    explanation: "Maya opposed soccer because the field was soaked with mud!"
+    explanation: "\"Snide\" describes doing something in a mean or nasty way."
   },
   {
-    id: "story-3",
-    type: "story",
-    category: "📖 Story Time",
-    title: "Coral Reef Adventure",
-    prompt: "Read the story:\n\"Divers plunged into the warm turquoise waters near the equator. They observed a wonderfully diverse reef where clownfish swam through anemones and sea turtles grazed on sea grass. Every creature had a unique role in keeping the ocean healthy.\"\n\nWhat made the coral reef diverse?",
-    choices: [
-      "It had many different creatures with unique roles",
-      "It was made of only one gray stone",
-      "There were no fish in the water",
-      "The water was frozen solid into ice"
-    ],
+    id: "rev-def-3",
+    type: "reverse_def",
+    category: "⭐ Week 5 Meaning",
+    title: "Match Word: Large Pile",
+    prompt: "Which Week 5 word has the definition: \"a large collection of things thrown into a pile\"?",
+    choices: ["heap", "origin", "snide", "oppose"],
     answer: 0,
-    explanation: "A diverse ecosystem has many different animals living together in harmony."
+    explanation: "\"Heap\" is a large collection of items thrown into a pile."
   },
   {
-    id: "story-4",
-    type: "story",
-    category: "📖 Story Time",
-    title: "The Kind Response",
-    prompt: "Read the story:\n\"When James dropped his colored pencils, a boy at the back table gave a snide laugh. Instead of getting angry, James smiled and politely asked his friend Lucas for help. Seeing James stay calm, the boy stopped laughing and apologized.\"\n\nHow did James react to the snide laugh?",
-    choices: [
-      "He stayed calm, smiled, and asked for help",
-      "He started crying and ran out",
-      "He threw his notebooks on the floor",
-      "He grumbled and kicked his desk"
-    ],
+    id: "rev-def-4",
+    type: "reverse_def",
+    category: "⭐ Week 5 Meaning",
+    title: "Match Word: Different from One Another",
+    prompt: "Which Week 5 word has the definition: \"different from one another\"?",
+    choices: ["diverse", "snide", "heap", "origin"],
     answer: 0,
-    explanation: "James reacted with patience and kindness instead of anger."
+    explanation: "\"Diverse\" means different from one another."
   },
   {
-    id: "story-5",
-    type: "story",
-    category: "📖 Story Time",
-    title: "The River's Secret",
-    prompt: "Read the story:\n\"Scientists hiked for three days to find the true origin of the misty river. Deep inside a hidden cave, they discovered crystal-clear glacial water dripping from the ceiling into a pool. This tiny pool was the starting point for a river that stretched over 200 miles.\"\n\nWhat was the origin of the river?",
-    choices: [
-      "Glacial water dripping inside a hidden cave pool",
-      "A garden hose behind a farmhouse",
-      "A swimming pool in a big city",
-      "Rain falling into a metal bucket"
-    ],
+    id: "rev-def-5",
+    type: "reverse_def",
+    category: "⭐ Week 5 Meaning",
+    title: "Match Word: The Start of Something",
+    prompt: "Which Week 5 word has the definition: \"the start of something\"?",
+    choices: ["origin", "oppose", "heap", "diverse"],
     answer: 0,
-    explanation: "The origin was the glacial pool inside the hidden mountain cave."
+    explanation: "\"Origin\" is the noun meaning the start of something."
   },
 
   // --------------------------------------------------------------------------
-  // GRADE 3 POWER VOCABULARY
+  // 3. PARTS OF SPEECH (GRAMMAR)
   // --------------------------------------------------------------------------
   {
-    id: "voc-1",
-    type: "vocab",
-    category: "📚 Vocabulary",
-    title: "Word Meaning: Privilege",
-    prompt: "What is a \"privilege\"?",
-    choices: [
-      "A special honor, benefit, or earned opportunity",
-      "A heavy chore everyone hates",
-      "A bad habit you want to break",
-      "A loud noise made by a train"
-    ],
+    id: "pos-1",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Part of Speech: Oppose",
+    prompt: "According to our Teacher Guide, what part of speech is the word \"oppose\"?",
+    choices: ["verb (action word)", "adjective (describing word)", "noun (person/place/thing)", "adverb"],
     answer: 0,
-    explanation: "A privilege is a special honor or advantage earned by being responsible."
+    explanation: "\"Oppose\" is a verb because it is an action you do (to be against something)."
   },
   {
-    id: "voc-2",
-    type: "vocab",
-    category: "📚 Vocabulary",
-    title: "Word Meaning: Fragile",
-    prompt: "Which of the following items is considered \"fragile\"?",
-    choices: [
-      "A thin glass ornament",
-      "A solid iron dumbbell",
-      "A rubber bouncy ball",
-      "A thick wooden plank"
-    ],
+    id: "pos-2",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Part of Speech: Snide",
+    prompt: "What part of speech is \"snide\"?",
+    choices: ["adjective (describing word)", "verb (action word)", "noun (thing)", "pronoun"],
     answer: 0,
-    explanation: "Glass ornaments are delicate and break easily, which means they are fragile."
+    explanation: "\"Snide\" is an adjective because it describes a mean look, remark, or attitude."
   },
   {
-    id: "voc-3",
-    type: "vocab",
-    category: "📚 Vocabulary",
-    title: "Word Meaning: Calculate",
-    prompt: "What does it mean to \"calculate\"?",
-    choices: [
-      "To figure out an answer using mathematics",
-      "To guess randomly with your eyes closed",
-      "To draw a cartoon picture",
-      "To whisper a secret to a friend"
-    ],
+    id: "pos-3",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Part of Speech: Heap",
+    prompt: "What part of speech is \"heap\"?",
+    choices: ["noun (naming a thing/pile)", "verb", "adjective", "preposition"],
     answer: 0,
-    explanation: "Calculating means determining numerical answers using math and reasoning."
+    explanation: "\"Heap\" is a noun that names a pile or collection of things."
   },
   {
-    id: "voc-4",
-    type: "vocab",
-    category: "📚 Vocabulary",
-    title: "Word Meaning: Assemble",
-    prompt: "When you \"assemble\" a model airplane, what are you doing?",
-    choices: [
-      "Putting the pieces together to build it",
-      "Smashing it with a heavy hammer",
-      "Painting it invisible",
-      "Throwing all the parts away"
-    ],
+    id: "pos-4",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Part of Speech: Diverse",
+    prompt: "What part of speech is \"diverse\"?",
+    choices: ["adjective (describing word)", "noun", "verb", "conjunction"],
     answer: 0,
-    explanation: "To assemble means to connect parts or gather people together."
+    explanation: "\"Diverse\" is an adjective describing things that are different from one another."
   },
   {
-    id: "voc-5",
-    type: "vocab",
-    category: "📚 Vocabulary",
-    title: "Word Meaning: Courage",
-    prompt: "What does true \"courage\" mean?",
-    choices: [
-      "Being brave and doing the right thing even when scared",
-      "Never feeling afraid of anything ever",
-      "Hiding under the bed during thunder",
-      "Running away from your homework"
-    ],
+    id: "pos-5",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Part of Speech: Origin",
+    prompt: "What part of speech is \"origin\"?",
+    choices: ["noun (naming the start)", "verb", "adjective", "interjection"],
     answer: 0,
-    explanation: "Courage means acting bravely even when you feel nervous or scared."
+    explanation: "\"Origin\" is a noun that names the starting point or source."
   },
   {
-    id: "voc-6",
-    type: "vocab",
-    category: "📚 Vocabulary",
-    title: "Word Meaning: Curious",
-    prompt: "A person with a \"curious\" mind is always:",
+    id: "pos-6",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Identify the Verb",
+    prompt: "Which of our 5 Week 5 words is a VERB (action word)?",
+    choices: ["oppose", "diverse", "heap", "origin"],
+    answer: 0,
+    explanation: "\"Oppose\" is the only verb among our 5 words."
+  },
+  {
+    id: "pos-7",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Identify the Adjectives",
+    prompt: "Which pair of our Week 5 words are both ADJECTIVES (describing words)?",
     choices: [
-      "Eager to learn, ask questions, and explore",
-      "Bored and unwilling to read books",
-      "Asleep on the living room sofa",
-      "Angry at the teacher"
+      "snide & diverse",
+      "oppose & origin",
+      "heap & oppose",
+      "origin & heap"
     ],
     answer: 0,
-    explanation: "Curiosity is the eager desire to learn how things work!"
+    explanation: "Both \"snide\" and \"diverse\" are adjectives in our Teacher Guide."
+  },
+  {
+    id: "pos-8",
+    type: "grammar",
+    category: "📝 Parts of Speech",
+    title: "Identify the Nouns",
+    prompt: "Which pair of our Week 5 words are both NOUNS (naming things)?",
+    choices: [
+      "heap & origin",
+      "oppose & snide",
+      "diverse & heap",
+      "snide & origin"
+    ],
+    answer: 0,
+    explanation: "Both \"heap\" and \"origin\" are nouns in our Teacher Guide."
   },
 
   // --------------------------------------------------------------------------
-  // GRADE 3 MATH: MULTIPLICATION, FRACTIONS, DIVISION, GEOMETRY
+  // 4. TEACHER GUIDE EXACT SENTENCES
   // --------------------------------------------------------------------------
   {
-    id: "math-q1",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Multiplication: 4 × 6",
-    prompt: "4 boxes hold 6 crayons each. How many crayons are there in total?",
-    choices: ["24 crayons", "20 crayons", "28 crayons", "18 crayons"],
+    id: "sen-oppose-1",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Lab: Dad and the Beach",
+    prompt: "Complete the exact Teacher Guide sentence:\n\"Dad doesn't like sand, so he will _________ mom's idea to go to the beach.\"",
+    choices: ["oppose", "snide", "diverse", "heap"],
     answer: 0,
-    explanation: "4 × 6 = 24. Four equal groups of six make 24!"
+    explanation: "\"Dad doesn't like sand, so he will oppose mom's idea to go to the beach.\""
   },
   {
-    id: "math-q2",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Multiplication Trick: 7 × 8",
-    prompt: "What is 7 × 8?\n(Remember the rhyme: 5, 6, 7, 8!)",
-    choices: ["56", "54", "64", "48"],
-    answer: 0,
-    explanation: "5, 6, 7, 8 -> 56 = 7 × 8!"
-  },
-  {
-    id: "math-q3",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Division Quest: 35 ÷ 5",
-    prompt: "Share 35 stickers equally among 5 friends. How many does each friend get?",
-    choices: ["7 stickers", "6 stickers", "8 stickers", "5 stickers"],
-    answer: 0,
-    explanation: "35 ÷ 5 = 7 because 5 × 7 = 35."
-  },
-  {
-    id: "math-q4",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Fractions: Pizza Slices",
-    prompt: "A pizza is sliced into 8 equal parts. You eat 3 slices. What fraction of the pizza was eaten?",
-    choices: ["3/8", "5/8", "1/8", "3/4"],
-    answer: 0,
-    explanation: "You ate 3 parts out of 8 total equal parts, which is 3/8."
-  },
-  {
-    id: "math-q5",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Geometry: Perimeter",
-    prompt: "A rectangular garden has sides of 6 feet and 4 feet. What is the perimeter all the way around?",
-    choices: ["20 feet", "24 feet", "10 feet", "16 feet"],
-    answer: 0,
-    explanation: "Perimeter = 6 + 4 + 6 + 4 = 20 feet!"
-  },
-  {
-    id: "math-q6",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Geometry: Area",
-    prompt: "A square rug measures 5 feet on each side. What is its area in square feet?",
-    choices: ["25 sq ft", "20 sq ft", "10 sq ft", "30 sq ft"],
-    answer: 0,
-    explanation: "Area of a square = side × side = 5 × 5 = 25 square feet."
-  },
-  {
-    id: "math-q7",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Division Quest: 48 ÷ 6",
-    prompt: "What is 48 divided by 6?",
-    choices: ["8", "7", "9", "6"],
-    answer: 0,
-    explanation: "48 ÷ 6 = 8 because 6 × 8 = 48!"
-  },
-  {
-    id: "math-q8",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Fraction Terms: Numerator",
-    prompt: "In the fraction 2/5, what is the top number (2) called?",
-    choices: ["Numerator", "Denominator", "Quotient", "Perimeter"],
-    answer: 0,
-    explanation: "The top number is the numerator; the bottom number is the denominator."
-  },
-  {
-    id: "math-q9",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Multiplication: 9 × 9",
-    prompt: "What is 9 × 9?",
-    choices: ["81", "72", "99", "90"],
-    answer: 0,
-    explanation: "9 × 9 = 81!"
-  },
-  {
-    id: "math-q10",
-    type: "math",
-    category: "🔢 Math Challenge",
-    title: "Word Problem: Bakery Cupcakes",
-    prompt: "A baker bakes 6 trays of cupcakes. Each tray holds 8 cupcakes. How many cupcakes in total?",
-    choices: ["48 cupcakes", "42 cupcakes", "54 cupcakes", "36 cupcakes"],
-    answer: 0,
-    explanation: "6 trays × 8 cupcakes = 48 total cupcakes!"
-  },
-
-  // --------------------------------------------------------------------------
-  // GRADE 3 SCIENCE: SPACE, MATTER, ECOSYSTEMS, FORCES
-  // --------------------------------------------------------------------------
-  {
-    id: "sci-q1",
-    type: "science",
-    category: "🔬 Science Mystery",
-    title: "States of Matter: Ice Melting",
-    prompt: "When solid ice melts in warm sunshine, which state of matter does it become?",
-    choices: ["Liquid", "Gas", "Plasma", "Solid rock"],
-    answer: 0,
-    explanation: "Melting changes solid ice into liquid water."
-  },
-  {
-    id: "sci-q2",
-    type: "science",
-    category: "🔬 Science Mystery",
-    title: "Plant Life: Photosynthesis",
-    prompt: "What gas do green plants produce during photosynthesis that humans and animals breathe?",
-    choices: ["Oxygen", "Carbon dioxide", "Helium", "Nitrogen"],
-    answer: 0,
-    explanation: "Plants absorb carbon dioxide and release fresh oxygen for us to breathe!"
-  },
-  {
-    id: "sci-q3",
-    type: "science",
-    category: "🔬 Science Mystery",
-    title: "Earth & Forces: Gravity",
-    prompt: "What invisible force pulls an apple down from a tree to the ground?",
-    choices: ["Gravity", "Magnetism", "Electricity", "Wind friction"],
-    answer: 0,
-    explanation: "Earth's gravity pulls all objects downward toward the center of the planet."
-  },
-  {
-    id: "sci-q4",
-    type: "science",
-    category: "🔬 Science Mystery",
-    title: "Ecosystems: Arctic Habitat",
-    prompt: "Which animal has thick blubber and white fur adapted to survive in the freezing Arctic habitat?",
-    choices: ["Polar Bear", "Chameleon", "Parrot", "Desert Camel"],
-    answer: 0,
-    explanation: "Polar bears have thick fat (blubber) and insulating fur for subzero Arctic cold."
-  },
-  {
-    id: "sci-q5",
-    type: "science",
-    category: "🔬 Science Mystery",
-    title: "Space Exploration: The Sun",
-    prompt: "What is the glowing object at the very center of our solar system?",
-    choices: ["A medium star called the Sun", "A giant rocky planet", "A block of frozen ice", "A silver moon"],
-    answer: 0,
-    explanation: "Our Sun is a bright star that provides light and heat to all 8 orbiting planets."
-  },
-  {
-    id: "sci-q6",
-    type: "science",
-    category: "🔬 Science Mystery",
-    title: "Magnets & Poles",
-    prompt: "What happens when you bring the North pole of one magnet near the North pole of another magnet?",
-    choices: ["They push apart (repel)", "They stick together (attract)", "They melt", "They turn into water"],
-    answer: 0,
-    explanation: "Like poles repel (push away), while opposite poles attract (pull together)!"
-  },
-  {
-    id: "sci-q7",
-    type: "science",
-    category: "🔬 Science Mystery",
-    title: "Water Cycle: Evaporation",
-    prompt: "When liquid puddles on the sidewalk disappear on a sunny afternoon, what happened to the water?",
+    id: "sen-oppose-2",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Comprehension: Dad's Reason",
+    prompt: "In the sentence: \"Dad doesn't like sand, so he will oppose mom's idea to go to the beach,\" WHY does Dad oppose the idea?",
     choices: [
-      "It evaporated into invisible water vapor gas in the air",
-      "It sank directly to the center of the Earth",
-      "Birds drank all of it in one second",
-      "It turned into solid gold"
+      "Because Dad doesn't like sand",
+      "Because the car has no gas",
+      "Because it is snowing outside",
+      "Because Mom forgot the sunscreen"
     ],
     answer: 0,
-    explanation: "Solar heat evaporates liquid water into water vapor gas in the atmosphere."
+    explanation: "The sentence states Dad opposes the idea because he doesn't like sand."
   },
-
-  // --------------------------------------------------------------------------
-  // GRADE 3 SOCIAL STUDIES: GEOGRAPHY, CONTINENTS, CITIZENSHIP
-  // --------------------------------------------------------------------------
   {
-    id: "soc-q1",
-    type: "social",
-    category: "🌎 Social & World",
-    title: "Earth Geography: Continents",
-    prompt: "How many total continents are there on planet Earth?",
-    choices: ["7 continents", "5 continents", "10 continents", "4 continents"],
+    id: "sen-snide-1",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Lab: The Trip",
+    prompt: "Complete the exact Teacher Guide sentence:\n\"Her _________ look made it clear that she did not trip me on accident.\"",
+    choices: ["snide", "heap", "origin", "oppose"],
     answer: 0,
-    explanation: "Earth has 7 continents: Africa, Antarctica, Asia, Australia, Europe, North America, and South America."
+    explanation: "\"Her snide look made it clear that she did not trip me on accident.\""
   },
   {
-    id: "soc-q2",
-    type: "social",
-    category: "🌎 Social & World",
-    title: "Maps: Compass Directions",
-    prompt: "Which cardinal direction is directly opposite of North on a map compass?",
-    choices: ["South", "East", "West", "Northeast"],
-    answer: 0,
-    explanation: "South is directly opposite of North."
-  },
-  {
-    id: "soc-q3",
-    type: "social",
-    category: "🌎 Social & World",
-    title: "Globe Lines: The Equator",
-    prompt: "What is the imaginary line circling the middle of Earth between the North and South Poles called?",
-    choices: ["The Equator", "The Prime Meridian", "The South Pole", "The Axis of Rotation"],
-    answer: 0,
-    explanation: "The equator circles Earth's warm middle and divides it into Northern and Southern hemispheres."
-  },
-  {
-    id: "soc-q4",
-    type: "social",
-    category: "🌎 Social & World",
-    title: "Good Citizenship",
-    prompt: "Which of the following is an example of being a responsible citizen in your community?",
+    id: "sen-snide-2",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Comprehension: The Mean Look",
+    prompt: "In the sentence: \"Her snide look made it clear that she did not trip me on accident,\" what proved the trip was on purpose?",
     choices: [
-      "Helping clean up litter in a neighborhood park",
-      "Ignoring traffic safety rules",
-      "Refusing to share toys in the classroom",
-      "Leaving trash on the playground floor"
+      "Her mean, nasty (snide) look",
+      "She apologized immediately",
+      "The teacher blew a whistle",
+      "Her shoelace was untied"
     ],
     answer: 0,
-    explanation: "Volunteering to keep parks clean and treating others kindly shows great citizenship!"
+    explanation: "Her snide (mean/nasty) look proved she tripped me on purpose, not by accident."
   },
   {
-    id: "soc-q5",
-    type: "social",
-    category: "🌎 Social & World",
-    title: "Oceans: The Largest Ocean",
-    prompt: "Which vast body of water is the largest ocean on Earth?",
-    choices: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean"],
+    id: "sen-heap-1",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Lab: The Laundry",
+    prompt: "Complete the exact Teacher Guide sentence:\n\"The laundry lay in a _________ on the floor.\"",
+    choices: ["heap", "diverse", "oppose", "origin"],
     answer: 0,
-    explanation: "The Pacific Ocean is so huge it covers more area than all of Earth's land combined!"
+    explanation: "\"The laundry lay in a heap on the floor.\""
+  },
+  {
+    id: "sen-heap-2",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Comprehension: Laundry Pile",
+    prompt: "In the sentence: \"The laundry lay in a heap on the floor,\" how was the laundry arranged?",
+    choices: [
+      "Thrown into a large pile",
+      "Neatly folded in a drawer",
+      "Hanging on clean hangers",
+      "Ironed on an ironing board"
+    ],
+    answer: 0,
+    explanation: "A \"heap\" means clothes were thrown into a large messy pile."
+  },
+  {
+    id: "sen-diverse-1",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Lab: The Restaurant Menu",
+    prompt: "Complete the exact Teacher Guide sentence:\n\"The restaurant has a very _________ menu with many kinds of food.\"",
+    choices: ["diverse", "snide", "heap", "oppose"],
+    answer: 0,
+    explanation: "\"The restaurant has a very diverse menu with many kinds of food.\""
+  },
+  {
+    id: "sen-diverse-2",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Comprehension: Restaurant Foods",
+    prompt: "Why does the sentence describe the restaurant menu as \"diverse\"?",
+    choices: [
+      "Because it has many kinds of food different from one another",
+      "Because it only sells one single hotdog",
+      "Because the menu is written in tiny invisible ink",
+      "Because the food is free for everyone"
+    ],
+    answer: 0,
+    explanation: "It is diverse because it serves many different kinds of food."
+  },
+  {
+    id: "sen-origin-1",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Lab: Mountain River",
+    prompt: "Complete the exact Teacher Guide sentence:\n\"The _________ of the river was a spring high in the mountains.\"",
+    choices: ["origin", "heap", "snide", "diverse"],
+    answer: 0,
+    explanation: "\"The origin of the river was a spring high in the mountains.\""
+  },
+  {
+    id: "sen-origin-2",
+    type: "sentence",
+    category: "📖 Teacher Guide Sentence",
+    title: "Sentence Comprehension: River Starting Point",
+    prompt: "Where was the \"origin\" (starting place) of the river located?",
+    choices: [
+      "A mountain spring high up",
+      "In the middle of the Atlantic Ocean",
+      "Inside a kitchen faucet",
+      "At a deep underground tunnel"
+    ],
+    answer: 0,
+    explanation: "The sentence states the origin was a spring high in the mountains."
   },
 
   // --------------------------------------------------------------------------
-  // LOGIC, RIDDLES & BRAIN TEASERS
+  // 5. SYNONYMS (SAME MEANING)
   // --------------------------------------------------------------------------
   {
-    id: "rid-1",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Riddle: Time Teller",
-    prompt: "I have hands and a face, but I have no arms and cannot smile. What am I?",
-    choices: ["A Clock", "A Mirror", "A Book", "A River"],
+    id: "syn-oppose-1",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Oppose (disagree)",
+    prompt: "Which word is a SYNONYM (same meaning) for \"oppose\"?",
+    choices: ["disagree", "agree", "consent", "celebrate"],
     answer: 0,
-    explanation: "A clock has an hour hand, a minute hand, and a clock face!"
+    explanation: "\"Disagree\" is a synonym for \"oppose\"."
   },
   {
-    id: "rid-2",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Riddle: Getting Wet",
-    prompt: "What gets wetter and wetter the more it dries?",
-    choices: ["A Bath Towel", "A Sponge", "An Umbrella", "A Raincoat"],
+    id: "syn-oppose-2",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Oppose (fight)",
+    prompt: "According to our Teacher Guide, which word is also a SYNONYM for \"oppose\"?",
+    choices: ["fight", "surrender", "hug", "join"],
     answer: 0,
-    explanation: "A towel gets wet as it dries your hands or body!"
+    explanation: "\"Fight\" is a synonym for \"oppose\" when standing against something."
   },
   {
-    id: "rid-3",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Riddle: Traveling the World",
-    prompt: "What can travel around the world while staying in one corner?",
-    choices: ["A Postage Stamp", "An Airplane", "A Compass", "A Postcard"],
+    id: "syn-oppose-pair",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Both Synonyms: Oppose",
+    prompt: "Which pair lists BOTH synonyms for \"oppose\" from our Teacher Guide?",
+    choices: [
+      "disagree and fight",
+      "agree and consent",
+      "nasty and mean",
+      "pile and stack"
+    ],
     answer: 0,
-    explanation: "A postage stamp stays in the corner of the envelope while travelling worldwide!"
+    explanation: "The two synonyms for \"oppose\" are disagree and fight."
   },
   {
-    id: "rid-4",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Pattern Logic",
-    prompt: "Look at the pattern: 3, 6, 9, 12, ___?\nWhat number comes next?",
-    choices: ["15", "14", "16", "18"],
+    id: "syn-snide-1",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Snide (nasty)",
+    prompt: "Which word is a SYNONYM (same meaning) for \"snide\"?",
+    choices: ["nasty", "polite", "friendly", "quiet"],
     answer: 0,
-    explanation: "Counting by 3s: 3, 6, 9, 12, 15!"
+    explanation: "\"Nasty\" is a direct synonym for \"snide\"."
   },
+  {
+    id: "syn-snide-2",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Snide (mean)",
+    prompt: "Which word from the Teacher Guide is a SYNONYM for \"snide\"?",
+    choices: ["mean", "kind", "sweet", "cheerful"],
+    answer: 0,
+    explanation: "\"Mean\" is a synonym for \"snide\"."
+  },
+  {
+    id: "syn-snide-pair",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Both Synonyms: Snide",
+    prompt: "Which pair lists BOTH synonyms for \"snide\" from our Teacher Guide?",
+    choices: [
+      "nasty and mean",
+      "kind and nice",
+      "different and unlike",
+      "beginning and start"
+    ],
+    answer: 0,
+    explanation: "The two synonyms for \"snide\" are nasty and mean."
+  },
+  {
+    id: "syn-heap-1",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Heap (pile)",
+    prompt: "Which word is a SYNONYM for \"heap\"?",
+    choices: ["pile", "crumb", "line", "thread"],
+    answer: 0,
+    explanation: "\"Pile\" means the same as \"heap\"."
+  },
+  {
+    id: "syn-heap-2",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Heap (stack)",
+    prompt: "Which word is also a SYNONYM for \"heap\" in our guide?",
+    choices: ["stack", "single", "flat", "empty"],
+    answer: 0,
+    explanation: "\"Stack\" is a synonym for \"heap\"."
+  },
+  {
+    id: "syn-heap-pair",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Both Synonyms: Heap",
+    prompt: "Which pair lists BOTH synonyms for \"heap\" from our Teacher Guide?",
+    choices: [
+      "pile and stack",
+      "one and little",
+      "disagree and fight",
+      "same and alike"
+    ],
+    answer: 0,
+    explanation: "The two synonyms for \"heap\" are pile and stack."
+  },
+  {
+    id: "syn-diverse-1",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Diverse (different)",
+    prompt: "Which word is a SYNONYM for \"diverse\"?",
+    choices: ["different", "identical", "same", "alike"],
+    answer: 0,
+    explanation: "\"Different\" means the same as \"diverse\"."
+  },
+  {
+    id: "syn-diverse-2",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Diverse (unlike)",
+    prompt: "Which word from the Teacher Guide is a SYNONYM for \"diverse\"?",
+    choices: ["unlike", "alike", "matching", "frozen"],
+    answer: 0,
+    explanation: "\"Unlike\" is a synonym for \"diverse\"."
+  },
+  {
+    id: "syn-diverse-pair",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Both Synonyms: Diverse",
+    prompt: "Which pair lists BOTH synonyms for \"diverse\" from our Teacher Guide?",
+    choices: [
+      "different and unlike",
+      "same and alike",
+      "finish and end",
+      "nasty and mean"
+    ],
+    answer: 0,
+    explanation: "The two synonyms for \"diverse\" are different and unlike."
+  },
+  {
+    id: "syn-origin-1",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Origin (beginning)",
+    prompt: "Which word is a SYNONYM for \"origin\"?",
+    choices: ["beginning", "conclusion", "ending", "finish"],
+    answer: 0,
+    explanation: "\"Beginning\" is a synonym for \"origin\"."
+  },
+  {
+    id: "syn-origin-2",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Synonym: Origin (start)",
+    prompt: "Which word from our Teacher Guide is also a SYNONYM for \"origin\"?",
+    choices: ["start", "end", "stop", "closure"],
+    answer: 0,
+    explanation: "\"Start\" is a synonym for \"origin\"."
+  },
+  {
+    id: "syn-origin-pair",
+    type: "synonym",
+    category: "🔄 Synonyms Check",
+    title: "Both Synonyms: Origin",
+    prompt: "Which pair lists BOTH synonyms for \"origin\" from our Teacher Guide?",
+    choices: [
+      "beginning and start",
+      "finish and end",
+      "disagree and fight",
+      "pile and stack"
+    ],
+    answer: 0,
+    explanation: "The two synonyms for \"origin\" are beginning and start."
+  },
+
   // --------------------------------------------------------------------------
-  // MORE WEEK 5 TEACHER GUIDE: WORD-BY-WORD, PHONICS & SYLLABLES
+  // 6. ANTONYMS (OPPOSITE MEANING)
   // --------------------------------------------------------------------------
   {
-    id: "w5-syl-1",
+    id: "ant-oppose-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Oppose (agree)",
+    prompt: "Which word is an ANTONYM (opposite meaning) of \"oppose\"?",
+    choices: ["agree", "disagree", "fight", "contest"],
+    answer: 0,
+    explanation: "\"Agree\" is the exact opposite of \"oppose\"."
+  },
+  {
+    id: "ant-oppose-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Oppose (consent)",
+    prompt: "Which word from the Teacher Guide is also an ANTONYM of \"oppose\"?",
+    choices: ["consent", "resist", "rebel", "block"],
+    answer: 0,
+    explanation: "\"Consent\" (giving permission / agreeing) is an antonym of \"oppose\"."
+  },
+  {
+    id: "ant-oppose-pair",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Both Antonyms: Oppose",
+    prompt: "Which pair lists BOTH antonyms for \"oppose\" from our Teacher Guide?",
+    choices: [
+      "agree and consent",
+      "disagree and fight",
+      "kind and nice",
+      "same and alike"
+    ],
+    answer: 0,
+    explanation: "The antonyms for \"oppose\" are agree and consent."
+  },
+  {
+    id: "ant-snide-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Snide (kind)",
+    prompt: "Which word is an ANTONYM (opposite) of \"snide\"?",
+    choices: ["kind", "nasty", "mean", "rude"],
+    answer: 0,
+    explanation: "\"Kind\" is the opposite of being \"snide\"."
+  },
+  {
+    id: "ant-snide-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Snide (nice)",
+    prompt: "Which word is also an ANTONYM of \"snide\" in our guide?",
+    choices: ["nice", "spiteful", "mocking", "cruel"],
+    answer: 0,
+    explanation: "\"Nice\" is an antonym of \"snide\"."
+  },
+  {
+    id: "ant-snide-pair",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Both Antonyms: Snide",
+    prompt: "Which pair lists BOTH antonyms for \"snide\" from our Teacher Guide?",
+    choices: [
+      "kind and nice",
+      "nasty and mean",
+      "one and little",
+      "finish and end"
+    ],
+    answer: 0,
+    explanation: "The antonyms for \"snide\" are kind and nice."
+  },
+  {
+    id: "ant-heap-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Heap (one)",
+    prompt: "Which word is an ANTONYM (opposite of a big pile) for \"heap\"?",
+    choices: ["one", "pile", "stack", "mountain"],
+    answer: 0,
+    explanation: "\"One\" (a single item) is an antonym for a big \"heap\"."
+  },
+  {
+    id: "ant-heap-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Heap (little)",
+    prompt: "Which word is also an ANTONYM for \"heap\" in our guide?",
+    choices: ["little", "many", "load", "tower"],
+    answer: 0,
+    explanation: "\"Little\" is an antonym for \"heap\"."
+  },
+  {
+    id: "ant-heap-pair",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Both Antonyms: Heap",
+    prompt: "Which pair lists BOTH antonyms for \"heap\" from our Teacher Guide?",
+    choices: [
+      "one and little",
+      "pile and stack",
+      "agree and consent",
+      "different and unlike"
+    ],
+    answer: 0,
+    explanation: "The antonyms for \"heap\" are one and little."
+  },
+  {
+    id: "ant-diverse-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Diverse (same)",
+    prompt: "Which word is an ANTONYM (opposite) of \"diverse\"?",
+    choices: ["same", "different", "unlike", "varied"],
+    answer: 0,
+    explanation: "\"Same\" is the direct opposite of \"diverse\"."
+  },
+  {
+    id: "ant-diverse-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Diverse (alike)",
+    prompt: "Which word is also an ANTONYM of \"diverse\" in our guide?",
+    choices: ["alike", "unique", "mixed", "colorful"],
+    answer: 0,
+    explanation: "\"Alike\" is an antonym for \"diverse\"."
+  },
+  {
+    id: "ant-diverse-pair",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Both Antonyms: Diverse",
+    prompt: "Which pair lists BOTH antonyms for \"diverse\" from our Teacher Guide?",
+    choices: [
+      "same and alike",
+      "different and unlike",
+      "agree and consent",
+      "beginning and start"
+    ],
+    answer: 0,
+    explanation: "The antonyms for \"diverse\" are same and alike."
+  },
+  {
+    id: "ant-origin-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Origin (finish)",
+    prompt: "Which word is an ANTONYM (opposite of the start) for \"origin\"?",
+    choices: ["finish", "beginning", "start", "source"],
+    answer: 0,
+    explanation: "\"Finish\" is an antonym for \"origin\"."
+  },
+  {
+    id: "ant-origin-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Origin (end)",
+    prompt: "Which word is also an ANTONYM of \"origin\" in our guide?",
+    choices: ["end", "birth", "launch", "foundation"],
+    answer: 0,
+    explanation: "\"End\" is an antonym for \"origin\"."
+  },
+  {
+    id: "ant-origin-pair",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Both Antonyms: Origin",
+    prompt: "Which pair lists BOTH antonyms for \"origin\" from our Teacher Guide?",
+    choices: [
+      "finish and end",
+      "beginning and start",
+      "nasty and mean",
+      "agree and consent"
+    ],
+    answer: 0,
+    explanation: "The antonyms for \"origin\" are finish and end."
+  },
+
+  // --------------------------------------------------------------------------
+  // 7. REVERSE SYNONYM / ANTONYM IDENTIFICATION
+  // --------------------------------------------------------------------------
+  {
+    id: "rev-syn-1",
+    type: "reverse_syn",
+    category: "🔄 Reverse Match",
+    title: "Which Word Has Synonyms: Disagree, Fight?",
+    prompt: "\"Disagree\" and \"fight\" are synonyms for which Week 5 word?",
+    choices: ["oppose", "snide", "diverse", "origin"],
+    answer: 0,
+    explanation: "\"Oppose\" has the synonyms disagree and fight."
+  },
+  {
+    id: "rev-syn-2",
+    type: "reverse_syn",
+    category: "🔄 Reverse Match",
+    title: "Which Word Has Synonyms: Nasty, Mean?",
+    prompt: "\"Nasty\" and \"mean\" are synonyms for which Week 5 word?",
+    choices: ["snide", "heap", "origin", "oppose"],
+    answer: 0,
+    explanation: "\"Snide\" has the synonyms nasty and mean."
+  },
+  {
+    id: "rev-syn-3",
+    type: "reverse_syn",
+    category: "🔄 Reverse Match",
+    title: "Which Word Has Synonyms: Pile, Stack?",
+    prompt: "\"Pile\" and \"stack\" are synonyms for which Week 5 word?",
+    choices: ["heap", "diverse", "origin", "snide"],
+    answer: 0,
+    explanation: "\"Heap\" has the synonyms pile and stack."
+  },
+  {
+    id: "rev-syn-4",
+    type: "reverse_syn",
+    category: "🔄 Reverse Match",
+    title: "Which Word Has Synonyms: Different, Unlike?",
+    prompt: "\"Different\" and \"unlike\" are synonyms for which Week 5 word?",
+    choices: ["diverse", "oppose", "heap", "snide"],
+    answer: 0,
+    explanation: "\"Diverse\" has the synonyms different and unlike."
+  },
+  {
+    id: "rev-syn-5",
+    type: "reverse_syn",
+    category: "🔄 Reverse Match",
+    title: "Which Word Has Synonyms: Beginning, Start?",
+    prompt: "\"Beginning\" and \"start\" are synonyms for which Week 5 word?",
+    choices: ["origin", "diverse", "oppose", "heap"],
+    answer: 0,
+    explanation: "\"Origin\" has the synonyms beginning and start."
+  },
+  {
+    id: "rev-ant-1",
+    type: "reverse_ant",
+    category: "↔️ Reverse Match",
+    title: "Which Word Has Antonyms: Agree, Consent?",
+    prompt: "\"Agree\" and \"consent\" are antonyms for which Week 5 word?",
+    choices: ["oppose", "snide", "heap", "diverse"],
+    answer: 0,
+    explanation: "\"Oppose\" has antonyms agree and consent."
+  },
+  {
+    id: "rev-ant-2",
+    type: "reverse_ant",
+    category: "↔️ Reverse Match",
+    title: "Which Word Has Antonyms: Kind, Nice?",
+    prompt: "\"Kind\" and \"nice\" are antonyms for which Week 5 word?",
+    choices: ["snide", "oppose", "origin", "heap"],
+    answer: 0,
+    explanation: "\"Snide\" has antonyms kind and nice."
+  },
+  {
+    id: "rev-ant-3",
+    type: "reverse_ant",
+    category: "↔️ Reverse Match",
+    title: "Which Word Has Antonyms: One, Little?",
+    prompt: "\"One\" and \"little\" are antonyms for which Week 5 word?",
+    choices: ["heap", "diverse", "origin", "oppose"],
+    answer: 0,
+    explanation: "\"Heap\" has antonyms one and little."
+  },
+  {
+    id: "rev-ant-4",
+    type: "reverse_ant",
+    category: "↔️ Reverse Match",
+    title: "Which Word Has Antonyms: Same, Alike?",
+    prompt: "\"Same\" and \"alike\" are antonyms for which Week 5 word?",
+    choices: ["diverse", "snide", "oppose", "origin"],
+    answer: 0,
+    explanation: "\"Diverse\" has antonyms same and alike."
+  },
+  {
+    id: "rev-ant-5",
+    type: "reverse_ant",
+    category: "↔️ Reverse Match",
+    title: "Which Word Has Antonyms: Finish, End?",
+    prompt: "\"Finish\" and \"end\" are antonyms for which Week 5 word?",
+    choices: ["origin", "heap", "diverse", "snide"],
+    answer: 0,
+    explanation: "\"Origin\" has antonyms finish and end."
+  },
+
+  // --------------------------------------------------------------------------
+  // 8. WORD-BY-WORD SPELLING
+  // --------------------------------------------------------------------------
+  {
+    id: "spell-1",
+    type: "spelling",
+    category: "🔤 Spelling Lab",
+    title: "Spell: Oppose",
+    prompt: "Choose the correct spelling for the word meaning \"to be against something\":",
+    choices: ["oppose", "opose", "oposse", "oppoze"],
+    answer: 0,
+    explanation: "Correct spelling: o-p-p-o-s-e (with double p)."
+  },
+  {
+    id: "spell-2",
+    type: "spelling",
+    category: "🔤 Spelling Lab",
+    title: "Spell: Snide",
+    prompt: "Choose the correct spelling for the word meaning \"mean or nasty\":",
+    choices: ["snide", "snyde", "snied", "snid"],
+    answer: 0,
+    explanation: "Correct spelling: s-n-i-d-e."
+  },
+  {
+    id: "spell-3",
+    type: "spelling",
+    category: "🔤 Spelling Lab",
+    title: "Spell: Heap",
+    prompt: "Choose the correct spelling for the word meaning \"a large pile\":",
+    choices: ["heap", "heep", "hepe", "heape"],
+    answer: 0,
+    explanation: "Correct spelling: h-e-a-p."
+  },
+  {
+    id: "spell-4",
+    type: "spelling",
+    category: "🔤 Spelling Lab",
+    title: "Spell: Diverse",
+    prompt: "Choose the correct spelling for the word meaning \"different from one another\":",
+    choices: ["diverse", "divurse", "diverce", "dyverse"],
+    answer: 0,
+    explanation: "Correct spelling: d-i-v-e-r-s-e."
+  },
+  {
+    id: "spell-5",
+    type: "spelling",
+    category: "🔤 Spelling Lab",
+    title: "Spell: Origin",
+    prompt: "Choose the correct spelling for the word meaning \"the start of something\":",
+    choices: ["origin", "oregin", "origen", "origon"],
+    answer: 0,
+    explanation: "Correct spelling: o-r-i-g-i-n."
+  },
+  {
+    id: "unscramble-1",
+    type: "spelling",
+    category: "🔤 Letter Unscramble",
+    title: "Unscramble: o - p - p - s - e - o",
+    prompt: "Unscramble the letters: O - P - P - O - S - E to form a Week 5 word:",
+    choices: ["oppose", "opaque", "open", "option"],
+    answer: 0,
+    explanation: "O-P-P-O-S-E spells oppose."
+  },
+  {
+    id: "unscramble-2",
+    type: "spelling",
+    category: "🔤 Letter Unscramble",
+    title: "Unscramble: s - n - d - e - i",
+    prompt: "Unscramble the letters: S - N - I - D - E to form a Week 5 word:",
+    choices: ["snide", "slide", "shine", "side"],
+    answer: 0,
+    explanation: "S-N-I-D-E spells snide."
+  },
+  {
+    id: "unscramble-3",
+    type: "spelling",
+    category: "🔤 Letter Unscramble",
+    title: "Unscramble: p - a - e - h",
+    prompt: "Unscramble the letters: H - E - A - P to form a Week 5 word:",
+    choices: ["heap", "help", "hope", "harp"],
+    answer: 0,
+    explanation: "H-E-A-P spells heap."
+  },
+  {
+    id: "unscramble-4",
+    type: "spelling",
+    category: "🔤 Letter Unscramble",
+    title: "Unscramble: d - v - e - r - s - i - e",
+    prompt: "Unscramble the letters: D - I - V - E - R - S - E to form a Week 5 word:",
+    choices: ["diverse", "divider", "driver", "direct"],
+    answer: 0,
+    explanation: "D-I-V-E-R-S-E spells diverse."
+  },
+  {
+    id: "unscramble-5",
+    type: "spelling",
+    category: "🔤 Letter Unscramble",
+    title: "Unscramble: o - i - g - n - r - i",
+    prompt: "Unscramble the letters: O - R - I - G - I - N to form a Week 5 word:",
+    choices: ["origin", "orange", "organ", "order"],
+    answer: 0,
+    explanation: "O-R-I-G-I-N spells origin."
+  },
+
+  // --------------------------------------------------------------------------
+  // 9. PHONICS & SYLLABLES
+  // --------------------------------------------------------------------------
+  {
+    id: "syl-oppose",
     type: "phonics",
-    category: "⭐ Week 5 Focus",
-    title: "Syllable Count: Diverse",
-    prompt: "How many syllables are in the word \"diverse\" (di-verse)?",
-    choices: ["2 syllables", "1 syllable", "3 syllables", "4 syllables"],
-    answer: 0,
-    explanation: "\"Di-verse\" has 2 syllables (di · verse)."
-  },
-  {
-    id: "w5-syl-2",
-    type: "phonics",
-    category: "⭐ Week 5 Focus",
-    title: "Syllable Count: Origin",
-    prompt: "Clap the beats for \"origin\" (or-i-gin). How many syllables does it have?",
-    choices: ["3 syllables", "2 syllables", "1 syllable", "4 syllables"],
-    answer: 0,
-    explanation: "\"Or-i-gin\" has 3 syllables (or · i · gin)."
-  },
-  {
-    id: "w5-syl-3",
-    type: "phonics",
-    category: "⭐ Week 5 Focus",
-    title: "Syllable Count: Oppose",
-    prompt: "How many syllables are in the verb \"oppose\" (op-pose)?",
+    category: "🎵 Phonics & Syllables",
+    title: "Syllable Clap: Oppose",
+    prompt: "Clap the syllables in \"oppose\" (op-pose). How many syllables do you hear?",
     choices: ["2 syllables", "1 syllable", "3 syllables", "4 syllables"],
     answer: 0,
     explanation: "\"Op-pose\" has 2 syllables (op · pose)."
   },
   {
-    id: "w5-spell-1",
+    id: "syl-snide",
     type: "phonics",
-    category: "⭐ Week 5 Focus",
-    title: "Spelling Check: Diverse",
-    prompt: "Which choice is the correct spelling for the word meaning 'different from one another'?",
-    choices: ["diverse", "divurse", "diverce", "dyverse"],
+    category: "🎵 Phonics & Syllables",
+    title: "Syllable Clap: Snide",
+    prompt: "How many syllables are in the word \"snide\"?",
+    choices: ["1 syllable", "2 syllables", "3 syllables", "4 syllables"],
     answer: 0,
-    explanation: "The correct spelling is d-i-v-e-r-s-e."
+    explanation: "\"Snide\" is a single beat: 1 syllable."
   },
   {
-    id: "w5-spell-2",
+    id: "syl-heap",
     type: "phonics",
-    category: "⭐ Week 5 Focus",
-    title: "Spelling Check: Origin",
-    prompt: "Which choice is the correct spelling for the word meaning 'the start or beginning'?",
-    choices: ["origin", "oregin", "origen", "origon"],
+    category: "🎵 Phonics & Syllables",
+    title: "Syllable Clap: Heap",
+    prompt: "How many syllables are in the word \"heap\"?",
+    choices: ["1 syllable", "2 syllables", "3 syllables", "4 syllables"],
     answer: 0,
-    explanation: "The correct spelling is o-r-i-g-i-n."
+    explanation: "\"Heap\" has 1 syllable."
   },
   {
-    id: "w5-ctx-1",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Context Clues: Diverse",
-    prompt: "\"Our school library has a _________ collection of books with mysteries, comics, history, and science.\"",
-    choices: ["diverse", "snide", "heap", "origin"],
+    id: "syl-diverse",
+    type: "phonics",
+    category: "🎵 Phonics & Syllables",
+    title: "Syllable Clap: Diverse",
+    prompt: "Clap the syllables in \"diverse\" (di-verse). How many syllables does it have?",
+    choices: ["2 syllables", "1 syllable", "3 syllables", "4 syllables"],
     answer: 0,
-    explanation: "Having many different kinds of books means the collection is diverse."
+    explanation: "\"Di-verse\" has 2 syllables (di · verse)."
   },
   {
-    id: "w5-ctx-2",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Context Clues: Snide",
-    prompt: "\"Her _________ remark hurt my feelings because it was mean and unkind.\"",
+    id: "syl-origin",
+    type: "phonics",
+    category: "🎵 Phonics & Syllables",
+    title: "Syllable Clap: Origin",
+    prompt: "Clap the beats in \"origin\" (or-i-gin). How many syllables are there?",
+    choices: ["3 syllables", "2 syllables", "1 syllable", "4 syllables"],
+    answer: 0,
+    explanation: "\"Or-i-gin\" has 3 syllables (or · i · gin)."
+  },
+  {
+    id: "ph-heap-ea",
+    type: "phonics",
+    category: "🎵 Phonics & Syllables",
+    title: "Vowel Team: Heap",
+    prompt: "Which vowel team in \"heap\" creates the long /ē/ sound?",
+    choices: ["ea", "ee", "ey", "ie"],
+    answer: 0,
+    explanation: "The \"ea\" vowel team makes the long /ē/ sound in heap (like in beach and teach)."
+  },
+  {
+    id: "ph-snide-silent-e",
+    type: "phonics",
+    category: "🎵 Phonics & Syllables",
+    title: "Phonics Rule: Snide",
+    prompt: "Why does the vowel \"i\" in \"snide\" say its long name (/ī/)?",
+    choices: [
+      "Because of the silent 'e' at the end (vowel-consonant-e rule)",
+      "Because 's' is silent",
+      "Because 'n' is a double consonant",
+      "It is a short vowel"
+    ],
+    answer: 0,
+    explanation: "The magic silent 'e' at the end makes the vowel 'i' say its long name!"
+  },
+  {
+    id: "ph-origin-soft-g",
+    type: "phonics",
+    category: "🎵 Phonics & Syllables",
+    title: "Phonics Rule: Origin",
+    prompt: "What sound does the letter \"g\" make in the word \"origin\"?",
+    choices: [
+      "Soft /j/ sound (like in 'giraffe')",
+      "Hard /g/ sound (like in 'grape')",
+      "Silent sound (no sound)",
+      "/s/ sound"
+    ],
+    answer: 0,
+    explanation: "The 'g' followed by 'i' makes a soft /j/ sound in or-i-gin!"
+  },
+
+  // --------------------------------------------------------------------------
+  // 10. REAL-WORLD APPLIED CONTEXT SCENARIOS
+  // --------------------------------------------------------------------------
+  {
+    id: "scen-oppose-recess",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Recess Kickball Debate",
+    prompt: "During recess, Tim wants to cancel kickball rules, but Liam and Sarah speak out against his idea. What did Liam and Sarah do?",
+    choices: [
+      "They opposed Tim's idea",
+      "They created a heap",
+      "They had a diverse lunch",
+      "They found an origin"
+    ],
+    answer: 0,
+    explanation: "Liam and Sarah opposed Tim's idea by speaking out against it."
+  },
+  {
+    id: "scen-oppose-bedtime",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Bedtime Debate",
+    prompt: "\"When Mom said bedtime was moved an hour earlier, my brother tried to _________ the new rule.\"",
+    choices: ["oppose", "diverse", "origin", "heap"],
+    answer: 0,
+    explanation: "The brother tried to oppose (disagree with) the earlier bedtime."
+  },
+  {
+    id: "scen-snide-playground",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Playground Kindness",
+    prompt: "Ben accidentally dropped his juice box, and a boy laughed and said something nasty. What word describes that comment?",
     choices: ["snide", "diverse", "origin", "heap"],
     answer: 0,
-    explanation: "\"Snide\" describes mean, nasty, or mocking words."
+    explanation: "A mean or nasty comment is snide."
   },
   {
-    id: "w5-ctx-3",
-    type: "fill_blank",
-    category: "⭐ Week 5 Focus",
-    title: "Context Clues: Origin",
-    prompt: "\"Scientists studied the rock to discover the _________ of the ancient volcano.\"",
+    id: "scen-snide-opposite",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Opposite of Snide",
+    prompt: "Instead of making a snide comment when a teammate made a mistake, Chloe was very encouraging. Which antonym of \"snide\" did Chloe show?",
+    choices: ["kind", "nasty", "mean", "diverse"],
+    answer: 0,
+    explanation: "Chloe was kind, which is the antonym of snide."
+  },
+  {
+    id: "scen-heap-leaves",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Autumn Leaves",
+    prompt: "After raking the backyard for an hour, Kevin jumped into a gigantic _________ of crisp red leaves!",
+    choices: ["heap", "oppose", "snide", "diverse"],
+    answer: 0,
+    explanation: "A large pile of raked leaves is called a heap."
+  },
+  {
+    id: "scen-heap-toys",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Messy Toy Room",
+    prompt: "Leo's bedroom was messy because his building blocks were tossed into a messy _________ in the corner.",
+    choices: ["heap", "origin", "snide", "diverse"],
+    answer: 0,
+    explanation: "A messy pile of blocks thrown together is a heap."
+  },
+  {
+    id: "scen-diverse-garden",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Botanical Garden",
+    prompt: "The school botanical garden grows roses, sunflowers, ferns, cacti, and orchids. Because it has so many different kinds of plants, the garden is:",
+    choices: ["diverse", "snide", "heap", "oppose"],
+    answer: 0,
+    explanation: "Having many different varieties means the plant collection is diverse."
+  },
+  {
+    id: "scen-diverse-music",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Diverse Music Playlist",
+    prompt: "Carlos listens to jazz, classical, rock, and hip-hop. What word best describes his taste in music?",
+    choices: ["diverse", "snide", "heap", "origin"],
+    answer: 0,
+    explanation: "Carlos enjoys many different styles, so his music taste is diverse."
+  },
+  {
+    id: "scen-origin-space",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Origin of a Meteor",
+    prompt: "Astronomers used a giant telescope to track the starting location of the bright comet. What were they searching for?",
+    choices: [
+      "The origin of the comet",
+      "The snide of the comet",
+      "The heap of the comet",
+      "The oppose of the comet"
+    ],
+    answer: 0,
+    explanation: "The starting point of the comet is its origin."
+  },
+  {
+    id: "scen-origin-story",
+    type: "scenario",
+    category: "🎯 Real-Life Scenarios",
+    title: "Superhero Origin",
+    prompt: "The comic book explains where the hero first got her powers when she was seven years old. This is called her _________ story.",
+    choices: ["origin", "snide", "heap", "oppose"],
+    answer: 0,
+    explanation: "An origin story explains how and where a superhero first started."
+  },
+
+  // --------------------------------------------------------------------------
+  // 11. WORD REPLACEMENT DRILLS
+  // --------------------------------------------------------------------------
+  {
+    id: "rep-oppose",
+    type: "replacement",
+    category: "🔄 Word Replacement",
+    title: "Replace: Disagree",
+    prompt: "Replace the bold word with our Week 5 vocabulary word:\n\"The students will **disagree with** the decision to cancel art class.\"",
+    choices: ["oppose", "heap", "snide", "diverse"],
+    answer: 0,
+    explanation: "\"Oppose\" replaces \"disagree with\"."
+  },
+  {
+    id: "rep-snide",
+    type: "replacement",
+    category: "🔄 Word Replacement",
+    title: "Replace: Mean",
+    prompt: "Replace the bold word with our Week 5 word:\n\"His **mean** smile proved he took the toy on purpose.\"",
+    choices: ["snide", "diverse", "origin", "heap"],
+    answer: 0,
+    explanation: "\"Snide\" replaces \"mean\"."
+  },
+  {
+    id: "rep-heap",
+    type: "replacement",
+    category: "🔄 Word Replacement",
+    title: "Replace: Pile",
+    prompt: "Replace the bold word with our Week 5 word:\n\"A messy **pile** of pillows sat on the sofa.\"",
+    choices: ["heap", "oppose", "diverse", "origin"],
+    answer: 0,
+    explanation: "\"Heap\" replaces \"pile\"."
+  },
+  {
+    id: "rep-diverse",
+    type: "replacement",
+    category: "🔄 Word Replacement",
+    title: "Replace: Varied & Different",
+    prompt: "Replace the bold words with our Week 5 word:\n\"The zoo has a **different and varied** group of animals from around the world.\"",
+    choices: ["diverse", "snide", "heap", "oppose"],
+    answer: 0,
+    explanation: "\"Diverse\" means different from one another."
+  },
+  {
+    id: "rep-origin",
+    type: "replacement",
+    category: "🔄 Word Replacement",
+    title: "Replace: Start / Beginning",
+    prompt: "Replace the bold word with our Week 5 word:\n\"The **beginning** of the campfire was a tiny wooden match.\"",
     choices: ["origin", "heap", "snide", "diverse"],
     answer: 0,
-    explanation: "\"Origin\" refers to the beginning or starting point of something."
-  },
-  {
-    id: "w5-ant-1",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Antonym Match: Snide",
-    prompt: "Which word is the exact OPPOSITE (antonym) of \"snide\"?",
-    choices: ["kind & gentle", "nasty", "rude", "mean"],
-    answer: 0,
-    explanation: "\"Kind\" is the antonym of \"snide\"."
-  },
-  {
-    id: "w5-ant-2",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Antonym Match: Origin",
-    prompt: "Which word is the opposite (antonym) of \"origin\" (the beginning)?",
-    choices: ["finish / end", "start", "source", "fountainhead"],
-    answer: 0,
-    explanation: "\"Finish\" or \"end\" is the direct opposite of \"origin\"."
-  },
-  {
-    id: "w5-syn-1",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Synonym Match: Heap",
-    prompt: "Which word means the same (synonym) as \"heap\"?",
-    choices: ["pile or stack", "single crumb", "line", "circle"],
-    answer: 0,
-    explanation: "A \"heap\" is a pile or large collection of items."
+    explanation: "\"Origin\" replaces \"beginning\"."
   },
 
   // --------------------------------------------------------------------------
-  // WORD-BY-WORD PHONICS, PREFIXES & VOCABULARY
+  // 12. ODD ONE OUT
   // --------------------------------------------------------------------------
   {
-    id: "ph-1",
-    type: "phonics",
-    category: "🔤 Word & Phonics",
-    title: "Prefix Meaning: Dis-",
-    prompt: "What does the prefix \"dis-\" mean in words like \"disagree\" and \"dislike\"?",
-    choices: ["not or opposite of", "very much", "again", "before"],
+    id: "odd-oppose-1",
+    type: "odd_one_out",
+    category: "🔍 Odd One Out",
+    title: "Odd One Out: Oppose",
+    prompt: "Which word does NOT mean the same as \"oppose\"?",
+    choices: ["agree", "disagree", "fight", "be against"],
     answer: 0,
-    explanation: "The prefix \"dis-\" means not or opposite (e.g., disagree = not agree)."
+    explanation: "\"Agree\" is the antonym (opposite), not a synonym!"
   },
   {
-    id: "ph-2",
-    type: "phonics",
-    category: "🔤 Word & Phonics",
-    title: "Prefix Meaning: Re-",
-    prompt: "If you \"rebuild\" a Lego tower, what does the prefix \"re-\" mean?",
-    choices: ["to do again", "to stop forever", "to break down", "to build smaller"],
+    id: "odd-snide-1",
+    type: "odd_one_out",
+    category: "🔍 Odd One Out",
+    title: "Odd One Out: Snide",
+    prompt: "Which word does NOT mean the same as \"snide\"?",
+    choices: ["nice", "nasty", "mean", "mocking"],
     answer: 0,
-    explanation: "The prefix \"re-\" means again (rebuild = build again)."
+    explanation: "\"Nice\" is an antonym (opposite), not a synonym."
   },
   {
-    id: "ph-3",
-    type: "phonics",
-    category: "🔤 Word & Phonics",
-    title: "Suffix Meaning: -ful",
-    prompt: "What does \"hopeful\" mean when you add \"-ful\" to \"hope\"?",
-    choices: ["full of hope", "without any hope", "afraid of hope", "before hope"],
+    id: "odd-heap-1",
+    type: "odd_one_out",
+    category: "🔍 Odd One Out",
+    title: "Odd One Out: Heap",
+    prompt: "Which word does NOT mean the same as \"heap\"?",
+    choices: ["one single crumb", "pile", "stack", "large collection"],
     answer: 0,
-    explanation: "The suffix \"-ful\" means full of something (hopeful = full of hope)."
+    explanation: "\"One single crumb\" is the opposite of a heap."
   },
   {
-    id: "ph-4",
-    type: "phonics",
-    category: "🔤 Word & Phonics",
-    title: "Vowel Team Sound",
-    prompt: "Which word has the long \"ea\" sound like in \"heap\" and \"beach\"?",
-    choices: ["team", "bread", "head", "feather"],
+    id: "odd-diverse-1",
+    type: "odd_one_out",
+    category: "🔍 Odd One Out",
+    title: "Odd One Out: Diverse",
+    prompt: "Which word does NOT mean the same as \"diverse\"?",
+    choices: ["identical", "different", "unlike", "varied"],
     answer: 0,
-    explanation: "\"Team\" has the long /ē/ sound just like \"heap\"."
+    explanation: "\"Identical\" (exactly the same) is an antonym, not a synonym."
   },
   {
-    id: "ph-5",
-    type: "phonics",
-    category: "🔤 Word & Phonics",
-    title: "Compound Words",
-    prompt: "Which word is a compound word formed by joining two complete words?",
-    choices: ["sunflower", "running", "happily", "careful"],
+    id: "odd-origin-1",
+    type: "odd_one_out",
+    category: "🔍 Odd One Out",
+    title: "Odd One Out: Origin",
+    prompt: "Which word does NOT mean the same as \"origin\"?",
+    choices: ["finish", "beginning", "start", "source"],
     answer: 0,
-    explanation: "\"Sun\" + \"flower\" joins two words together into one compound word."
-  },
-  {
-    id: "ph-6",
-    type: "phonics",
-    category: "🔤 Word & Phonics",
-    title: "Contraction Power",
-    prompt: "Which two words make up the contraction \"doesn't\"?",
-    choices: ["does not", "do not", "did not", "done not"],
-    answer: 0,
-    explanation: "\"Doesn't\" is the short form of \"does not\"."
+    explanation: "\"Finish\" is the antonym of origin."
   },
 
   // --------------------------------------------------------------------------
-  // 3-SENTENCE READING STORIES
+  // 13. TRUE OR FALSE DRILLS
   // --------------------------------------------------------------------------
   {
-    id: "story-4",
+    id: "tf-oppose-1",
+    type: "true_false",
+    category: "✅ True or False",
+    title: "True or False: Oppose",
+    prompt: "True or False:\n\"To oppose something means you agree happily with it.\"",
+    choices: ["False! (Oppose means to be against something)", "True!"],
+    answer: 0,
+    explanation: "False! Oppose means to be against something or disagree."
+  },
+  {
+    id: "tf-snide-1",
+    type: "true_false",
+    category: "✅ True or False",
+    title: "True or False: Snide",
+    prompt: "True or False:\n\"A snide remark is a kind, polite, and helpful compliment.\"",
+    choices: ["False! (Snide means mean or nasty)", "True!"],
+    answer: 0,
+    explanation: "False! Snide means doing something in a mean or nasty way."
+  },
+  {
+    id: "tf-heap-1",
+    type: "true_false",
+    category: "✅ True or False",
+    title: "True or False: Heap",
+    prompt: "True or False:\n\"A heap is a noun that describes a large collection of things thrown into a pile.\"",
+    choices: ["True!", "False! (A heap is only one single item)"],
+    answer: 0,
+    explanation: "True! Heap is a noun meaning a large collection of things thrown into a pile."
+  },
+  {
+    id: "tf-diverse-1",
+    type: "true_false",
+    category: "✅ True or False",
+    title: "True or False: Diverse",
+    prompt: "True or False:\n\"Diverse is an adjective that means things are different from one another.\"",
+    choices: ["True!", "False! (Diverse means all things are identical)"],
+    answer: 0,
+    explanation: "True! Diverse describes things that are different from one another."
+  },
+  {
+    id: "tf-origin-1",
+    type: "true_false",
+    category: "✅ True or False",
+    title: "True or False: Origin",
+    prompt: "True or False:\n\"The origin of something is the finish line or end.\"",
+    choices: ["False! (Origin is the start or beginning)", "True!"],
+    answer: 0,
+    explanation: "False! Origin is the start of something, while finish and end are its antonyms."
+  },
+
+  // --------------------------------------------------------------------------
+  // 14. MULTI-SENTENCE COMPREHENSION DRILLS
+  // --------------------------------------------------------------------------
+  {
+    id: "story-week5-1",
     type: "story",
-    category: "📖 Story Time",
-    title: "Story: The Lost Puppy",
-    prompt: "\"Max found a shivering brown puppy sitting under the park bench during the rainstorm. He wrapped his warm jacket around the little dog and gently carried him home. Together, Max and his mom made warm soup and called the phone number on the puppy's shiny collar.\"\n\nHow did Max help the puppy?",
+    category: "📖 Week 5 Story",
+    title: "Story: The Classroom Project",
+    prompt: "\"Mrs. Davis asked the class to research where rivers begin. Maya discovered that the origin of the Amazon River is high in the Andes mountains. She was surprised that the river supports a diverse ecosystem of pink dolphins, monkeys, and colorful parrots.\"\n\nWhat does \"origin\" mean in this story?",
     choices: [
-      "He kept him warm with his jacket and called the owner",
-      "He left him under the bench in the rain",
-      "He sold the puppy to a pet store",
-      "He hid the puppy under the bed"
+      "Where the river begins",
+      "Where the river ends in the ocean",
+      "The color of the water",
+      "The speed of the fish"
     ],
     answer: 0,
-    explanation: "Max showed kindness by wrapping the puppy in his warm jacket and calling the collar's phone number!"
+    explanation: "\"Origin\" refers to where the river begins high in the mountains."
   },
   {
-    id: "story-5",
+    id: "story-week5-2",
     type: "story",
-    category: "📖 Story Time",
-    title: "Story: The Treehouse Project",
-    prompt: "\"Leo and Maya gathered sturdy wooden planks and a heap of shiny nails in the backyard. Their uncle taught them how to safely measure each board with a yellow tape measure before sawing. By sunset, their treehouse had four strong walls and a lookout window.\"\n\nWhat did Leo and Maya do before sawing the boards?",
+    category: "📖 Week 5 Story",
+    title: "Story: Cleaning the Bedroom",
+    prompt: "\"Jake's bedroom looked like a whirlwind had struck it. Clean clothes, dirty socks, and comic books were mixed into a giant heap right by the door. His mom opposed his request to play outside until the entire pile was put away in drawers.\"\n\nWhat did Jake's mom do?",
     choices: [
-      "They measured each board carefully",
-      "They painted the roof red",
-      "They ate dinner inside",
-      "They jumped into the pile of leaves"
+      "She opposed (was against) his request to go outside",
+      "She threw more clothes into the heap",
+      "She bought him a new comic book",
+      "She went outside without him"
     ],
     answer: 0,
-    explanation: "The story states their uncle taught them to measure each board with a tape measure before sawing."
+    explanation: "His mom opposed his request to play outside until the heap was cleaned."
   },
   {
-    id: "story-6",
+    id: "story-week5-3",
     type: "story",
-    category: "📖 Story Time",
-    title: "Story: The Space Robot",
-    prompt: "\"Robo-7 beeped happily as its solar panels charged in the morning sunlight. Its mission on Mars was to collect diverse red rock samples inside a metal capsule. When the dust storm passed, Robo-7 sent high-definition photographs back to Earth.\"\n\nHow does Robo-7 get its energy?",
+    category: "📖 Week 5 Story",
+    title: "Story: The Playground Challenge",
+    prompt: "\"During the four-square tournament, Lucas lost a point when the ball touched the red line. Another player made a snide comment, teasing Lucas about his shoe size. Instead of getting angry, Lucas smiled and made a kind comment back.\"\n\nHow did the other player act when teasing Lucas?",
     choices: [
-      "From solar panels in the sunlight",
-      "From gasoline fuel",
-      "From eating Martian fruit",
-      "From wind turbines"
+      "In a mean and nasty (snide) way",
+      "In a helpful and friendly way",
+      "Quiet and asleep",
+      "Like a referee"
     ],
     answer: 0,
-    explanation: "Robo-7's solar panels charged in the sunlight to power the robot."
+    explanation: "Teasing someone meanly is acting in a snide way."
   },
   {
-    id: "story-7",
+    id: "story-week5-4",
     type: "story",
-    category: "📖 Story Time",
-    title: "Story: Grandma's Secret Recipe",
-    prompt: "\"Grandma opened her ancient wooden box to find the handwritten recipe card for apple pie. The origin of the recipe was from her own grandmother over eighty years ago! Emma peeled crisp green apples while Grandma rolled out flaky, golden dough.\"\n\nWhat does 'origin' mean in this story?",
+    category: "📖 Week 5 Story",
+    title: "Story: The International Food Festival",
+    prompt: "\"The downtown festival featured booths from Mexico, Japan, Italy, and Egypt. The food court offered a diverse selection of tacos, sushi, pasta, and falafel. Maya loved trying foods that were completely unlike the meals she ate at home.\"\n\nWhat made the food court \"diverse\"?",
     choices: [
-      "Where the recipe first started long ago",
-      "The temperature of the baking oven",
-      "The price of the green apples",
-      "The flavor of the cinnamon"
+      "It had many different kinds of food from around the world",
+      "Every single booth only served plain cheese pizza",
+      "The food was cold and stale",
+      "Nobody was allowed to eat"
     ],
     answer: 0,
-    explanation: "The recipe's origin was where it first began eighty years ago with great-grandmother."
+    explanation: "The food court was diverse because it served many different kinds of food."
   },
 
   // --------------------------------------------------------------------------
-  // GRADE 3 MATH: MULTIPLICATION, DIVISION, FRACTIONS, GEOMETRY
+  // 15. ADVANCED 5-WORD SYNTHESIS & REVIEW
   // --------------------------------------------------------------------------
   {
-    id: "math-9",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Multiplication Fact: 6 x 7",
-    prompt: "What is 6 × 7?",
-    choices: ["42", "40", "48", "36"],
+    id: "rev-5w-1",
+    type: "synthesis",
+    category: "⭐ Week 5 Mastery",
+    title: "All 5 Words: Which is an Action?",
+    prompt: "Look at our 5 words: oppose, snide, heap, diverse, origin.\nWhich one is an ACTION that a person does?",
+    choices: ["oppose", "heap", "diverse", "snide"],
     answer: 0,
-    explanation: "6 groups of 7 equals 42!"
+    explanation: "\"Oppose\" is the action verb meaning to be against something."
   },
   {
-    id: "math-10",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Multiplication Fact: 8 x 8",
-    prompt: "What is 8 × 8?",
-    choices: ["64", "62", "72", "56"],
+    id: "rev-5w-2",
+    type: "synthesis",
+    category: "⭐ Week 5 Mastery",
+    title: "All 5 Words: Which Describes Variety?",
+    prompt: "Look at our 5 words: oppose, snide, heap, diverse, origin.\nWhich word describes variety and things different from one another?",
+    choices: ["diverse", "oppose", "snide", "origin"],
     answer: 0,
-    explanation: "8 × 8 = 64 (I ate and I ate till I was sick on the floor, 8 times 8 is 64!)."
+    explanation: "\"Diverse\" describes things that are different from one another."
   },
   {
-    id: "math-11",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Division Fact: 54 ÷ 6",
-    prompt: "If 54 stickers are shared equally among 6 friends, how many stickers does each friend get?",
-    choices: ["9 stickers", "8 stickers", "7 stickers", "6 stickers"],
+    id: "rev-5w-3",
+    type: "synthesis",
+    category: "⭐ Week 5 Mastery",
+    title: "All 5 Words: Which Describes a Messy Pile?",
+    prompt: "Look at our 5 words: oppose, snide, heap, diverse, origin.\nWhich word names a large collection of items thrown together into a pile?",
+    choices: ["heap", "diverse", "origin", "snide"],
     answer: 0,
-    explanation: "54 ÷ 6 = 9 because 9 × 6 = 54!"
+    explanation: "\"Heap\" is the noun naming a large pile."
   },
   {
-    id: "math-12",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Division Fact: 36 ÷ 4",
-    prompt: "What is 36 ÷ 4?",
-    choices: ["9", "8", "7", "6"],
+    id: "rev-5w-4",
+    type: "synthesis",
+    category: "⭐ Week 5 Mastery",
+    title: "All 5 Words: Which Describes Mean Behavior?",
+    prompt: "Look at our 5 words: oppose, snide, heap, diverse, origin.\nWhich word describes doing something in a mean or nasty way?",
+    choices: ["snide", "heap", "origin", "diverse"],
     answer: 0,
-    explanation: "36 ÷ 4 = 9 because 4 × 9 = 36."
+    explanation: "\"Snide\" describes mean, nasty behavior or remarks."
   },
   {
-    id: "math-13",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Comparing Fractions",
-    prompt: "Which fraction is GREATER: 1/2 of a pizza or 1/4 of the same pizza?",
-    choices: ["1/2 is greater", "1/4 is greater", "They are equal", "Cannot tell"],
+    id: "rev-5w-5",
+    type: "synthesis",
+    category: "⭐ Week 5 Mastery",
+    title: "All 5 Words: Which Describes the First Start?",
+    prompt: "Look at our 5 words: oppose, snide, heap, diverse, origin.\nWhich word names the start or beginning of something?",
+    choices: ["origin", "diverse", "oppose", "heap"],
     answer: 0,
-    explanation: "1/2 (half) is larger than 1/4 (one quarter) of the same whole pizza."
-  },
-  {
-    id: "math-14",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Geometry: Perimeter",
-    prompt: "A square garden has sides that are each 5 meters long. What is the perimeter around the whole garden?",
-    choices: ["20 meters", "25 meters", "15 meters", "10 meters"],
-    answer: 0,
-    explanation: "A square has 4 equal sides. Perimeter = 5 + 5 + 5 + 5 = 20 meters."
-  },
-  {
-    id: "math-15",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Geometry: Quadrilaterals",
-    prompt: "How many sides does any quadrilateral have (like squares, rectangles, and trapezoids)?",
-    choices: ["4 sides", "3 sides", "5 sides", "6 sides"],
-    answer: 0,
-    explanation: "\"Quad\" means four. All quadrilaterals have 4 sides!"
-  },
-  {
-    id: "math-16",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Word Problem: Bakery Cookies",
-    prompt: "Chef Mario baked 3 trays of chocolate chip cookies. Each tray had 8 cookies. How many cookies did he bake in all?",
-    choices: ["24 cookies", "21 cookies", "28 cookies", "18 cookies"],
-    answer: 0,
-    explanation: "3 trays × 8 cookies per tray = 24 cookies."
-  },
-  {
-    id: "math-17",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Telling Time",
-    prompt: "The short hour hand points between the 3 and 4, and the long minute hand points at 6. What time is it?",
-    choices: ["3:30", "3:06", "4:30", "6:15"],
-    answer: 0,
-    explanation: "When the minute hand is at 6, it is 30 minutes past 3: 3:30!"
+    explanation: "\"Origin\" names the start of something."
   },
 
   // --------------------------------------------------------------------------
-  // GRADE 3 SCIENCE & NATURE
+  // 16. ADDITIONAL TEACHER GUIDE DRILLS (DEEPENING TO 70+ EXAMS)
   // --------------------------------------------------------------------------
   {
-    id: "sci-8",
-    type: "science",
-    category: "🔬 Science Lab",
-    title: "The Water Cycle",
-    prompt: "When liquid water in puddles heats up in the sun and turns into invisible water vapor, what process is that?",
-    choices: ["Evaporation", "Condensation", "Freezing", "Precipitation"],
+    id: "extra-opp-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Agree vs Oppose",
+    prompt: "\"Agree\" is an ANTONYM of which Week 5 word?",
+    choices: ["oppose", "heap", "diverse", "snide"],
     answer: 0,
-    explanation: "Evaporation turns liquid water into gas vapor that rises into the sky."
+    explanation: "Agree is the antonym of oppose."
   },
   {
-    id: "sci-9",
-    type: "science",
-    category: "🔬 Science Lab",
-    title: "Animal Groups: Mammals",
-    prompt: "Which of these is a characteristic of all mammals?",
-    choices: ["They have hair or fur and feed milk to babies", "They have feathers and wings", "They breathe only through gills in water", "They hatch from hard eggs in sand"],
+    id: "extra-opp-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Consent vs Oppose",
+    prompt: "\"Consent\" is an ANTONYM of which Week 5 word?",
+    choices: ["oppose", "origin", "heap", "diverse"],
     answer: 0,
-    explanation: "Mammals have hair or fur, are warm-blooded, and mothers feed milk to their young."
+    explanation: "Consent is the antonym of oppose."
   },
   {
-    id: "sci-10",
-    type: "science",
-    category: "🔬 Science Lab",
-    title: "Plant Life Cycle",
-    prompt: "What is the green substance inside plant leaves that captures sunlight for photosynthesis?",
-    choices: ["Chlorophyll", "Pollen", "Bark", "Roots"],
+    id: "extra-snide-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Kind vs Snide",
+    prompt: "\"Kind\" is an ANTONYM of which Week 5 word?",
+    choices: ["snide", "oppose", "heap", "origin"],
     answer: 0,
-    explanation: "Chlorophyll is the green pigment that traps sunlight energy so plants can make food."
+    explanation: "Kind is the antonym of snide."
   },
   {
-    id: "sci-11",
-    type: "science",
-    category: "🔬 Science Lab",
-    title: "Forces: Friction",
-    prompt: "Why is it harder to slide a heavy box across a rough carpet than across smooth ice?",
-    choices: ["Carpet has more friction that resists sliding", "Ice has more gravity", "Carpet is colder than ice", "The box becomes heavier on carpet"],
+    id: "extra-snide-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Nice vs Snide",
+    prompt: "\"Nice\" is an ANTONYM of which Week 5 word?",
+    choices: ["snide", "diverse", "origin", "oppose"],
     answer: 0,
-    explanation: "Rough surfaces create high friction that pushes back against sliding objects."
+    explanation: "Nice is the antonym of snide."
   },
   {
-    id: "sci-12",
-    type: "science",
-    category: "🔬 Science Lab",
-    title: "Earth's Rotation",
-    prompt: "What causes day and night on Earth?",
-    choices: ["Earth spins on its axis every 24 hours", "The Sun turns off like a light bulb", "Clouds block the Sun at night", "The Moon travels between the Earth and Sun"],
+    id: "extra-heap-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: One vs Heap",
+    prompt: "\"One\" is an ANTONYM of which Week 5 word?",
+    choices: ["heap", "oppose", "snide", "diverse"],
     answer: 0,
-    explanation: "As Earth spins (rotates) once every 24 hours, one side faces the Sun (day) while the other faces away (night)."
+    explanation: "One is the antonym of heap."
   },
   {
-    id: "sci-13",
-    type: "science",
-    category: "🔬 Science Lab",
-    title: "Ecosystems: Food Chain",
-    prompt: "In a food chain, what role do green plants play?",
-    choices: ["Producers (making their own food)", "Consumers (eating other animals)", "Decomposers", "Predators"],
+    id: "extra-heap-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Little vs Heap",
+    prompt: "\"Little\" is an ANTONYM of which Week 5 word?",
+    choices: ["heap", "origin", "snide", "diverse"],
     answer: 0,
-    explanation: "Plants are producers because they produce their own food using sunlight, water, and air."
+    explanation: "Little is the antonym of heap."
+  },
+  {
+    id: "extra-div-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Same vs Diverse",
+    prompt: "\"Same\" is an ANTONYM of which Week 5 word?",
+    choices: ["diverse", "oppose", "heap", "origin"],
+    answer: 0,
+    explanation: "Same is the antonym of diverse."
+  },
+  {
+    id: "extra-div-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Alike vs Diverse",
+    prompt: "\"Alike\" is an ANTONYM of which Week 5 word?",
+    choices: ["diverse", "snide", "heap", "oppose"],
+    answer: 0,
+    explanation: "Alike is the antonym of diverse."
+  },
+  {
+    id: "extra-orig-1",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: Finish vs Origin",
+    prompt: "\"Finish\" is an ANTONYM of which Week 5 word?",
+    choices: ["origin", "oppose", "snide", "diverse"],
+    answer: 0,
+    explanation: "Finish is the antonym of origin."
+  },
+  {
+    id: "extra-orig-2",
+    type: "antonym",
+    category: "↔️ Antonyms Check",
+    title: "Antonym: End vs Origin",
+    prompt: "\"End\" is an ANTONYM of which Week 5 word?",
+    choices: ["origin", "heap", "diverse", "snide"],
+    answer: 0,
+    explanation: "End is the antonym of origin."
   },
 
   // --------------------------------------------------------------------------
-  // SOCIAL STUDIES, GEOGRAPHY & CITIZENSHIP
+  // 17. COMPLETE TEACHER GUIDE PAIR EXAMS
   // --------------------------------------------------------------------------
   {
-    id: "soc-6",
-    type: "social",
-    category: "🌍 Social Studies",
-    title: "Compass Directions",
-    prompt: "If you face North, what direction is directly behind you?",
-    choices: ["South", "East", "West", "Northeast"],
-    answer: 0,
-    explanation: "South is directly opposite of North on the compass."
-  },
-  {
-    id: "soc-7",
-    type: "social",
-    category: "🌍 Social Studies",
-    title: "Continents: The Coldest",
-    prompt: "Which continent is covered almost completely in thick ice and is home to emperor penguins?",
-    choices: ["Antarctica", "Australia", "Africa", "Europe"],
-    answer: 0,
-    explanation: "Antarctica is the coldest, windiest, and iciest continent on Earth!"
-  },
-  {
-    id: "soc-8",
-    type: "social",
-    category: "🌍 Social Studies",
-    title: "Good Citizenship",
-    prompt: "What is an example of being a responsible citizen in your classroom?",
+    id: "pair-oppose-full",
+    type: "mastery",
+    category: "⭐ Full Word Review",
+    title: "Oppose: Full Profile",
+    prompt: "Which statement about \"oppose\" matches the Teacher Guide exactly?",
     choices: [
-      "Listening respectfully and helping keep the room clean",
-      "Talking over the teacher when others are working",
-      "Refusing to share colored pencils",
-      "Leaving paper scraps on the floor"
+      "Part of speech: verb | Synonyms: disagree, fight | Antonyms: agree, consent",
+      "Part of speech: noun | Synonyms: pile, stack | Antonyms: one, little",
+      "Part of speech: adjective | Synonyms: nasty, mean | Antonyms: kind, nice",
+      "Part of speech: adjective | Synonyms: different, unlike | Antonyms: same, alike"
     ],
     answer: 0,
-    explanation: "Good citizens respect others, listen, cooperate, and take care of shared spaces."
+    explanation: "Oppose is a verb; synonyms are disagree, fight; antonyms are agree, consent."
   },
   {
-    id: "soc-9",
-    type: "social",
-    category: "🌍 Social Studies",
-    title: "Community Helpers",
-    prompt: "Who in our community helps put out fires and teaches fire safety?",
-    choices: ["Firefighters", "Librarians", "Architects", "Accountants"],
-    answer: 0,
-    explanation: "Firefighters protect people, homes, and wildlife from fires."
-  },
-  {
-    id: "soc-10",
-    type: "social",
-    category: "🌍 Social Studies",
-    title: "Goods vs Services",
-    prompt: "Which of these is a SERVICE rather than a physical good?",
-    choices: ["A haircut from a barber", "A loaf of bread", "A toy airplane", "A pair of shoes"],
-    answer: 0,
-    explanation: "A haircut is a service performed by a person, whereas bread and toys are tangible goods."
-  },
-
-  // --------------------------------------------------------------------------
-  // BRAIN TEASERS & LOGIC RIDDLES
-  // --------------------------------------------------------------------------
-  {
-    id: "rid-5",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Riddle: Many Teeth",
-    prompt: "I have many teeth, but I cannot bite anything. What am I?",
-    choices: ["A Hair Comb", "A Crocodile", "A Saw", "A Zipper"],
-    answer: 0,
-    explanation: "A hair comb has teeth to detangle your hair, but cannot bite!"
-  },
-  {
-    id: "rid-6",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Riddle: Going Up and Down",
-    prompt: "What goes up and down but never actually moves?",
-    choices: ["A Flight of Stairs", "An Elevator", "A Yo-yo", "A Balloon"],
-    answer: 0,
-    explanation: "Stairs go up and down between floors, but they stay in one place!"
-  },
-  {
-    id: "rid-7",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Logic: Heavy Feathers",
-    prompt: "Which is heavier: One pound of gold or one pound of feathers?",
-    choices: ["They weigh exactly the same!", "The gold is heavier", "The feathers are heavier", "Gold is double weight"],
-    answer: 0,
-    explanation: "Both weigh exactly one pound! Weight is equal even though feathers take up much more space."
-  },
-  {
-    id: "rid-8",
-    type: "riddle",
-    category: "🧠 Brain Teaser",
-    title: "Pattern Logic: Number Jump",
-    prompt: "Look at the numbers: 5, 10, 15, 20, 25, ___?\nWhat number comes next?",
-    choices: ["30", "28", "35", "26"],
-    answer: 0,
-    explanation: "Counting by 5s: 5, 10, 15, 20, 25, 30!"
-  },
-  {
-    id: "w5-opp-2",
-    type: "week5",
-    category: "⭐ Week 5 Focus",
-    title: "Real-Life Scenario: Oppose",
-    prompt: "If your town council wants to cut down trees in the park and citizens speak out against it, they _________ the plan.",
-    choices: ["oppose", "support", "celebrate", "originate"],
-    answer: 0,
-    explanation: "Speaking against an action means they oppose it."
-  },
-  {
-    id: "w5-syn-2",
-    type: "syn_ant",
-    category: "⭐ Week 5 Focus",
-    title: "Synonym Match: Diverse",
-    prompt: "Which pair of words are SYNONYMS for \"diverse\"?",
-    choices: ["different & varied", "identical & same", "small & tiny", "empty & plain"],
-    answer: 0,
-    explanation: "\"Diverse\" means different, varied, and unlike one another."
-  },
-  {
-    id: "math-18",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Multiplication Fact: 9 x 4",
-    prompt: "What is 9 × 4?",
-    choices: ["36", "32", "45", "28"],
-    answer: 0,
-    explanation: "9 groups of 4 equals 36 (or 4 × 9 = 36)!"
-  },
-  {
-    id: "math-19",
-    type: "math",
-    category: "🔢 Math Mania",
-    title: "Multiplication Fact: 12 x 3",
-    prompt: "What is 12 × 3?",
-    choices: ["36", "24", "39", "48"],
-    answer: 0,
-    explanation: "12 × 3 = 36!"
-  },
-  {
-    id: "sci-14",
-    type: "science",
-    category: "🔬 Science Lab",
-    title: "Magnets: Attraction",
-    prompt: "What happens when you bring the North pole of one magnet near the South pole of another magnet?",
-    choices: ["They attract (pull towards each other)", "They repel (push apart)", "They explode", "Nothing happens"],
-    answer: 0,
-    explanation: "Opposite magnetic poles attract, while like poles (North-North) repel!"
-  },
-  {
-    id: "story-8",
-    type: "story",
-    category: "📖 Story Time",
-    title: "Story: Sammy the Sea Turtle",
-    prompt: "\"Sammy the sea turtle hatched on a moonlit sandy beach and scrambled quickly toward the crashing waves. He swam past vibrant coral reefs filled with diverse schools of clownfish and sea anemones. Over thirty years later, Sammy returned to the exact same origin where he was born to start a new family.\"\n\nWhat did Sammy do thirty years later?",
+    id: "pair-snide-full",
+    type: "mastery",
+    category: "⭐ Full Word Review",
+    title: "Snide: Full Profile",
+    prompt: "Which statement about \"snide\" matches the Teacher Guide exactly?",
     choices: [
-      "Returned to the exact beach origin where he hatched",
-      "Moved to a freshwater lake",
-      "Built a nest in a high palm tree",
-      "Swallowed plastic pieces"
+      "Part of speech: adjective | Synonyms: nasty, mean | Antonyms: kind, nice",
+      "Part of speech: verb | Synonyms: disagree, fight | Antonyms: agree, consent",
+      "Part of speech: noun | Synonyms: beginning, start | Antonyms: finish, end",
+      "Part of speech: noun | Synonyms: pile, stack | Antonyms: one, little"
     ],
     answer: 0,
-    explanation: "The story explains that Sammy returned to the exact same origin where he was born!"
+    explanation: "Snide is an adjective; synonyms are nasty, mean; antonyms are kind, nice."
+  },
+  {
+    id: "pair-heap-full",
+    type: "mastery",
+    category: "⭐ Full Word Review",
+    title: "Heap: Full Profile",
+    prompt: "Which statement about \"heap\" matches the Teacher Guide exactly?",
+    choices: [
+      "Part of speech: noun | Synonyms: pile, stack | Antonyms: one, little",
+      "Part of speech: adjective | Synonyms: different, unlike | Antonyms: same, alike",
+      "Part of speech: verb | Synonyms: disagree, fight | Antonyms: agree, consent",
+      "Part of speech: adjective | Synonyms: nasty, mean | Antonyms: kind, nice"
+    ],
+    answer: 0,
+    explanation: "Heap is a noun; synonyms are pile, stack; antonyms are one, little."
+  },
+  {
+    id: "pair-diverse-full",
+    type: "mastery",
+    category: "⭐ Full Word Review",
+    title: "Diverse: Full Profile",
+    prompt: "Which statement about \"diverse\" matches the Teacher Guide exactly?",
+    choices: [
+      "Part of speech: adjective | Synonyms: different, unlike | Antonyms: same, alike",
+      "Part of speech: noun | Synonyms: beginning, start | Antonyms: finish, end",
+      "Part of speech: verb | Synonyms: disagree, fight | Antonyms: agree, consent",
+      "Part of speech: noun | Synonyms: pile, stack | Antonyms: one, little"
+    ],
+    answer: 0,
+    explanation: "Diverse is an adjective; synonyms are different, unlike; antonyms are same, alike."
+  },
+  {
+    id: "pair-origin-full",
+    type: "mastery",
+    category: "⭐ Full Word Review",
+    title: "Origin: Full Profile",
+    prompt: "Which statement about \"origin\" matches the Teacher Guide exactly?",
+    choices: [
+      "Part of speech: noun | Synonyms: beginning, start | Antonyms: finish, end",
+      "Part of speech: adjective | Synonyms: nasty, mean | Antonyms: kind, nice",
+      "Part of speech: verb | Synonyms: disagree, fight | Antonyms: agree, consent",
+      "Part of speech: adjective | Synonyms: different, unlike | Antonyms: same, alike"
+    ],
+    answer: 0,
+    explanation: "Origin is a noun; synonyms are beginning, start; antonyms are finish, end."
   }
 ];
 
@@ -1229,12 +1628,12 @@ export function shuffleArray(array) {
   return arr;
 }
 
-// Return a randomized deck of challenges excluding recently answered ones
-export function getChallengeBatch(count = 20, excludedIds = []) {
+// Return a randomized deck of challenges excluding recently mastered ones
+export function getChallengeBatch(count = 70, excludedIds = []) {
   const excludeSet = new Set(excludedIds);
   let pool = MASSIVE_CHALLENGES.filter((c) => !excludeSet.has(c.id));
 
-  // If pool is exhausted, reset and use full bank
+  // If pool is exhausted or less than count, reset and use full bank
   if (pool.length < count) {
     pool = [...MASSIVE_CHALLENGES];
   }

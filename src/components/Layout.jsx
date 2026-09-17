@@ -84,8 +84,11 @@ export function Layout({ page, setPage, children }) {
         style={{
           flex: 1,
           padding: page === 'home' ? '0' : '16px 16px 20px',
-          overflowY: 'auto',
-          maxWidth: '100%'
+          overflowY: page === 'home' ? 'hidden' : 'auto',
+          overflowX: 'hidden',
+          maxWidth: '100%',
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
         {children}
@@ -96,11 +99,13 @@ export function Layout({ page, setPage, children }) {
         className="bottomnav"
         style={{
           position: 'relative',
-          height: '60px',
+          height: '52px',
+          minHeight: '52px',
           borderTop: '1px solid #f1f5f9',
           background: '#ffffff',
-          gap: 'min(4vw, 36px)',
-          backdropFilter: 'none'
+          gap: 'min(4vw, 32px)',
+          backdropFilter: 'none',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)'
         }}
       >
         {nav.map(([id, label, IconComponent]) => (
@@ -112,13 +117,13 @@ export function Layout({ page, setPage, children }) {
               setPage(id);
             }}
             style={{
-              padding: '4px 0',
-              minWidth: '48px',
+              padding: '2px 0',
+              minWidth: '46px',
               color: page === id ? '#157aff' : '#94a3b8'
             }}
           >
-            <IconComponent size={20} />
-            <span style={{ fontSize: '10.5px', marginTop: '2px' }}>{label}</span>
+            <IconComponent size={19} />
+            <span style={{ fontSize: '10px', marginTop: '1px' }}>{label}</span>
           </button>
         ))}
       </nav>

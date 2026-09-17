@@ -2,20 +2,46 @@
    ADVANCED KIDS MOBILE DESIGN SYSTEM (MATCHING REFERENCE UI)
    ========================================================================== */
 
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #ffffff;
+  font-family: 'Fredoka', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'Outfit', sans-serif;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+}
+
 .deviceWrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
   background: radial-gradient(circle at 50% 10%, #dceeff 0%, #b8d9fe 100%);
   padding: 16px;
+  box-sizing: border-box;
   font-family: 'Fredoka', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'Outfit', sans-serif;
+  overflow: hidden;
 }
+
 .deviceFrame {
   width: 100%;
   max-width: 410px;
-  height: min(870px, 98vh);
+  height: min(870px, 98dvh);
   background: #ffffff;
   border-radius: 46px;
   box-shadow: 0 25px 65px rgba(22, 60, 120, 0.25), 0 0 0 10px #ffffff, 0 0 0 12px #d5e5f8;
@@ -27,8 +53,9 @@
 }
 .deviceFrame.expanded {
   max-width: 960px;
-  height: min(900px, 98vh);
+  height: min(900px, 98dvh);
 }
+
 .desktopToggleBtn {
   position: fixed;
   top: 16px;
@@ -51,22 +78,58 @@
 .desktopToggleBtn:hover {
   transform: translateY(-2px);
 }
-@media (max-width: 768px) {
-  .desktopToggleBtn {
-    display: none;
-  }
+
+/* PWA Standalone & Mobile View: 100% full screen, zero scroll up/down */
+.deviceWrapper.standalone {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
 }
-@media (max-width: 540px) {
+.deviceFrame.standalone {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+@media (display-mode: standalone), (max-width: 768px) {
   .deviceWrapper {
-    padding: 0;
-    background: #ffffff;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
   }
   .deviceFrame {
-    max-width: 100%;
-    height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-    border: none;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: hidden !important;
+  }
+  .desktopToggleBtn,
+  .iosStatusBar,
+  .iosHomeBar {
+    display: none !important;
   }
 }
 
@@ -340,28 +403,32 @@
   transform: translateY(-2px);
 }
 
-/* Screen 3: Dashboard */
+/* Screen 3: Dashboard - Fitted with zero up/down scrolling */
 .dashboardScreen {
   flex: 1;
   background: #f7fafe;
-  padding: 8px 18px 20px;
+  padding: 6px 14px 4px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  overflow-y: auto;
+  gap: 6px;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 .dashTopBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 34px;
+  flex-shrink: 0;
 }
 .gearBtn {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 0;
   background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   display: grid;
   place-items: center;
   color: #64748b;
@@ -369,46 +436,46 @@
 }
 .explorerHeroCard {
   background: linear-gradient(180deg, #cde6ff 0%, #e2f4ff 50%, #dcf4cb 85%, #b4e899 100%);
-  border-radius: 26px;
-  padding: 16px 18px;
+  border-radius: 18px;
+  padding: 6px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 10px 25px rgba(50, 110, 180, 0.12);
+  box-shadow: 0 4px 12px rgba(50, 110, 180, 0.1);
   position: relative;
   overflow: hidden;
-  min-height: 105px;
+  min-height: 60px;
+  flex-shrink: 0;
 }
 .explorerBadge {
   position: absolute;
-  top: 10px;
-  left: 18px;
+  top: 5px;
+  left: 12px;
   background: #ffffff;
   border-radius: 99px;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 2px 7px;
+  font-size: 9.5px;
   font-weight: 800;
   color: #2563eb;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 .didiCharacter {
-  font-size: 54px;
-  margin-top: 12px;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
+  font-size: 32px;
+  margin-top: 4px;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
 }
 .askBtn {
   background: linear-gradient(180deg, #2ba5ff 0%, #0077ff 100%);
   color: #ffffff;
   border: 0;
   border-radius: 999px;
-  padding: 10px 22px;
-  font-size: 15px;
+  padding: 6px 14px;
+  font-size: 12.5px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 119, 255, 0.35);
+  box-shadow: 0 3px 8px rgba(0, 119, 255, 0.28);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   transition: transform 0.1s ease;
 }
 .askBtn:active {
@@ -418,12 +485,13 @@
 .activitiesGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 13px;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
 }
 .activityTile {
-  aspect-ratio: 1 / 1.15;
-  border-radius: 26px;
-  padding: 18px 16px;
+  border-radius: 18px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -431,89 +499,91 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease;
   text-align: left;
 }
 .activityTile:active {
-  transform: translateY(3px) scale(0.98);
+  transform: translateY(2px) scale(0.98);
 }
 .activityTile .tileIcon {
-  font-size: 42px;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.14));
+  font-size: 24px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.12));
 }
 .activityTile .tileBadge {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 8px;
   background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(8px);
   border-radius: 50%;
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
   color: #ffffff;
+  font-size: 10px;
 }
 .activityTile h3 {
   color: #ffffff;
-  font-size: 18px;
+  font-size: 13.5px;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 .activityTile p.tileSub {
   color: rgba(255, 255, 255, 0.88);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
-  margin: 2px 0 0;
+  margin: 1px 0 0;
 }
 
 .tile-colors {
   background: linear-gradient(145deg, #ffb214 0%, #ff7900 100%);
-  box-shadow: 0 12px 26px rgba(255, 121, 0, 0.32);
+  box-shadow: 0 6px 16px rgba(255, 121, 0, 0.25);
 }
 .tile-shapes {
   background: linear-gradient(145deg, #b065fe 0%, #7e3af2 100%);
-  box-shadow: 0 12px 26px rgba(126, 58, 242, 0.32);
+  box-shadow: 0 6px 16px rgba(126, 58, 242, 0.25);
 }
 .tile-animals {
   background: linear-gradient(145deg, #4ade80 0%, #059669 100%);
-  box-shadow: 0 12px 26px rgba(5, 150, 105, 0.3);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.25);
 }
 .tile-numbers {
   background: linear-gradient(145deg, #38bdf8 0%, #0284c7 100%);
-  box-shadow: 0 12px 26px rgba(2, 132, 199, 0.32);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.25);
 }
 
 .routinesRail {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 4px;
+  margin-top: 1px;
+  flex-shrink: 0;
 }
 .routineItem {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
   border: 0;
   background: none;
   cursor: pointer;
   padding: 0;
 }
 .routineCircle {
-  width: 50px;
-  height: 50px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 5px 15px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
   display: grid;
   place-items: center;
-  font-size: 24px;
+  font-size: 16px;
   border: 1px solid #f1f5f9;
   transition: transform 0.15s ease;
 }
@@ -521,34 +591,35 @@
   transform: scale(0.92);
 }
 .routineItem span {
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 750;
   color: #64748b;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.05;
 }
 
 .iosHomeBar {
-  width: 130px;
-  height: 5px;
+  width: 120px;
+  height: 4px;
   background: #0f172a;
   border-radius: 99px;
-  margin: 8px auto 3px;
-  opacity: 0.25;
+  margin: 4px auto 2px;
+  opacity: 0.2;
 }
 
-/* Gift Quest Progress Card */
+/* Gift Quest Progress Card - Compact & Crisp */
 .giftQuestCard {
   background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
-  border: 2px solid #bae6fd;
-  border-radius: 26px;
-  padding: 16px 18px;
-  box-shadow: 0 10px 24px rgba(2, 132, 199, 0.12);
+  border: 1.5px solid #bae6fd;
+  border-radius: 18px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 5px;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .giftQuestHeader {
   display: flex;
@@ -558,22 +629,22 @@
 .giftQuestTag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: #fef08a;
   color: #854d0e;
-  padding: 4px 10px;
+  padding: 2px 8px;
   border-radius: 99px;
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 900;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 .giftChangeBtn {
   border: 0;
   background: #e0f2fe;
   color: #0284c7;
-  font-size: 11.5px;
+  font-size: 10px;
   font-weight: 800;
-  padding: 4px 12px;
+  padding: 2px 7px;
   border-radius: 99px;
   cursor: pointer;
   transition: background 0.15s ease;
@@ -584,51 +655,51 @@
 .giftQuestBody {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 .giftIconCircle {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
   background: #ffffff;
-  border: 2px solid #e0f2fe;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+  border: 1.5px solid #e0f2fe;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
   display: grid;
   place-items: center;
-  font-size: 30px;
+  font-size: 20px;
   flex-shrink: 0;
 }
 .giftQuestDetails {
   flex: 1;
 }
 .giftQuestTitle {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 850;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 .giftQuestStats {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 3px;
+  gap: 6px;
+  margin-top: 1px;
 }
 .giftQuestStats .count {
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 800;
   color: #0284c7;
 }
 .giftQuestStats .remaining {
-  font-size: 11px;
+  font-size: 9.5px;
   font-weight: 700;
   color: #64748b;
   background: #f1f5f9;
-  padding: 2px 8px;
+  padding: 1px 6px;
   border-radius: 99px;
 }
 .giftProgressBarTrack {
   width: 100%;
-  height: 12px;
+  height: 7px;
   background: #e2e8f0;
   border-radius: 99px;
   overflow: hidden;
@@ -639,26 +710,26 @@
   background: linear-gradient(90deg, #10b981 0%, #38bdf8 50%, #6366f1 100%);
   border-radius: 99px;
   transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
 }
 .giftMarathonBtn {
   width: 100%;
   background: linear-gradient(180deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   border: 0;
-  border-radius: 18px;
-  padding: 12px 18px;
-  font-size: 14.5px;
+  border-radius: 12px;
+  padding: 7px 12px;
+  font-size: 12.5px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: transform 0.1s ease, filter 0.1s ease;
+  gap: 5px;
+  transition: transform 0.1s ease;
 }
 .giftMarathonBtn:active {
-  transform: translateY(2px) scale(0.98);
+  transform: translateY(1px) scale(0.98);
 }
 

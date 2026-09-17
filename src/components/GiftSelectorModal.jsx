@@ -43,9 +43,7 @@ export const GIFT_OPTIONS = [
 ];
 
 const TARGET_LENGTHS = [
-  { count: 15, label: '15 Challenges', badge: '⚡ Quick Quest' },
-  { count: 25, label: '25 Challenges', badge: '⭐ Champion' },
-  { count: 40, label: '40 Challenges', badge: '🏆 Grand Marathon' }
+  { count: 70, label: '70 Questions Marathon', badge: '🏆 Week 5 Grand Master (70 Qs)' }
 ];
 
 export function GiftSelectorModal({ onClose, onConfirm }) {
@@ -53,9 +51,7 @@ export function GiftSelectorModal({ onClose, onConfirm }) {
   const [selectedGiftId, setSelectedGiftId] = useState(
     child.giftGoal?.category || 'toy'
   );
-  const [selectedCount, setSelectedCount] = useState(
-    child.giftGoal?.targetQuestions || 25
-  );
+  const [selectedCount, setSelectedCount] = useState(70);
 
   const handleSelect = (giftId) => {
     playPop();

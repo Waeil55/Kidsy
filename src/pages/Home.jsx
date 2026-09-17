@@ -60,7 +60,7 @@ export function Home({ go, openSubject }) {
     category: 'toy',
     title: 'Awesome Fun Toy 🧸',
     icon: '🧸',
-    targetQuestions: 20,
+    targetQuestions: 70,
     progress: 0,
     isUnlocked: false
   };
