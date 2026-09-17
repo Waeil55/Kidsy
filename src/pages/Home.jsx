@@ -1,121 +1,188 @@
-import React from 'react';
-import { BookOpen, Flame, Star, Trophy, ChevronRight, Play, Target, Clock, Sparkles } from 'lucide-react';
-import { Card } from '../components/Card';
+import React, { useState } from 'react';
+import { Settings, Lock, HelpCircle } from 'lucide-react';
 import { useApp } from '../store/AppContext';
-import { getLessons, subjects } from '../data/curriculum';
+import { AskDidiModal } from '../components/AskDidiModal';
+import { HabitsModal } from '../components/HabitsModal';
+import { playPop, playCorrect } from '../utils/audio';
 
 export function Home({ go, openSubject }) {
   const { child } = useApp();
-  const lessons = getLessons(child.grade);
-  const done = child.completed.length;
-  const pct = Math.min(100, Math.round((done / Math.max(1, lessons.length)) * 100));
+  const [isAskOpen, setIsAskOpen] = useState(false);
+  const [habitType, setHabitType] = useState(null); // 'teeth' | 'routine' | 'night' | 'light' | null
 
-  // Get active quest lesson: first uncompleted lesson, or the first lesson
-  const currentLesson = lessons.find((l) => !child.completed.includes(l.id)) || lessons[0];
+  const handleTileClick = (subjectId) => {
+    playPop();
+    if (openSubject) openSubject(subjectId);
+    go('learn');
+  };
 
   return (
-    <div className="page">
-      <section className="hero">
-        <div>
-          <p className="eyebrow">Welcome back, {child.name}!</p>
-          <h1>Your Grade {child.grade} adventure is ready.</h1>
-          <p>Master Week 5 vocabulary words, explore Math & Science, and keep your streak alive!</p>
-          <button className="primary" onClick={() => go('learn')}>
-            <Play size={18} /> Start learning
-          </button>
+    <div className="dashboardScreen">
+      {/* Top Bar Header with Settings Gear */}
+      <div className="dashTopBar">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: '#e0f2fe',
+              display: 'grid',
+              placeItems: 'center',
+              fontSize: '20px'
+            }}
+          >
+            {child.avatar || '🦖'}
+          </div>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+              {child.name || 'Explorer'}
+            </div>
+            <small style={{ fontSize: '11px', color: '#64748b', fontWeight: 700 }}>
+              Grade {child.grade} · {child.streak} Day Streak 🔥
+            </small>
+          </div>
         </div>
-        <div className="heroArt">{child.avatar}</div>
-      </section>
 
-      <div className="stats">
-        <Card>
-          <Flame />
-          <b>{child.streak}</b>
-          <span>day streak</span>
-        </Card>
-        <Card>
-          <Star />
-          <b>{child.xp}</b>
-          <span>XP earned</span>
-        </Card>
-        <Card>
-          <Trophy />
-          <b>{done}</b>
-          <span>lessons done</span>
-        </Card>
-      </div>
-
-      <div className="sectionTitle">
-        <div>
-          <p className="eyebrow">Today's Focus</p>
-          <h2>Recommended Lesson</h2>
-        </div>
-        <button className="textBtn" onClick={() => go('learn')}>
-          View all <ChevronRight size={15} />
+        <button
+          className="gearBtn"
+          onClick={() => {
+            playPop();
+            go('settings');
+          }}
+          title="App Settings"
+        >
+          <Settings size={18} />
         </button>
       </div>
 
-      {currentLesson && (
-        <Card className="lesson">
-          <div className="lessonIcon">{currentLesson.emoji || '🚀'}</div>
-          <div className="grow">
-            <span className="pill">
-              {currentLesson.difficulty || 'Featured'} · {currentLesson.duration || 10} min
-            </span>
-            <h3>{currentLesson.title}</h3>
-            <p>{currentLesson.description}</p>
-            <small>
-              <Target size={13} /> {pct}% curriculum progress ({done}/{lessons.length} complete)
-            </small>
+      {/* Top Mascot Hero Card: Didi the Explorer with "Ask ?" Button */}
+      <div className="explorerHeroCard">
+        <div className="explorerBadge">Didi the Explorer</div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
+          <div className="didiCharacter" title="Didi the Dinosaur Explorer">
+            🦖
           </div>
-          <button className="round" onClick={() => go('learn')} title="Start Lesson">
-            <ChevronRight />
-          </button>
-        </Card>
-      )}
-
-      <div className="sectionTitle">
-        <div>
-          <p className="eyebrow">Explore Subjects</p>
-          <h2>Grade {child.grade} Curriculum</h2>
         </div>
+
+        <button
+          className="askBtn"
+          onClick={() => {
+            playCorrect();
+            setIsAskOpen(true);
+          }}
+        >
+          <HelpCircle size={17} /> Ask ?
+        </button>
       </div>
 
-      <div className="subjectGrid">
-        {subjects.slice(0, 6).map((s) => {
-          const subLessons = lessons.filter((l) => l.subject === s.id);
-          return (
-            <button
-              key={s.id}
-              className="subject"
-              onClick={() => {
-                if (openSubject) openSubject(s.id);
-                go('learn');
-              }}
-            >
-              <span>{s.icon}</span>
-              <strong>{s.name}</strong>
-              <small>{subLessons.length} lessons</small>
-            </button>
-          );
-        })}
+      {/* 2x2 Large Rounded Colorful Gradient Activity Cards (Matching Screenshot) */}
+      <div className="activitiesGrid">
+        {/* 1. Top Left: Colors & Week 5 Vocab (Warm Yellow / Orange Gradient) */}
+        <button
+          className="activityTile tile-colors"
+          onClick={() => handleTileClick('week5')}
+        >
+          <div className="tileIcon">🎨</div>
+          <div>
+            <h3>Colors & Words</h3>
+            <p className="tileSub">⭐ Week 5 Focus</p>
+          </div>
+        </button>
+
+        {/* 2. Top Right: Shapes & Math (Vivid Violet / Purple Gradient) */}
+        <button
+          className="activityTile tile-shapes"
+          onClick={() => handleTileClick('math')}
+        >
+          <div className="tileIcon">🧊</div>
+          <div>
+            <h3>Shapes & Math</h3>
+            <p className="tileSub">Grade 3 Challenges</p>
+          </div>
+        </button>
+
+        {/* 3. Bottom Left: Animals & Science (Fresh Green Gradient) */}
+        <button
+          className="activityTile tile-animals"
+          onClick={() => handleTileClick('science')}
+        >
+          <div className="tileIcon">🐙</div>
+          <div className="tileBadge">
+            <span style={{ fontSize: '13px' }}>★</span>
+          </div>
+          <div>
+            <h3>Animals & Nature</h3>
+            <p className="tileSub">Science Lab</p>
+          </div>
+        </button>
+
+        {/* 4. Bottom Right: Numbers & Social (Radiant Cyan / Blue Gradient) */}
+        <button
+          className="activityTile tile-numbers"
+          onClick={() => handleTileClick('social')}
+        >
+          <div className="tileIcon">🔢</div>
+          <div className="tileBadge">
+            <span style={{ fontSize: '13px' }}>★</span>
+          </div>
+          <div>
+            <h3>Numbers & World</h3>
+            <p className="tileSub">Social & Continents</p>
+          </div>
+        </button>
       </div>
 
-      <div className="sectionTitle">
-        <h2>Quick stats</h2>
+      {/* Bottom Quick Habits / Daily Routine Rail (Matching Screenshot) */}
+      <div className="routinesRail">
+        <button
+          className="routineItem"
+          onClick={() => {
+            playPop();
+            setHabitType('teeth');
+          }}
+        >
+          <div className="routineCircle">🦷</div>
+          <span>Brushing<br />teeth</span>
+        </button>
+
+        <button
+          className="routineItem"
+          onClick={() => {
+            playPop();
+            setHabitType('routine');
+          }}
+        >
+          <div className="routineCircle">⏰</div>
+          <span>Daily<br />routine</span>
+        </button>
+
+        <button
+          className="routineItem"
+          onClick={() => {
+            playPop();
+            setHabitType('night');
+          }}
+        >
+          <div className="routineCircle">🌙</div>
+          <span>Good<br />night</span>
+        </button>
+
+        <button
+          className="routineItem"
+          onClick={() => {
+            playPop();
+            setHabitType('light');
+          }}
+        >
+          <div className="routineCircle">💡</div>
+          <span>Blue<br />light</span>
+        </button>
       </div>
-      <div className="miniGrid">
-        <Card>
-          <Clock />
-          <b>{child.minutes} min</b>
-          <span>learning time</span>
-        </Card>
-        <Card>
-          <BookOpen />
-          <b>{lessons.length}</b>
-          <span>lessons available</span>
-        </Card>
-      </div>
+
+      {/* Interactive Modals */}
+      {isAskOpen && <AskDidiModal onClose={() => setIsAskOpen(false)} />}
+      {habitType && <HabitsModal type={habitType} onClose={() => setHabitType(null)} />}
     </div>
   );
 }

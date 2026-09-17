@@ -84,6 +84,16 @@ export function Settings() {
             className="secondary full"
             onClick={() => {
               playPop();
+              localStorage.removeItem('merola_v2_has_seen_splash');
+              window.location.reload();
+            }}
+          >
+            <Sparkles size={16} /> View 3-Screen Onboarding Tour
+          </button>
+          <button
+            className="secondary full"
+            onClick={() => {
+              playPop();
               window.location.reload();
             }}
           >
