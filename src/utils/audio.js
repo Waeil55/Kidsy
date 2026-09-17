@@ -1,168 +1,136 @@
-import * as Tone from 'tone';
 import confetti from 'canvas-confetti';
 
-let toneCorrect = null;
-let toneIncorrect = null;
-let tonePop = null;
-let audioInitialized = false;
-let isMutedAudio = false;
-let globalAudioCtx = null;
+let audioCtx = null;
+let isMuted = false;
 
-function fetchAudioContext() {
-  if (!globalAudioCtx && typeof window !== 'undefined') {
+function getAudioContext() {
+  if (!audioCtx && typeof window !== 'undefined') {
     const AudioClass = window.AudioContext || window.webkitAudioContext;
     if (AudioClass) {
-      globalAudioCtx = new AudioClass();
+      audioCtx = new AudioClass();
     }
   }
-  if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
-    globalAudioCtx.resume().catch(() => {});
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
   }
-  return globalAudioCtx;
+  return audioCtx;
 }
 
 export function isAudioMuted() {
-  return isMutedAudio;
+  return isMuted;
 }
 
 export function toggleAudioSFX() {
-  isMutedAudio = !isMutedAudio;
-  if (!isMutedAudio) {
-    triggerAudioTone('tap');
-  }
-  return !isMutedAudio;
+  isMuted = !isMuted;
+  if (!isMuted) playPop();
+  return !isMuted;
 }
 
-export function triggerAudioTone(kind) {
-  if (isMutedAudio) return;
+// Instant zero-latency tap click
+export function playPop() {
+  if (isMuted) return;
   try {
-    const ctx = fetchAudioContext();
+    const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(450, now);
+    osc.frequency.exponentialRampToValueAtTime(880, now + 0.04);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
     osc.connect(gain);
     gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.04);
+  } catch (e) { /* ignore */ }
+}
 
-    if (kind === 'tap') {
+// Duolingo-style signature joyful ascending fanfare
+export function playCorrect() {
+  if (isMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+
+    freqs.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+
+      const startTime = now + idx * 0.07;
+      const duration = 0.22;
+
+      gain.gain.setValueAtTime(0.2, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+    });
+  } catch (e) { /* ignore */ }
+}
+
+// Gentle low error thump
+export function playIncorrect() {
+  if (isMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    [190, 140].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(400, now);
-      osc.frequency.exponentialRampToValueAtTime(800, now + 0.06);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-      osc.start(now);
-      osc.stop(now + 0.06);
-    } else if (kind === 'penalty') {
-      // Buzz -1 penalty sound
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(160, now);
-      osc.frequency.setValueAtTime(110, now + 0.1);
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
-      osc.start(now);
-      osc.stop(now + 0.22);
-    } else if (kind === 'success') {
-      // Success arpeggio
-      [523.25, 659.25, 783.99].forEach((freq, idx) => {
-        const sOsc = ctx.createOscillator();
-        const sGain = ctx.createGain();
-        sOsc.type = 'sine';
-        sOsc.frequency.value = freq;
-        sOsc.connect(sGain);
-        sGain.connect(ctx.destination);
-        const start = now + idx * 0.07;
-        sGain.gain.setValueAtTime(0.18, start);
-        sGain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
-        sOsc.start(start);
-        sOsc.stop(start + 0.3);
-      });
-    }
-  } catch (err) {
-    console.warn('Audio tone error:', err);
-  }
+      osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + idx * 0.09 + 0.12);
+
+      const startTime = now + idx * 0.09;
+      gain.gain.setValueAtTime(0.25, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + 0.12);
+    });
+  } catch (e) { /* ignore */ }
 }
 
 export async function initAudioSystem() {
-  if (audioInitialized) return;
-  try {
-    fetchAudioContext();
-    await Tone.start();
-    
-    toneCorrect = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: 'triangle' },
-      envelope: { attack: 0.02, decay: 0.15, sustain: 0.1, release: 0.4 }
-    }).toDestination();
-    toneCorrect.volume.value = -10;
-
-    toneIncorrect = new Tone.Synth({
-      oscillator: { type: 'sawtooth' },
-      envelope: { attack: 0.05, decay: 0.25, sustain: 0, release: 0.2 }
-    }).toDestination();
-    toneIncorrect.volume.value = -12;
-
-    tonePop = new Tone.Synth({
-      oscillator: { type: 'sine' },
-      envelope: { attack: 0.005, decay: 0.08, sustain: 0, release: 0.08 }
-    }).toDestination();
-    tonePop.volume.value = -16;
-
-    audioInitialized = true;
-  } catch (err) {
-    console.warn("Audio Context init deferred:", err);
-  }
+  getAudioContext();
 }
 
-export function playPop() {
-  if (isMutedAudio) return;
-  triggerAudioTone('tap');
-  try {
-    if (tonePop && Tone.context.state === 'running') {
-      tonePop.triggerAttackRelease("C6", "32n");
-    }
-  } catch (e) { /* ignore */ }
-}
-
-export function playCorrect() {
-  if (isMutedAudio) return;
-  triggerAudioTone('success');
-  try {
-    if (toneCorrect && Tone.context.state === 'running') {
-      const now = Tone.now();
-      toneCorrect.triggerAttackRelease("C5", "8n", now);
-      toneCorrect.triggerAttackRelease("E5", "8n", now + 0.09);
-      toneCorrect.triggerAttackRelease("G5", "8n", now + 0.18);
-      toneCorrect.triggerAttackRelease("C6", "4n", now + 0.28);
-    }
-  } catch (e) { /* ignore */ }
-}
-
-export function playIncorrect() {
-  if (isMutedAudio) return;
-  triggerAudioTone('penalty');
-  try {
-    if (toneIncorrect && Tone.context.state === 'running') {
-      toneIncorrect.triggerAttackRelease("G#3", "8n");
-    }
-  } catch (e) { /* ignore */ }
+export function triggerAudioTone(kind) {
+  if (kind === 'tap') playPop();
+  else if (kind === 'penalty') playIncorrect();
+  else if (kind === 'success') playCorrect();
 }
 
 export function fireConfetti(isBig = false) {
   if (isBig) {
-    const end = Date.now() + 2500;
-    const colors = ['#f44383', '#14b8a6', '#059669', '#fbbf24', '#a855f7', '#4F46E5'];
+    const end = Date.now() + 2000;
+    const colors = ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FF4B4B'];
     (function frame() {
-      confetti({ particleCount: 6, angle: 60, spread: 55, origin: { x: 0 }, colors });
-      confetti({ particleCount: 6, angle: 120, spread: 55, origin: { x: 1 }, colors });
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
+      confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors });
+      confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors });
+      if (Date.now() < end) requestAnimationFrame(frame);
     })();
   } else {
     confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#f44383', '#14b8a6', '#059669', '#fbbf24', '#4F46E5']
+      particleCount: 60,
+      spread: 60,
+      origin: { y: 0.65 },
+      colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF']
     });
   }
 }
@@ -172,7 +140,7 @@ export const PRAISES = [
   "Brilliant thinking!",
   "Awesome job!",
   "Spot on! You got it!",
-  "Look at you go, learning champion!",
+  "Look at you go, champion!",
   "You are crushing it!",
   "High five! Fantastic answer!"
 ];

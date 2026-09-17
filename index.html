@@ -2,21 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>MerolaApp Enterprise OS - WonderPals Institutional Learning Suite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>MerolaApp - Grade 3 Learning Adventure</title>
     
-    <!-- Premium Fonts: Fredoka for Playful Branding + Plus Jakarta Sans & Outfit for UI Precision -->
+    <!-- PWA Manifest & App Icons -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    
+    <!-- iOS / Web App Standalone Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="MerolaApp" />
+    <meta name="theme-color" content="#159eea" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="description" content="MerolaApp Enterprise - Duolingo-grade K-6 learning suite featuring Grade 3 Week 5 curriculum." />
+
+    <!-- Google Fonts: Inter and Fredoka -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
-    
-    <!-- Web App & Theme Color -->
-    <meta name="theme-color" content="#4F46E5" />
-    <meta name="description" content="MerolaApp Enterprise OS - Adaptive Multi-Seat Learning & Assessment System (Better than Duolingo)" />
-    <script type="module" crossorigin src="./assets/index-BYnZPb7X.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DQieN774.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="./assets/index-D-mX4GIY.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C63Ieb3b.css">
   </head>
-  <body class="bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased overflow-hidden select-none">
+  <body>
     <div id="root"></div>
+    <script>
+      // Register PWA Service Worker
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

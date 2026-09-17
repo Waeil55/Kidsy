@@ -1,15 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Trophy, 
-  Sparkles, 
-  ArrowRight, 
   Check, 
-  Star, 
-  Flame, 
-  Compass,
-  Play
+  Play, 
+  Sparkles, 
+  ArrowRight,
+  BookOpen
 } from 'lucide-react';
-import { playPop, triggerAudioTone, speakText } from '../utils/audio';
+import { playPop, playCorrect } from '../utils/audio';
 
 export default function JourneyMap({
   activeSubject,
@@ -21,116 +19,82 @@ export default function JourneyMap({
   companionName = "Captain Pip",
   companionHat = "👑"
 }) {
-  const handlePetMascot = () => {
-    playPop();
-    const bubble = document.getElementById('journey-mascot-bubble');
-    if (bubble) {
-      const phrases = [
-        "Ready for quest! ⚡",
-        "You're a genius! 🌟",
-        "Keep the streak alive! 🔥",
-        "Let's conquer this stage! 🚀"
-      ];
-      bubble.textContent = phrases[Math.floor(Math.random() * phrases.length)];
-      bubble.classList.remove('opacity-0');
-      bubble.classList.add('opacity-100', 'pop');
-      setTimeout(() => {
-        bubble.classList.remove('opacity-100', 'pop');
-        bubble.classList.add('opacity-0');
-      }, 1500);
-    }
-  };
+  const [selectedNodeIndex, setSelectedNodeIndex] = useState(null);
 
-  // Build nodes based on current curriculum items (up to 5 or item count)
   const displayItems = items.length > 0 ? items.slice(0, 5) : [
-    { word: "oppose", displayTitle: "Oppose", image: "🛑" },
-    { word: "snide", displayTitle: "Snide", image: "😏" },
-    { word: "heap", displayTitle: "Heap", image: "🧺" },
-    { word: "diverse", displayTitle: "Diverse", image: "🌈" },
-    { word: "origin", displayTitle: "Origin", image: "🏔️" },
+    { word: "oppose", displayTitle: "Oppose", definition: "To be against something", image: "🛑" },
+    { word: "snide", displayTitle: "Snide", definition: "To do something in a mean or nasty way", image: "😏" },
+    { word: "heap", displayTitle: "Heap", definition: "A large collection of things thrown into a pile", image: "🧺" },
+    { word: "diverse", displayTitle: "Diverse", definition: "Different from one another", image: "🌈" },
+    { word: "origin", displayTitle: "Origin", definition: "The start of something", image: "🏔️" },
   ];
 
-  // Coordinates for nice S-curve positioning
-  const xOffsets = [0, 48, -48, 36, 0];
+  // Natural Duolingo horizontal zigzag offsets
+  const xOffsets = [0, 45, -45, 30, 0];
+
+  const handleNodeClick = (idx) => {
+    playPop();
+    setSelectedNodeIndex(selectedNodeIndex === idx ? null : idx);
+  };
+
+  const startStage = (idx) => {
+    playPop();
+    onSelectStage(idx);
+    setSelectedNodeIndex(null);
+    onLaunchExam();
+  };
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col justify-between overflow-y-auto no-scrollbar py-1 w-full max-w-lg mx-auto">
+    <div className="flex-1 flex flex-col justify-between overflow-y-auto no-scrollbar py-2 px-4 max-w-lg mx-auto w-full relative select-none">
       
-      {/* Institutional Curriculum Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-purple-700 p-3.5 text-white shadow-squish-indigo shrink-0 mb-2">
-        <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="max-w-[65%]">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-fredoka font-semibold uppercase tracking-wider mb-1 text-yellow-300 border border-white/20">
-              <Compass className="w-3 h-3" />
-              <span>Learning Roadmap</span>
-              <span>•</span>
-              <span className="capitalize">{activeSubject}</span>
-            </div>
-            <h2 className="font-fredoka font-bold text-base sm:text-lg leading-tight mb-1 text-white">
-              Quest: <span className="text-yellow-300">{displayItems[activeStageIndex % displayItems.length]?.displayTitle || "Mastery Path"}</span>
-            </h2>
-            <p className="text-[11px] text-indigo-100 font-medium mb-2 line-clamp-1">
-              {displayItems[activeStageIndex % displayItems.length]?.definition || "Master all 5 milestone stages!"}
-            </p>
-            
-            <button 
-              onClick={() => { playPop(); onLaunchExam(); }}
-              className="squish-btn px-3.5 py-1.5 rounded-xl bg-white text-indigo-700 font-fredoka text-xs font-bold shadow-md flex items-center gap-1.5 active:scale-95"
-            >
-              <span>Launch Assessment Hub</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
+      {/* Duolingo Section Unit Header Banner */}
+      <div className="duo-card bg-duo-green text-white p-3.5 border-duo-greenDark mb-4 flex items-center justify-between shrink-0 shadow-sm">
+        <div>
+          <span className="text-[10px] font-fredoka font-bold uppercase tracking-wider text-duo-greenLight block">
+            Current Unit • {activeSubject.toUpperCase()}
+          </span>
+          <h2 className="font-fredoka font-bold text-lg leading-tight text-white mt-0.5">
+            Unit 1: Grade 3 Power Words
+          </h2>
+          <p className="text-xs text-white/90 font-fredoka mt-0.5">
+            5 Lessons • Master all words to claim the Trophy!
+          </p>
+        </div>
 
-          {/* Interactive Mascot Companion Widget */}
-          <div className="flex flex-col items-center">
-            <div onClick={handlePetMascot} className="cursor-pointer group relative active:scale-90 transition-transform">
-              <div className="w-18 h-18 rounded-2xl bg-white/20 backdrop-blur-md p-1 flex items-center justify-center border border-white/30 animate-bounce-subtle relative">
-                <span className="text-4xl">{companionEmoji}</span>
-                {companionHat && (
-                  <span className="absolute -top-3 text-2xl">{companionHat}</span>
-                )}
-                <div 
-                  id="journey-mascot-bubble" 
-                  className="absolute -top-7 -right-2 bg-white text-slate-800 text-[10px] font-fredoka font-bold px-2 py-0.5 rounded-lg shadow-md whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-300 z-20 border border-slate-200"
-                >
-                  Ready for quest! ⚡
-                </div>
-              </div>
-            </div>
-            <span className="text-[9px] font-fredoka text-indigo-200 mt-1 font-bold">Tap Companion</span>
-          </div>
+        {/* Mascot Companion Mini Widget */}
+        <div className="w-14 h-14 rounded-2xl bg-white/20 border-2 border-white/40 flex items-center justify-center text-3xl relative animate-bounce-subtle shrink-0">
+          <span>{companionEmoji}</span>
+          {companionHat && (
+            <span className="absolute -top-2.5 text-lg">{companionHat}</span>
+          )}
         </div>
       </div>
 
-      {/* Curriculum Level Stage Matrix (Curved Path Canvas) */}
-      <div className="flex-1 min-h-[340px] bg-white dark:bg-kid-nightCard rounded-3xl p-3 shadow-squish-card border-2 border-slate-100 dark:border-kid-nightBorder relative overflow-hidden flex flex-col items-center justify-center my-1">
+      {/* S-Curve Stepping Stones Roadmap */}
+      <div className="relative py-4 flex flex-col items-center my-auto min-h-[360px]">
         
-        {/* Animated SVG S-Curve Path */}
+        {/* Animated Connecting SVG Path */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 360 380" fill="none" preserveAspectRatio="none">
           <path 
             d="M 180,30 C 270,80 270,140 180,190 C 90,240 90,300 180,350" 
-            stroke="#E2E8F0" 
-            strokeWidth="10" 
+            stroke="#E5E5E5" 
+            strokeWidth="12" 
             strokeLinecap="round" 
-            className="dark:stroke-slate-800" 
           />
           <path 
             d="M 180,30 C 270,80 270,140 180,190 C 90,240 90,300 180,350" 
-            stroke="#4F46E5" 
-            strokeWidth="5" 
+            stroke="#58CC02" 
+            strokeWidth="6" 
             strokeLinecap="round" 
             className="journey-path" 
           />
         </svg>
 
-        {/* Milestone Nodes (Top to Bottom: Gate 5 -> Stage 1) */}
+        {/* Nodes (Stepping Stones) */}
         <div className="relative z-10 w-full flex flex-col items-center justify-between h-full py-2">
           {displayItems.map((item, idx) => {
-            const stageNum = idx + 1;
-            const isCurrent = idx === activeStageIndex;
             const isCompleted = idx < activeStageIndex;
+            const isCurrent = idx === activeStageIndex;
             const isGate = idx === displayItems.length - 1;
             const xShift = xOffsets[idx % xOffsets.length];
 
@@ -138,55 +102,69 @@ export default function JourneyMap({
               <div 
                 key={item.id || idx}
                 style={{ transform: `translateX(${xShift}px)` }}
-                className="flex flex-col items-center my-1 transition-transform"
+                className="flex flex-col items-center my-2 relative"
               >
-                {/* Current Stage Glowing Pulse Ring */}
+                {/* Active Tooltip Speech Callout */}
                 {isCurrent && (
-                  <div className="absolute -inset-2 bg-indigo-500/25 rounded-3xl blur-md animate-pulse pointer-events-none" />
+                  <div className="absolute -top-8 px-2.5 py-1 rounded-xl bg-duo-green text-white font-fredoka text-[10px] font-bold shadow-md animate-bounce-subtle whitespace-nowrap z-20">
+                    <span>START HERE!</span>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-duo-green" />
+                  </div>
                 )}
 
+                {/* Stepping Stone Button */}
                 <button
-                  onClick={() => {
-                    playPop();
-                    onSelectStage(idx);
-                  }}
-                  className={`squish-btn relative rounded-2xl flex items-center justify-center font-fredoka font-black border-4 transition-all ${
+                  onClick={() => handleNodeClick(idx)}
+                  className={`duo-btn relative w-16 h-16 rounded-full flex items-center justify-center transition-all ${
                     isGate 
-                      ? 'w-14 h-14 bg-gradient-to-tr from-amber-400 to-orange-500 text-white border-white dark:border-slate-800 shadow-squish-orange text-2xl'
-                      : isCurrent
-                        ? 'w-15 h-15 bg-gradient-to-tr from-indigo-600 via-brand-500 to-purple-600 text-white border-white dark:border-slate-800 shadow-squish-indigo text-2xl scale-105'
-                        : isCompleted
-                          ? 'w-12 h-12 bg-gradient-to-tr from-emerald-500 to-teal-600 text-white border-white dark:border-slate-800 shadow-squish-emerald text-xl'
-                          : 'w-12 h-12 bg-slate-100 dark:bg-slate-800 text-slate-400 border-white dark:border-slate-700 shadow-squish-neutral text-lg'
+                      ? 'bg-duo-yellow border-b-4 border-duo-yellowDark text-white' 
+                      : isCompleted
+                        ? 'bg-duo-green border-b-4 border-duo-greenDark text-white'
+                        : isCurrent
+                          ? 'bg-duo-blue border-b-4 border-duo-blueDark text-white scale-105 ring-4 ring-duo-blueLight'
+                          : 'bg-duo-gray-100 border-b-4 border-duo-gray-300 text-duo-gray-400'
                   }`}
-                  title={`Stage ${stageNum}: ${item.displayTitle || item.word}`}
                 >
                   {isGate ? (
-                    <Trophy className="w-6 h-6 text-yellow-100 animate-bounce-subtle" />
+                    <Trophy className="w-8 h-8 fill-current text-white animate-bounce-subtle" />
                   ) : isCompleted ? (
-                    <Check className="w-6 h-6 text-white stroke-[3]" />
+                    <Check className="w-8 h-8 stroke-[3.5] text-white" />
                   ) : isCurrent ? (
-                    <span className="text-xl animate-bounce-subtle">{item.image || "⚡"}</span>
+                    <span className="text-2xl">{item.image || "⚡"}</span>
                   ) : (
-                    <span>{stageNum}</span>
+                    <span className="text-xl font-bold">{idx + 1}</span>
                   )}
                 </button>
 
-                {/* Badge underneath node */}
-                <div className="mt-1 flex items-center gap-1">
-                  <span className={`px-2 py-0.5 rounded-full font-fredoka text-[10px] font-bold shadow-xs ${
-                    isCurrent 
-                      ? 'bg-indigo-600 text-white border border-indigo-400' 
-                      : isCompleted
-                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-                  }`}>
-                    {item.displayTitle || item.word}
-                  </span>
-                  {isCompleted && (
-                    <span className="text-[9px] text-amber-500">★★★</span>
-                  )}
-                </div>
+                {/* Word Label Pill */}
+                <span className={`mt-1.5 px-2 py-0.5 rounded-lg font-fredoka text-[11px] font-bold border ${
+                  isCurrent 
+                    ? 'bg-duo-blue text-white border-duo-blueDark' 
+                    : isCompleted
+                      ? 'bg-duo-greenLight text-duo-greenDark border-duo-green'
+                      : 'bg-white text-duo-gray-500 border-duo-gray-100'
+                }`}>
+                  {item.displayTitle || item.word}
+                </span>
+
+                {/* Popover Card when Node is Tapped */}
+                {selectedNodeIndex === idx && (
+                  <div className="absolute top-full mt-2 z-30 w-52 duo-card p-3 text-center pop shadow-2xl bg-white">
+                    <span className="text-2xl block mb-1">{item.image || "🌟"}</span>
+                    <h3 className="font-fredoka font-bold text-sm text-duo-gray-800 capitalize">
+                      {item.displayTitle || item.word}
+                    </h3>
+                    <p className="text-[11px] font-fredoka text-duo-gray-500 my-1 line-clamp-2">
+                      "{item.definition}"
+                    </p>
+                    <button
+                      onClick={() => startStage(idx)}
+                      className="duo-btn duo-btn-green w-full py-2 text-xs mt-1"
+                    >
+                      <span>PRACTICE (+10 XP)</span>
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -194,21 +172,23 @@ export default function JourneyMap({
 
       </div>
 
-      {/* Bottom Action: Stage Launch Bar */}
-      <div className="shrink-0 pt-1.5 flex items-center justify-between border-t border-slate-200/80 dark:border-slate-800 mt-1">
-        <div className="flex items-center gap-1.5 text-xs font-fredoka">
-          <span className="text-slate-400">Target:</span>
-          <span className="font-bold text-slate-800 dark:text-white capitalize">
-            {displayItems[activeStageIndex % displayItems.length]?.word || "Select Node"}
+      {/* Direct Action Bottom Bar */}
+      <div className="shrink-0 pt-2 border-t-2 border-duo-gray-100 mt-2 flex items-center justify-between">
+        <div className="text-left">
+          <span className="text-[10px] font-fredoka font-bold uppercase text-duo-gray-400 block">
+            Next Milestone
+          </span>
+          <span className="font-fredoka font-bold text-sm text-duo-gray-800 capitalize">
+            {displayItems[activeStageIndex % displayItems.length]?.word || "Complete Unit"}
           </span>
         </div>
 
         <button
           onClick={() => { playPop(); onLaunchExam(); }}
-          className="px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 text-white font-fredoka font-bold text-xs shadow-squish-emerald squish-btn flex items-center gap-1.5"
+          className="duo-btn duo-btn-green px-5 py-2.5 text-xs flex items-center gap-1.5"
         >
           <Play className="w-3.5 h-3.5 fill-current" />
-          <span>Start Assessment</span>
+          <span>START LESSON</span>
         </button>
       </div>
 
