@@ -30,19 +30,27 @@ export function Home({ go, openSubject }) {
 
   // Auto-prompt child to pick their gift if not yet chosen or on session start
   useEffect(() => {
-    const promptedThisSession = sessionStorage.getItem('merola_gift_prompted');
-    if (!child.giftGoal?.hasPicked || !promptedThisSession) {
-      setIsGiftSelectorOpen(true);
-      sessionStorage.setItem('merola_gift_prompted', 'true');
+    try {
+      const promptedThisSession = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('merola_gift_prompted') : 'true';
+      if (!child?.giftGoal?.hasPicked || !promptedThisSession) {
+        setIsGiftSelectorOpen(true);
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('merola_gift_prompted', 'true');
+        }
+      }
+    } catch (e) {
+      if (!child?.giftGoal?.hasPicked) {
+        setIsGiftSelectorOpen(true);
+      }
     }
-  }, [child.id, child.giftGoal?.hasPicked]);
+  }, [child?.id, child?.giftGoal?.hasPicked]);
 
   // Open unboxing modal if the child reached their goal
   useEffect(() => {
-    if (child.giftGoal?.isUnlocked) {
+    if (child?.giftGoal?.isUnlocked) {
       setIsUnboxingOpen(true);
     }
-  }, [child.giftGoal?.isUnlocked]);
+  }, [child?.giftGoal?.isUnlocked]);
 
   const handleTileClick = (subjectId) => {
     playPop();

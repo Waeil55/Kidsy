@@ -3,13 +3,20 @@ import { Wifi, Battery, Signal, Maximize2, Minimize2 } from 'lucide-react';
 
 export function DeviceFrame({ children, isDarkStatus = false }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isMobileOrPwa, setIsMobileOrPwa] = useState(false);
+  const [isMobileOrPwa, setIsMobileOrPwa] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return (
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      window.navigator?.standalone === true ||
+      window.innerWidth <= 768
+    );
+  });
 
   useEffect(() => {
     const checkMode = () => {
       const isStandalone =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true ||
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        window.navigator?.standalone === true ||
         window.innerWidth <= 768;
       setIsMobileOrPwa(isStandalone);
     };

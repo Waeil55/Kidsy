@@ -30,8 +30,12 @@ export function Onboarding({ done, onBack }) {
     if (!name.trim()) return;
     playCorrect();
     const avatarObj = AVATAR_OPTIONS.find((a) => a.id === selectedAvatarId) || AVATAR_OPTIONS[0];
+    const newId =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : 'kid-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
     addChild({
-      id: crypto.randomUUID(),
+      id: newId,
       name: name.trim(),
       grade: grade,
       avatar: avatarObj.emoji,

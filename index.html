@@ -22,16 +22,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="./assets/index-CNA0FXAI.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BPxWwbKQ.css">
+    <script type="module" crossorigin src="./assets/index-DCOkEg6r.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-COVJGt2o.css">
   </head>
   <body>
     <div id="root"></div>
     <script>
-      // Register PWA Service Worker
+      // Register PWA Service Worker with active update check
       if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').catch(() => {});
+          navigator.serviceWorker.register('./sw.js').then((reg) => {
+            reg.update().catch(() => {});
+          }).catch((err) => {
+            console.warn('[SW Registration Error]', err);
+          });
         });
       }
     </script>

@@ -27,8 +27,12 @@ export function Parent() {
   const handleAddChild = () => {
     if (!newChildName.trim()) return;
     const avatars = ['🦕', '🦊', '🐼', '🦉', '🐨', '🐯', '🦁', '🐬'];
+    const newId =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : 'kid-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
     const created = {
-      id: crypto.randomUUID(),
+      id: newId,
       name: newChildName.trim(),
       grade: newChildGrade,
       avatar: avatars[children.length % avatars.length],
