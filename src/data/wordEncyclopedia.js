@@ -1,6 +1,8 @@
 // ============================================================================
 // MEROLA APP AI WORD ENCYCLOPEDIA & KNOWLEDGE INDEX
 // High-Intelligence Educational Database with Pedagogical Scaffolding
+// Complete with verified child-friendly photography and phonetics
+// Grade 3 is strictly focused on Week 5 Core + foundational concepts
 // ============================================================================
 
 export const WORD_ENCYCLOPEDIA = [
@@ -12,6 +14,8 @@ export const WORD_ENCYCLOPEDIA = [
     word: "oppose",
     grade: 3,
     subject: "Vocabulary & Reading",
+    emoji: "🛑",
+    imageUrl: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=600&auto=format&fit=crop&q=80",
     phonetic: "/əˈpoʊz/",
     syllables: "op · pose (2 syllables)",
     partOfSpeech: "verb (action word)",
@@ -63,6 +67,8 @@ export const WORD_ENCYCLOPEDIA = [
     word: "snide",
     grade: 3,
     subject: "Vocabulary & Reading",
+    emoji: "😏",
+    imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
     phonetic: "/snaɪd/",
     syllables: "snide (1 syllable)",
     partOfSpeech: "adjective (describing word)",
@@ -110,6 +116,8 @@ export const WORD_ENCYCLOPEDIA = [
     word: "heap",
     grade: 3,
     subject: "Vocabulary & Reading",
+    emoji: "🧺",
+    imageUrl: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=600&auto=format&fit=crop&q=80",
     phonetic: "/hiːp/",
     syllables: "heap (1 syllable)",
     partOfSpeech: "noun (or verb)",
@@ -153,6 +161,8 @@ export const WORD_ENCYCLOPEDIA = [
     word: "diverse",
     grade: 3,
     subject: "Vocabulary & Reading",
+    emoji: "🌈",
+    imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=80",
     phonetic: "/daɪˈvɜːrs/",
     syllables: "di · verse (2 syllables)",
     partOfSpeech: "adjective (describing word)",
@@ -196,6 +206,8 @@ export const WORD_ENCYCLOPEDIA = [
     word: "origin",
     grade: 3,
     subject: "Vocabulary & Reading",
+    emoji: "🏔️",
+    imageUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&auto=format&fit=crop&q=80",
     phonetic: "/ˈɔːr.ɪ.dʒɪn/",
     syllables: "or · i · gin (3 syllables)",
     partOfSpeech: "noun (naming word)",
@@ -232,13 +244,15 @@ export const WORD_ENCYCLOPEDIA = [
   },
 
   // --------------------------------------------------------------------------
-  // FOUNDATIONAL EXPANSION: MATH & SCIENCE CONCEPTS
+  // GRADE 3 FOUNDATIONAL CONCEPTS (Multiplication & Ecosystem)
   // --------------------------------------------------------------------------
   {
     id: "word-multiply",
     word: "multiplication",
     grade: 3,
     subject: "Math",
+    emoji: "✖️",
+    imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&auto=format&fit=crop&q=80",
     phonetic: "/ˌmʌl.tə.plɪˈkeɪ.ʃən/",
     syllables: "mul · ti · pli · ca · tion (5 syllables)",
     partOfSpeech: "noun (math operation)",
@@ -269,6 +283,8 @@ export const WORD_ENCYCLOPEDIA = [
     word: "ecosystem",
     grade: 3,
     subject: "Science",
+    emoji: "🌿",
+    imageUrl: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&auto=format&fit=crop&q=80",
     phonetic: "/ˈiː.koʊˌsɪs.təm/",
     syllables: "e · co · sys · tem (4 syllables)",
     partOfSpeech: "noun (science concept)",
@@ -298,6 +314,215 @@ export const WORD_ENCYCLOPEDIA = [
       hint: "Ecosystems contain all organisms and their natural surroundings.",
       explanation: "An ecosystem connects living organisms with non-living elements like water and sunlight."
     }
+  },
+
+  // --------------------------------------------------------------------------
+  // GRADE K WORDS
+  // --------------------------------------------------------------------------
+  {
+    id: "word-puppy",
+    word: "puppy",
+    grade: "K",
+    subject: "Animals & Early Words",
+    emoji: "🐶",
+    imageUrl: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
+    phonetic: "/ˈpʌp.i/",
+    syllables: "pup · py (2 syllables)",
+    partOfSpeech: "noun",
+    kidDefinition: "A playful and friendly baby dog.",
+    officialDefinition: "A young dog, typically under a year of age.",
+    teacherSentence: "The energetic puppy fetched the small rubber ball.",
+    funStory: "Barnaby the golden puppy learned how to sit and give high-fives with his soft paw!",
+    mnemonicTrick: "P-U-P-P-Y has two friendly 'P's jumping up like puppy ears!",
+    synonyms: ["pup", "doggy", "canine"],
+    antonyms: ["kitten"],
+    aiPrompts: [
+      {
+        q: "How to take care of a puppy?",
+        a: "Give your puppy clean water, healthy food, lots of cuddles, and daily walks in the park!"
+      }
+    ],
+    quiz: {
+      prompt: "What is a baby dog called?",
+      choices: ["A puppy", "A calf", "A kitten", "A duck"],
+      answer: 0,
+      explanation: "A young dog is called a puppy!"
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // GRADE 1 WORDS
+  // --------------------------------------------------------------------------
+  {
+    id: "word-every",
+    word: "every",
+    grade: 1,
+    subject: "Sight Words",
+    emoji: "🌟",
+    imageUrl: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80",
+    phonetic: "/ˈev.ri/",
+    syllables: "ev · ery (2 syllables)",
+    partOfSpeech: "adjective",
+    kidDefinition: "All the individual people or things in a whole group without leaving any out.",
+    officialDefinition: "Used to refer to all the individual members of a set without exception.",
+    teacherSentence: "Every student in our class received a shiny gold star today.",
+    funStory: "On field trip day, every single child wore their blue sun hat so the teacher could see them across the zoo!",
+    mnemonicTrick: "EVERY includes EVERYONE: nobody gets left behind!",
+    synonyms: ["each", "all", "without exception"],
+    antonyms: ["none", "no one"],
+    aiPrompts: [
+      {
+        q: "Use 'every' in a fun sentence",
+        a: "Every squirrel in the park was busy gathering acorns for winter!"
+      }
+    ],
+    quiz: {
+      prompt: 'Complete: "_________ bird in the nest opened its beak for breakfast."',
+      choices: ["Every", "None", "About", "Almost"],
+      answer: 0,
+      explanation: '"Every bird in the nest opened its beak."'
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // GRADE 2 WORDS
+  // --------------------------------------------------------------------------
+  {
+    id: "word-curious",
+    word: "curious",
+    grade: 2,
+    subject: "Vocabulary & Reading",
+    emoji: "🧭",
+    imageUrl: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=600&auto=format&fit=crop&q=80",
+    phonetic: "/ˈkjʊr.i.əs/",
+    syllables: "cu · ri · ous (3 syllables)",
+    partOfSpeech: "adjective",
+    kidDefinition: "Eager to learn, explore, and find out about everything in the world.",
+    officialDefinition: "Eager to know or learn something.",
+    teacherSentence: "The curious young scientist looked through the microscope to see water drops.",
+    funStory: "Curious Oliver inspected every rock along the creek bed until he found a real fossilized seashell!",
+    mnemonicTrick: "CURIOSITY fuels the mind like a spark fuels a campfire!",
+    synonyms: ["inquisitive", "interested", "inquiring", "eager"],
+    antonyms: ["indifferent", "bored", "uninterested"],
+    aiPrompts: [
+      {
+        q: "Why is being curious great?",
+        a: "Being curious is the secret superpower of all great inventors, scientists, and astronauts!"
+      }
+    ],
+    quiz: {
+      prompt: "What does a curious person love to do?",
+      choices: ["Ask questions and explore new things", "Sleep all day", "Avoid reading books", "Ignore instructions"],
+      answer: 0,
+      explanation: "A curious person loves asking questions and learning new things."
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // GRADE 4 WORDS
+  // --------------------------------------------------------------------------
+  {
+    id: "word-analyze",
+    word: "analyze",
+    grade: 4,
+    subject: "Academic Vocabulary",
+    emoji: "📰",
+    imageUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&auto=format&fit=crop&q=80",
+    phonetic: "/ˈæn.əl.aɪz/",
+    syllables: "an · a · lyze (3 syllables)",
+    partOfSpeech: "verb",
+    kidDefinition: "To look at all the separate parts of something very carefully to understand it.",
+    officialDefinition: "Examine methodically and in detail the constitution or structure of something.",
+    teacherSentence: "Our group will analyze the water samples to see which lake is the cleanest.",
+    funStory: "Detective Sherlock studied the muddy paw print, analyzed its shape, and discovered it belonged to a friendly golden retriever!",
+    mnemonicTrick: "ANALYZE: Break it into parts like a puzzle to see the full picture!",
+    synonyms: ["examine", "investigate", "inspect", "study"],
+    antonyms: ["synthesize", "combine", "ignore"],
+    aiPrompts: [
+      {
+        q: "How do students analyze a book?",
+        a: "By looking at character motivations, the central plot problem, and how the problem was resolved!"
+      }
+    ],
+    quiz: {
+      prompt: "When you analyze a math chart, what are you doing?",
+      choices: ["Studying the data carefully to understand patterns", "Coloring over it with black marker", "Guessing randomly", "Tearing the page"],
+      answer: 0,
+      explanation: "Analyzing means studying the information carefully to spot patterns and insights."
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // GRADE 5 WORDS
+  // --------------------------------------------------------------------------
+  {
+    id: "word-hypothesis",
+    word: "hypothesis",
+    grade: 5,
+    subject: "Scientific Reasoning",
+    emoji: "🧪",
+    imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&auto=format&fit=crop&q=80",
+    phonetic: "/haɪˈpɑː.θə.sɪs/",
+    syllables: "hy · poth · e · sis (4 syllables)",
+    partOfSpeech: "noun",
+    kidDefinition: "An educated prediction that can be tested with experiments.",
+    officialDefinition: "A proposed explanation made on the basis of limited evidence as a starting point for further investigation.",
+    teacherSentence: "My hypothesis was that plants given warm sunlight would grow twice as tall.",
+    funStory: "Scientists formed a hypothesis that ice exists beneath the red dust on Mars. Space rovers drilled and confirmed the prediction was correct!",
+    mnemonicTrick: "HYPO = Under, THESIS = Idea. A hypothesis is the foundation idea under your experiment!",
+    synonyms: ["educated guess", "prediction", "theory", "proposition"],
+    antonyms: ["proven law", "certainty", "fact"],
+    aiPrompts: [
+      {
+        q: "What makes a good hypothesis?",
+        a: "It must be TESTABLE! You can run an experiment to see if your prediction holds true."
+      }
+    ],
+    quiz: {
+      prompt: "Which of these is a scientific hypothesis?",
+      choices: [
+        '"If I add fertilizer to soil, the sunflower will grow faster."',
+        '"Sunflowers are pretty."',
+        '"I like yellow flowers."',
+        '"Flowers are green."'
+      ],
+      answer: 0,
+      explanation: 'A hypothesis is an "If/Then" testable prediction.'
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // GRADE 6 WORDS
+  // --------------------------------------------------------------------------
+  {
+    id: "word-formulate",
+    word: "formulate",
+    grade: 6,
+    subject: "Advanced Rhetoric & Math",
+    emoji: "💡",
+    imageUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&auto=format&fit=crop&q=80",
+    phonetic: "/ˈfɔːr.mjə.leɪt/",
+    syllables: "for · mu · late (3 syllables)",
+    partOfSpeech: "verb",
+    kidDefinition: "To create or design a clear plan, equation, or strategy with careful thought.",
+    officialDefinition: "Create or prepare methodically; express an idea systematically.",
+    teacherSentence: "The robotics team met after school to formulate a winning strategy for the competition.",
+    funStory: "Engineers worked together to formulate a lightweight titanium shield that protected the space capsule during re-entry!",
+    mnemonicTrick: "FORMULATE = To build a FORMULA for success!",
+    synonyms: ["devise", "design", "create", "plan", "compose"],
+    antonyms: ["destroy", "disorganize", "neglect"],
+    aiPrompts: [
+      {
+        q: "Give an example of formulating an equation",
+        a: "Writing 'Total Cost = 5x + 3' to calculate ticket prices is formulating a mathematical formula!"
+      }
+    ],
+    quiz: {
+      prompt: "What does it mean to formulate a plan?",
+      choices: ["To develop a well-thought-out strategy step by step", "To forget where you were going", "To give up easily", "To copy someone else"],
+      answer: 0,
+      explanation: "Formulating means crafting an organized, systematic plan."
+    }
   }
 ];
 
@@ -307,14 +532,14 @@ export const WORD_ENCYCLOPEDIA = [
 export function searchEncyclopedia(query, gradeFilter = null) {
   const cleanQ = (query || '').trim().toLowerCase();
   return WORD_ENCYCLOPEDIA.filter((item) => {
-    if (gradeFilter && gradeFilter !== 'all' && item.grade !== Number(gradeFilter)) {
+    if (gradeFilter && gradeFilter !== 'all' && String(item.grade) !== String(gradeFilter)) {
       return false;
     }
     if (!cleanQ) return true;
     const haystack = [
       item.word,
       item.kidDefinition,
-      item.officialDefinition,
+      item.officialDefinition || '',
       item.subject,
       item.partOfSpeech,
       ...(item.synonyms || []),

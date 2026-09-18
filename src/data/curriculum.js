@@ -1,4 +1,5 @@
 import { DEFAULT_CURRICULUM } from './curriculumData.js';
+import { OTHER_GRADES_LESSONS } from './otherGradesCurriculum.js';
 
 export const grades = ['K', '1', '2', '3', '4', '5', '6'];
 
@@ -264,96 +265,14 @@ const socialLessons = (DEFAULT_CURRICULUM.social || []).map((item, idx) => {
   };
 });
 
-// Other Grade topics from newDesign for full K-6 compatibility
-const fallbackTopics = {
-  K: {
-    math: [['Counting to 20', 'Count objects and recognize numerals.', '🔢'], ['Shapes Around Us', 'Find circles, squares and triangles.', '🔺']],
-    reading: [['Letter Sounds', 'Match letters to their beginning sounds.', '🔤'], ['Story Time', 'Listen for characters, setting and events.', '📖']],
-    science: [['Living Things', 'Sort things that are alive and not alive.', '🌱'], ['Weather Watch', 'Observe sun, clouds, rain and wind.', '☀️']],
-    social: [['My Community', 'Learn about helpers and places nearby.', '🏘️'], ['Maps & Places', 'Use simple maps and location words.', '🗺️']],
-    arts: [['Colors', 'Mix and identify basic colors.', '🖌️']],
-    life: [['Brush Your Teeth', 'Build a morning and bedtime routine.', '🪥']]
-  },
-  1: {
-    math: [['Place Value', 'Understand tens and ones.', '🔢'], ['Add & Subtract', 'Solve within 20 using strategies.', '➕']],
-    reading: [['Phonics Builders', 'Blend sounds to read new words.', '🔤'], ['Sentence Lab', 'Build complete sentences with punctuation.', '✍️']],
-    science: [['Plants', 'Identify what plants need to grow.', '🌻'], ['Matter', 'Explore solids, liquids and gases.', '🧊']],
-    social: [['Families & Communities', 'Describe how people help one another.', '👨‍👩‍👧']],
-    arts: [['Shape Art', 'Build pictures from shapes.', '🎨']],
-    life: [['Daily Routine', 'Plan a morning and evening routine.', '⏰']]
-  },
-  2: {
-    math: [['Two-Digit Addition', 'Add with regrouping and models.', '➕'], ['Multiplication Ideas', 'Use equal groups to understand multiplication.', '✖️']],
-    reading: [['Vocabulary Quest', 'Use context clues to learn word meaning.', '🧭'], ['Writing Workshop', 'Write a focused paragraph.', '✍️']],
-    science: [['Ecosystems', 'Explore how plants and animals interact.', '🦋']],
-    social: [['Geography', 'Use maps, landforms and regions.', '🌎']],
-    arts: [['Pattern & Design', 'Create visual patterns and symmetry.', '🧩']],
-    life: [['Money Basics', 'Identify coins and make simple totals.', '🪙']]
-  },
-  4: {
-    math: [['Multi-Digit Multiplication', 'Multiply whole numbers efficiently.', '✖️'], ['Fractions', 'Compare, add and subtract fractions.', '🍕']],
-    reading: [['Informational Text', 'Analyze structure, facts and evidence.', '📰']],
-    science: [['Energy', 'Explore transfer and forms of energy.', '⚡']],
-    social: [['Regions of the U.S.', 'Compare geography, resources and culture.', '🇺🇸']],
-    arts: [['Art History', 'Explore styles, artists and visual choices.', '🖼️']],
-    life: [['Time Management', 'Plan schoolwork and responsibilities.', '🗓️']]
-  },
-  5: {
-    math: [['Decimals', 'Add, subtract and multiply decimals.', '🔢'], ['Fractions', 'Multiply and divide fractions.', '🍰']],
-    reading: [['Argument & Evidence', 'Evaluate claims and supporting evidence.', '⚖️']],
-    science: [['Matter & Reactions', 'Model matter and chemical changes.', '🧪']],
-    social: [['Early U.S. History', 'Study major people, places and events.', '📜']],
-    arts: [['Visual Storytelling', 'Use composition to guide attention.', '🎨']],
-    life: [['Study Systems', 'Build a sustainable study workflow.', '📒']]
-  },
-  6: {
-    math: [['Ratios & Rates', 'Compare quantities and solve rate problems.', '📊'], ['Expressions & Equations', 'Use variables to model problems.', '🧮']],
-    reading: [['Text Analysis', 'Analyze theme, structure and perspective.', '🔎']],
-    science: [['Cells', 'Explore cell structures and functions.', '🧬']],
-    social: [['Ancient Civilizations', 'Compare societies through evidence.', '🏺']],
-    arts: [['Design Thinking', 'Iterate from idea to prototype.', '💡']],
-    life: [['Organization', 'Manage projects, deadlines and materials.', '🗂️']]
-  }
-};
-
-const otherGradeLessons = Object.entries(fallbackTopics).flatMap(([g, subObj]) =>
-  Object.entries(subObj).flatMap(([subject, items]) =>
-    items.map(([title, description, emoji], i) => ({
-      id: `${g}-${subject}-${i}`,
-      grade: g,
-      subject,
-      title,
-      description,
-      duration: 10,
-      xp: 25,
-      difficulty: 'Core',
-      emoji,
-      questions: [
-        {
-          prompt: `What is the focus of "${title}"?`,
-          choices: [description, 'Skip the activity', 'Only write the date', 'Nothing at all'],
-          answer: 0,
-          explanation: `In this lesson, you explore: ${description}`
-        },
-        {
-          prompt: `How do you make the most progress in learning "${title}"?`,
-          choices: ['Practice actively and explain your reasoning', 'Guess randomly', 'Close the app immediately', 'Ignore instructions'],
-          answer: 0,
-          explanation: `Practicing actively helps your brain remember concepts longer.`
-        }
-      ]
-    }))
-  )
-);
-
-// Combine Grade 3 rich user lessons + K-6 topics
+// Combine Grade 3 rich user lessons + K, 1, 2, 4, 5, 6 authentic curricula
 export const staticLessons = [
   ...week5Lessons,
   ...englishLessons,
   ...mathLessons,
   ...scienceLessons,
   ...socialLessons,
-  ...otherGradeLessons
+  ...OTHER_GRADES_LESSONS
 ];
 
 // Helper to get custom parent cards from localStorage

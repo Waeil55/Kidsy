@@ -1,5 +1,5 @@
 // MerolaApp Production Service Worker - Resilient Offline Caching
-const CACHE_NAME = 'merolaapp-v5-prod';
+const CACHE_NAME = 'merolaapp-v6-visual-cards';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
