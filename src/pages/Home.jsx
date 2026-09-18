@@ -6,6 +6,8 @@ import { HabitsModal } from '../components/HabitsModal';
 import { GiftSelectorModal } from '../components/GiftSelectorModal';
 import { GiftUnboxingModal } from '../components/GiftUnboxingModal';
 import { MarathonChallengePlayer } from '../components/MarathonChallengePlayer';
+import { GeminiAIStudio } from '../components/GeminiAIStudio';
+import { SmartStudyHabitsModal } from '../components/SmartStudyHabitsModal';
 import {
   DidiExplorerHero,
   Palette3DIcon,
@@ -27,6 +29,8 @@ export function Home({ go, openSubject }) {
   const [isGiftSelectorOpen, setIsGiftSelectorOpen] = useState(false);
   const [isChallengePlayerOpen, setIsChallengePlayerOpen] = useState(false);
   const [isUnboxingOpen, setIsUnboxingOpen] = useState(false);
+  const [isGeminiStudioOpen, setIsGeminiStudioOpen] = useState(false);
+  const [isSmartHabitsOpen, setIsSmartHabitsOpen] = useState(false);
 
   // Auto-prompt child to pick their gift ONLY IF they haven't picked yet
   useEffect(() => {
@@ -184,6 +188,92 @@ export function Home({ go, openSubject }) {
         </div>
       </div>
 
+      {/* Modern AI & Smart Vacation Habits Feature Bar */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+        gap: '12px',
+        marginBottom: '16px'
+      }}>
+        <button
+          onClick={() => { playPop(); setIsGeminiStudioOpen(true); }}
+          style={{
+            background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+            color: '#ffffff',
+            border: '2px solid rgba(167, 139, 250, 0.4)',
+            borderRadius: '16px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxShadow: '0 4px 14px rgba(79, 70, 229, 0.25)'
+          }}
+        >
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.15)',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '22px',
+            flexShrink: 0
+          }}>
+            🤖
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.02em' }}>GEMINI AI STUDIO</span>
+              <span style={{ fontSize: '10px', background: '#ec4899', color: '#fff', padding: '1px 6px', borderRadius: '8px', fontWeight: 800 }}>PRO</span>
+            </div>
+            <div style={{ fontSize: '11px', color: '#cbd5e1', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              Lesson Planner, Materials & Differentiation
+            </div>
+          </div>
+        </button>
+
+        <button
+          onClick={() => { playPop(); setIsSmartHabitsOpen(true); }}
+          style={{
+            background: 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)',
+            color: '#ffffff',
+            border: '2px solid rgba(52, 211, 153, 0.4)',
+            borderRadius: '16px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)'
+          }}
+        >
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.15)',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '22px',
+            flexShrink: 0
+          }}>
+            🏖️
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.02em' }}>10 SMART VACATION TIPS</span>
+              <span style={{ fontSize: '10px', background: '#f59e0b', color: '#fff', padding: '1px 6px', borderRadius: '8px', fontWeight: 800 }}>KIDS</span>
+            </div>
+            <div style={{ fontSize: '11px', color: '#d1fae5', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              Daily Checklist, Play & Productive Habits
+            </div>
+          </div>
+        </button>
+      </div>
+
       {/* 2x2 Large Rounded Colorful Gradient Activity Cards with 3D Vector Icons */}
       <div className="activitiesGrid">
         {/* 1. Top Left: Colors & Week 5 Vocab (Warm Yellow / Orange Gradient) */}
@@ -334,6 +424,16 @@ export function Home({ go, openSubject }) {
             setIsGiftSelectorOpen(true);
           }}
         />
+      )}
+
+      {/* Gemini AI Studio Pro Modal */}
+      {isGeminiStudioOpen && (
+        <GeminiAIStudio onClose={() => setIsGeminiStudioOpen(false)} />
+      )}
+
+      {/* 10 Smart Vacation Tips Modal */}
+      {isSmartHabitsOpen && (
+        <SmartStudyHabitsModal onClose={() => setIsSmartHabitsOpen(false)} />
       )}
     </div>
   );

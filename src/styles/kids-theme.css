@@ -933,5 +933,73 @@ html, body {
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 
+/* 3D Stacked Physical Flashcard Deck (Matching Screenshot 3) */
+.physicalCardDeck {
+  width: 100%;
+  max-width: 380px;
+  min-height: 380px;
+  background: #ffffff;
+  border-radius: 28px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 5px 0 #cbd5e1, 0 10px 0 #94a3b8, 0 18px 30px rgba(15, 23, 42, 0.15);
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px auto 16px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.physicalCardDeck:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #cbd5e1, 0 5px 0 #94a3b8, 0 10px 18px rgba(15, 23, 42, 0.12);
+}
+
+.bigLetterBadge {
+  font-size: 80px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 3px 4px 0px rgba(0, 0, 0, 0.12);
+  margin-right: 12px;
+}
+
+.audioControlPod {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #0284c7;
+  border-radius: 999px;
+  padding: 8px 24px;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4), inset 0 2px 3px rgba(255, 255, 255, 0.35);
+  margin: 12px auto 0;
+  width: fit-content;
+}
+.audioPodBtn {
+  border: 0;
+  background: #f59e0b;
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), inset 0 2px 2px rgba(255, 255, 255, 0.4);
+  transition: transform 0.1s ease;
+}
+.audioPodBtn.main {
+  width: 54px;
+  height: 54px;
+  background: #fbbf24;
+  font-size: 20px;
+}
+.audioPodBtn:active {
+  transform: scale(0.92);
+}
+
+
 
 

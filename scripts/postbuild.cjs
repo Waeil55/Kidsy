@@ -7,8 +7,11 @@ const rootDir = path.resolve(__dirname, '..');
 const distAssetsDir = path.join(rootDir, 'dist', 'assets');
 const rootAssetsDir = path.join(rootDir, 'assets');
 if (fs.existsSync(distAssetsDir)) {
+  if (fs.existsSync(rootAssetsDir)) {
+    fs.rmSync(rootAssetsDir, { recursive: true, force: true });
+  }
   fs.cpSync(distAssetsDir, rootAssetsDir, { recursive: true });
-  console.log('[Postbuild] Copied dist/assets to assets/');
+  console.log('[Postbuild] Cleaned and copied dist/assets to assets/');
 }
 
 // 2. Read dist/index.html

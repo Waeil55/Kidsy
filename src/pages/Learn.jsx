@@ -17,7 +17,9 @@ import {
   Check,
   Trophy,
   Compass,
-  Smile
+  Smile,
+  Bot,
+  Sun
 } from 'lucide-react';
 import { Card } from '../components/Card';
 import { getLessons, grades, subjects } from '../data/curriculum';
@@ -29,6 +31,9 @@ import {
   searchPictureCards
 } from '../data/pictureBookCategories';
 import { AITeacherModal } from '../components/AITeacherModal';
+import { GeminiAIStudio } from '../components/GeminiAIStudio';
+import { SmartStudyHabitsModal } from '../components/SmartStudyHabitsModal';
+import { WordPictureMatchGame } from '../components/WordPictureMatchGame';
 import JourneyMap from '../components/JourneyMap';
 import { useApp } from '../store/AppContext';
 import { playCorrect, playIncorrect, playPop, fireConfetti, speakText } from '../utils/audio';
@@ -38,6 +43,10 @@ export function Learn({ initialSubject = 'all' }) {
 
   // Mode: 'picturebook' | 'arena' | 'curriculum' | 'encyclopedia'
   const [activeTab, setActiveTab] = useState('picturebook');
+
+  // Interactive AI & Habits Modal State
+  const [isGeminiStudioOpen, setIsGeminiStudioOpen] = useState(false);
+  const [isSmartHabitsOpen, setIsSmartHabitsOpen] = useState(false);
 
   // Picture Book State
   const [pictureCategory, setPictureCategory] = useState('all');
@@ -55,9 +64,9 @@ export function Learn({ initialSubject = 'all' }) {
   const [dictQuery, setDictQuery] = useState('');
   const [selectedWordEntry, setSelectedWordEntry] = useState(null);
 
-  // Arena Flashcard State (5 Fun Ways to Play - Reference Screenshot 2)
-  // 'memory' | 'scavenger' | 'speed' | 'quiz' | 'teacher'
-  const [arenaPlayMode, setArenaPlayMode] = useState('memory');
+  // Arena Flashcard State (Matching Screenshots 2, 3, 4, 5)
+  // 'deck' | 'match' | 'scavenger' | 'speed' | 'quiz'
+  const [arenaPlayMode, setArenaPlayMode] = useState('deck');
   const [cardIndex, setCardIndex] = useState(0);
   const [cardFlipped, setCardFlipped] = useState(false);
 
@@ -136,7 +145,7 @@ export function Learn({ initialSubject = 'all' }) {
 
   return (
     <div className="page" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
-      {/* Page Header */}
+      {/* Page Header with Quick Launchers for Gemini AI Studio & 10 Smart Habits */}
       <div className="pageHead" style={{ marginBottom: '14px' }}>
         <div>
           <div
@@ -154,14 +163,65 @@ export function Learn({ initialSubject = 'all' }) {
             }}
           >
             <Sparkles size={13} />
-            <span>VISUAL KIDS LEARNING SUITE</span>
+            <span>AI MASTER LEARNING STUDIO</span>
           </div>
           <h1 style={{ fontSize: '26px', fontWeight: 900, margin: '2px 0 4px', color: '#0f172a', letterSpacing: '-0.5px' }}>
             Interactive Learning Studio
           </h1>
           <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>
-            Picture book categories, grade-specific journeys, 3D flashcards, and AI Master Teacher lessons.
+            Picture book categories, grade-specific journeys, 3D stacked deck, and Gemini AI teaching assistant.
           </p>
+        </div>
+
+        {/* Action Pills: Gemini AI Assistant & 10 Smart Vacation Habits */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
+          <button
+            onClick={() => {
+              playCorrect();
+              setIsGeminiStudioOpen(true);
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+              border: 0,
+              borderRadius: '999px',
+              color: '#ffffff',
+              padding: '8px 14px',
+              fontSize: '12px',
+              fontWeight: 850,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.35)'
+            }}
+          >
+            <Bot size={15} />
+            <span>🤖 Gemini AI Studio</span>
+          </button>
+
+          <button
+            onClick={() => {
+              playPop();
+              setIsSmartHabitsOpen(true);
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+              border: 0,
+              borderRadius: '999px',
+              color: '#ffffff',
+              padding: '8px 14px',
+              fontSize: '12px',
+              fontWeight: 850,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.35)'
+            }}
+          >
+            <Sun size={15} />
+            <span>☀️ 10 Smart Habits</span>
+          </button>
         </div>
       </div>
 
@@ -304,7 +364,7 @@ export function Learn({ initialSubject = 'all' }) {
               type="text"
               value={pictureQuery}
               onChange={(e) => setPictureQuery(e.target.value)}
-              placeholder="Search animals, vehicles, food, space, words..."
+              placeholder="Search animals, vehicles, school items, words..."
               style={{
                 border: 0,
                 outline: 'none',
@@ -368,7 +428,7 @@ export function Learn({ initialSubject = 'all' }) {
             })}
           </div>
 
-          {/* Picture Cards Grid */}
+          {/* Picture Cards Grid (50+ Items) */}
           <div className="pictureGrid">
             {pictureCardsList.map((item) => (
               <div
@@ -427,7 +487,7 @@ export function Learn({ initialSubject = 'all' }) {
             ))}
           </div>
 
-          {/* Detail & Mini-Quiz Modal for Picture Card */}
+          {/* Detail & Mini-Quiz Modal for Picture Card (Matching Screenshot 5) */}
           {selectedPictureCard && (
             <div className="modal" style={{ zIndex: 100 }}>
               <div className="modalPanel compact">
@@ -583,20 +643,29 @@ export function Learn({ initialSubject = 'all' }) {
       )}
 
       {/* ==================================================================== */}
-      {/* MODE 2: FLASHCARD ARENA (5 FUN WAYS TO PLAY - SCREENSHOT 2)          */}
+      {/* MODE 2: FLASHCARD ARENA (SCREENSHOTS 2, 3, 4, 5)                     */}
       {/* ==================================================================== */}
       {activeTab === 'arena' && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          {/* 5 Fun Play Modes Selector (Reference Screenshot 2) */}
+          {/* Mode Selector Chips */}
           <div className="playModeBar">
             <button
-              className={`playModeChip ${arenaPlayMode === 'memory' ? 'active' : ''}`}
+              className={`playModeChip ${arenaPlayMode === 'deck' ? 'active' : ''}`}
               onClick={() => {
                 playPop();
-                setArenaPlayMode('memory');
+                setArenaPlayMode('deck');
               }}
             >
-              <span>🃏 Memory Flip</span>
+              <span>🃏 3D Stacked Deck</span>
+            </button>
+            <button
+              className={`playModeChip ${arenaPlayMode === 'match' ? 'active' : ''}`}
+              onClick={() => {
+                playPop();
+                setArenaPlayMode('match');
+              }}
+            >
+              <span>🧩 Word-to-Pic Match</span>
             </button>
             <button
               className={`playModeChip ${arenaPlayMode === 'scavenger' ? 'active' : ''}`}
@@ -620,15 +689,6 @@ export function Learn({ initialSubject = 'all' }) {
               <span>🏃 Speed Sprint</span>
             </button>
             <button
-              className={`playModeChip ${arenaPlayMode === 'quiz' ? 'active' : ''}`}
-              onClick={() => {
-                playPop();
-                setArenaPlayMode('quiz');
-              }}
-            >
-              <span>🧩 Picture Quiz</span>
-            </button>
-            <button
               className="playModeChip"
               onClick={() => {
                 playPop();
@@ -639,144 +699,139 @@ export function Learn({ initialSubject = 'all' }) {
             </button>
           </div>
 
-          {/* 1. MEMORY FLIP MODE */}
-          {arenaPlayMode === 'memory' && (
+          {/* 1. 3D STACKED PHYSICAL FLASHCARD DECK (SCREENSHOTS 3 & 5) */}
+          {arenaPlayMode === 'deck' && (
             <div style={{ width: '100%', maxWidth: '420px', textAlign: 'center' }}>
-              <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', marginBottom: '8px' }}>
-                Card {((cardIndex % WORD_ENCYCLOPEDIA.length) + 1)} of {WORD_ENCYCLOPEDIA.length} · Tap Card to Flip
+              <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', marginBottom: '6px' }}>
+                Tap the card to flip between Front & Back
               </div>
 
-              {/* 3D Flip Card with High-Res Photo */}
+              {/* Physical Stacked Deck Card */}
               <div
+                className="physicalCardDeck"
                 onClick={() => {
                   playPop();
                   setCardFlipped(!cardFlipped);
                 }}
-                style={{
-                  minHeight: '260px',
-                  background: cardFlipped ? 'linear-gradient(135deg, #0f172a, #1e293b)' : '#ffffff',
-                  color: cardFlipped ? '#ffffff' : '#0f172a',
-                  border: cardFlipped ? '2px solid #334155' : '2px solid #bae6fd',
-                  borderRadius: '24px',
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
-                  transition: 'all 0.2s ease',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
               >
-                <div style={{ position: 'absolute', top: '12px', right: '14px', zIndex: 5, fontSize: '10.5px', fontWeight: 900, color: cardFlipped ? '#38bdf8' : '#0284c7', background: cardFlipped ? 'rgba(255,255,255,0.1)' : '#e0f2fe', padding: '3px 8px', borderRadius: '8px' }}>
-                  {cardFlipped ? '🧠 MEMORY BACK' : '🔍 TAP TO FLIP'}
+                {/* Header info */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 900, color: '#0284c7', background: '#e0f2fe', padding: '3px 10px', borderRadius: '99px' }}>
+                    CARD {((cardIndex % WORD_ENCYCLOPEDIA.length) + 1)} / {WORD_ENCYCLOPEDIA.length}
+                  </span>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: cardFlipped ? '#0284c7' : '#64748b' }}>
+                    {cardFlipped ? '🧠 MEMORY BACK' : '🔍 TAP TO FLIP'}
+                  </span>
                 </div>
 
                 {!cardFlipped ? (
-                  <div style={{ width: '100%' }}>
-                    {currentFlashcard.imageUrl && (
-                      <img
-                        src={currentFlashcard.imageUrl}
-                        alt={currentFlashcard.word}
-                        style={{
-                          width: '100%',
-                          height: '140px',
-                          objectFit: 'cover',
-                          borderRadius: '16px',
-                          marginBottom: '10px'
-                        }}
-                      />
-                    )}
-                    <h2 style={{ fontSize: '30px', fontWeight: 900, margin: '0 0 4px', color: '#0284c7' }}>
-                      {currentFlashcard.word}
+                  <div style={{ width: '100%', textAlign: 'center', margin: 'auto 0' }}>
+                    {/* Letter + Photo (Matching Screenshot 3) */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', margin: '12px 0' }}>
+                      <div className="bigLetterBadge" style={{ color: '#ef4444' }}>
+                        {currentFlashcard.word.charAt(0).toUpperCase()}
+                      </div>
+                      {currentFlashcard.imageUrl && (
+                        <img
+                          src={currentFlashcard.imageUrl}
+                          alt={currentFlashcard.word}
+                          style={{
+                            width: '135px',
+                            height: '135px',
+                            objectFit: 'cover',
+                            borderRadius: '20px',
+                            boxShadow: '0 6px 16px rgba(0,0,0,0.1)'
+                          }}
+                        />
+                      )}
+                    </div>
+
+                    <h2 style={{ fontSize: '26px', fontWeight: 900, color: '#0f172a', margin: '6px 0 2px' }}>
+                      {currentFlashcard.word.charAt(0).toUpperCase()} For {currentFlashcard.word}
                     </h2>
                     <div style={{ fontSize: '12.5px', color: '#64748b', fontWeight: 700 }}>
                       {currentFlashcard.phonetic} · Gr {currentFlashcard.grade}
                     </div>
                   </div>
                 ) : (
-                  <div style={{ width: '100%', textAlign: 'left', padding: '10px 4px' }}>
-                    <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>
+                  <div style={{ width: '100%', textAlign: 'left', margin: 'auto 0', padding: '6px' }}>
+                    <div style={{ fontSize: '11px', color: '#0284c7', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>
                       Kid-Friendly Definition
                     </div>
-                    <p style={{ fontSize: '14.5px', fontWeight: 750, margin: '0 0 10px', lineHeight: 1.4, color: '#f8fafc' }}>
+                    <p style={{ fontSize: '15px', fontWeight: 750, color: '#0f172a', margin: '0 0 10px', lineHeight: 1.4 }}>
                       &ldquo;{currentFlashcard.kidDefinition}&rdquo;
                     </p>
-                    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '10px', padding: '8px 10px', fontSize: '12px', color: '#fde68a', marginBottom: '10px' }}>
-                      💡 <strong>Mnemonic:</strong> {currentFlashcard.mnemonicTrick}
+                    <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '10px 12px', borderLeft: '4px solid #0284c7', marginBottom: '10px', fontSize: '12px', color: '#334155' }}>
+                      💡 <strong>Mnemonic Superpower:</strong> {currentFlashcard.mnemonicTrick}
                     </div>
-                    <div style={{ fontSize: '11.5px', color: '#94a3b8', fontStyle: 'italic' }}>
+                    <div style={{ fontSize: '11.5px', color: '#64748b', fontStyle: 'italic' }}>
                       &ldquo;{currentFlashcard.teacherSentence}&rdquo;
                     </div>
                   </div>
                 )}
+
+                <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>
+                  Tap card to reveal definition & mnemonic
+                </div>
               </div>
 
-              {/* Controls */}
-              <div style={{ display: 'flex', gap: '8px', marginTop: '14px', justifyContent: 'center' }}>
+              {/* Tactile Audio Control Pod (Matching Screenshot 3 & 5) */}
+              <div className="audioControlPod">
                 <button
-                  onClick={() => {
+                  className="audioPodBtn"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     playPop();
                     setCardFlipped(false);
                     setCardIndex((i) => (i - 1 + WORD_ENCYCLOPEDIA.length) % WORD_ENCYCLOPEDIA.length);
                   }}
-                  style={{
-                    background: '#ffffff',
-                    border: '1.5px solid #cbd5e1',
-                    borderRadius: '14px',
-                    padding: '9px 14px',
-                    fontSize: '12.5px',
-                    fontWeight: 800,
-                    color: '#475569',
-                    cursor: 'pointer'
-                  }}
+                  title="Previous Card"
                 >
-                  ← Prev
+                  ◀
                 </button>
 
                 <button
-                  onClick={() => handleSpeak(`${currentFlashcard.word}. ${currentFlashcard.kidDefinition}`)}
-                  style={{
-                    background: '#e0f2fe',
-                    border: '1.5px solid #bae6fd',
-                    borderRadius: '14px',
-                    padding: '9px 14px',
-                    fontSize: '12.5px',
-                    fontWeight: 800,
-                    color: '#0369a1',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px'
+                  className="audioPodBtn main"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSpeak(`${currentFlashcard.word.charAt(0).toUpperCase()} for ${currentFlashcard.word}. ${currentFlashcard.kidDefinition}`);
                   }}
+                  title="Play Audio Sound"
                 >
-                  <Volume2 size={15} /> Listen
+                  🔊
                 </button>
 
                 <button
-                  onClick={() => {
+                  className="audioPodBtn"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     playPop();
                     setCardFlipped(false);
                     setCardIndex((i) => (i + 1) % WORD_ENCYCLOPEDIA.length);
                   }}
-                  className="glossyPillBtn"
-                  style={{ padding: '9px 18px', fontSize: '12.5px' }}
+                  title="Next Card"
                 >
-                  Next Card →
+                  ▶
                 </button>
               </div>
             </div>
           )}
 
-          {/* 2. SCAVENGER MATCH MODE */}
+          {/* 2. WORD-TO-PICTURE MATCH ARENA (SCREENSHOT 4) */}
+          {arenaPlayMode === 'match' && (
+            <WordPictureMatchGame
+              onRoundComplete={(xp) => {
+                complete('word-pic-match-round', xp, 2);
+              }}
+            />
+          )}
+
+          {/* 3. SCAVENGER MATCH MODE */}
           {arenaPlayMode === 'scavenger' && (
             <div style={{ width: '100%', maxWidth: '440px' }}>
               {(() => {
                 const target = WORD_ENCYCLOPEDIA[scavengerTargetIdx % WORD_ENCYCLOPEDIA.length];
                 const otherWords = WORD_ENCYCLOPEDIA.filter((w) => w.id !== target.id);
-                // 4 choices
                 const choices = [target, otherWords[0], otherWords[1], otherWords[2]].sort(() => 0.5 - Math.random());
 
                 return (
@@ -866,7 +921,7 @@ export function Learn({ initialSubject = 'all' }) {
             </div>
           )}
 
-          {/* 3. SPEED SPRINT (15-SECOND CHALLENGE) */}
+          {/* 4. SPEED SPRINT MODE */}
           {arenaPlayMode === 'speed' && (
             <div style={{ width: '100%', maxWidth: '420px', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
@@ -944,64 +999,6 @@ export function Learn({ initialSubject = 'all' }) {
               )}
             </div>
           )}
-
-          {/* 4. PICTURE QUIZ MODE */}
-          {arenaPlayMode === 'quiz' && (
-            <div style={{ width: '100%', maxWidth: '420px' }}>
-              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '16px', border: '2px solid #e2e8f0', boxShadow: '0 4px 14px rgba(0,0,0,0.04)' }}>
-                <span style={{ fontSize: '11px', fontWeight: 900, color: '#0284c7', textTransform: 'uppercase' }}>
-                  Quiz {((cardIndex % WORD_ENCYCLOPEDIA.length) + 1)} of {WORD_ENCYCLOPEDIA.length}
-                </span>
-                <h3 style={{ margin: '8px 0 12px', fontSize: '16px', color: '#0f172a' }}>
-                  {currentFlashcard.quiz?.prompt || `What is the meaning of "${currentFlashcard.word}"?`}
-                </h3>
-
-                <div style={{ display: 'grid', gap: '8px' }}>
-                  {(currentFlashcard.quiz?.choices || [currentFlashcard.kidDefinition, 'None of the above', 'Skip', 'Try later']).map((ch, idx) => (
-                    <button
-                      key={ch}
-                      onClick={() => {
-                        if (idx === (currentFlashcard.quiz?.answer || 0)) {
-                          playCorrect();
-                          fireConfetti(true);
-                          complete(`quiz-${currentFlashcard.id}`, 15, 1);
-                        } else {
-                          playIncorrect();
-                        }
-                      }}
-                      style={{
-                        padding: '11px 14px',
-                        borderRadius: '12px',
-                        border: '1.5px solid #cbd5e1',
-                        background: '#f8fafc',
-                        fontSize: '13px',
-                        fontWeight: 750,
-                        textAlign: 'left',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {ch}
-                    </button>
-                  ))}
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '14px' }}>
-                  <button
-                    onClick={() => setCardIndex((i) => (i - 1 + WORD_ENCYCLOPEDIA.length) % WORD_ENCYCLOPEDIA.length)}
-                    style={{ border: 0, background: 'none', color: '#64748b', fontWeight: 800, cursor: 'pointer' }}
-                  >
-                    ← Prev Quiz
-                  </button>
-                  <button
-                    onClick={() => setCardIndex((i) => (i + 1) % WORD_ENCYCLOPEDIA.length)}
-                    style={{ border: 0, background: 'none', color: '#0284c7', fontWeight: 900, cursor: 'pointer' }}
-                  >
-                    Next Quiz →
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -1053,7 +1050,7 @@ export function Learn({ initialSubject = 'all' }) {
               ))}
           </div>
 
-          {/* Duolingo / Golingo Level Adventure Map (Reference Screenshot 3) */}
+          {/* Duolingo / Golingo Level Adventure Map */}
           <div style={{ marginBottom: '14px', background: '#ffffff', borderRadius: '22px', border: '1.5px solid #e2e8f0', padding: '14px', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -1322,6 +1319,21 @@ export function Learn({ initialSubject = 'all' }) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Gemini AI Studio Modal */}
+      {isGeminiStudioOpen && (
+        <GeminiAIStudio onClose={() => setIsGeminiStudioOpen(false)} />
+      )}
+
+      {/* 10 Smart Vacation Study Habits Modal */}
+      {isSmartHabitsOpen && (
+        <SmartStudyHabitsModal
+          onClose={() => setIsSmartHabitsOpen(false)}
+          onRewardEarned={(bonusXp) => {
+            complete('smart-habits-streak', bonusXp, 5);
+          }}
+        />
       )}
 
       {/* AI Master Teacher Modal */}
