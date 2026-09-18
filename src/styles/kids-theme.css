@@ -282,11 +282,13 @@ html, body {
   transform: translateY(-2px);
 }
 
-/* Screen 3: Dashboard - Fitted with zero up/down scrolling */
+/* Screen 3: Dashboard - Fitted with zero up/down scrolling and full mobile width */
 .dashboardScreen {
   flex: 1;
+  width: 100%;
+  max-width: 100%;
   background: #f7fafe;
-  padding: 6px 14px 4px;
+  padding: 6px 10px 4px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -299,6 +301,8 @@ html, body {
   align-items: center;
   justify-content: space-between;
   height: 34px;
+  width: 100%;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 .gearBtn {
@@ -317,6 +321,8 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 .explorerHeroCard {
@@ -371,6 +377,8 @@ html, body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
   flex: 1;
   min-height: 0;
 }
@@ -447,6 +455,8 @@ html, body {
   align-items: center;
   gap: 4px;
   margin-top: 1px;
+  width: 100%;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 .routineItem {
@@ -486,6 +496,8 @@ html, body {
 
 /* Gift Quest Progress Card - Compact & Crisp */
 .giftQuestCard {
+  width: 100%;
+  box-sizing: border-box;
   background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
   border: 1.5px solid #bae6fd;
   border-radius: 18px;

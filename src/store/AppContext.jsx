@@ -29,21 +29,48 @@ const demoChild = {
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-  const [kids, setKids] = useState([]);
-  const [activeId, setActiveId] = useState('merola');
+  const [kids, setKids] = useState(() => {
+    try {
+      const item = localStorage.getItem('merola_v2_children');
+      if (item) {
+        const parsed = JSON.parse(item);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((k) => ({
+            ...k,
+            giftGoal: k.giftGoal || { ...defaultGiftGoal }
+          }));
+        }
+      }
+    } catch (e) {}
+    return [demoChild];
+  });
+
+  const [activeId, setActiveId] = useState(() => {
+    try {
+      const item = localStorage.getItem('merola_v2_children');
+      if (item) {
+        const parsed = JSON.parse(item);
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.id) {
+          return parsed[0].id;
+        }
+      }
+    } catch (e) {}
+    return 'merola';
+  });
+
   const [online, setOnline] = useState(navigator.onLine);
   const [role, setRole] = useState('parent');
 
   useEffect(() => {
-    getState('children', [demoChild]).then((v) => {
-      const list = Array.isArray(v) && v.length ? v : [demoChild];
-      // Ensure each child has a giftGoal
-      const populated = list.map((k) => ({
-        ...k,
-        giftGoal: k.giftGoal || { ...defaultGiftGoal }
-      }));
-      setKids(populated);
-      setActiveId(populated[0].id);
+    getState('children', null).then((v) => {
+      if (Array.isArray(v) && v.length > 0) {
+        const populated = v.map((k) => ({
+          ...k,
+          giftGoal: k.giftGoal || { ...defaultGiftGoal }
+        }));
+        setKids(populated);
+        setActiveId(populated[0].id);
+      }
     });
     getState('role', 'parent').then(setRole);
 
@@ -88,25 +115,40 @@ export function AppProvider({ children }) {
   };
 
   const setGiftGoal = (newGoal) => {
-    setKids((prev) =>
-      prev.map((k) => {
+    setKids((prev) => {
+      const updated = prev.map((k) => {
         if (k.id !== child.id) return k;
+        const currentGoal = k.giftGoal || defaultGiftGoal;
+        // CRITICAL: ALWAYS preserve existing points and solved questions!
+        const preservedProgress =
+          newGoal.progress !== undefined ? newGoal.progress : (currentGoal.progress || 0);
+        const preservedAnswered =
+          newGoal.answeredQuestionIds || currentGoal.answeredQuestionIds || [];
+        const targetQ = newGoal.targetQuestions || currentGoal.targetQuestions || 70;
+        const unlocked = preservedProgress >= targetQ;
+
         return {
           ...k,
           giftGoal: {
-            ...k.giftGoal,
+            ...currentGoal,
             ...newGoal,
-            isUnlocked: false,
+            targetQuestions: targetQ,
+            progress: preservedProgress,
+            answeredQuestionIds: preservedAnswered,
+            isUnlocked: unlocked,
             hasPicked: true
           }
         };
-      })
-    );
+      });
+      // Immediately persist to localStorage
+      setState('children', updated);
+      return updated;
+    });
   };
 
   const advanceGiftProgress = (questionId, isCorrect = true) => {
-    setKids((prev) =>
-      prev.map((k) => {
+    setKids((prev) => {
+      const updated = prev.map((k) => {
         if (k.id !== child.id) return k;
         const currentGoal = k.giftGoal || defaultGiftGoal;
         const answered = currentGoal.answeredQuestionIds || [];
@@ -130,8 +172,11 @@ export function AppProvider({ children }) {
             answeredQuestionIds: nextAnswered
           }
         };
-      })
-    );
+      });
+      // Immediately persist to localStorage
+      setState('children', updated);
+      return updated;
+    });
   };
 
   const claimGift = () => {

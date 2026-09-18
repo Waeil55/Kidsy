@@ -61,13 +61,16 @@ export function GiftSelectorModal({ onClose, onConfirm }) {
   const handleSave = () => {
     playCorrect();
     const gift = GIFT_OPTIONS.find((g) => g.id === selectedGiftId) || GIFT_OPTIONS[3];
+    const existingProgress = child?.giftGoal?.progress || 0;
+    const existingAnswered = child?.giftGoal?.answeredQuestionIds || [];
     setGiftGoal({
       category: gift.category,
       title: `${gift.title} ${gift.icon}`,
       icon: gift.icon,
       targetQuestions: selectedCount,
-      progress: 0,
-      isUnlocked: false
+      progress: existingProgress,
+      answeredQuestionIds: existingAnswered,
+      isUnlocked: existingProgress >= selectedCount
     });
     if (onConfirm) onConfirm();
     if (onClose) onClose();
@@ -199,14 +202,39 @@ export function GiftSelectorModal({ onClose, onConfirm }) {
           ))}
         </div>
 
-        {/* Start Button */}
-        <button
-          className="glossyPillBtn"
-          style={{ marginTop: '20px', width: '100%' }}
-          onClick={handleSave}
-        >
-          <Sparkles size={18} /> Lock in My Goal & Begin!
-        </button>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '18px' }}>
+          <button
+            className="glossyPillBtn"
+            style={{ width: '100%' }}
+            onClick={handleSave}
+          >
+            <Sparkles size={18} /> Lock in My Goal & Begin!
+          </button>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={() => {
+                playPop();
+                onClose();
+              }}
+              style={{
+                background: '#ffffff',
+                border: '1.5px solid #cbd5e1',
+                borderRadius: '99px',
+                padding: '10px 18px',
+                fontSize: '13.5px',
+                fontWeight: 800,
+                color: '#475569',
+                cursor: 'pointer',
+                textAlign: 'center'
+              }}
+            >
+              ← Back to Adventure
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

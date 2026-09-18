@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, ChartNoAxesColumn, House, Settings, ShieldCheck, Users, WifiOff } from 'lucide-react';
+import { BookOpen, ChartNoAxesColumn, House, Settings, ShieldCheck, Users, WifiOff, ArrowLeft } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { playPop } from '../utils/audio';
 
@@ -21,36 +21,71 @@ export function Layout({ page, setPage, children }) {
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
+        width: '100%',
+        maxWidth: '100%',
         minHeight: 0,
         height: '100%',
         overflow: 'hidden',
-        background: '#ffffff'
+        background: '#f7fafe',
+        boxSizing: 'border-box'
       }}
     >
-      {/* Slim Header Bar for non-Home pages */}
+      {/* Slim Header Bar for non-Home pages with Dedicated Back Button */}
       {page !== 'home' && (
         <header
           className="topbar"
           style={{
-            height: '54px',
-            padding: '0 16px',
+            height: '52px',
+            padding: '0 14px',
             position: 'relative',
-            borderBottom: '1px solid #eef3f8'
+            borderBottom: '1px solid #eef3f8',
+            background: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            boxSizing: 'border-box'
           }}
         >
-          <button
-            className="brand"
-            onClick={() => {
-              playPop();
-              setPage('home');
-            }}
-            style={{ fontSize: '18px', gap: '8px' }}
-          >
-            <span className="brandMark" style={{ width: '28px', height: '28px', fontSize: '13px' }}>
-              ★
-            </span>
-            <span>MerolaApp</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              onClick={() => {
+                playPop();
+                setPage('home');
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                background: '#eff6ff',
+                color: '#1d4ed8',
+                border: '1.5px solid #bfdbfe',
+                borderRadius: '12px',
+                padding: '5px 11px',
+                fontSize: '12.5px',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+              title="Back to Home Dashboard"
+            >
+              <ArrowLeft size={15} strokeWidth={2.5} />
+              <span>Back</span>
+            </button>
+
+            <button
+              className="brand"
+              onClick={() => {
+                playPop();
+                setPage('home');
+              }}
+              style={{ fontSize: '17px', gap: '6px' }}
+            >
+              <span className="brandMark" style={{ width: '26px', height: '26px', fontSize: '12px' }}>
+                ★
+              </span>
+              <span>MerolaApp</span>
+            </button>
+          </div>
 
           <div className="topActions">
             {!online && (
@@ -83,29 +118,35 @@ export function Layout({ page, setPage, children }) {
         className="main"
         style={{
           flex: 1,
-          padding: page === 'home' ? '0' : '16px 16px 20px',
+          width: '100%',
+          maxWidth: '100%',
+          padding: page === 'home' ? '0' : '14px 14px 20px',
           overflowY: 'auto',
           overflowX: 'hidden',
-          maxWidth: '100%',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          boxSizing: 'border-box'
         }}
       >
         {children}
       </main>
 
-      {/* Clean In-Device Bottom Navigation Dock */}
+      {/* Clean Bottom Navigation Dock - Full Mobile Width */}
       <nav
         className="bottomnav"
         style={{
           position: 'relative',
-          height: '52px',
-          minHeight: '52px',
+          width: '100%',
+          height: '54px',
+          minHeight: '54px',
           borderTop: '1px solid #f1f5f9',
           background: '#ffffff',
-          gap: 'min(4vw, 32px)',
+          display: 'flex',
+          justifyContent: 'space-around',
+          alignItems: 'center',
           backdropFilter: 'none',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          boxSizing: 'border-box'
         }}
       >
         {nav.map(([id, label, IconComponent]) => (

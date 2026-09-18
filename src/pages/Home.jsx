@@ -28,20 +28,10 @@ export function Home({ go, openSubject }) {
   const [isChallengePlayerOpen, setIsChallengePlayerOpen] = useState(false);
   const [isUnboxingOpen, setIsUnboxingOpen] = useState(false);
 
-  // Auto-prompt child to pick their gift if not yet chosen or on session start
+  // Auto-prompt child to pick their gift ONLY IF they haven't picked yet
   useEffect(() => {
-    try {
-      const promptedThisSession = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('merola_gift_prompted') : 'true';
-      if (!child?.giftGoal?.hasPicked || !promptedThisSession) {
-        setIsGiftSelectorOpen(true);
-        if (typeof sessionStorage !== 'undefined') {
-          sessionStorage.setItem('merola_gift_prompted', 'true');
-        }
-      }
-    } catch (e) {
-      if (!child?.giftGoal?.hasPicked) {
-        setIsGiftSelectorOpen(true);
-      }
+    if (child && child.giftGoal && !child.giftGoal.hasPicked) {
+      setIsGiftSelectorOpen(true);
     }
   }, [child?.id, child?.giftGoal?.hasPicked]);
 

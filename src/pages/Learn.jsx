@@ -193,8 +193,25 @@ function LessonPlayer({ lesson, close, done }) {
   return (
     <div className="modal">
       <div className="modalPanel">
-        <button className="back" onClick={close}>
-          <ArrowLeft size={16} /> Exit lesson
+        <button
+          onClick={close}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: '#eff6ff',
+            color: '#1d4ed8',
+            border: '1.5px solid #bfdbfe',
+            borderRadius: '12px',
+            padding: '6px 14px',
+            fontSize: '13px',
+            fontWeight: 800,
+            cursor: 'pointer',
+            marginBottom: '10px'
+          }}
+        >
+          <ArrowLeft size={16} strokeWidth={2.5} />
+          <span>← Back to Lessons</span>
         </button>
 
         {!finished ? (

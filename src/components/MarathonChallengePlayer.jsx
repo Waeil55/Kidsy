@@ -101,14 +101,26 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
           {/* Top Header Row: Exit + Gift Tracker */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <button
-              className="back"
               onClick={() => {
                 playPop();
                 onClose();
               }}
-              style={{ fontSize: '12.5px', padding: '5px 10px', background: '#f1f5f9', borderRadius: '10px' }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: '#eff6ff',
+                color: '#1d4ed8',
+                border: '1.5px solid #bfdbfe',
+                borderRadius: '12px',
+                padding: '6px 12px',
+                fontSize: '13px',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
             >
-              <ArrowLeft size={14} /> Exit Quest
+              <ArrowLeft size={16} strokeWidth={2.5} />
+              <span>← Back</span>
             </button>
 
             {/* Gift Icon & Count */}
