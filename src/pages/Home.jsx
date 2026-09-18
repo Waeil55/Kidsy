@@ -118,77 +118,80 @@ export function Home({ go, openSubject }) {
         </button>
       </div>
 
-      {/* Top Mascot Hero Card: Custom Vector Didi the Explorer with "Ask ?" Button */}
-      <DidiExplorerHero
-        onAsk={() => {
-          playCorrect();
-          setIsAskOpen(true);
-        }}
-      />
+      {/* Hero Mascot & Motivation Section - Responsive Side-by-Side on Tablet/Desktop */}
+      <div className="dashHeroRow">
+        {/* Mascot Hero Card: Custom Vector Didi the Explorer with "Ask ?" Button */}
+        <DidiExplorerHero
+          onAsk={() => {
+            playCorrect();
+            setIsAskOpen(true);
+          }}
+        />
 
-      {/* Gift Quest Motivation & Progress Bar */}
-      <div className="giftQuestCard">
-        <div className="giftQuestHeader">
-          <div className="giftQuestTag">
-            <Sparkles size={13} />
-            <span>SPECIAL REWARD QUEST</span>
+        {/* Gift Quest Motivation & Progress Bar */}
+        <div className="giftQuestCard">
+          <div className="giftQuestHeader">
+            <div className="giftQuestTag">
+              <Sparkles size={13} />
+              <span>SPECIAL REWARD QUEST</span>
+            </div>
+            <button
+              className="giftChangeBtn"
+              onClick={() => {
+                playPop();
+                setIsGiftSelectorOpen(true);
+              }}
+            >
+              Change Prize 🎁
+            </button>
           </div>
+
+          <div className="giftQuestBody">
+            <div className="giftIconCircle">
+              {gift.icon || '🎁'}
+            </div>
+            <div className="giftQuestDetails">
+              <div className="giftQuestTitle">
+                {gift.title || 'Special Gift'}
+              </div>
+              <div className="giftQuestStats">
+                <span className="count">{currentProg} / {gift.targetQuestions} Solved</span>
+                <span className="remaining">
+                  {isGoalReached ? '🎉 Ready to Unbox!' : `${remainingCount} left to win!`}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Milestone Progress Bar */}
+          <div className="giftProgressBarTrack">
+            <div
+              className="giftProgressBarFill"
+              style={{ width: `${percentComplete}%` }}
+            />
+          </div>
+
+          {/* Action Button: Start Marathon */}
           <button
-            className="giftChangeBtn"
+            className="giftMarathonBtn"
             onClick={() => {
-              playPop();
-              setIsGiftSelectorOpen(true);
+              playCorrect();
+              if (isGoalReached) {
+                setIsUnboxingOpen(true);
+              } else {
+                setIsChallengePlayerOpen(true);
+              }
             }}
           >
-            Change Prize 🎁
+            {isGoalReached ? (
+              <>🎁 Tap to Unbox Reward!</>
+            ) : (
+              <>
+                <Sparkles size={17} /> Start Marathon Challenge ({remainingCount} left) →
+              </>
+            )}
           </button>
         </div>
-
-        <div className="giftQuestBody">
-          <div className="giftIconCircle">
-            {gift.icon || '🎁'}
-          </div>
-          <div className="giftQuestDetails">
-            <div className="giftQuestTitle">
-              {gift.title || 'Special Gift'}
-            </div>
-            <div className="giftQuestStats">
-              <span className="count">{currentProg} / {gift.targetQuestions} Solved</span>
-              <span className="remaining">
-                {isGoalReached ? '🎉 Ready to Unbox!' : `${remainingCount} left to win!`}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Milestone Progress Bar */}
-        <div className="giftProgressBarTrack">
-          <div
-            className="giftProgressBarFill"
-            style={{ width: `${percentComplete}%` }}
-          />
-        </div>
-
-        {/* Action Button: Start Marathon */}
-        <button
-          className="giftMarathonBtn"
-          onClick={() => {
-            playCorrect();
-            if (isGoalReached) {
-              setIsUnboxingOpen(true);
-            } else {
-              setIsChallengePlayerOpen(true);
-            }
-          }}
-        >
-          {isGoalReached ? (
-            <>🎁 Tap to Unbox Reward!</>
-          ) : (
-            <>
-              <Sparkles size={17} /> Start Marathon Challenge ({remainingCount} left) →
-            </>
-          )}
-        </button>
       </div>
 
       {/* 2x2 Large Rounded Colorful Gradient Activity Cards with 3D Vector Icons */}

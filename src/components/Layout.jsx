@@ -84,7 +84,7 @@ export function Layout({ page, setPage, children }) {
         style={{
           flex: 1,
           padding: page === 'home' ? '0' : '16px 16px 20px',
-          overflowY: page === 'home' ? 'hidden' : 'auto',
+          overflowY: 'auto',
           overflowX: 'hidden',
           maxWidth: '100%',
           display: 'flex',

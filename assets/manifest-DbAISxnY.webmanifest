@@ -1,0 +1,18 @@
+{
+  "name": "MerolaApp Enterprise",
+  "short_name": "MerolaApp",
+  "description": "Duolingo-grade K-6 learning suite featuring Grade 3 Week 5 curriculum.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f9ff",
+  "theme_color": "#159eea",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
