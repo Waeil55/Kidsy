@@ -235,25 +235,126 @@ function LessonPlayer({ lesson, close, done }) {
               <div className="bigEmoji">{lesson.emoji}</div>
             )}
 
-            <h2>{lesson.title}</h2>
-            <p className="question" style={{ whiteSpace: 'pre-line' }}>
-              {question.prompt}
-            </p>
+            {/* Question Board (Dark High-Contrast Card) */}
+            <div
+              style={{
+                background: 'linear-gradient(145deg, #0f172a 0%, #1e293b 100%)',
+                borderRadius: '18px',
+                padding: '14px 16px',
+                border: '2px solid #334155',
+                boxShadow: '0 8px 24px rgba(15, 23, 42, 0.22)',
+                margin: '12px 0 16px',
+                color: '#ffffff'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <span
+                  style={{
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    padding: '2px 8px',
+                    borderRadius: '99px',
+                    fontSize: '9.5px',
+                    fontWeight: 900,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  QUESTION BOARD
+                </span>
+                <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>
+                  {lesson.title}
+                </span>
+              </div>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '15px',
+                  fontWeight: 750,
+                  lineHeight: 1.45,
+                  color: '#f8fafc',
+                  whiteSpace: 'pre-line'
+                }}
+              >
+                {question.prompt}
+              </p>
+            </div>
 
-            <div className="choices">
+            {/* Answer Choices (Tactile 3D Buttons with Badges) */}
+            <div style={{ fontSize: '11px', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+              Choose your answer:
+            </div>
+            <div className="choices" style={{ display: 'grid', gap: '8px' }}>
               {question.choices.map((choiceText, cIdx) => {
-                let statusClass = '';
+                const letters = ['A', 'B', 'C', 'D'];
+                const letterStyles = [
+                  { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+                  { bg: '#faf5ff', text: '#7e22ce', border: '#e9d5ff' },
+                  { bg: '#fffbeb', text: '#b45309', border: '#fde68a' },
+                  { bg: '#ecfdf5', text: '#047857', border: '#a7f3d0' }
+                ];
+                const lStyle = letterStyles[cIdx % letterStyles.length];
+
+                let cardBg = '#ffffff';
+                let cardBorder = '#e2e8f0';
+                let cardBottom = '#cbd5e1';
+                let cardTextColor = '#1e293b';
+
                 if (answeredIndex !== null) {
-                  if (cIdx === question.answer) statusClass = 'correct';
-                  else if (cIdx === answeredIndex) statusClass = 'wrong';
+                  if (cIdx === question.answer) {
+                    cardBg = '#f0fdf4';
+                    cardBorder = '#86efac';
+                    cardBottom = '#22c55e';
+                    cardTextColor = '#14532d';
+                  } else if (cIdx === answeredIndex) {
+                    cardBg = '#fef2f2';
+                    cardBorder = '#fca5a5';
+                    cardBottom = '#ef4444';
+                    cardTextColor = '#7f1d1d';
+                  }
                 }
+
                 return (
                   <button
                     key={cIdx}
-                    className={statusClass}
+                    disabled={answeredIndex !== null}
                     onClick={() => choose(cIdx)}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '11px 14px',
+                      background: cardBg,
+                      border: `2px solid ${cardBorder}`,
+                      borderBottom: `4px solid ${cardBottom}`,
+                      borderRadius: '16px',
+                      cursor: answeredIndex === null ? 'pointer' : 'default',
+                      boxShadow: '0 3px 6px rgba(0,0,0,0.03)',
+                      textAlign: 'left',
+                      transition: 'all 0.15s ease'
+                    }}
                   >
-                    {choiceText}
+                    <div
+                      style={{
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '10px',
+                        background: lStyle.bg,
+                        border: `1.5px solid ${lStyle.border}`,
+                        color: lStyle.text,
+                        fontWeight: 900,
+                        fontSize: '13px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        flexShrink: 0
+                      }}
+                    >
+                      {letters[cIdx]}
+                    </div>
+                    <span style={{ fontSize: '13.5px', fontWeight: 800, color: cardTextColor, flex: 1, lineHeight: 1.3 }}>
+                      {choiceText}
+                    </span>
                   </button>
                 );
               })}

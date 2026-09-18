@@ -12,16 +12,18 @@ const defaultGiftGoal = {
   hasPicked: false
 };
 
+import { generateChildrenSignatures, verifyChildIntegrity, installAntiCheatGuards } from '../lib/security';
+
 const demoChild = {
   id: 'merola',
   name: 'Merola',
   grade: '3',
-  avatar: '🦖',
+  avatar: '🦊',
   avatarId: 'rex',
-  xp: 450,
-  streak: 5,
-  completed: ['3-week5-0', '3-week5-1'],
-  minutes: 35,
+  xp: 140,
+  streak: 4,
+  minutes: 36,
+  completed: ['gr3-eng-01'],
   dailyGoal: 20,
   giftGoal: defaultGiftGoal
 };
@@ -32,13 +34,24 @@ export function AppProvider({ children }) {
   const [kids, setKids] = useState(() => {
     try {
       const item = localStorage.getItem('merola_v2_children');
+      const sigsItem = localStorage.getItem('merola_v2_children_sigs');
       if (item) {
         const parsed = JSON.parse(item);
+        const sigs = sigsItem ? JSON.parse(sigsItem) : null;
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((k) => ({
-            ...k,
-            giftGoal: k.giftGoal || { ...defaultGiftGoal }
-          }));
+          return parsed.map((k) => {
+            const childObj = {
+              ...k,
+              giftGoal: k.giftGoal || { ...defaultGiftGoal }
+            };
+            // Anti-hack check: if signature exists and is invalid, sanitize cheated progress
+            if (sigs && sigs[k.id] && !verifyChildIntegrity(childObj, sigs[k.id])) {
+              console.warn(`[Anti-Hack Guard] Tampering detected on ${k.id}! Reverting cheated state.`);
+              childObj.giftGoal.progress = 0;
+              childObj.giftGoal.isUnlocked = false;
+            }
+            return childObj;
+          });
         }
       }
     } catch (e) {}
@@ -62,6 +75,9 @@ export function AppProvider({ children }) {
   const [role, setRole] = useState('parent');
 
   useEffect(() => {
+    // Install anti-cheat keyboard and inspect guards
+    const uninstallGuards = installAntiCheatGuards();
+
     getState('children', null).then((v) => {
       if (Array.isArray(v) && v.length > 0) {
         const populated = v.map((k) => ({
@@ -79,6 +95,7 @@ export function AppProvider({ children }) {
     window.addEventListener('online', on);
     window.addEventListener('offline', off);
     return () => {
+      uninstallGuards();
       window.removeEventListener('online', on);
       window.removeEventListener('offline', off);
     };
