@@ -1,5 +1,5 @@
 // MerolaApp Production Service Worker - Resilient Offline Caching
-const CACHE_NAME = 'merolaapp-v4-prod';
+const CACHE_NAME = 'merolaapp-v5-prod';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -38,6 +38,7 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
 
   // 1. Navigation requests (HTML document): Network-First so users always get the latest build
+  // CRITICAL: If network returns 404 on PWA launch or sub-path, fallback to cached index.html!
   if (req.mode === 'navigate' || req.destination === 'document') {
     event.respondWith(
       fetch(req)
@@ -45,11 +46,19 @@ self.addEventListener('fetch', (event) => {
           if (networkRes && networkRes.status === 200) {
             const copy = networkRes.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+            return networkRes;
           }
-          return networkRes;
+          // If GitHub Pages returns 404, deliver cached app shell!
+          return caches.match('./index.html').then((cachedHtml) => {
+            if (cachedHtml) return cachedHtml;
+            return caches.match('./').then((rootRes) => rootRes || networkRes);
+          });
         })
         .catch(() => {
-          return caches.match('./index.html') || caches.match('./');
+          return caches.match('./index.html').then((cachedHtml) => {
+            if (cachedHtml) return cachedHtml;
+            return caches.match('./');
+          });
         })
     );
     return;
