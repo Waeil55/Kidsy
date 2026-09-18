@@ -19,7 +19,9 @@ import {
   Compass,
   Smile,
   Bot,
-  Sun
+  Sun,
+  Map,
+  Backpack
 } from 'lucide-react';
 import { Card } from '../components/Card';
 import { getLessons, grades, subjects } from '../data/curriculum';
@@ -34,6 +36,9 @@ import { AITeacherModal } from '../components/AITeacherModal';
 import { GeminiAIStudio } from '../components/GeminiAIStudio';
 import { SmartStudyHabitsModal } from '../components/SmartStudyHabitsModal';
 import { WordPictureMatchGame } from '../components/WordPictureMatchGame';
+import { GradeLevelAdventure } from '../components/GradeLevelAdventure';
+import { SchoolWordsSection } from '../components/SchoolWordsSection';
+import { getGradeLevels } from '../data/levelProgressionEngine';
 import JourneyMap from '../components/JourneyMap';
 import { useApp } from '../store/AppContext';
 import { playCorrect, playIncorrect, playPop, fireConfetti, speakText } from '../utils/audio';
@@ -41,8 +46,8 @@ import { playCorrect, playIncorrect, playPop, fireConfetti, speakText } from '..
 export function Learn({ initialSubject = 'all' }) {
   const { child, complete } = useApp();
 
-  // Mode: 'picturebook' | 'arena' | 'curriculum' | 'encyclopedia'
-  const [activeTab, setActiveTab] = useState('picturebook');
+  // Mode: 'adventure' | 'school' | 'arena' | 'picturebook' | 'curriculum' | 'encyclopedia'
+  const [activeTab, setActiveTab] = useState('adventure');
 
   // Interactive AI & Habits Modal State
   const [isGeminiStudioOpen, setIsGeminiStudioOpen] = useState(false);
@@ -123,7 +128,42 @@ export function Learn({ initialSubject = 'all' }) {
     return searchEncyclopedia(dictQuery);
   }, [dictQuery]);
 
-  const currentFlashcard = WORD_ENCYCLOPEDIA[cardIndex % WORD_ENCYCLOPEDIA.length];
+  // Grade-isolated Flashcard Catalog (Strictly isolated by child.grade + School Words!)
+  const gradeFlashcards = useMemo(() => {
+    const schoolCards = (child.schoolWords || []).map(sw => ({
+      word: sw.word,
+      displayTitle: sw.word.charAt(0).toUpperCase() + sw.word.slice(1),
+      definition: sw.definition,
+      phonetic: `/${sw.word}/`,
+      sentence: sw.sentence,
+      mnemonic: sw.mnemonic || 'School study word',
+      synonyms: sw.synonyms || [],
+      antonyms: sw.antonyms || [],
+      imageUrl: sw.imageUrl || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&auto=format&fit=crop&q=80',
+      category: 'School Bag'
+    }));
+
+    if (String(grade) === '3') {
+      const g3Words = WORD_ENCYCLOPEDIA.filter(w => ['oppose', 'snide', 'heap', 'diverse', 'origin'].includes(w.word.toLowerCase()));
+      return [...schoolCards, ...g3Words];
+    } else {
+      const lvlCards = getGradeLevels(grade).slice(0, 25).map(lvl => ({
+        word: lvl.targetWord || lvl.title,
+        displayTitle: lvl.title,
+        definition: lvl.description,
+        phonetic: `/${lvl.targetWord || lvl.title}/`,
+        sentence: (lvl.questions[0] && lvl.questions[0].prompt) || '',
+        mnemonic: `${lvl.stage} concept for Grade ${grade}`,
+        synonyms: [],
+        antonyms: [],
+        imageUrl: lvl.imageUrl || 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80',
+        category: `Grade ${grade}`
+      }));
+      return [...schoolCards, ...lvlCards];
+    }
+  }, [grade, child.schoolWords]);
+
+  const currentFlashcard = gradeFlashcards[cardIndex % Math.max(1, gradeFlashcards.length)] || gradeFlashcards[0] || WORD_ENCYCLOPEDIA[0];
 
   const handleOpenWordEntry = (entry) => {
     playPop();
@@ -140,7 +180,7 @@ export function Learn({ initialSubject = 'all' }) {
     setSpeedTimer(15);
     setSpeedScore(0);
     setIsSpeedRunning(true);
-    setCardIndex(Math.floor(Math.random() * WORD_ENCYCLOPEDIA.length));
+    setCardIndex(Math.floor(Math.random() * Math.max(1, gradeFlashcards.length)));
   };
 
   return (
@@ -225,11 +265,11 @@ export function Learn({ initialSubject = 'all' }) {
         </div>
       </div>
 
-      {/* Main Mode Navigation Bar (4 Visual Modes) */}
+      {/* Main Mode Navigation Bar (6 Visual Modes with Strict Grade Isolation) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(105px, 1fr))',
           background: '#e2e8f0',
           padding: '4px',
           borderRadius: '16px',
@@ -242,15 +282,15 @@ export function Learn({ initialSubject = 'all' }) {
         <button
           onClick={() => {
             playPop();
-            setActiveTab('picturebook');
+            setActiveTab('adventure');
           }}
           style={{
             padding: '9px 4px',
             borderRadius: '12px',
             border: 0,
-            background: activeTab === 'picturebook' ? '#ffffff' : 'transparent',
-            color: activeTab === 'picturebook' ? '#0f172a' : '#64748b',
-            boxShadow: activeTab === 'picturebook' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            background: activeTab === 'adventure' ? '#ffffff' : 'transparent',
+            color: activeTab === 'adventure' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'adventure' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
             fontSize: '11.5px',
             fontWeight: 850,
             cursor: 'pointer',
@@ -260,8 +300,33 @@ export function Learn({ initialSubject = 'all' }) {
             gap: '3px'
           }}
         >
-          <BookOpen size={16} color={activeTab === 'picturebook' ? '#0284c7' : '#64748b'} />
-          <span>Picture Book</span>
+          <Map size={16} color={activeTab === 'adventure' ? '#3b82f6' : '#64748b'} />
+          <span>100 Levels</span>
+        </button>
+
+        <button
+          onClick={() => {
+            playPop();
+            setActiveTab('school');
+          }}
+          style={{
+            padding: '9px 4px',
+            borderRadius: '12px',
+            border: 0,
+            background: activeTab === 'school' ? '#ffffff' : 'transparent',
+            color: activeTab === 'school' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'school' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            fontSize: '11.5px',
+            fontWeight: 850,
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '3px'
+          }}
+        >
+          <Backpack size={16} color={activeTab === 'school' ? '#4f46e5' : '#64748b'} />
+          <span>School Bag</span>
         </button>
 
         <button
@@ -287,6 +352,31 @@ export function Learn({ initialSubject = 'all' }) {
         >
           <Brain size={16} color={activeTab === 'arena' ? '#0284c7' : '#64748b'} />
           <span>Flashcards</span>
+        </button>
+
+        <button
+          onClick={() => {
+            playPop();
+            setActiveTab('picturebook');
+          }}
+          style={{
+            padding: '9px 4px',
+            borderRadius: '12px',
+            border: 0,
+            background: activeTab === 'picturebook' ? '#ffffff' : 'transparent',
+            color: activeTab === 'picturebook' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'picturebook' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            fontSize: '11.5px',
+            fontWeight: 850,
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '3px'
+          }}
+        >
+          <BookOpen size={16} color={activeTab === 'picturebook' ? '#0284c7' : '#64748b'} />
+          <span>Picture Book</span>
         </button>
 
         <button
@@ -339,6 +429,20 @@ export function Learn({ initialSubject = 'all' }) {
           <span>Word Index</span>
         </button>
       </div>
+
+      {/* ==================================================================== */}
+      {/* MODE 0: 100-LEVEL PROGRESSION MAP (STRICTLY FOR ACTIVE GRADE)        */}
+      {/* ==================================================================== */}
+      {activeTab === 'adventure' && (
+        <GradeLevelAdventure />
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODE 0B: MY SCHOOL BAG (HOMEWORK WORDS WITH FREE AI EXTRACTION)      */}
+      {/* ==================================================================== */}
+      {activeTab === 'school' && (
+        <SchoolWordsSection />
+      )}
 
       {/* ==================================================================== */}
       {/* MODE 1: PICTURE BOOK & CATEGORIES (MATCHING SCREENSHOTS 1 & 5)       */}

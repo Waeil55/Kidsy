@@ -25,11 +25,12 @@ export function MarathonChallengePlayer({ onClose, onRewardUnlocked }) {
 
   const targetGoal = gift.targetQuestions || 70;
 
-  // Load a shuffled batch of non-repeated questions from the Week 5 master bank
+  // Load a shuffled batch of non-repeated questions strictly for the child's grade
   const [questions, setQuestions] = useState(() => {
     return getChallengeBatch(
       Math.max(70, targetGoal),
-      gift.answeredQuestionIds || []
+      gift.answeredQuestionIds || [],
+      child?.grade || '3'
     );
   });
 

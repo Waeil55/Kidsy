@@ -1,3 +1,5 @@
+import { getGradeLevels } from './levelProgressionEngine.js';
+
 // ============================================================================
 // WEEK 5 TEACHER GUIDE MASTER EXAM BANK (105+ Multi-Modal Questions)
 //
@@ -1623,19 +1625,43 @@ export function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [arr[j], arr[i]] = [arr[i], arr[j]];
   }
   return arr;
 }
 
-// Return a randomized deck of challenges excluding recently mastered ones
-export function getChallengeBatch(count = 70, excludedIds = []) {
+// Return a randomized deck of challenges strictly filtered by grade, excluding recently mastered ones
+export function getChallengeBatch(count = 70, excludedIds = [], grade = '3') {
+  const g = String(grade || '3').toUpperCase();
   const excludeSet = new Set(excludedIds);
-  let pool = MASSIVE_CHALLENGES.filter((c) => !excludeSet.has(c.id));
+
+  let masterPool = [];
+  if (g === '3') {
+    masterPool = MASSIVE_CHALLENGES;
+  } else {
+    // Strictly isolate: pull from the 100 levels of this specific grade
+    const levels = getGradeLevels(g);
+    levels.forEach((lvl) => {
+      (lvl.questions || []).forEach((q, qIdx) => {
+        masterPool.push({
+          id: `lvl-${g}-${lvl.level}-${qIdx}`,
+          type: 'grade_challenge',
+          category: `Grade ${g} · ${lvl.stage}`,
+          title: lvl.title,
+          prompt: q.prompt,
+          choices: q.choices,
+          answer: q.answer,
+          explanation: q.explanation
+        });
+      });
+    });
+  }
+
+  let pool = masterPool.filter((c) => !excludeSet.has(c.id));
 
   // If pool is exhausted or less than count, reset and use full bank
   if (pool.length < count) {
-    pool = [...MASSIVE_CHALLENGES];
+    pool = [...masterPool];
   }
 
   const shuffled = shuffleArray(pool);

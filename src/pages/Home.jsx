@@ -8,6 +8,7 @@ import { GiftUnboxingModal } from '../components/GiftUnboxingModal';
 import { MarathonChallengePlayer } from '../components/MarathonChallengePlayer';
 import { GeminiAIStudio } from '../components/GeminiAIStudio';
 import { SmartStudyHabitsModal } from '../components/SmartStudyHabitsModal';
+import { SchoolWordsSection } from '../components/SchoolWordsSection';
 import {
   DidiExplorerHero,
   Palette3DIcon,
@@ -31,6 +32,7 @@ export function Home({ go, openSubject }) {
   const [isUnboxingOpen, setIsUnboxingOpen] = useState(false);
   const [isGeminiStudioOpen, setIsGeminiStudioOpen] = useState(false);
   const [isSmartHabitsOpen, setIsSmartHabitsOpen] = useState(false);
+  const [isSchoolBagOpen, setIsSchoolBagOpen] = useState(false);
 
   // Auto-prompt child to pick their gift ONLY IF they haven't picked yet
   useEffect(() => {
@@ -272,6 +274,84 @@ export function Home({ go, openSubject }) {
             </div>
           </div>
         </button>
+
+        <button
+          onClick={() => { playPop(); setIsSchoolBagOpen(true); }}
+          style={{
+            background: 'linear-gradient(135deg, #312e81 0%, #4338ca 50%, #4f46e5 100%)',
+            color: '#ffffff',
+            border: '2px solid rgba(165, 180, 252, 0.4)',
+            borderRadius: '16px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxShadow: '0 4px 14px rgba(79, 70, 229, 0.25)'
+          }}
+        >
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.15)',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '22px',
+            flexShrink: 0
+          }}>
+            🎒
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.02em' }}>MY SCHOOL BAG</span>
+              <span style={{ fontSize: '10px', background: '#10b981', color: '#fff', padding: '1px 6px', borderRadius: '8px', fontWeight: 800 }}>AI SCAN</span>
+            </div>
+            <div style={{ fontSize: '11px', color: '#e0e7ff', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              Upload Worksheet & Weekly Homework Words
+            </div>
+          </div>
+        </button>
+
+        <button
+          onClick={() => { playPop(); go('learn'); }}
+          style={{
+            background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%)',
+            color: '#ffffff',
+            border: '2px solid rgba(45, 212, 191, 0.4)',
+            borderRadius: '16px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxShadow: '0 4px 14px rgba(13, 148, 136, 0.25)'
+          }}
+        >
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.15)',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '22px',
+            flexShrink: 0
+          }}>
+            🗺️
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.02em' }}>100-LEVEL ADVENTURE</span>
+              <span style={{ fontSize: '10px', background: '#3b82f6', color: '#fff', padding: '1px 6px', borderRadius: '8px', fontWeight: 800 }}>GRADE {child.grade}</span>
+            </div>
+            <div style={{ fontSize: '11px', color: '#ccfbf1', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              Easy to Expert Progressive Roadmap
+            </div>
+          </div>
+        </button>
       </div>
 
       {/* 2x2 Large Rounded Colorful Gradient Activity Cards with 3D Vector Icons */}
@@ -434,6 +514,43 @@ export function Home({ go, openSubject }) {
       {/* 10 Smart Vacation Tips Modal */}
       {isSmartHabitsOpen && (
         <SmartStudyHabitsModal onClose={() => setIsSmartHabitsOpen(false)} />
+      )}
+
+      {/* School Words Homework Modal */}
+      {isSchoolBagOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 9999,
+          overflowY: 'auto',
+          padding: '16px'
+        }}>
+          <div style={{ maxWidth: '720px', margin: '20px auto', position: 'relative' }}>
+            <button
+              onClick={() => setIsSchoolBagOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                zIndex: 10,
+                background: '#f1f5f9',
+                border: 'none',
+                borderRadius: '50%',
+                width: '36px',
+                height: '36px',
+                cursor: 'pointer',
+                display: 'grid',
+                placeItems: 'center',
+                fontWeight: 800
+              }}
+            >
+              ✕
+            </button>
+            <SchoolWordsSection onClose={() => setIsSchoolBagOpen(false)} />
+          </div>
+        </div>
       )}
     </div>
   );

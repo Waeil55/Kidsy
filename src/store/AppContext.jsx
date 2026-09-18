@@ -25,7 +25,11 @@ const demoChild = {
   minutes: 36,
   completed: ['gr3-eng-01'],
   dailyGoal: 20,
-  giftGoal: defaultGiftGoal
+  giftGoal: defaultGiftGoal,
+  schoolWords: [],
+  gradeLevelsProgress: {
+    '3': { 1: 3, 2: 3 }
+  }
 };
 
 const AppContext = createContext(null);
@@ -42,7 +46,9 @@ export function AppProvider({ children }) {
           return parsed.map((k) => {
             const childObj = {
               ...k,
-              giftGoal: k.giftGoal || { ...defaultGiftGoal }
+              giftGoal: k.giftGoal || { ...defaultGiftGoal },
+              schoolWords: k.schoolWords || [],
+              gradeLevelsProgress: k.gradeLevelsProgress || {}
             };
             // Anti-hack check: if signature exists and is invalid, sanitize cheated progress
             if (sigs && sigs[k.id] && !verifyChildIntegrity(childObj, sigs[k.id])) {
@@ -82,7 +88,9 @@ export function AppProvider({ children }) {
       if (Array.isArray(v) && v.length > 0) {
         const populated = v.map((k) => ({
           ...k,
-          giftGoal: k.giftGoal || { ...defaultGiftGoal }
+          giftGoal: k.giftGoal || { ...defaultGiftGoal },
+          schoolWords: k.schoolWords || [],
+          gradeLevelsProgress: k.gradeLevelsProgress || {}
         }));
         setKids(populated);
         setActiveId(populated[0].id);
@@ -215,10 +223,82 @@ export function AppProvider({ children }) {
     );
   };
 
+  const addSchoolWords = (newWords = []) => {
+    if (!Array.isArray(newWords) || newWords.length === 0) return;
+    setKids((prev) => {
+      const updated = prev.map((k) => {
+        if (k.id !== child.id) return k;
+        const existing = k.schoolWords || [];
+        const existingWordSet = new Set(existing.map((w) => (w.word || '').toLowerCase().trim()));
+        const filteredNew = newWords
+          .filter((w) => w && w.word && !existingWordSet.has(w.word.toLowerCase().trim()))
+          .map((w) => ({
+            id: w.id || `sw-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            word: w.word.trim(),
+            partOfSpeech: w.partOfSpeech || 'noun',
+            definition: w.definition || '',
+            sentence: w.sentence || '',
+            synonyms: w.synonyms || [],
+            antonyms: w.antonyms || [],
+            mnemonic: w.mnemonic || '',
+            imageUrl: w.imageUrl || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&auto=format&fit=crop&q=80',
+            addedAt: new Date().toISOString()
+          }));
+        return {
+          ...k,
+          schoolWords: [...filteredNew, ...existing]
+        };
+      });
+      setState('children', updated);
+      return updated;
+    });
+  };
+
+  const removeSchoolWord = (wordId) => {
+    setKids((prev) => {
+      const updated = prev.map((k) => {
+        if (k.id !== child.id) return k;
+        return {
+          ...k,
+          schoolWords: (k.schoolWords || []).filter((w) => w.id !== wordId)
+        };
+      });
+      setState('children', updated);
+      return updated;
+    });
+  };
+
+  const completeGradeLevel = (grade, levelNum, stars = 3, earnedXp = 25) => {
+    setKids((prev) => {
+      const updated = prev.map((k) => {
+        if (k.id !== child.id) return k;
+        const gKey = String(grade || k.grade).toUpperCase();
+        const currentProgress = k.gradeLevelsProgress || {};
+        const gradeMap = { ...(currentProgress[gKey] || {}) };
+        const prevStars = gradeMap[levelNum] || 0;
+        gradeMap[levelNum] = Math.max(prevStars, stars);
+
+        return {
+          ...k,
+          xp: k.xp + earnedXp,
+          streak: Math.max(k.streak, 1),
+          gradeLevelsProgress: {
+            ...currentProgress,
+            [gKey]: gradeMap
+          }
+        };
+      });
+      setState('children', updated);
+      return updated;
+    });
+  };
+
   const addChild = (newChild) => {
     const withGoal = {
       ...newChild,
-      giftGoal: newChild.giftGoal || { ...defaultGiftGoal }
+      giftGoal: newChild.giftGoal || { ...defaultGiftGoal },
+      schoolWords: [],
+      gradeLevelsProgress: {}
     };
     setKids((prev) => [...prev, withGoal]);
     setActiveId(withGoal.id);
@@ -239,6 +319,9 @@ export function AppProvider({ children }) {
       setGiftGoal,
       advanceGiftProgress,
       claimGift,
+      addSchoolWords,
+      removeSchoolWord,
+      completeGradeLevel,
       online,
       role,
       setRole

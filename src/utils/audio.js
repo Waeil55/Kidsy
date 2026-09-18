@@ -1,20 +1,8 @@
 import confetti from 'canvas-confetti';
 
-let audioCtx = null;
 let isMuted = false;
-
-function getAudioContext() {
-  if (!audioCtx && typeof window !== 'undefined') {
-    const AudioClass = window.AudioContext || window.webkitAudioContext;
-    if (AudioClass) {
-      audioCtx = new AudioClass();
-    }
-  }
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume().catch(() => {});
-  }
-  return audioCtx;
-}
+const audioCache = new Map();
+let currentAudio = null;
 
 export function isAudioMuted() {
   return isMuted;
@@ -22,92 +10,149 @@ export function isAudioMuted() {
 
 export function toggleAudioSFX() {
   isMuted = !isMuted;
-  if (!isMuted) playPop();
+  if (!isMuted) {
+    aiSpeak("Sound is on!");
+  }
   return !isMuted;
 }
 
-// Instant zero-latency tap click
+export const PRAISES = [
+  "Superstar! That is correct!",
+  "Brilliant thinking!",
+  "Awesome job!",
+  "Spot on! You got it!",
+  "Look at you go, champion!",
+  "You are crushing it!",
+  "High five! Fantastic answer!"
+];
+
+export const CORRECTIONS = [
+  "Try again, you can do it!",
+  "Keep trying, you are almost there!",
+  "Good try! Let's check this one together.",
+  "Don't worry, try one more time!"
+];
+
+/**
+ * Lifetime Free Human AI Voice Engine
+ * 1. Puter.js (Free Keyless AI TTS: OpenAI Alloy / Nova / Polly)
+ * 2. Device Natural Neural SpeechSynthesis fallback
+ */
+export async function aiSpeak(text, options = {}) {
+  if (isMuted || !text || typeof window === 'undefined') return;
+
+  const cleanText = String(text).trim();
+  if (!cleanText) return;
+
+  // Stop any currently playing audio stream
+  try {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  } catch (e) { /* ignore */ }
+
+  // Check in-memory audio cache
+  const cacheKey = cleanText.toLowerCase();
+  if (audioCache.has(cacheKey)) {
+    try {
+      const cached = audioCache.get(cacheKey);
+      currentAudio = cached.cloneNode();
+      await currentAudio.play();
+      return;
+    } catch (e) {
+      // Audio play blocked or error, fallback to speech synthesis
+    }
+  }
+
+  // 1. Try Puter.js free AI Text-to-Speech API
+  if (window.puter && window.puter.ai && typeof window.puter.ai.txt2speech === 'function') {
+    try {
+      const audio = await window.puter.ai.txt2speech(cleanText, {
+        provider: 'openai',
+        model: 'gpt-4o-mini-tts',
+        voice: options.voice || 'alloy'
+      });
+
+      if (audio && typeof audio.play === 'function') {
+        currentAudio = audio;
+        audioCache.set(cacheKey, audio);
+        await audio.play();
+        return;
+      }
+    } catch (puterErr) {
+      console.warn('[Puter AI TTS Fallback]', puterErr?.message || puterErr);
+    }
+  }
+
+  // 2. High-Fidelity Natural Neural Voice Fallback via Web Speech API
+  if ('speechSynthesis' in window) {
+    try {
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.rate = options.rate || 0.95;
+      utterance.pitch = options.pitch || 1.05;
+
+      const voices = window.speechSynthesis.getVoices();
+      // Prioritize natural, friendly human voices
+      const humanVoice = voices.find(v => 
+        v.lang.startsWith('en') && (
+          v.name.includes('Natural') ||
+          v.name.includes('Google') ||
+          v.name.includes('Samantha') ||
+          v.name.includes('Jenny') ||
+          v.name.includes('Guy') ||
+          v.name.includes('Aria')
+        )
+      ) || voices.find(v => v.lang.startsWith('en'));
+
+      if (humanVoice) {
+        utterance.voice = humanVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('[SpeechSynthesis Error]', err);
+    }
+  }
+}
+
+// Global alias for compatibility with existing components
+export function speakText(text, rate = 0.95, pitch = 1.05) {
+  return aiSpeak(text, { rate, pitch });
+}
+
+// Spoken Human AI Voice Encouragement (Zero synth beeps!)
+export function playCorrect() {
+  if (isMuted) return;
+  const praise = PRAISES[Math.floor(Math.random() * PRAISES.length)];
+  aiSpeak(praise);
+}
+
+// Gentle Spoken Human AI Voice Guidance (Zero synth error thumps!)
+export function playIncorrect() {
+  if (isMuted) return;
+  const guidance = CORRECTIONS[Math.floor(Math.random() * CORRECTIONS.length)];
+  aiSpeak(guidance);
+}
+
+// Clean tactile tap (Zero synth beeps!)
 export function playPop() {
   if (isMuted) return;
   try {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(450, now);
-    osc.frequency.exponentialRampToValueAtTime(880, now + 0.04);
-
-    gain.gain.setValueAtTime(0.18, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.04);
-  } catch (e) { /* ignore */ }
-}
-
-// Duolingo-style signature joyful ascending fanfare
-export function playCorrect() {
-  if (isMuted) return;
-  try {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-
-    freqs.forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.value = freq;
-
-      const startTime = now + idx * 0.07;
-      const duration = 0.22;
-
-      gain.gain.setValueAtTime(0.2, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(startTime);
-      osc.stop(startTime + duration);
-    });
-  } catch (e) { /* ignore */ }
-}
-
-// Gentle low error thump
-export function playIncorrect() {
-  if (isMuted) return;
-  try {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-
-    [190, 140].forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, now + idx * 0.09);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + idx * 0.09 + 0.12);
-
-      const startTime = now + idx * 0.09;
-      gain.gain.setValueAtTime(0.25, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.12);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(startTime);
-      osc.stop(startTime + 0.12);
-    });
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(8);
+    }
   } catch (e) { /* ignore */ }
 }
 
 export async function initAudioSystem() {
-  getAudioContext();
+  // Pre-load voices if speech synthesis is available
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+  }
 }
 
 export function triggerAudioTone(kind) {
@@ -117,6 +162,7 @@ export function triggerAudioTone(kind) {
 }
 
 export function fireConfetti(isBig = false) {
+  if (typeof window === 'undefined') return;
   if (isBig) {
     const end = Date.now() + 2000;
     const colors = ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FF4B4B'];
@@ -132,32 +178,6 @@ export function fireConfetti(isBig = false) {
       origin: { y: 0.65 },
       colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF']
     });
-  }
-}
-
-export const PRAISES = [
-  "Superstar! That is correct!",
-  "Brilliant thinking!",
-  "Awesome job!",
-  "Spot on! You got it!",
-  "Look at you go, champion!",
-  "You are crushing it!",
-  "High five! Fantastic answer!"
-];
-
-export function speakText(text, rate = 0.95, pitch = 1.15) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-  try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = rate;
-    utterance.pitch = pitch;
-    const voices = window.speechSynthesis.getVoices();
-    const friendlyVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Victoria')));
-    if (friendlyVoice) utterance.voice = friendlyVoice;
-    window.speechSynthesis.speak(utterance);
-  } catch (err) {
-    console.warn("Speech synthesis error:", err);
   }
 }
 
