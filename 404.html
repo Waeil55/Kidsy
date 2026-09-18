@@ -24,7 +24,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
     <script type="module" crossorigin src="./assets/index-Dhn6cmQF.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-CLRdaiA4.css">
-  </head>
+  
+  <script>
+    (function() {
+      // GitHub Pages SPA Redirect Handler
+      var path = window.location.pathname;
+      if (!path.endsWith('.html') && !path.endsWith('.js') && !path.endsWith('.css') && !path.endsWith('.svg') && !path.endsWith('.webmanifest')) {
+        // Redirect to repository base
+        if (path.indexOf('/Kidsy') !== -1 && path !== '/Kidsy/' && path !== '/Kidsy/index.html') {
+          window.location.replace('/Kidsy/index.html');
+        }
+      }
+    })();
+  </script>
+</head>
   <body>
     <div id="root"></div>
     <script>
