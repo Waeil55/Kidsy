@@ -441,7 +441,7 @@ function LevelRunnerModal({ levelData, onClose, onCompleted }) {
                       fontSize: '13px',
                       fontWeight: 800
                     }}>
-                      {['A', 'B', 'C', 'D'][idx]}
+                      {['🦁', '🐸', '🦋', '🐙', '🦊', '🐬', '🐢', '🐝'][idx]}
                     </span>
                     <span style={{ flex: 1 }}>{ch}</span>
                   </button>

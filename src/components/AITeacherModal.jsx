@@ -563,7 +563,7 @@ export function AITeacherModal({ entry, onClose, onMasteryComplete }) {
               </div>
               <div style={{ display: 'grid', gap: '8px' }}>
                 {quiz.choices.map((choiceText, cIdx) => {
-                  const letters = ['A', 'B', 'C', 'D'];
+                  const letters = ['🦁', '🐸', '🦋', '🐙'];
                   const isEliminated = eliminatedChoices.includes(cIdx);
                   const isSelected = selectedAnswer === cIdx;
                   const isCorrect = cIdx === quiz.answer;

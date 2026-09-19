@@ -38,11 +38,41 @@ export default {
             800: '#1E293B',
             900: '#0F172A',
           }
+        },
+        rosebloom: {
+          50: '#FFF1F2',
+          100: '#FFE4E6',
+          200: '#FECDD3',
+          300: '#FDA4AF',
+          400: '#FB7185',
+          500: '#F43F5E',
+          600: '#E11D48',
+          700: '#BE123C',
+          800: '#9F1239',
+          900: '#881337',
+        },
+        tealsoft: {
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#14B8A6',
+          600: '#0D9488',
+          700: '#0F766E',
+          800: '#115E59',
+          900: '#134E4A',
+        },
+        "kid": {
+          night: '#0F172A',
+          nightCard: '#1E293B',
+          nightBorder: '#334155',
         }
       },
       fontFamily: {
-        sans: ['Fredoka', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Rounded"', '"SF Pro Display"', 'system-ui', 'sans-serif'],
-        fredoka: ['Fredoka', 'sans-serif'],
+        sans: ['ui-rounded', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Rounded"', '"SF Pro Display"', 'system-ui', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        display: ['Fredoka', 'ui-rounded', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Rounded"', '"SF Pro Display"', 'system-ui', 'sans-serif'],
+        fredoka: ['Fredoka', 'ui-rounded', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Rounded"', '"SF Pro Display"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'duo-green': '0 4px 0 #46A302',
@@ -52,7 +82,28 @@ export default {
         'duo-red': '0 4px 0 #EA2B2B',
         'duo-gray': '0 4px 0 #CCCCCC',
         'duo-card': '0 4px 0 #E5E5E5',
-      }
+        'squish-indigo': '0 4px 0 #4F46E5',
+        'squish-emerald': '0 4px 0 #059669',
+        'squish-pink': '0 4px 0 #DB2777',
+        'squish-orange': '0 4px 0 #EA580C',
+        'squish-purple': '0 4px 0 #7C3AED',
+        'squish-card': '0 4px 0 #E2E8F0',
+        'glow-rose': '0 10px 30px -8px rgba(244, 63, 94, 0.45)',
+      },
+      keyframes: {
+        floatSlow: {
+          '0%, 100%': { transform: 'translateY(0px) translateX(0px)' },
+          '50%': { transform: 'translateY(-18px) translateX(12px)' },
+        },
+        bounceSubtle: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+      },
+      animation: {
+        'float-slow': 'floatSlow 6s ease-in-out infinite',
+        'bounce-subtle': 'bounceSubtle 2.2s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

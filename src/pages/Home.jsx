@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Sparkles, Trophy, Gift } from 'lucide-react';
+import { Settings, Sparkles, Trophy, Gift, VolumeX, Calculator, BookOpen } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { AskDidiModal } from '../components/AskDidiModal';
 import { HabitsModal } from '../components/HabitsModal';
@@ -21,7 +21,7 @@ import {
   Bulb3DIcon,
   DinoAvatarVector
 } from '../components/illustrations/KidsVectors';
-import { playPop, playCorrect } from '../utils/audio';
+import { playPop, playCorrect, stopAudio } from '../utils/audio';
 
 export function Home({ go, openSubject }) {
   const { child } = useApp();
@@ -102,16 +102,42 @@ export function Home({ go, openSubject }) {
           </div>
         </div>
 
-        <button
-          className="gearBtn"
-          onClick={() => {
-            playPop();
-            go('settings');
-          }}
-          title="App Settings"
-        >
-          <Settings size={18} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            onClick={() => {
+              stopAudio();
+            }}
+            style={{
+              background: '#fee2e2',
+              border: '1px solid #fca5a5',
+              borderRadius: '999px',
+              color: '#b91c1c',
+              padding: '6px 12px',
+              fontSize: '12px',
+              fontWeight: 850,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 2px 6px rgba(185, 28, 28, 0.12)'
+            }}
+            title="Stop all voices and sounds immediately"
+          >
+            <VolumeX size={15} />
+            <span>Stop Voice</span>
+          </button>
+
+          <button
+            className="gearBtn"
+            onClick={() => {
+              playPop();
+              go('settings');
+            }}
+            title="App Settings"
+          >
+            <Settings size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Hero Mascot & Motivation Section - Responsive Side-by-Side on Tablet/Desktop */}
@@ -349,6 +375,84 @@ export function Home({ go, openSubject }) {
             </div>
             <div style={{ fontSize: '11px', color: '#ccfbf1', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               Easy to Expert Progressive Roadmap
+            </div>
+          </div>
+        </button>
+
+        <button
+          onClick={() => { playPop(); if (openSubject) openSubject('mathlab'); go('learn'); }}
+          style={{
+            background: 'linear-gradient(135deg, #4c1d95 0%, #5b21b6 50%, #6d28d9 100%)',
+            color: '#ffffff',
+            border: '2px solid rgba(196, 181, 253, 0.4)',
+            borderRadius: '16px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxShadow: '0 4px 14px rgba(109, 40, 217, 0.25)'
+          }}
+        >
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.15)',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '22px',
+            flexShrink: 0
+          }}>
+            🧮
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.02em' }}>500 MATH LAB</span>
+              <span style={{ fontSize: '10px', background: '#ec4899', color: '#fff', padding: '1px 6px', borderRadius: '8px', fontWeight: 800 }}>GRADE {child.grade}</span>
+            </div>
+            <div style={{ fontSize: '11px', color: '#ede9fe', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              500 Questions · Hints & Speed Blitz
+            </div>
+          </div>
+        </button>
+
+        <button
+          onClick={() => { playPop(); if (openSubject) openSubject('gradewords'); go('learn'); }}
+          style={{
+            background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)',
+            color: '#ffffff',
+            border: '2px solid rgba(110, 231, 183, 0.4)',
+            borderRadius: '16px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxShadow: '0 4px 14px rgba(4, 120, 87, 0.25)'
+          }}
+        >
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.15)',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '22px',
+            flexShrink: 0
+          }}>
+            📚
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.02em' }}>500+ WORDS CATALOG</span>
+              <span style={{ fontSize: '10px', background: '#10b981', color: '#fff', padding: '1px 6px', borderRadius: '8px', fontWeight: 800 }}>VOCAB</span>
+            </div>
+            <div style={{ fontSize: '11px', color: '#d1fae5', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {child.grade === '3' ? '5 Core Words (500 Qs) + 500 Vocab' : `500+ Words for Grade ${child.grade}`}
             </div>
           </div>
         </button>

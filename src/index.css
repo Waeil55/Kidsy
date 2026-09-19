@@ -1,14 +1,217 @@
-@import './styles/app.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", Inter, ui-sans-serif, system-ui, sans-serif;
-    color: #182338;
-    background: #f5f9ff;
+  * {
     -webkit-tap-highlight-color: transparent;
   }
+  html, body {
+    overscroll-behavior: none;
+  }
+  body {
+    font-family: 'Fredoka', ui-rounded, -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif;
+    background-color: #FFFFFF;
+    color: #4B4B4B;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
 }
+
+/* ============================================================
+   App background textures (defined so shared classes render)
+   ============================================================ */
+.bg-executive-mesh {
+  background-color: #FAFAFF;
+  background-image:
+    radial-gradient(at 8% 0%, rgba(93, 173, 255, 0.10) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(255, 105, 180, 0.10) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(88, 204, 2, 0.08) 0px, transparent 55%);
+}
+
+/* ============================================================
+   Glass surfaces
+   ============================================================ */
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 32px rgba(30, 41, 59, 0.10);
+}
+.glass-pill {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ============================================================
+   Squish / tactile buttons (Duolingo 3D press)
+   ============================================================ */
+.squish-btn {
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+  cursor: pointer;
+}
+.squish-btn:active {
+  transform: translateY(3px) scale(0.98);
+}
+.btn-press {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn-press:active {
+  transform: translateY(2px) scale(0.97);
+}
+
+/* Duolingo Chunky 3D Vector Buttons */
+.duo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka', ui-rounded, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 1rem;
+  transition: transform 0.08s ease, border 0.08s ease, filter 0.08s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.duo-btn:active {
+  transform: translateY(3px) !important;
+}
+
+/* Green (Primary Action) */
+.duo-btn-green {
+  background-color: #58CC02;
+  border-bottom: 4px solid #46A302;
+  color: #FFFFFF;
+}
+.duo-btn-green:hover { background-color: #61E002; }
+.duo-btn-green:active { border-bottom-width: 0px; }
+
+/* Blue (Secondary / Accent) */
+.duo-btn-blue {
+  background-color: #1CB0F6;
+  border-bottom: 4px solid #1899D6;
+  color: #FFFFFF;
+}
+.duo-btn-blue:hover { background-color: #26BAFF; }
+.duo-btn-blue:active { border-bottom-width: 0px; }
+
+/* Purple */
+.duo-btn-purple {
+  background-color: #CE82FF;
+  border-bottom: 4px solid #A855F7;
+  color: #FFFFFF;
+}
+.duo-btn-purple:hover { background-color: #D899FF; }
+.duo-btn-purple:active { border-bottom-width: 0px; }
+
+/* White / Neutral Option Card */
+.duo-btn-white {
+  background-color: #FFFFFF;
+  border: 2px solid #E5E5E5;
+  border-bottom: 4px solid #E5E5E5;
+  color: #4B4B4B;
+}
+.duo-btn-white:hover { background-color: #F7F7F7; border-color: #D6D6D6; }
+.duo-btn-white:active { border-bottom-width: 2px; }
+
+/* Selected Option */
+.duo-btn-selected {
+  background-color: #DDF4FF !important;
+  border: 2px solid #1CB0F6 !important;
+  border-bottom: 4px solid #1899D6 !important;
+  color: #1899D6 !important;
+}
+
+/* Correct Answer */
+.duo-btn-correct {
+  background-color: #D7FFB8 !important;
+  border: 2px solid #58CC02 !important;
+  border-bottom: 4px solid #46A302 !important;
+  color: #46A302 !important;
+}
+
+/* Wrong Answer */
+.duo-btn-wrong {
+  background-color: #FFDFE0 !important;
+  border: 2px solid #FF4B4B !important;
+  border-bottom: 4px solid #EA2B2B !important;
+  color: #EA2B2B !important;
+}
+
+/* Disabled */
+.duo-btn-disabled {
+  background-color: #E5E5E5 !important;
+  border-bottom: 4px solid #CCCCCC !important;
+  color: #AFAFAF !important;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Duolingo Chunky Container Card */
+.duo-card {
+  background-color: #FFFFFF;
+  border: 2px solid #E5E5E5;
+  border-bottom: 4px solid #E5E5E5;
+  border-radius: 1.5rem;
+}
+
+/* Syntax builder word tokens */
+.token-btn {
+  border-radius: 0.75rem;
+  transition: transform 0.08s ease;
+}
+
+/* Animated Journey SVG Path */
+@keyframes marchDash {
+  to { stroke-dashoffset: -40; }
+}
+.journey-path {
+  stroke-dasharray: 8 10;
+  animation: marchDash 1.6s linear infinite;
+}
+
+/* Speech Waveform */
+@keyframes waveBar {
+  0% { height: 20%; }
+  100% { height: 100%; }
+}
+.wave-bar {
+  animation: waveBar 1.2s ease-in-out infinite alternate;
+}
+.wave-bar:nth-child(1) { animation-delay: 0.1s; }
+.wave-bar:nth-child(2) { animation-delay: 0.3s; }
+.wave-bar:nth-child(3) { animation-delay: 0.5s; }
+.wave-bar:nth-child(4) { animation-delay: 0.2s; }
+.wave-bar:nth-child(5) { animation-delay: 0.4s; }
+.wave-bar:nth-child(6) { animation-delay: 0.15s; }
+.wave-bar:nth-child(7) { animation-delay: 0.35s; }
+.wave-bar:nth-child(8) { animation-delay: 0.25s; }
+
+/* Micro Animations */
+.pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.shake { animation: shake 0.35s ease-in-out; }
+
+@keyframes pop {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* Rose gradient text */
+.text-gradient-rose {
+  background: linear-gradient(90deg, #F43F5E, #FB7185, #F472B6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

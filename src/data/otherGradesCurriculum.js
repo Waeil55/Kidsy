@@ -23,7 +23,7 @@ export const OTHER_GRADES_LESSONS = [
     imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&auto=format&fit=crop&q=80',
     questions: [
       {
-        prompt: 'Which letter makes the /æ/ sound at the beginning of "Apple"?',
+        prompt: 'Listen — which letter makes this sound at the beginning of a word?',
         choices: ['Letter A', 'Letter B', 'Letter M', 'Letter Z'],
         answer: 0,
         explanation: 'A is for Apple! /æ/ /æ/ Apple.'
@@ -210,7 +210,7 @@ export const OTHER_GRADES_LESSONS = [
     imageUrl: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=600&auto=format&fit=crop&q=80',
     questions: [
       {
-        prompt: 'Which letters make the beginning sound in "Ship" and "Shark"?',
+        prompt: 'Listen — which letters make that beginning sound in words?',
         choices: ['Sh', 'Ch', 'Th', 'Wh'],
         answer: 0,
         explanation: '"Sh" makes the /ʃ/ quiet hush sound: Ship, Shark, Shine.'

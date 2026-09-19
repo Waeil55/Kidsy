@@ -300,7 +300,7 @@ function generateGradeKLevels() {
       description = `Identify the letter ${letter} and its sound.`;
       questions = [
         {
-          prompt: `Which letter is this: "${letter}"?`,
+          prompt: `Which letter is this? Listen, then pick it.`,
           choices: [`Letter ${letter}`, `Letter ${(i % 2 === 0 ? 'X' : 'O')}`, `Letter ${(i % 2 === 0 ? 'M' : 'Z')}`, `Letter B`],
           answer: 0,
           explanation: `Superstar! This is the letter ${letter}!`
@@ -447,10 +447,10 @@ function generateGradeLevels(grade) {
     let description = `${stage.name} practice in ${spec.theme}.`;
     let questions = [
       {
-        prompt: `Vocabulary Practice: What is the target term in this lesson?`,
+        prompt: `Vocabulary Practice: Listen, then pick the word you heard.`,
         choices: [vocabWord, 'pencil', 'chair', 'house'],
         answer: 0,
-        explanation: `Great job! "${vocabWord}" is our target academic word for this level.`
+        explanation: `Great job! "${vocabWord}" is the special word for this level.`
       },
       {
         prompt: math.prompt,

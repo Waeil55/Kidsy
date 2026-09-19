@@ -21,7 +21,9 @@ import {
   Bot,
   Sun,
   Map,
-  Backpack
+  Backpack,
+  Calculator,
+  VolumeX
 } from 'lucide-react';
 import { Card } from '../components/Card';
 import { getLessons, grades, subjects } from '../data/curriculum';
@@ -38,16 +40,18 @@ import { SmartStudyHabitsModal } from '../components/SmartStudyHabitsModal';
 import { WordPictureMatchGame } from '../components/WordPictureMatchGame';
 import { GradeLevelAdventure } from '../components/GradeLevelAdventure';
 import { SchoolWordsSection } from '../components/SchoolWordsSection';
+import { MathLabSection } from '../components/MathLabSection';
+import { GradeWordBankSection } from '../components/GradeWordBankSection';
 import { getGradeLevels } from '../data/levelProgressionEngine';
 import JourneyMap from '../components/JourneyMap';
 import { useApp } from '../store/AppContext';
-import { playCorrect, playIncorrect, playPop, fireConfetti, speakText } from '../utils/audio';
+import { playCorrect, playIncorrect, playPop, fireConfetti, speakText, stopAudio } from '../utils/audio';
 
 export function Learn({ initialSubject = 'all' }) {
   const { child, complete } = useApp();
 
-  // Mode: 'adventure' | 'school' | 'arena' | 'picturebook' | 'curriculum' | 'encyclopedia'
-  const [activeTab, setActiveTab] = useState('adventure');
+  // Mode: 'mathlab' | 'gradewords' | 'adventure' | 'school' | 'arena' | 'picturebook' | 'curriculum' | 'encyclopedia'
+  const [activeTab, setActiveTab] = useState('mathlab');
 
   // Interactive AI & Habits Modal State
   const [isGeminiStudioOpen, setIsGeminiStudioOpen] = useState(false);
@@ -87,8 +91,12 @@ export function Learn({ initialSubject = 'all' }) {
 
   useEffect(() => {
     if (initialSubject && initialSubject !== 'all') {
-      setSubject(initialSubject);
-      setActiveTab('curriculum');
+      if (['mathlab', 'gradewords', 'adventure', 'school', 'arena', 'picturebook', 'curriculum', 'encyclopedia'].includes(initialSubject)) {
+        setActiveTab(initialSubject);
+      } else {
+        setSubject(initialSubject);
+        setActiveTab('curriculum');
+      }
     }
   }, [initialSubject]);
 
@@ -213,8 +221,32 @@ export function Learn({ initialSubject = 'all' }) {
           </p>
         </div>
 
-        {/* Action Pills: Gemini AI Assistant & 10 Smart Vacation Habits */}
+        {/* Action Pills: Stop Voice, Gemini AI Assistant & 10 Smart Vacation Habits */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
+          <button
+            onClick={() => {
+              stopAudio();
+            }}
+            style={{
+              background: '#fee2e2',
+              border: '1px solid #fca5a5',
+              borderRadius: '999px',
+              color: '#b91c1c',
+              padding: '8px 14px',
+              fontSize: '12px',
+              fontWeight: 850,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)'
+            }}
+            title="Stop all currently playing voice and sounds immediately"
+          >
+            <VolumeX size={15} />
+            <span>⏹️ Stop Voice</span>
+          </button>
+
           <button
             onClick={() => {
               playCorrect();
@@ -265,11 +297,11 @@ export function Learn({ initialSubject = 'all' }) {
         </div>
       </div>
 
-      {/* Main Mode Navigation Bar (6 Visual Modes with Strict Grade Isolation) */}
+      {/* Main Mode Navigation Bar (8 Visual Modes with Strict Grade Isolation) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(105px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(95px, 1fr))',
           background: '#e2e8f0',
           padding: '4px',
           borderRadius: '16px',
@@ -279,6 +311,56 @@ export function Learn({ initialSubject = 'all' }) {
           boxSizing: 'border-box'
         }}
       >
+        <button
+          onClick={() => {
+            playPop();
+            setActiveTab('mathlab');
+          }}
+          style={{
+            padding: '9px 4px',
+            borderRadius: '12px',
+            border: 0,
+            background: activeTab === 'mathlab' ? '#ffffff' : 'transparent',
+            color: activeTab === 'mathlab' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'mathlab' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            fontSize: '11.5px',
+            fontWeight: 850,
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '3px'
+          }}
+        >
+          <Calculator size={16} color={activeTab === 'mathlab' ? '#7c3aed' : '#64748b'} />
+          <span>Math Lab</span>
+        </button>
+
+        <button
+          onClick={() => {
+            playPop();
+            setActiveTab('gradewords');
+          }}
+          style={{
+            padding: '9px 4px',
+            borderRadius: '12px',
+            border: 0,
+            background: activeTab === 'gradewords' ? '#ffffff' : 'transparent',
+            color: activeTab === 'gradewords' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'gradewords' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            fontSize: '11.5px',
+            fontWeight: 850,
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '3px'
+          }}
+        >
+          <BookOpen size={16} color={activeTab === 'gradewords' ? '#059669' : '#64748b'} />
+          <span>500 Words</span>
+        </button>
+
         <button
           onClick={() => {
             playPop();
@@ -429,6 +511,20 @@ export function Learn({ initialSubject = 'all' }) {
           <span>Word Index</span>
         </button>
       </div>
+
+      {/* ==================================================================== */}
+      {/* MODE -1: 500 MATH LAB (STRICTLY FOR ACTIVE GRADE)                    */}
+      {/* ==================================================================== */}
+      {activeTab === 'mathlab' && (
+        <MathLabSection />
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODE -2: 500+ WORDS CATALOG + GRADE 3 CORE PRACTICE (500 QUESTIONS)  */}
+      {/* ==================================================================== */}
+      {activeTab === 'gradewords' && (
+        <GradeWordBankSection />
+      )}
 
       {/* ==================================================================== */}
       {/* MODE 0: 100-LEVEL PROGRESSION MAP (STRICTLY FOR ACTIVE GRADE)        */}
@@ -1605,7 +1701,7 @@ function LessonPlayer({ lesson, close, done }) {
             </div>
             <div className="choices" style={{ display: 'grid', gap: '8px' }}>
               {question.choices.map((choiceText, cIdx) => {
-                const letters = ['A', 'B', 'C', 'D'];
+                const letters = ['🦁', '🐸', '🦋', '🐙'];
                 const letterStyles = [
                   { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
                   { bg: '#faf5ff', text: '#7e22ce', border: '#e9d5ff' },

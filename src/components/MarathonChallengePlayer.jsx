@@ -5,7 +5,7 @@ import { getChallengeBatch } from '../data/massiveChallengeBank';
 import { playCorrect, playIncorrect, playPop, fireConfetti, speakText } from '../utils/audio';
 import { shuffleChoices } from '../lib/security';
 
-const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
+const OPTION_LETTERS = ['🦁', '🐸', '🦋', '🐙'];
 const LETTER_STYLES = [
   { bg: '#eff6ff', border: '#bfdbfe', text: '#1d4ed8' }, // A - Blue
   { bg: '#faf5ff', border: '#e9d5ff', text: '#7e22ce' }, // B - Purple

@@ -4,6 +4,11 @@ let isMuted = false;
 const audioCache = new Map();
 let currentAudio = null;
 
+// Speech generation token: every aiSpeak/stop bumps it, so any speech that
+// was already "in flight" (e.g. waiting for a Puter AI TTS request) is
+// discovered to be stale and discarded instead of playing on top.
+let speechGen = 0;
+
 export function isAudioMuted() {
   return isMuted;
 }
@@ -44,11 +49,15 @@ export async function aiSpeak(text, options = {}) {
   const cleanText = String(text).trim();
   if (!cleanText) return;
 
-  // Stop any currently playing audio stream
+  // Every new request cancels the previous one — both the audio already
+  // playing AND any still resolving in the background.
+  const myGen = ++speechGen;
+
   try {
     if (currentAudio) {
       currentAudio.pause();
       currentAudio.currentTime = 0;
+      currentAudio = null;
     }
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -60,8 +69,12 @@ export async function aiSpeak(text, options = {}) {
   if (audioCache.has(cacheKey)) {
     try {
       const cached = audioCache.get(cacheKey);
-      currentAudio = cached.cloneNode();
-      await currentAudio.play();
+      const audio = cached.cloneNode();
+      if (speechGen !== myGen) return; // superseded while a new tap happened
+      currentAudio = audio;
+      isSpeakingActive = true;
+      audio.onended = () => { isSpeakingActive = false; };
+      await audio.play();
       return;
     } catch (e) {
       // Audio play blocked or error, fallback to speech synthesis
@@ -77,9 +90,20 @@ export async function aiSpeak(text, options = {}) {
         voice: options.voice || 'alloy'
       });
 
+      // This request is stale (child tapped speak/stop again while we were
+      // generating) — cancel it instead of letting it overlap.
+      if (speechGen !== myGen) {
+        try {
+          if (audio && typeof audio.pause === 'function') audio.pause();
+        } catch (e) { /* ignore */ }
+        return;
+      }
+
       if (audio && typeof audio.play === 'function') {
         currentAudio = audio;
         audioCache.set(cacheKey, audio);
+        isSpeakingActive = true;
+        currentAudio.onended = () => { isSpeakingActive = false; };
         await audio.play();
         return;
       }
@@ -87,6 +111,9 @@ export async function aiSpeak(text, options = {}) {
       console.warn('[Puter AI TTS Fallback]', puterErr?.message || puterErr);
     }
   }
+
+  // If we were superseded while the network hop resolved, stop here.
+  if (speechGen !== myGen) return;
 
   // 2. High-Fidelity Natural Neural Voice Fallback via Web Speech API
   if ('speechSynthesis' in window) {
@@ -112,12 +139,40 @@ export async function aiSpeak(text, options = {}) {
         utterance.voice = humanVoice;
       }
 
+      isSpeakingActive = true;
+      utterance.onend = () => { isSpeakingActive = false; };
+      utterance.onerror = () => { isSpeakingActive = false; };
       window.speechSynthesis.speak(utterance);
     } catch (err) {
+      isSpeakingActive = false;
       console.warn('[SpeechSynthesis Error]', err);
     }
   }
 }
+
+let isSpeakingActive = false;
+
+export function isSpeechPlaying() {
+  return isSpeakingActive || (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking);
+}
+
+// Global Stop Sound / Stop Voice: Instantly cancels any speech in progress
+export function stopAudio() {
+  speechGen++; // discard any TTS request that is still "in flight"
+  isSpeakingActive = false;
+  try {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  } catch (e) { /* ignore */ }
+}
+
+export const stopSpeech = stopAudio;
 
 // Global alias for compatibility with existing components
 export function speakText(text, rate = 0.95, pitch = 1.05) {
