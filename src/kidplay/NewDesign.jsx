@@ -1,1869 +1,1017 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
+﻿import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import {
-  Home,
-  MessageSquare,
-  User,
-  Play,
-  Pause,
-  Star,
-  Volume2,
-  VolumeX,
-  ArrowLeft,
-  Camera,
-  Clock,
-  X,
-  Sparkles,
-  Trophy,
-  Award,
-  Palette,
-  RotateCcw,
-  CheckCircle2,
-  ChevronRight,
-  ChevronLeft,
-  Send,
-  Bot,
-  BookOpen,
-  Flame,
-  Search,
-  Bell,
-  Check,
-  Shield,
-  Lock,
-  Unlock,
-  Languages,
-  Smartphone,
-  Monitor,
-  Heart,
-  Calendar,
-  Layers,
-  GraduationCap,
-  BarChart2,
-  RefreshCw,
-  ExternalLink,
-  Sliders,
-  Grid,
-  Gamepad2,
-  Smile,
-  Compass,
-  Zap,
-  HelpCircle,
-  Settings,
-  Filter,
-  Bookmark,
-  Share2,
-  SlidersHorizontal,
-  Lightbulb,
-  Music,
-  Info
+  Home, MessageSquare, User, Play, Pause, Star, Volume2, VolumeX,
+  ArrowLeft, Camera, Clock, X, Sparkles, Trophy, Award, Palette,
+  RotateCcw, CheckCircle2, ChevronRight, ChevronLeft, Send, Bot,
+  BookOpen, Flame, Search, Bell, Check, Shield, Lock, Unlock,
+  Languages, Smartphone, Monitor, Heart, Calendar, Layers,
+  GraduationCap, BarChart2, RefreshCw, ExternalLink, Sliders, Grid,
+  Gamepad2, Smile, Compass, Zap, HelpCircle, Settings, Filter,
+  Bookmark, Share2, SlidersHorizontal, Lightbulb, Music, Info, Plus, Trash2
 } from 'lucide-react';
+import { GRADES, shuffleArray, getQuestionsForGrade, getSubjectsForGrade } from './content.js';
 
-let sharedAudioCtx = null;
-const getAudioContext = () => {
-  if (typeof window === 'undefined') return null;
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return null;
-  if (!sharedAudioCtx) {
-    sharedAudioCtx = new AudioCtx();
-  }
-  if (sharedAudioCtx.state === 'suspended') {
-    sharedAudioCtx.resume().catch(() => {});
-  }
-  return sharedAudioCtx;
-};
+let _sctx = null;
+const _gac = () => { if(typeof window==='undefined')return null; const A=window.AudioContext||window.webkitAudioContext; if(!A)return null; if(!_sctx)_sctx=new A(); if(_sctx.state==='suspended')_sctx.resume().catch(()=>{}); return _sctx; };
 
-// Zero-asset procedural audio generation using Web Audio API
-const playSfx = (type = 'click', isMuted = false) => {
-  if (isMuted) return;
-  try {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    const now = ctx.currentTime;
+export const playSfx = (type='click', muted=false) => {
+  if(muted)return; try{const c=_gac();if(!c)return;const n=c.currentTime;
+  const m=(f,d,w='sine',v=0.18)=>{const o=c.createOscillator(),g=c.createGain();o.type=w;o.frequency.setValueAtTime(f,n);g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(0.001,n+d);o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+d);};
+  if(type==='click')m(480,0.06);else if(type==='pop'){m(320,0.1);setTimeout(()=>m(850,0.09),10);}else if(type==='coin'){m(987.77,0.35);setTimeout(()=>m(1318.51,0.2),80);}else if(type==='correct')[523.25,659.25,783.99,1046.5].forEach((f,i)=>setTimeout(()=>m(f,0.22,'triangle'),i*80));else if(type==='celebrate')[440,554.37,659.25,880,1108.73].forEach((f,i)=>setTimeout(()=>m(f,0.3),i*90));}catch{}};
 
-    if (type === 'coin') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(987.77, now);
-      osc.frequency.setValueAtTime(1318.51, now + 0.08);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.35);
-    } else if (type === 'pop') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(320, now);
-      osc.frequency.exponentialRampToValueAtTime(850, now + 0.09);
-      gain.gain.setValueAtTime(0.22, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.1);
-    } else if (type === 'correct') {
-      [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.18, now + idx * 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.22);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + idx * 0.08);
-        osc.stop(now + idx * 0.08 + 0.25);
-      });
-    } else if (type === 'celebrate') {
-      [440, 554.37, 659.25, 880, 1108.73].forEach((f, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = f;
-        gain.gain.setValueAtTime(0.15, now + i * 0.09);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.3);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + i * 0.09);
-        osc.stop(now + i * 0.09 + 0.32);
-      });
-    } else if (type === 'whoosh') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(200, now);
-      osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.16);
-    } else {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(480, now);
-      gain.gain.setValueAtTime(0.12, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.06);
-    }
-  } catch (err) {}
-};
+export const speak = (text, lang='en-US') => { if(typeof window!=='undefined'&&'speechSynthesis' in window){try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=0.96;u.pitch=1.15;u.lang=lang;window.speechSynthesis.speak(u);}catch{}} };
 
-const speak = (text, lang = 'en-US') => {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    try {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
-      utt.rate = 0.96;
-      utt.pitch = 1.15;
-      utt.lang = lang;
-      window.speechSynthesis.speak(utt);
-    } catch (e) {}
-  }
-};
-
-const KidStyles = () => (
-  <style>{`
-    @keyframes kid-bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px) scale(1.02); }
-    }
-    @keyframes kid-wiggle {
-      0%, 100% { transform: rotate(-3deg); }
-      50% { transform: rotate(3deg); }
-    }
-    @keyframes kid-pop {
-      0% { transform: scale(0.96); }
-      60% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    .animate-kid-bounce {
-      animation: kid-bounce 2.5s ease-in-out infinite;
-    }
-    .animate-kid-wiggle {
-      animation: kid-wiggle 1.8s ease-in-out infinite;
-    }
-    .kid-3d-btn {
-      transition: all 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      user-select: none;
-    }
-    .kid-3d-btn:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 7px 0 rgba(0, 0, 0, 0.2), 0 12px 20px rgba(0, 0, 0, 0.14);
-    }
-    .kid-3d-btn:active {
-      transform: translateY(4px) scale(0.98);
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
-    }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  `}</style>
-);
-
-// Blue Bird with Red Necktie
+const KidStyles = () => (<style>{`
+@keyframes kid-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px) scale(1.02)}}
+@keyframes kid-wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes kid-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px) rotate(2deg)}}
+.animate-kid-bounce{animation:kid-bounce 2.5s ease-in-out infinite}
+.animate-kid-wiggle{animation:kid-wiggle 1.8s ease-in-out infinite}
+.animate-kid-float{animation:kid-float 3s ease-in-out infinite}
+.kid-3d-btn{transition:all .12s cubic-bezier(.34,1.56,.64,1);box-shadow:0 5px 0 rgba(0,0,0,.16),0 8px 16px rgba(0,0,0,.1);cursor:pointer;user-select:none}
+.kid-3d-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 7px 0 rgba(0,0,0,.2),0 12px 20px rgba(0,0,0,.14)}
+.kid-3d-btn:active{transform:translateY(4px) scale(.98);box-shadow:0 1px 0 rgba(0,0,0,.2),0 3px 6px rgba(0,0,0,.1)}
+.no-scrollbar::-webkit-scrollbar{display:none}
+.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+`}</style>);
 const BlueBirdIcon = memo(() => (
-  <svg viewBox="0 0 120 120" className="w-24 h-24 select-none drop-shadow-md animate-[bounce_3s_ease-in-out_infinite]" aria-label="Blue Bird">
-    <ellipse cx="60" cy="65" rx="36" ry="38" fill="#4B96FF" />
-    <ellipse cx="60" cy="72" rx="26" ry="26" fill="#D3E8FF" />
-    <ellipse cx="48" cy="103" rx="8" ry="4" fill="#FFB703" />
-    <ellipse cx="72" cy="103" rx="8" ry="4" fill="#FFB703" />
-    <path d="M60 27 C56 16, 52 14, 48 18 C52 24, 56 26, 60 28 Z" fill="#2E79E6" />
-    <path d="M63 26 C66 14, 71 13, 74 18 C70 24, 66 26, 63 28 Z" fill="#3A86FF" />
-    <circle cx="50" cy="52" r="7" fill="#FFFFFF" />
-    <circle cx="51" cy="52" r="4.5" fill="#1E293B" />
-    <circle cx="53" cy="50" r="1.8" fill="#FFFFFF" />
-    <circle cx="70" cy="52" r="7" fill="#FFFFFF" />
-    <circle cx="69" cy="52" r="4.5" fill="#1E293B" />
-    <circle cx="71" cy="50" r="1.8" fill="#FFFFFF" />
-    <ellipse cx="43" cy="61" rx="4.5" ry="2.5" fill="#FF9EAA" opacity="0.7" />
-    <ellipse cx="77" cy="61" rx="4.5" ry="2.5" fill="#FF9EAA" opacity="0.7" />
-    <path d="M57 58 L63 58 L60 65 Z" fill="#FB8500" />
-    <ellipse cx="28" cy="65" rx="9" ry="18" fill="#2E79E6" transform="rotate(15 28 65)" />
-    <ellipse cx="92" cy="65" rx="9" ry="18" fill="#2E79E6" transform="rotate(-15 92 65)" />
-    <path d="M44 68 L60 74 L76 68 L74 86 L60 89 L46 86 Z" fill="#EF4444" />
-    <path d="M46 70 L60 75 L60 88 L47 84 Z" fill="#FCA5A5" />
-    <path d="M60 75 L74 70 L73 84 L60 88 Z" fill="#FEE2E2" />
-    <line x1="60" y1="74" x2="60" y2="89" stroke="#DC2626" strokeWidth="2" />
+  <svg viewBox="0 0 120 120" className="w-24 h-24 select-none drop-shadow-md animate-[bounce_3s_ease-in-out_infinite]">
+    <ellipse cx="60" cy="65" rx="36" ry="38" fill="#4B96FF"/>
+    <ellipse cx="60" cy="72" rx="26" ry="26" fill="#D3E8FF"/>
+    <ellipse cx="48" cy="103" rx="8" ry="4" fill="#FFB703"/>
+    <ellipse cx="72" cy="103" rx="8" ry="4" fill="#FFB703"/>
+    <path d="M60 27C56 16,52 14,48 18C52 24,56 26,60 28Z" fill="#2E79E6"/>
+    <path d="M63 26C66 14,71 13,74 18C70 24,66 26,63 28Z" fill="#3A86FF"/>
+    <circle cx="50" cy="52" r="7" fill="#FFF"/><circle cx="51" cy="52" r="4.5" fill="#1E293B"/><circle cx="53" cy="50" r="1.8" fill="#FFF"/>
+    <circle cx="70" cy="52" r="7" fill="#FFF"/><circle cx="69" cy="52" r="4.5" fill="#1E293B"/><circle cx="71" cy="50" r="1.8" fill="#FFF"/>
+    <ellipse cx="43" cy="61" rx="4.5" ry="2.5" fill="#FF9EAA" opacity="0.7"/>
+    <ellipse cx="77" cy="61" rx="4.5" ry="2.5" fill="#FF9EAA" opacity="0.7"/>
+    <path d="M57 58L63 58L60 65Z" fill="#FB8500"/>
+    <ellipse cx="28" cy="65" rx="9" ry="18" fill="#2E79E6" transform="rotate(15 28 65)"/>
+    <ellipse cx="92" cy="65" rx="9" ry="18" fill="#2E79E6" transform="rotate(-15 92 65)"/>
+    <path d="M44 68L60 74L76 68L74 86L60 89L46 86Z" fill="#EF4444"/>
+    <path d="M46 70L60 75L60 88L47 84Z" fill="#FCA5A5"/><path d="M60 75L74 70L73 84L60 88Z" fill="#FEE2E2"/>
+    <line x1="60" y1="74" x2="60" y2="89" stroke="#DC2626" strokeWidth="2"/>
   </svg>
 ));
 
-// Happy Lion with Heart
 const HappyLionIcon = memo(() => (
-  <svg viewBox="0 0 140 140" className="w-28 h-28 select-none drop-shadow-md hover:scale-105 transition-transform duration-300" aria-label="Happy Lion">
-    {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg, i) => (
-      <circle
-        key={i}
-        cx={70 + 44 * Math.cos((deg * Math.PI) / 180)}
-        cy={70 + 44 * Math.sin((deg * Math.PI) / 180)}
-        r="17"
-        fill={i % 2 === 0 ? '#FDBA74' : '#F59E0B'}
-      />
-    ))}
-    <circle cx="45" cy="42" r="12" fill="#FBBF24" />
-    <circle cx="45" cy="42" r="7" fill="#FDE68A" />
-    <circle cx="95" cy="42" r="12" fill="#FBBF24" />
-    <circle cx="95" cy="42" r="7" fill="#FDE68A" />
-    <circle cx="70" cy="70" r="38" fill="#FDE047" />
-    <ellipse cx="56" cy="63" rx="5" ry="6" fill="#451A03" />
-    <circle cx="58" cy="61" r="2" fill="#FFFFFF" />
-    <ellipse cx="84" cy="63" rx="5" ry="6" fill="#451A03" />
-    <circle cx="86" cy="61" r="2" fill="#FFFFFF" />
-    <ellipse cx="48" cy="74" rx="6" ry="3.5" fill="#FCA5A5" />
-    <ellipse cx="92" cy="74" rx="6" ry="3.5" fill="#FCA5A5" />
-    <polygon points="70,69 66,74 74,74" fill="#B45309" />
-    <path d="M66 76 Q70 80 74 76" stroke="#78350F" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <path d="M78 88 C78 82 85 76 93 76 C101 76 107 83 107 90 C107 101 93 109 93 109 C93 109 78 101 78 90 Z" fill="#EF4444" />
+  <svg viewBox="0 0 140 140" className="w-28 h-28 select-none drop-shadow-md hover:scale-105 transition-transform duration-300">
+    {[0,30,60,90,120,150,180,210,240,270,300,330].map((d,i)=>(<circle key={i} cx={70+44*Math.cos(d*Math.PI/180)} cy={70+44*Math.sin(d*Math.PI/180)} r="17" fill={i%2===0?'#FDBA74':'#F59E0B'}/>))}
+    <circle cx="45" cy="42" r="12" fill="#FBBF24"/><circle cx="45" cy="42" r="7" fill="#FDE68A"/>
+    <circle cx="95" cy="42" r="12" fill="#FBBF24"/><circle cx="95" cy="42" r="7" fill="#FDE68A"/>
+    <circle cx="70" cy="70" r="38" fill="#FDE047"/>
+    <ellipse cx="56" cy="63" rx="5" ry="6" fill="#451A03"/><circle cx="58" cy="61" r="2" fill="#FFF"/>
+    <ellipse cx="84" cy="63" rx="5" ry="6" fill="#451A03"/><circle cx="86" cy="61" r="2" fill="#FFF"/>
+    <ellipse cx="48" cy="74" rx="6" ry="3.5" fill="#FCA5A5"/>
+    <ellipse cx="92" cy="74" rx="6" ry="3.5" fill="#FCA5A5"/>
+    <polygon points="70,69 66,74 74,74" fill="#B45309"/>
+    <path d="M66 76Q70 80 74 76" stroke="#78350F" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
   </svg>
 ));
 
-// Friendly Dinosaur
 const FriendlyDinoIcon = memo(() => (
-  <svg viewBox="0 0 160 140" className="w-28 h-24 select-none drop-shadow-md hover:rotate-3 transition-transform" aria-label="Dinosaur">
-    <ellipse cx="75" cy="85" rx="42" ry="38" fill="#84CC16" />
-    <ellipse cx="68" cy="88" rx="28" ry="24" fill="#ECFCCB" />
-    <path d="M90 85 C100 80 115 65 118 45 C120 30 110 20 95 20 C82 20 78 32 82 45 C85 55 88 70 88 85 Z" fill="#84CC16" />
-    <circle cx="110" cy="35" r="5" fill="#FCA5A5" opacity="0.6" />
-    <circle cx="102" cy="28" r="6" fill="#FFFFFF" />
-    <circle cx="103" cy="28" r="3.5" fill="#1E293B" />
-    <circle cx="105" cy="26" r="1.5" fill="#FFFFFF" />
-    <polygon points="65,48 72,40 76,52" fill="#EAB308" />
-    <polygon points="50,55 58,45 62,59" fill="#EAB308" />
-    <polygon points="36,68 44,58 48,72" fill="#EAB308" />
-    <path d="M102 40 Q112 44 116 38" stroke="#166534" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <rect x="52" y="112" width="14" height="20" rx="7" fill="#65A30D" />
-    <rect x="80" y="112" width="14" height="20" rx="7" fill="#65A30D" />
+  <svg viewBox="0 0 160 140" className="w-28 h-24 select-none drop-shadow-md hover:rotate-3 transition-transform">
+    <ellipse cx="75" cy="85" rx="42" ry="38" fill="#84CC16"/>
+    <ellipse cx="68" cy="88" rx="28" ry="24" fill="#ECFCCB"/>
+    <path d="M90 85C100 80 115 65 118 45C120 30 110 20 95 20C82 20 78 32 82 45C85 55 88 70 88 85Z" fill="#84CC16"/>
+    <circle cx="102" cy="28" r="6" fill="#FFF"/><circle cx="103" cy="28" r="3.5" fill="#1E293B"/><circle cx="105" cy="26" r="1.5" fill="#FFF"/>
+    <path d="M102 40Q112 44 116 38" stroke="#166534" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <rect x="52" y="112" width="14" height="20" rx="7" fill="#65A30D"/>
+    <rect x="80" y="112" width="14" height="20" rx="7" fill="#65A30D"/>
   </svg>
 ));
 
-// EduPlay Scholar Owl Mascot
-const EduPlayOwlIcon = memo(({ className = "w-28 h-28" }) => (
-  <svg viewBox="0 0 140 140" className={`${className} select-none drop-shadow-md`} aria-label="EduPlay Scholar Owl">
-    <ellipse cx="70" cy="80" rx="42" ry="46" fill="#7C3AED" />
-    <ellipse cx="70" cy="86" rx="30" ry="34" fill="#DDD6FE" />
-    <ellipse cx="54" cy="126" rx="9" ry="5" fill="#F59E0B" />
-    <ellipse cx="86" cy="126" rx="9" ry="5" fill="#F59E0B" />
-    <ellipse cx="28" cy="80" rx="10" ry="22" fill="#6D28D9" transform="rotate(18 28 80)" />
-    <ellipse cx="112" cy="80" rx="10" ry="22" fill="#6D28D9" transform="rotate(-18 112 80)" />
-    <circle cx="52" cy="62" r="18" fill="#FFFFFF" />
-    <circle cx="52" cy="62" r="11" fill="#3B82F6" />
-    <circle cx="53" cy="61" r="6" fill="#1E1B4B" />
-    <circle cx="55" cy="58" r="2.5" fill="#FFFFFF" />
-    <circle cx="88" cy="62" r="18" fill="#FFFFFF" />
-    <circle cx="88" cy="62" r="11" fill="#3B82F6" />
-    <circle cx="87" cy="61" r="6" fill="#1E1B4B" />
-    <circle cx="89" cy="58" r="2.5" fill="#FFFFFF" />
-    <polygon points="70,72 64,80 76,80" fill="#F59E0B" />
-    <polygon points="70,18 26,35 70,48 114,35" fill="#1E293B" />
-    <polygon points="70,22 34,35 70,44 106,35" fill="#334155" />
-    <rect x="52" y="38" width="36" height="12" rx="4" fill="#0F172A" />
-    <path d="M102 38 Q110 50 114 62" stroke="#EAB308" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <circle cx="114" cy="64" r="3" fill="#EAB308" />
-    <rect x="50" y="86" width="40" height="28" rx="4" fill="#EA580C" />
-    <rect x="54" y="88" width="15" height="24" rx="2" fill="#FED7AA" />
-    <rect x="71" y="88" width="15" height="24" rx="2" fill="#FFEDD5" />
-    <line x1="69" y1="86" x2="69" y2="114" stroke="#C2410C" strokeWidth="2" />
+const EduPlayOwlIcon = memo(({ className = "w-16 h-16" }) => (
+  <svg viewBox="0 0 140 140" className={`${className} select-none drop-shadow-md`}>
+    <ellipse cx="70" cy="80" rx="42" ry="46" fill="#7C3AED"/>
+    <ellipse cx="70" cy="86" rx="30" ry="34" fill="#DDD6FE"/>
+    <ellipse cx="28" cy="80" rx="10" ry="22" fill="#6D28D9" transform="rotate(18 28 80)"/>
+    <ellipse cx="112" cy="80" rx="10" ry="22" fill="#6D28D9" transform="rotate(-18 112 80)"/>
+    <circle cx="52" cy="62" r="18" fill="#FFF"/><circle cx="52" cy="62" r="11" fill="#3B82F6"/>
+    <circle cx="53" cy="61" r="6" fill="#1E1B4B"/><circle cx="55" cy="58" r="2.5" fill="#FFF"/>
+    <circle cx="88" cy="62" r="18" fill="#FFF"/><circle cx="88" cy="62" r="11" fill="#3B82F6"/>
+    <circle cx="87" cy="61" r="6" fill="#1E1B4B"/><circle cx="89" cy="58" r="2.5" fill="#FFF"/>
+    <polygon points="70,72 64,80 76,80" fill="#F59E0B"/>
+    <polygon points="70,18 26,35 70,48 114,35" fill="#1E293B"/>
+    <rect x="52" y="38" width="36" height="12" rx="4" fill="#0F172A"/>
   </svg>
 ));
 
-// Toby the Turtle Mascot
 const TobyTurtleIcon = memo(({ className = "w-32 h-36" }) => (
-  <svg viewBox="0 0 160 180" className={`${className} select-none drop-shadow-md`} aria-label="Toby the Turtle">
-    <ellipse cx="80" cy="100" rx="48" ry="42" fill="#22C55E" />
-    <ellipse cx="80" cy="98" rx="42" ry="36" fill="#4ADE80" stroke="#15803D" strokeWidth="3" />
-    <path d="M60 85 L100 85 L110 102 L95 120 L65 120 L50 102 Z" fill="#86EFAC" stroke="#16A34A" strokeWidth="2" />
-    <ellipse cx="44" cy="130" rx="11" ry="16" fill="#86EFAC" stroke="#16A34A" strokeWidth="2" />
-    <ellipse cx="116" cy="130" rx="11" ry="16" fill="#86EFAC" stroke="#16A34A" strokeWidth="2" />
-    <ellipse cx="36" cy="90" rx="14" ry="10" fill="#86EFAC" stroke="#16A34A" strokeWidth="2" />
-    <ellipse cx="124" cy="90" rx="14" ry="10" fill="#86EFAC" stroke="#16A34A" strokeWidth="2" />
-    <circle cx="80" cy="54" r="26" fill="#86EFAC" stroke="#16A34A" strokeWidth="2" />
-    <circle cx="70" cy="50" r="4.5" fill="#0F172A" />
-    <circle cx="71" cy="48" r="1.5" fill="#FFFFFF" />
-    <circle cx="90" cy="50" r="4.5" fill="#0F172A" />
-    <circle cx="91" cy="48" r="1.5" fill="#FFFFFF" />
-    <path d="M72 62 Q80 68 88 62" stroke="#15803D" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <ellipse cx="64" cy="58" rx="4" ry="2.5" fill="#FCA5A5" />
-    <ellipse cx="96" cy="58" rx="4" ry="2.5" fill="#FCA5A5" />
-    <ellipse cx="80" cy="34" rx="22" ry="5" fill="#3B82F6" />
-    <path d="M66 33 C66 22, 70 18, 80 18 C90 18, 94 22, 94 33 Z" fill="#2563EB" />
-    <rect x="66" y="28" width="28" height="5" fill="#1E3A8A" />
+  <svg viewBox="0 0 160 180" className={`${className} select-none drop-shadow-md`}>
+    <ellipse cx="80" cy="100" rx="48" ry="42" fill="#22C55E"/>
+    <ellipse cx="80" cy="98" rx="42" ry="36" fill="#4ADE80" stroke="#15803D" strokeWidth="3"/>
+    <path d="M60 85L100 85L110 102L95 120L65 120L50 102Z" fill="#86EFAC" stroke="#16A34A" strokeWidth="2"/>
+    <ellipse cx="44" cy="130" rx="11" ry="16" fill="#86EFAC" stroke="#16A34A" strokeWidth="2"/>
+    <ellipse cx="116" cy="130" rx="11" ry="16" fill="#86EFAC" stroke="#16A34A" strokeWidth="2"/>
+    <circle cx="80" cy="54" r="26" fill="#86EFAC" stroke="#16A34A" strokeWidth="2"/>
+    <circle cx="70" cy="50" r="4.5" fill="#0F172A"/><circle cx="71" cy="48" r="1.5" fill="#FFF"/>
+    <circle cx="90" cy="50" r="4.5" fill="#0F172A"/><circle cx="91" cy="48" r="1.5" fill="#FFF"/>
+    <path d="M72 62Q80 68 88 62" stroke="#15803D" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <ellipse cx="80" cy="34" rx="22" ry="5" fill="#3B82F6"/>
+    <path d="M66 33C66 22,70 18,80 18C90 18,94 22,94 33Z" fill="#2563EB"/>
+    <rect x="66" y="28" width="28" height="5" fill="#1E3A8A"/>
   </svg>
 ));
 
-// Graduate Polar Bear Mascot
-const GraduatePolarBearIcon = memo(({ className = "w-36 h-36" }) => (
-  <svg viewBox="0 0 160 170" className={`${className} select-none drop-shadow-md`} aria-label="Graduate Polar Bear">
-    <rect x="20" y="20" width="6" height="6" fill="#F43F5E" transform="rotate(25 20 20)" />
-    <rect x="135" y="30" width="6" height="6" fill="#3B82F6" transform="rotate(45 135 30)" />
-    <rect x="125" y="60" width="5" height="5" fill="#EAB308" transform="rotate(15 125 60)" />
-    <rect x="15" y="70" width="5" height="5" fill="#10B981" transform="rotate(30 15 70)" />
-    <circle cx="50" cy="48" r="12" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" />
-    <circle cx="50" cy="48" r="6" fill="#FDA4AF" />
-    <circle cx="110" cy="48" r="12" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" />
-    <circle cx="110" cy="48" r="6" fill="#FDA4AF" />
-    <ellipse cx="80" cy="115" rx="38" ry="42" fill="#1E293B" />
-    <circle cx="80" cy="72" r="32" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" />
-    <circle cx="70" cy="68" r="4" fill="#0F172A" />
-    <circle cx="90" cy="68" r="4" fill="#0F172A" />
-    <ellipse cx="80" cy="78" rx="10" ry="7" fill="#F1F5F9" />
-    <ellipse cx="80" cy="76" rx="4" ry="2.5" fill="#0F172A" />
-    <path d="M77 81 Q80 84 83 81" stroke="#0F172A" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-    <ellipse cx="64" cy="76" rx="4" ry="2" fill="#FCA5A5" opacity="0.8" />
-    <ellipse cx="96" cy="76" rx="4" ry="2" fill="#FCA5A5" opacity="0.8" />
-    <path d="M72 104 L80 118 L88 104" stroke="#DC2626" strokeWidth="5" fill="none" />
-    <circle cx="80" cy="120" r="7" fill="#F59E0B" stroke="#B45309" strokeWidth="1.5" />
-    <polygon points="80,24 38,40 80,50 122,40" fill="#0F172A" />
-    <rect x="62" y="44" width="36" height="8" rx="3" fill="#1E293B" />
-    <path d="M110 42 Q120 54 122 65" stroke="#F59E0B" strokeWidth="2" fill="none" />
-    <circle cx="122" cy="67" r="2.5" fill="#F59E0B" />
-    <rect x="108" y="98" width="26" height="8" rx="3" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="1.5" transform="rotate(-30 108 98)" />
-    <line x1="120" y1="92" x2="122" y2="100" stroke="#DC2626" strokeWidth="2.5" />
+const PolarBearIcon = memo(({ className = "w-40 h-40" }) => (
+  <svg viewBox="0 0 160 170" className={`${className} select-none drop-shadow-md`}>
+    <circle cx="50" cy="48" r="12" fill="#FFF" stroke="#E2E8F0" strokeWidth="2"/><circle cx="50" cy="48" r="6" fill="#FDA4AF"/>
+    <circle cx="110" cy="48" r="12" fill="#FFF" stroke="#E2E8F0" strokeWidth="2"/><circle cx="110" cy="48" r="6" fill="#FDA4AF"/>
+    <ellipse cx="80" cy="115" rx="38" ry="42" fill="#1E293B"/>
+    <circle cx="80" cy="72" r="32" fill="#FFF" stroke="#E2E8F0" strokeWidth="2"/>
+    <circle cx="70" cy="68" r="4" fill="#0F172A"/><circle cx="90" cy="68" r="4" fill="#0F172A"/>
+    <ellipse cx="80" cy="78" rx="10" ry="7" fill="#F1F5F9"/>
+    <ellipse cx="80" cy="76" rx="4" ry="2.5" fill="#0F172A"/>
+    <path d="M77 81Q80 84 83 81" stroke="#0F172A" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+    <ellipse cx="64" cy="76" rx="4" ry="2" fill="#FCA5A5" opacity="0.8"/>
+    <ellipse cx="96" cy="76" rx="4" ry="2" fill="#FCA5A5" opacity="0.8"/>
+    <path d="M72 104L80 118L88 104" stroke="#DC2626" strokeWidth="5" fill="none"/>
+    <circle cx="80" cy="120" r="7" fill="#F59E0B" stroke="#B45309" strokeWidth="1.5"/>
+    <polygon points="80,24 38,40 80,50 122,40" fill="#0F172A"/>
+    <rect x="62" y="44" width="36" height="8" rx="3" fill="#1E293B"/>
   </svg>
 ));
 
-// Safari Jeep with Friendly Animals
-const SafariJeepIcon = memo(({ className = "w-28 h-24" }) => (
-  <svg viewBox="0 0 140 120" className={`${className} select-none drop-shadow-sm`} aria-label="Safari Jeep with Animals">
-    <circle cx="92" cy="30" r="10" fill="#F59E0B" />
-    <path d="M88 18 L88 24 M96 18 L96 24" stroke="#B45309" strokeWidth="2" strokeLinecap="round" />
-    <rect x="90" y="36" width="6" height="20" fill="#F59E0B" />
-    <circle cx="48" cy="46" r="12" fill="#94A3B8" />
-    <ellipse cx="36" cy="46" rx="6" ry="9" fill="#94A3B8" />
-    <path d="M48 50 Q46 62 50 64" stroke="#64748B" strokeWidth="3" fill="none" strokeLinecap="round" />
-    <circle cx="70" cy="48" r="11" fill="#FB923C" />
-    <circle cx="67" cy="46" r="1.5" fill="#000" />
-    <circle cx="73" cy="46" r="1.5" fill="#000" />
-    <polygon points="70,49 68,52 72,52" fill="#B45309" />
-    <rect x="30" y="62" width="80" height="30" rx="8" fill="#EF4444" />
-    <rect x="36" y="65" width="68" height="12" rx="3" fill="#FEF08A" opacity="0.8" />
-    <circle cx="48" cy="94" r="11" fill="#1E293B" />
-    <circle cx="48" cy="94" r="5" fill="#94A3B8" />
-    <circle cx="92" cy="94" r="11" fill="#1E293B" />
-    <circle cx="92" cy="94" r="5" fill="#94A3B8" />
-    <rect x="58" y="78" width="24" height="10" rx="2" fill="#B91C1C" />
-    <line x1="64" y1="78" x2="64" y2="88" stroke="#FFFFFF" strokeWidth="1.5" />
-    <line x1="70" y1="78" x2="70" y2="88" stroke="#FFFFFF" strokeWidth="1.5" />
-    <line x1="76" y1="78" x2="76" y2="88" stroke="#FFFFFF" strokeWidth="1.5" />
-  </svg>
-));
+const KidAvatar = memo(({ name = '?', color = '#2563EB', size = 48 }) => {
+  const initial = (name || '?')[0].toUpperCase();
+  return (
+    <div className="rounded-full flex items-center justify-center font-black text-white select-none" style={{ width: size, height: size, background: color, fontSize: size * 0.4 }}>
+      {initial}
+    </div>
+  );
+});
 
-// Elephant Kid with Alphabet Letter E
-const LetterEKidIcon = memo(({ className = "w-28 h-24" }) => (
-  <svg viewBox="0 0 140 120" className={`${className} select-none drop-shadow-sm`} aria-label="Alphabet Letter E">
-    <circle cx="45" cy="60" r="18" fill="#CBD5E1" />
-    <ellipse cx="28" cy="58" rx="8" ry="12" fill="#94A3B8" />
-    <circle cx="45" cy="58" r="11" fill="#FED7AA" />
-    <circle cx="42" cy="56" r="1.5" fill="#000" />
-    <circle cx="48" cy="56" r="1.5" fill="#000" />
-    <path d="M43 62 Q45 64 47 62" stroke="#9A3412" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-    <path d="M45 64 Q43 74 48 76" stroke="#64748B" strokeWidth="3" fill="none" strokeLinecap="round" />
-    <path d="M72 32 L112 32 M72 32 L72 88 L112 88 M72 60 L104 60" stroke="#F87171" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    <path d="M72 32 L112 32 M72 32 L72 88 L112 88 M72 60 L104 60" stroke="#FFFFFF" strokeWidth="2" strokeDasharray="3 3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-  </svg>
-));
-
-// User Profile Avatar - Maheen Hassan
-const MaheenAvatar = memo(() => (
-  <svg viewBox="0 0 100 100" className="w-full h-full select-none" aria-label="Maheen Avatar">
-    <circle cx="50" cy="50" r="50" fill="#2563EB" />
-    <circle cx="50" cy="48" r="26" fill="#FFE4B5" />
-    <path d="M24 44 C24 22 40 16 50 16 C62 16 76 22 76 44 C76 45 74 38 70 34 C64 30 60 36 50 28 C44 34 38 30 32 36 C28 40 25 43 24 44 Z" fill="#1E293B" />
-    <circle cx="41" cy="48" r="9" fill="none" stroke="#0F172A" strokeWidth="3" />
-    <circle cx="59" cy="48" r="9" fill="none" stroke="#0F172A" strokeWidth="3" />
-    <line x1="50" y1="48" x2="50" y2="48" stroke="#0F172A" strokeWidth="3" />
-    <circle cx="41" cy="48" r="4" fill="#1E293B" />
-    <circle cx="43" cy="46" r="1.5" fill="#FFFFFF" />
-    <circle cx="59" cy="48" r="4" fill="#1E293B" />
-    <circle cx="61" cy="46" r="1.5" fill="#FFFFFF" />
-    <path d="M46 56 Q50 60 54 56" stroke="#9A3412" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <path d="M28 86 C28 72 38 72 50 72 C62 72 72 72 72 86 Z" fill="#38BDF8" />
-  </svg>
-));
-
-// Jane Cooper Avatar
-const JaneCooperAvatar = memo(() => (
-  <svg viewBox="0 0 100 100" className="w-full h-full select-none" aria-label="Jane Cooper Avatar">
-    <circle cx="50" cy="50" r="50" fill="#FBBF24" />
-    <circle cx="50" cy="50" r="26" fill="#FCD34D" />
-    <path d="M26 44 C26 24 38 18 50 18 C64 18 74 24 74 44 C74 52 70 56 68 56 C62 38 42 38 32 56 Z" fill="#78350F" />
-    <circle cx="42" cy="50" r="3.5" fill="#451A03" />
-    <circle cx="58" cy="50" r="3.5" fill="#451A03" />
-    <ellipse cx="36" cy="56" rx="3.5" ry="2" fill="#F87171" opacity="0.6" />
-    <ellipse cx="64" cy="56" rx="3.5" ry="2" fill="#F87171" opacity="0.6" />
-    <path d="M46 60 Q50 64 54 60" stroke="#78350F" strokeWidth="2" fill="none" strokeLinecap="round" />
-    <path d="M30 88 C30 74 40 74 50 74 C60 74 70 74 70 88 Z" fill="#10B981" />
-  </svg>
-));
-
-const GRADES = [
-  { id: 'KG', label: 'Kindergarten', age: '4-5 yrs', desc: 'Phonics & Basic Counting' },
-  { id: 'G1', label: 'Grade 1', age: '6-7 yrs', desc: 'Addition & Simple Reading' },
-  { id: 'G2', label: 'Grade 2', age: '7-8 yrs', desc: 'Word Problems & Nature' },
-  { id: 'G3', label: 'Grade 3', age: '8-9 yrs', desc: 'Multiplication & Earth Science' },
-  { id: 'G4', label: 'Grade 4', age: '9-10 yrs', desc: 'Fractions & Geography' },
-  { id: 'G5', label: 'Grade 5', age: '10-11 yrs', desc: 'Critical Thinking & STEM' },
-  { id: 'G6', label: 'Grade 6', age: '11-12 yrs', desc: 'Pre-Algebra & Global History' }
+const AVATARS = [
+  { id: 'rex', emoji: '🦊', color: '#F59E0B' },
+  { id: 'leo', emoji: '🦁', color: '#EF4444' },
+  { id: 'toby', emoji: '🐢', color: '#22C55E' },
+  { id: 'owl', emoji: '🦉', color: '#7C3AED' },
+  { id: 'bear', emoji: '🐻', color: '#92400E' },
+  { id: 'bird', emoji: '🐦', color: '#3B82F6' },
+  { id: 'cat', emoji: '🐱', color: '#EC4899' },
+  { id: 'dino', emoji: '🦖', color: '#10B981' },
 ];
 
-const DrawingCanvas = memo(({ earnCoins, setActiveModalGame, isAudioMuted }) => {
-  const canvasRef = useRef(null);
-  const [color, setColor] = useState('#EF4444');
-  const [brushSize, setBrushSize] = useState(12);
-  const [isDrawing, setIsDrawing] = useState(false);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-  }, []);
-
-  const getCoordinates = (e) => {
-    const c = canvasRef.current;
-    if (!c) return { x: 0, y: 0 };
-    const rect = c.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
-    };
+function loadProfiles() { try { return JSON.parse(localStorage.getItem('kidplay_profiles') || '[]'); } catch { return []; } }
+function saveProfiles(p) { localStorage.setItem('kidplay_profiles', JSON.stringify(p)); }
+function loadActiveProfile() { try { return JSON.parse(localStorage.getItem('kidplay_active_profile') || 'null'); } catch { return null; } }
+function saveActiveProfile(id) { localStorage.setItem('kidplay_active_profile', JSON.stringify(id)); }
+const CreateProfileScreen = memo(({ onDone }) => {
+  const [name, setName] = useState('');
+  const [grade, setGrade] = useState('G3');
+  const [avatarIdx, setAvatarIdx] = useState(0);
+  const handleCreate = () => {
+    if (!name.trim()) return;
+    const profiles = loadProfiles();
+    const p = { id: `p-${Date.now()}`, name: name.trim(), grade, avatar: AVATARS[avatarIdx], coins: 0, streak: 0, stars: 0, createdAt: Date.now() };
+    profiles.push(p);
+    saveProfiles(profiles);
+    saveActiveProfile(p.id);
+    playSfx('celebrate');
+    speak(`Welcome ${p.name}! Let's learn and play!`);
+    onDone(p);
   };
-
-  const startDraw = (e) => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    if (!ctx) return;
-    const { x, y } = getCoordinates(e);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    setIsDrawing(true);
-  };
-
-  const drawMove = (e) => {
-    if (!isDrawing) return;
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    if (!ctx) return;
-    const { x, y } = getCoordinates(e);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = brushSize;
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  };
-
-  const stopDraw = () => setIsDrawing(false);
-
-  const clearCanvas = () => {
-    playSfx('pop', isAudioMuted);
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    if (ctx) {
-      const dpr = window.devicePixelRatio || 1;
-      ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
-    }
-  };
-
   return (
-    <div className="flex flex-col h-full bg-white p-4">
-      <div className="flex items-center justify-between pb-3 border-b-2 border-slate-100">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-700 animate-kid-bounce">
-            <Palette className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="font-black text-base sm:text-lg text-slate-800 tracking-wide">Magic Drawing Board</h2>
-            <p className="text-xs font-bold text-slate-400">Pick a bright color and draw!</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={clearCanvas}
-            className="kid-3d-btn px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl text-xs sm:text-sm font-black flex items-center gap-1.5"
-            aria-label="Clear drawing"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Clear</span>
-          </button>
-          <button
-            onClick={() => {
-              playSfx('celebrate', isAudioMuted);
-              earnCoins(25);
-              setActiveModalGame(null);
-            }}
-            className="kid-3d-btn px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-xs sm:text-sm font-black flex items-center gap-1.5"
-          >
-            <Star className="w-4 h-4 fill-amber-300 text-amber-300" />
-            <span>Save Art ⭐</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-1 my-3 bg-amber-50/40 rounded-3xl border-4 border-dashed border-amber-200 overflow-hidden flex items-center justify-center shadow-inner">
-        <canvas
-          ref={canvasRef}
-          className="w-full h-full bg-white cursor-crosshair touch-none"
-          onMouseDown={startDraw}
-          onMouseMove={drawMove}
-          onMouseUp={stopDraw}
-          onMouseLeave={stopDraw}
-          onTouchStart={startDraw}
-          onTouchMove={drawMove}
-          onTouchEnd={stopDraw}
-        />
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-        <div className="flex items-center gap-2">
-          {['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#000000'].map((c) => (
-            <button
-              key={c}
-              onClick={() => {
-                setColor(c);
-                playSfx('click', isAudioMuted);
-              }}
-              aria-label={`Color ${c}`}
-              className={`w-9 h-9 rounded-2xl border-4 transition-all duration-150 ${
-                color === c ? 'scale-125 border-slate-900 shadow-lg ring-4 ring-amber-300' : 'border-white hover:scale-110 shadow-sm'
-              }`}
-              style={{ backgroundColor: c }}
-            />
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div className="bg-white/95 backdrop-blur rounded-3xl p-8 w-full max-w-sm shadow-2xl">
+        <h1 className="text-2xl font-black text-center mb-1" style={{ color: '#6B21A8' }}>Create Your Profile</h1>
+        <p className="text-center text-sm text-gray-500 mb-6">Who's learning today?</p>
+        <div className="flex flex-wrap gap-3 justify-center mb-6">
+          {AVATARS.map((av, i) => (
+            <button key={av.id} onClick={() => setAvatarIdx(i)}
+              className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all ${i === avatarIdx ? 'ring-4 scale-110 shadow-lg' : 'opacity-70 hover:opacity-100'}`}
+              style={{ background: av.color + '20', ringColor: av.color }}>
+              {av.emoji}
+            </button>
           ))}
         </div>
-        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
-          <span className="text-xs font-black text-slate-600">Brush</span>
-          <input
-            type="range"
-            min="4"
-            max="32"
-            value={brushSize}
-            onChange={(e) => setBrushSize(Number(e.target.value))}
-            className="w-24 sm:w-32 h-3 accent-indigo-600 cursor-pointer"
-            aria-label="Brush size"
-          />
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name..."
+          className="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-500 outline-none text-center text-lg font-semibold mb-4" maxLength={20}
+          onKeyDown={e => e.key === 'Enter' && handleCreate()} />
+        <div className="mb-6">
+          <p className="text-xs text-gray-400 text-center mb-2 font-medium">Your grade</p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {GRADES.map(g => (
+              <button key={g.id} onClick={() => setGrade(g.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${grade === g.id ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                style={grade === g.id ? { background: g.color } : {}}>
+                {g.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button onClick={handleCreate} disabled={!name.trim()}
+          className="kid-3d-btn w-full py-3 rounded-2xl text-white font-black text-lg disabled:opacity-40"
+          style={{ background: name.trim() ? AVATARS[avatarIdx].color : '#ccc' }}>
+          Let's Go! 🚀
+        </button>
+      </div>
+    </div>
+  );
+});
+
+const ProfileSelectScreen = memo(({ onSelect, onAddNew }) => {
+  const profiles = loadProfiles();
+  const handleSelect = (p) => { saveActiveProfile(p.id); playSfx('pop'); speak(`Hi ${p.name}!`); onSelect(p); };
+  const handleDelete = (e, p) => { e.stopPropagation(); if (confirm(`Delete ${p.name}'s profile?`)) { saveProfiles(profiles.filter(x => x.id !== p.id)); location.reload(); } };
+  if (profiles.length === 0) return null;
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }}>
+      <div className="bg-white/95 backdrop-blur rounded-3xl p-8 w-full max-w-sm shadow-2xl">
+        <h1 className="text-2xl font-black text-center mb-1" style={{ color: '#7C3AED' }}>Who's Playing?</h1>
+        <p className="text-center text-sm text-gray-500 mb-6">Choose your profile</p>
+        <div className="space-y-3 mb-6">
+          {profiles.map(p => (
+            <button key={p.id} onClick={() => handleSelect(p)}
+              className="kid-3d-btn w-full flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 text-left border-2 border-transparent hover:border-purple-200">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: (p.avatar?.color || '#3B82F6') + '20' }}>
+                {p.avatar?.emoji || '🦊'}
+              </div>
+              <div className="flex-1">
+                <div className="font-bold text-gray-800">{p.name}</div>
+                <div className="text-xs text-gray-400">{GRADES.find(g => g.id === p.grade)?.label || p.grade} · {p.stars || 0} ⭐</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🪙 {p.coins || 0}</span>
+                <button onClick={(e) => handleDelete(e, p)} className="text-red-400 hover:text-red-600 p-1"><Trash2 size={14}/></button>
+              </div>
+            </button>
+          ))}
+        </div>
+        <button onClick={onAddNew} className="kid-3d-btn w-full py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
+          <Plus size={18} className="inline mr-2" /> New Profile
+        </button>
+      </div>
+    </div>
+  );
+});
+const GradeSelectScreen = memo(({ onSelect, onBack }) => (
+  <div className="min-h-screen px-4 py-8" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+    <div className="max-w-md mx-auto">
+      <div className="flex items-center gap-4 mb-8">
+        <button onClick={onBack} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600">
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-2xl font-black text-white">Pick Your Grade</h1>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        {GRADES.map(g => (
+          <button key={g.id} onClick={() => { playSfx('pop'); onSelect(g); }}
+            className="kid-3d-btn p-6 rounded-3xl text-left relative overflow-hidden"
+            style={{ background: `linear-gradient(135deg, ${g.color}ee, ${g.color}99)` }}>
+            <div className="absolute -top-4 -right-4 text-7xl opacity-10 font-black">{g.id.replace('G','')}</div>
+            <div className="text-white text-2xl font-black mb-1">{g.label}</div>
+            <div className="text-white/70 text-xs font-medium">{g.age}</div>
+            <div className="text-white/80 text-xs mt-2">{g.desc}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+));
+
+const SubjectSelectScreen = memo(({ grade, onSelect, onBack }) => {
+  const subjects = getSubjectsForGrade(grade.id);
+  const icons = { math: '🔢', english: '🔤', science: '🔬', general: '🌍', vocabulary: '📚' };
+  return (
+    <div className="min-h-screen px-4 py-8" style={{ background: `linear-gradient(135deg, ${grade.color}dd, ${grade.color}88)` }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-4 mb-8">
+          <button onClick={onBack} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600">
+            <ArrowLeft size={20} />
+          </button>
+          <div>
+            <h1 className="text-xl font-black text-white">{grade.label} Subjects</h1>
+            <p className="text-white/70 text-xs">{grade.age}</p>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {subjects.map(s => (
+            <button key={s.id} onClick={() => { playSfx('pop'); onSelect(s); }}
+              className="kid-3d-btn w-full p-5 rounded-2xl bg-white/95 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl" style={{ background: grade.color + '20' }}>
+                {icons[s.id] || '📖'}
+              </div>
+              <div className="flex-1 text-left">
+                <div className="font-bold text-gray-800 text-lg">{s.name}</div>
+                <div className="text-xs text-gray-400">{s.questionCount || 10} questions</div>
+              </div>
+              <ChevronRight size={20} className="text-gray-300" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+});
+const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, onBack, profile }) => {
+  const questions = useMemo(() => {
+    if (propQuestions && propQuestions.length) return shuffleArray([...propQuestions]);
+    return getQuestionsForGrade(grade.id, 10);
+  }, [grade, subject, propQuestions]);
+
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const [score, setScore] = useState(0);
+  const [answered, setAnswered] = useState(false);
+  const [coins, setCoins] = useState(profile?.coins || 0);
+  const [stars, setStars] = useState(profile?.stars || 0);
+  const [timer, setTimer] = useState(30);
+
+  const q = questions[idx];
+  const progress = ((idx + 1) / questions.length) * 100;
+
+  useEffect(() => {
+    if (!answered && !showResult) {
+      const t = setInterval(() => setTimer(p => { if (p <= 1) { handleAnswer(-1); return 30; } return p - 1; }), 1000);
+      return () => clearInterval(t);
+    }
+  }, [idx, answered, showResult]);
+
+  const handleAnswer = (ansIdx) => {
+    if (answered || showResult) return;
+    setSelected(ansIdx);
+    setAnswered(true);
+    const isCorrect = ansIdx === q.correct;
+    if (isCorrect) {
+      playSfx('correct');
+      speak(q.explanation || 'Correct!');
+      setScore(s => s + 1);
+      setCoins(c => c + 5);
+      setStars(s => s + 1);
+    } else {
+      playSfx('click');
+      speak(q.explanation || `The answer is ${q.options[q.correct]}`);
+    }
+    setTimeout(() => {
+      setSelected(null);
+      setAnswered(false);
+      setTimer(30);
+      if (idx + 1 < questions.length) setIdx(i => i + 1);
+      else setShowResult(true);
+    }, 1800);
+  };
+
+  if (showResult) {
+    const pct = Math.round((score / questions.length) * 100);
+    const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
+    const newCoins = score * 5;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }}>
+        <div className="bg-white/95 backdrop-blur rounded-3xl p-8 w-full max-w-sm shadow-2xl text-center">
+          <div className="text-6xl mb-4 animate-kid-bounce">{emoji}</div>
+          <h2 className="text-2xl font-black text-gray-800 mb-2">{pct >= 80 ? 'Amazing!' : pct >= 50 ? 'Good Job!' : 'Keep Going!'}</h2>
+          <p className="text-gray-500 mb-6">You got <span className="font-bold text-purple-600">{score}/{questions.length}</span> correct</p>
+          <div className="flex justify-center gap-6 mb-6">
+            <div className="text-center"><div className="text-2xl font-black text-yellow-500">+{newCoins}</div><div className="text-xs text-gray-400">Coins</div></div>
+            <div className="text-center"><div className="text-2xl font-black text-blue-500">+{score}</div><div className="text-xs text-gray-400">Stars</div></div>
+            <div className="text-center"><div className="text-2xl font-black text-green-500">{pct}%</div><div className="text-xs text-gray-400">Score</div></div>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => { playSfx('click'); onFinish({ score, coins: (profile?.coins||0) + newCoins, stars: (profile?.stars||0) + score }); }}
+              className="kid-3d-btn flex-1 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold">
+              Done
+            </button>
+            <button onClick={() => { playSfx('click'); setIdx(0); setScore(0); setShowResult(false); setTimer(30); }}
+              className="kid-3d-btn flex-1 py-3 rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold">
+              <RotateCcw size={16} className="inline mr-1" /> Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!q) return null;
+
+  return (
+    <div className="min-h-screen px-4 py-6" style={{ background: `linear-gradient(135deg, ${grade.color}dd, ${grade.color}88)` }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-4">
+          <button onClick={onBack} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
+          <div className="flex-1">
+            <div className="h-2 bg-white/30 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full transition-all" style={{ width: `${progress}%` }}/></div>
+          </div>
+          <div className="bg-white/90 rounded-full px-3 py-1 text-xs font-bold text-gray-700">{idx+1}/{questions.length}</div>
+        </div>
+        <div className="bg-white/95 backdrop-blur rounded-3xl p-6 shadow-2xl mb-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock size={16} className={timer <= 10 ? 'text-red-500' : 'text-gray-400'} />
+            <span className={`text-sm font-bold ${timer <= 10 ? 'text-red-500' : 'text-gray-500'}`}>{timer}s</span>
+            <div className="flex-1" />
+            <Star size={16} className="text-yellow-500" />
+            <span className="text-sm font-bold text-yellow-500">{score}</span>
+          </div>
+          <div className="text-center mb-6">
+            {q.image && <div className="text-6xl mb-4">{q.image}</div>}
+            <h2 className="text-xl font-bold text-gray-800">{q.question}</h2>
+            {q.hint && <p className="text-xs text-gray-400 mt-2 italic">{q.hint}</p>}
+          </div>
+          <div className="space-y-3">
+            {q.options.map((opt, i) => {
+              let bg = 'bg-gray-50 hover:bg-gray-100 border-gray-200';
+              if (answered) {
+                if (i === q.correct) bg = 'bg-green-100 border-green-500 text-green-800';
+                else if (i === selected && i !== q.correct) bg = 'bg-red-100 border-red-500 text-red-800';
+              }
+              return (
+                <button key={i} onClick={() => handleAnswer(i)} disabled={answered}
+                  className={`kid-3d-btn w-full p-4 rounded-xl text-left font-semibold border-2 transition-all ${bg}`}>
+                  <span className="inline-block w-7 h-7 rounded-full bg-white/80 text-center leading-7 text-sm font-bold text-gray-500 mr-3">{String.fromCharCode(65 + i)}</span>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {q.explanation && answered && (
+            <div className="mt-4 p-3 rounded-xl bg-blue-50 border border-blue-200 text-sm text-blue-800">
+              💡 {q.explanation}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+const COLORS = ['#EF4444','#F97316','#F59E0B','#22C55E','#3B82F6','#8B5CF6','#EC4899','#000000'];
+
+const DrawingCanvas = memo(({ onBack }) => {
+  const canvasRef = useRef(null);
+  const [color, setColor] = useState('#3B855E');
+  const [size, setSize] = useState(8);
+  const drawing = useRef(false);
+
+  useEffect(() => {
+    const c = canvasRef.current; if (!c) return;
+    const ctx = c.getContext('2d');
+    c.width = c.offsetWidth * 2; c.height = c.offsetHeight * 2;
+    ctx.scale(2, 2);
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, c.offsetWidth, c.offsetHeight);
+  }, []);
+
+  const getPos = (e) => {
+    const c = canvasRef.current;
+    const r = c.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return { x: touch.clientX - r.left, y: touch.clientY - r.top };
+  };
+  const startDraw = (e) => { drawing.current = true; const p = getPos(e); const ctx = canvasRef.current.getContext('2d'); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
+  const draw = (e) => { if (!drawing.current) return; e.preventDefault(); const p = getPos(e); const ctx = canvasRef.current.getContext('2d'); ctx.lineWidth = size; ctx.lineCap = 'round'; ctx.strokeStyle = color; ctx.lineTo(p.x, p.y); ctx.stroke(); };
+  const endDraw = () => { drawing.current = false; };
+  const clear = () => { const c = canvasRef.current; const ctx = c.getContext('2d'); ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, c.offsetWidth, c.offsetHeight); };
+
+  return (
+    <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)' }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-4">
+          <button onClick={() => { playSfx('whoosh'); onBack(); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
+          <h1 className="text-xl font-black text-white">Draw & Color</h1>
+        </div>
+        <div className="bg-white rounded-3xl p-4 shadow-2xl mb-4">
+          <canvas ref={canvasRef} className="w-full rounded-xl border-2 border-gray-200 cursor-crosshair" style={{ height: 300, touchAction: 'none' }}
+            onMouseDown={startDraw} onMouseMove={draw} onMouseUp={endDraw} onMouseLeave={endDraw}
+            onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={endDraw} />
+        </div>
+        <div className="bg-white rounded-2xl p-4 shadow-xl">
+          <div className="flex gap-2 flex-wrap justify-center mb-3">
+            {COLORS.map(c => (
+              <button key={c} onClick={() => { setColor(c); playSfx('click'); }}
+                className={`w-9 h-9 rounded-full border-3 transition-all ${c === color ? 'scale-125 border-gray-800 shadow-lg' : 'border-white hover:scale-110'}`}
+                style={{ background: c }} />
+            ))}
+          </div>
+          <div className="flex items-center gap-3 justify-center">
+            <span className="text-xs text-gray-400">Brush:</span>
+            {[4,8,16,24].map(s => (
+              <button key={s} onClick={() => { setSize(s); playSfx('click'); }}
+                className={`rounded-full transition-all ${s === size ? 'bg-blue-500' : 'bg-gray-200 hover:bg-gray-300'}`}
+                style={{ width: s + 16, height: s + 16 }}>
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="rounded-full bg-white" style={{ width: s, height: s }} />
+                </div>
+              </button>
+            ))}
+            <button onClick={() => { clear(); playSfx('click'); }} className="kid-3d-btn ml-4 px-4 py-2 rounded-xl bg-red-100 text-red-600 font-bold text-sm">
+              Clear
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 });
 
-const PuzzleBoard = memo(({ earnCoins, isAudioMuted }) => {
-  const [tiles, setTiles] = useState([1, 2, 3, 4, 5, 6, 7, 0, 8]);
-  const [moves, setMoves] = useState(0);
-  const [solved, setSolved] = useState(false);
+const MEMORY_ITEMS = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮'];
 
-  const onTileClick = (idx) => {
-    const emptyIdx = tiles.indexOf(0);
-    const r1 = Math.floor(idx / 3);
-    const c1 = idx % 3;
-    const r2 = Math.floor(emptyIdx / 3);
-    const c2 = emptyIdx % 3;
-    if (Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1) {
-      playSfx('pop', isAudioMuted);
-      const next = [...tiles];
-      next[emptyIdx] = next[idx];
-      next[idx] = 0;
-      setTiles(next);
-      setMoves((m) => m + 1);
-      if (next.slice(0, 8).every((v, i) => v === i + 1)) {
-        setSolved(true);
-        playSfx('celebrate', isAudioMuted);
-        earnCoins(50);
-        speak('Awesome job! You solved the picture puzzle!');
+const MemoryGame = memo(({ onBack }) => {
+  const [cards, setCards] = useState([]);
+  const [flipped, setFlipped] = useState([]);
+  const [matched, setMatched] = useState([]);
+  const [moves, setMoves] = useState(0);
+
+  useEffect(() => {
+    const pairs = shuffleArray([...MEMORY_ITEMS]).slice(0, 6);
+    const deck = shuffleArray([...pairs, ...pairs].map((emoji, i) => ({ id: i, emoji })));
+    setCards(deck);
+  }, []);
+
+  const handleFlip = (card) => {
+    if (flipped.length === 2 || matched.includes(card.emoji) || flipped.find(f => f.id === card.id)) return;
+    const newFlipped = [...flipped, card];
+    setFlipped(newFlipped);
+    playSfx('pop');
+    if (newFlipped.length === 2) {
+      setMoves(m => m + 1);
+      if (newFlipped[0].emoji === newFlipped[1].emoji) {
+        setMatched([...matched, newFlipped[0].emoji]);
+        playSfx('correct');
+        setFlipped([]);
+        if (matched.length + 1 === 6) { playSfx('celebrate'); speak('You matched them all!'); }
+      } else {
+        setTimeout(() => setFlipped([]), 900);
       }
     }
   };
 
   return (
-    <div className="p-4 sm:p-6 flex flex-col items-center justify-between h-full bg-[#FAF5EE]">
-      <div className="w-full flex items-center justify-between mb-3 bg-white p-3.5 rounded-2xl border border-amber-100 shadow-sm">
-        <div>
-          <h2 className="font-black text-base sm:text-lg text-slate-800">Animal Picture Match 🧩</h2>
-          <p className="text-xs font-bold text-slate-400">Slide tiles into counting order 1 to 8!</p>
+    <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-4">
+          <button onClick={() => { playSfx('whoosh'); onBack(); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
+          <h1 className="text-xl font-black text-white">Memory Match</h1>
+          <div className="flex-1" />
+          <div className="bg-white/90 rounded-full px-3 py-1 text-sm font-bold text-gray-600">{moves} moves</div>
         </div>
-        <span className="text-sm bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-black shadow-inner">
-          Moves: {moves}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3 w-72 h-72 sm:w-80 sm:h-80 bg-white p-3.5 rounded-[32px] shadow-xl border-4 border-amber-200">
-        {tiles.map((num, i) => (
-          <button
-            key={i}
-            onClick={() => onTileClick(i)}
-            disabled={num === 0 || solved}
-            className={`rounded-2xl font-black text-3xl flex items-center justify-center transition-all ${
-              num === 0
-                ? 'bg-amber-50/50 border-4 border-dashed border-amber-200'
-                : 'kid-3d-btn bg-gradient-to-br from-blue-500 to-indigo-600 text-white active:scale-95'
-            }`}
-          >
-            {num !== 0 && (
-              <div className="flex flex-col items-center">
-                <span className="text-3xl sm:text-4xl animate-kid-bounce">{['🦁', '🐧', '🦊', '🐻', '🐼', '🐨', '🐰', '🐯'][num - 1]}</span>
-                <span className="text-xs font-black opacity-90">{num}</span>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {solved ? (
-        <div className="text-center p-4 bg-emerald-100 border-2 border-emerald-300 rounded-3xl w-full max-w-sm animate-kid-bounce">
-          <p className="font-black text-emerald-800 text-base sm:text-lg">🎉 Puzzle Solved! +50 Stars! 🌟</p>
-        </div>
-      ) : (
-        <button
-          onClick={() => {
-            playSfx('pop', isAudioMuted);
-            setTiles([1, 2, 3, 4, 5, 6, 0, 7, 8]);
-            setMoves(0);
-          }}
-          className="kid-3d-btn w-full max-w-sm py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black text-base shadow-lg tracking-wide transition"
-        >
-          🎲 Shuffle Animal Tiles!
-        </button>
-      )}
-    </div>
-  );
-});
-
-const AnimalGridMatchGame = memo(({ earnCoins, isAudioMuted, onBack }) => {
-  const [targetAnimal] = useState('Lion');
-  const [selectedIdx, setSelectedIdx] = useState(null);
-  const [timerSeconds, setTimerSeconds] = useState(46);
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  const animalOptions = [
-    { id: 'cat', emoji: '🐱', label: 'Cat' },
-    { id: 'owl', emoji: '🦉', label: 'Owl' },
-    { id: 'fox', emoji: '🦊', label: 'Fox' },
-    { id: 'tiger', emoji: '🐯', label: 'Tiger' },
-    { id: 'lion', emoji: '🦁', label: 'Lion', correct: true },
-    { id: 'giraffe', emoji: '🦒', label: 'Giraffe' },
-    { id: 'pig', emoji: '🐷', label: 'Pig' },
-    { id: 'panda', emoji: '🐼', label: 'Panda' }
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimerSeconds((s) => (s > 0 ? s - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleCheck = () => {
-    if (selectedIdx === null) return;
-    const choice = animalOptions[selectedIdx];
-    if (choice.correct) {
-      setIsSuccess(true);
-      playSfx('correct', isAudioMuted);
-      speak('Correct! You found the mighty Lion!');
-      earnCoins(40);
-    } else {
-      playSfx('pop', isAudioMuted);
-      speak('Not quite! Look for the lion with the golden mane.');
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-[#FAF5F0]">
-      <div className="flex items-center justify-between mb-3">
-        <button
-          onClick={onBack}
-          className="kid-3d-btn p-3 bg-white rounded-2xl border-2 border-slate-200 text-slate-700 flex items-center justify-center"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-black text-amber-800 bg-amber-200/80 px-4 py-1.5 rounded-full shadow-sm">
-            Level 1
-          </span>
-          <span className="text-sm font-mono font-black text-slate-700 bg-white px-3.5 py-1 rounded-full border-2 border-slate-200 shadow-sm">
-            ⏱️ 00:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}
-          </span>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-3xl p-5 shadow-md border-2 border-amber-200 flex flex-col items-center justify-center mb-4">
-        <span className="text-xs font-black text-amber-500 uppercase tracking-widest mb-1">Find This Animal</span>
-        <h2 className="text-3xl font-black text-slate-800 tracking-wide mb-2">{targetAnimal}</h2>
-        <div className="w-28 h-28 rounded-3xl bg-amber-50 border-4 border-amber-200 flex items-center justify-center shadow-inner animate-kid-bounce">
-          <span className="text-7xl">🦁</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 gap-2.5 mb-4">
-        {animalOptions.map((item, idx) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              playSfx('click', isAudioMuted);
-              setSelectedIdx(idx);
-            }}
-            className={`p-3 rounded-2xl border-4 flex flex-col items-center justify-center transition-all ${
-              selectedIdx === idx
-                ? 'border-amber-500 bg-amber-100 shadow-lg scale-105 ring-4 ring-amber-300'
-                : 'border-slate-200 bg-white hover:border-amber-300 hover:scale-102'
-            }`}
-          >
-            <span className="text-4xl mb-1">{item.emoji}</span>
-            <span className="text-xs font-black text-slate-800">{item.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {isSuccess ? (
-        <div className="bg-emerald-100 border-2 border-emerald-400 text-emerald-900 p-4 rounded-3xl text-center mb-2 animate-kid-bounce">
-          <p className="font-black text-base">🎉 Match Complete! +40 Stars Earned! 🌟</p>
-        </div>
-      ) : (
-        <button
-          onClick={handleCheck}
-          className="kid-3d-btn w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-black text-lg tracking-wide shadow-xl transition"
-        >
-          Check My Answer! ✨
-        </button>
-      )}
-    </div>
-  );
-});
-
-const TobyTurtleBookScreen = memo(({ onBack, isAudioMuted, earnCoins }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 8;
-
-  const pagesContent = [
-    { text: "Once upon a sunny morning, Toby the Turtle put on his favorite blue hat. Today was the big day!" },
-    { text: "Toby packed two green lettuce leaves and a tiny shiny compass. 'I'm ready for the jungle river!' he cheered." },
-    { text: "Along the riverbank, Toby met Sammy the friendly Sparrow. Sammy chirped, 'Keep walking, Toby, the waterfall is ahead!'" },
-    { text: "Toby moved slow and steady. Step by step, his little green paws crossed over pebble bridges." },
-    { text: "Suddenly, Toby heard a joyful splash! It was Leo the baby lion playing in the warm jungle creek." },
-    { text: "Leo and Toby shared fresh berries under the shade of giant tropical palm trees." },
-    { text: "The sun began to dip into warm golden colors. Toby opened his little compass and smiled." },
-    { text: "Toby made it safely back home with a heart full of joy. 'Kindness and courage win every day!'" }
-  ];
-
-  const handleRead = () => {
-    speak(pagesContent[currentPage - 1].text);
-    playSfx('pop', isAudioMuted);
-  };
-
-  return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-[#F5F3FF]">
-      <div className="flex items-center justify-between mb-3">
-        <button
-          onClick={onBack}
-          className="kid-3d-btn p-3 bg-white rounded-2xl border-2 border-indigo-200 text-indigo-700 flex items-center justify-center"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <span className="text-sm font-black text-indigo-800 bg-indigo-100 px-4 py-1.5 rounded-full border border-indigo-200">
-          Page {currentPage} of {totalPages} 📖
-        </span>
-        <button
-          onClick={handleRead}
-          className="kid-3d-btn px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-md"
-          aria-label="Listen"
-        >
-          <Volume2 className="w-5 h-5" />
-          <span>Read to Me</span>
-        </button>
-      </div>
-
-      <div className="bg-gradient-to-b from-[#EDE9FE] to-white rounded-[32px] p-5 shadow-lg border-2 border-indigo-100 flex flex-col items-center text-center mb-4">
-        <div className="animate-kid-bounce">
-          <TobyTurtleIcon className="w-36 h-40 mb-2" />
-        </div>
-        <h2 className="text-xl font-black text-slate-800 leading-tight">Toby the Turtle's</h2>
-        <h3 className="text-base font-extrabold text-indigo-600 mb-3">Big Trip Adventure</h3>
-        <div className="bg-white p-4 rounded-2xl border-2 border-indigo-100 shadow-sm w-full min-h-[90px] flex items-center justify-center">
-          <p className="text-base sm:text-lg font-bold text-slate-700 leading-relaxed">
-            "{pagesContent[currentPage - 1].text}"
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between gap-1.5 mb-4 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-          <button
-            key={num}
-            onClick={() => {
-              playSfx('pop', isAudioMuted);
-              setCurrentPage(num);
-              earnCoins(5);
-            }}
-            className={`w-9 h-9 rounded-xl text-sm font-black transition-all flex items-center justify-center ${
-              currentPage === num
-                ? 'bg-amber-500 text-white shadow-md scale-110 ring-2 ring-amber-300'
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            {num}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex items-center justify-between gap-3 mt-auto">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => {
-            playSfx('pop', isAudioMuted);
-            setCurrentPage((p) => Math.max(1, p - 1));
-          }}
-          className="kid-3d-btn flex-1 py-4 bg-white border-2 border-slate-300 text-slate-800 disabled:opacity-40 rounded-2xl text-base font-black transition"
-        >
-          ⬅️ Back
-        </button>
-        <button
-          onClick={() => {
-            if (currentPage < totalPages) {
-              setCurrentPage((p) => p + 1);
-              playSfx('pop', isAudioMuted);
-            } else {
-              playSfx('celebrate', isAudioMuted);
-              earnCoins(30);
-              speak('Congratulations! You finished the whole story!');
-            }
-          }}
-          className="kid-3d-btn flex-1 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl text-base font-black shadow-lg transition"
-        >
-          {currentPage === totalPages ? 'Finish Book 🎉' : 'Next Page ➡️'}
-        </button>
-      </div>
-    </div>
-  );
-});
-
-const ChampionBadgesScreen = memo(({ onBack, coins, earnCoins, isAudioMuted }) => {
-  const [claimed, setClaimed] = useState(false);
-
-  return (
-    <div className="flex flex-col h-full overflow-y-auto px-5 pt-4 pb-28 no-scrollbar bg-gradient-to-b from-[#FCE7F3] via-[#FFF1F2] to-white items-center text-center justify-between">
-      <div className="w-full flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="kid-3d-btn p-3 bg-white rounded-2xl border-2 border-rose-200 text-rose-700"
-          aria-label="Back"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <span className="text-sm font-black text-rose-700 bg-rose-200 px-4 py-1.5 rounded-full">
-          Quizzy Champion 🏆
-        </span>
-      </div>
-
-      <div className="my-3 relative flex items-center justify-center animate-kid-bounce">
-        <GraduatePolarBearIcon className="w-48 h-48" />
-      </div>
-
-      <div className="w-full max-w-sm">
-        <h2 className="text-2xl font-black text-slate-800 leading-tight mb-2">
-          Earn Stars & Unlock Badges!
-        </h2>
-        <p className="text-sm font-bold text-slate-600 leading-relaxed mb-4">
-          Learn and play every day to level up your rank and become a proud Quizzy Champion!
-        </p>
-
-        <div className="flex items-center justify-center gap-3 mb-3">
-          <div className="flex items-center gap-1.5 bg-white px-4 py-2 rounded-2xl border-2 border-rose-200 shadow-sm">
-            <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-            <span className="text-sm font-black text-slate-800">{coins} Stars</span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-white px-4 py-2 rounded-2xl border-2 border-rose-200 shadow-sm">
-            <Award className="w-5 h-5 text-rose-500" />
-            <span className="text-sm font-black text-slate-800">8 Badges</span>
-          </div>
-        </div>
-      </div>
-
-      <button
-        onClick={() => {
-          if (!claimed) {
-            setClaimed(true);
-            playSfx('celebrate', isAudioMuted);
-            earnCoins(100);
-            speak('Hooray! 100 bonus stars added to your treasure chest!');
-          }
-        }}
-        className="kid-3d-btn w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-black text-base sm:text-lg shadow-xl tracking-wide transition"
-      >
-        {claimed ? 'Claimed +100 Stars! 🌟' : 'Get Started & Claim 100 ⭐'}
-      </button>
-    </div>
-  );
-});
-
-const EduPlayHubScreen = memo(({ setCurrentScreen, earnCoins, isAudioMuted }) => {
-  const subjects = [
-    {
-      id: 'math',
-      name: 'Mathematics',
-      icon: '🧮',
-      bg: 'bg-rose-100 hover:bg-rose-200',
-      border: 'border-rose-300',
-      textColor: 'text-rose-900',
-      targetScreen: 'eduplay-math'
-    },
-    {
-      id: 'science',
-      name: 'Science',
-      icon: '🔬',
-      bg: 'bg-purple-100 hover:bg-purple-200',
-      border: 'border-purple-300',
-      textColor: 'text-purple-900',
-      targetScreen: 'image4-dino'
-    },
-    {
-      id: 'art',
-      name: 'Art & Craft',
-      icon: '🎨',
-      bg: 'bg-cyan-100 hover:bg-cyan-200',
-      border: 'border-cyan-300',
-      textColor: 'text-cyan-900',
-      targetScreen: 'image1-modal'
-    },
-    {
-      id: 'social',
-      name: 'Social Study',
-      icon: '🌍',
-      bg: 'bg-emerald-100 hover:bg-emerald-200',
-      border: 'border-emerald-300',
-      textColor: 'text-emerald-900',
-      targetScreen: 'image6-reader'
-    }
-  ];
-
-  return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-slate-50">
-      <div className="flex items-center justify-between mb-4 bg-white p-4 rounded-3xl border-2 border-slate-100 shadow-md">
-        <div>
-          <span className="text-xs font-black text-indigo-600 uppercase tracking-wide">EduPlay Learning</span>
-          <h2 className="text-lg font-black text-slate-800">Hello, Vyom! 👋</h2>
-          <p className="text-xs font-bold text-slate-400">Ready for fun learning today?</p>
-        </div>
-        <div className="w-16 h-16 flex items-center justify-center animate-kid-bounce">
-          <EduPlayOwlIcon className="w-16 h-16" />
-        </div>
-      </div>
-
-      <h3 className="text-sm font-black text-slate-800 mb-2 px-1">Pick a Subject</h3>
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        {subjects.map((sub) => (
-          <button
-            key={sub.id}
-            onClick={() => {
-              playSfx('pop', isAudioMuted);
-              speak(sub.name);
-              setCurrentScreen(sub.targetScreen);
-            }}
-            className={`kid-3d-btn ${sub.bg} border-3 ${sub.border} p-5 rounded-3xl flex flex-col items-center text-center transition-all`}
-          >
-            <span className="text-5xl mb-2 animate-kid-wiggle">{sub.icon}</span>
-            <span className={`text-sm font-black ${sub.textColor}`}>{sub.name}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-3xl p-4 text-white shadow-lg flex items-center justify-between">
-        <div>
-          <span className="text-xs uppercase tracking-wider font-black bg-white/20 px-2.5 py-0.5 rounded-full inline-block mb-1">
-            Mini Game
-          </span>
-          <h4 className="font-black text-sm sm:text-base">Math Brain Challenge</h4>
-          <p className="text-xs font-bold text-purple-100">Quick arithmetic fun</p>
-        </div>
-        <button
-          onClick={() => {
-            playSfx('click', isAudioMuted);
-            setCurrentScreen('eduplay-math');
-          }}
-          className="kid-3d-btn px-5 py-3 bg-white text-purple-800 font-black text-sm rounded-2xl shadow-md"
-        >
-          Play 🚀
-        </button>
-      </div>
-    </div>
-  );
-});
-
-const EduPlayMathQuiz = memo(({ onBack, earnCoins, isAudioMuted }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [isCorrect, setIsCorrect] = useState(false);
-
-  const options = [20, 17, 15, 22];
-
-  const handleSelect = (val) => {
-    setSelectedAnswer(val);
-    if (val === 17) {
-      setIsCorrect(true);
-      playSfx('correct', isAudioMuted);
-      speak('Correct! 12 plus 7 minus 2 equals 17!');
-      earnCoins(35);
-    } else {
-      setIsCorrect(false);
-      playSfx('pop', isAudioMuted);
-      speak('Not quite! Try counting carefully.');
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-gradient-to-b from-[#FEF3C7] via-[#FFFBEB] to-white justify-between">
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={onBack}
-            className="kid-3d-btn p-3 bg-white rounded-2xl border-2 border-amber-200 text-amber-800"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <div className="w-40 bg-amber-200 h-3 rounded-full overflow-hidden">
-            <div className="bg-amber-500 h-full w-3/4 rounded-full" />
-          </div>
-          <span className="text-sm font-black text-amber-900">3 of 4 ⭐</span>
-        </div>
-
-        <div className="bg-white rounded-3xl p-6 shadow-lg border-3 border-amber-200 text-center mb-6">
-          <span className="text-xs font-black text-amber-600 block mb-2 uppercase tracking-wider">Quick Math Challenge</span>
-          <h2 className="text-4xl font-black text-slate-800 tracking-wide">
-            12 + 7 - 2 = ?
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3.5 mb-4">
-          {options.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => handleSelect(opt)}
-              className={`kid-3d-btn p-6 rounded-3xl text-2xl font-black transition-all border-3 ${
-                selectedAnswer === opt
-                  ? opt === 17
-                    ? 'bg-emerald-100 border-emerald-500 text-emerald-800 ring-4 ring-emerald-300'
-                    : 'bg-rose-100 border-rose-400 text-rose-800'
-                  : 'bg-white border-slate-200 text-slate-800 hover:border-amber-300'
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <button
-        onClick={() => {
-          if (isCorrect) {
-            playSfx('celebrate', isAudioMuted);
-            onBack();
-          } else {
-            speak('Choose the right answer first!');
-          }
-        }}
-        className="kid-3d-btn w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-base sm:text-lg shadow-xl tracking-wide transition"
-      >
-        {isCorrect ? 'Awesome! Continue 🎉' : 'Pick Your Answer ✨'}
-      </button>
-    </div>
-  );
-});
-
-const ModernMinimalHubScreen = memo(({ setCurrentScreen, isAudioMuted }) => (
-  <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-[#FAF8F5]">
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-2.5">
-        <div className="w-12 h-12 rounded-full overflow-hidden border-3 border-amber-400 shadow-md">
-          <JaneCooperAvatar />
-        </div>
-        <div>
-          <span className="text-xs text-slate-400 font-bold block">Hello Little 👋</span>
-          <h2 className="text-base font-black text-slate-800">Jane Cooper</h2>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="flex items-center gap-1.5 text-sm font-black text-amber-800 bg-amber-100 px-3.5 py-1 rounded-full border border-amber-200">
-          <span>18</span>
-          <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-        </span>
-      </div>
-    </div>
-
-    <div className="bg-[#FFF1F2] rounded-3xl p-5 shadow-md border-2 border-rose-100 mb-3.5 relative overflow-hidden">
-      <div className="max-w-[62%] relative z-10">
-        <h3 className="text-base font-black text-slate-800 leading-snug mb-3">
-          Can you ace the animal quiz?
-        </h3>
-        <button
-          onClick={() => {
-            playSfx('click', isAudioMuted);
-            setCurrentScreen('animal-match-game');
-          }}
-          className="kid-3d-btn px-5 py-3 bg-[#6366F1] hover:bg-[#4F46E5] text-white font-black text-sm rounded-2xl shadow-md transition"
-        >
-          Start Now 🚀
-        </button>
-      </div>
-      <div className="absolute right-1 bottom-0 animate-kid-bounce">
-        <SafariJeepIcon className="w-32 h-28" />
-      </div>
-    </div>
-
-    <div className="bg-[#FFF8E6] rounded-3xl p-5 shadow-md border-2 border-amber-200 mb-3.5 relative overflow-hidden">
-      <div className="max-w-[60%] relative z-10">
-        <span className="text-xs text-slate-400 font-black uppercase tracking-wide">Learning</span>
-        <h3 className="text-base font-black text-slate-800 leading-snug mb-3">
-          A to Z Alphabet
-        </h3>
-        <button
-          onClick={() => {
-            playSfx('click', isAudioMuted);
-            setCurrentScreen('toby-book');
-          }}
-          className="kid-3d-btn px-5 py-3 bg-[#F59E0B] hover:bg-[#D97706] text-white font-black text-sm rounded-2xl shadow-md transition"
-        >
-          Read Now 📖
-        </button>
-      </div>
-      <div className="absolute right-1 bottom-0 animate-kid-wiggle">
-        <LetterEKidIcon className="w-32 h-28" />
-      </div>
-    </div>
-
-    <div className="bg-[#F0FDF4] rounded-3xl p-5 shadow-md border-2 border-emerald-100 mb-3.5 relative overflow-hidden">
-      <div className="max-w-[60%] relative z-10">
-        <h3 className="text-base font-black text-slate-800 leading-snug mb-3">
-          Choose a quiz to test your brain!
-        </h3>
-        <button
-          onClick={() => {
-            playSfx('click', isAudioMuted);
-            setCurrentScreen('image5-quiz');
-          }}
-          className="kid-3d-btn px-5 py-3 bg-[#6366F1] hover:bg-[#4F46E5] text-white font-black text-sm rounded-2xl shadow-md transition"
-        >
-          Take Quiz ❓
-        </button>
-      </div>
-      <div className="absolute right-2 bottom-2 text-5xl animate-kid-bounce">
-        🧩
-      </div>
-    </div>
-  </div>
-));
-
-const ScreenImage1Home = memo(({
-  coins,
-  earnCoins,
-  habitClaimed,
-  setHabitClaimed,
-  setCurrentScreen,
-  setActiveModalGame,
-  isAudioMuted
-}) => (
-  <div className="flex flex-col h-full overflow-y-auto px-4 pt-3 pb-28 no-scrollbar">
-    <div className="flex items-center justify-between mb-3.5">
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => setCurrentScreen('image1-profile')}
-          className="w-12 h-12 rounded-full overflow-hidden border-3 border-blue-400 shadow-md cursor-pointer hover:scale-105 transition"
-          aria-label="View profile"
-        >
-          <MaheenAvatar />
-        </button>
-        <div>
-          <p className="text-xs font-bold text-slate-400 leading-none">Good Afternoon!</p>
-          <h2 className="text-base font-black text-slate-800 leading-snug">Maheen Hassan 👋</h2>
-        </div>
-      </div>
-      <button
-        onClick={() => earnCoins(20)}
-        className="kid-3d-btn flex items-center gap-1.5 bg-[#2E79E6] hover:bg-blue-700 text-white px-4 py-2 rounded-full shadow-md"
-      >
-        <Star className="w-4 h-4 fill-amber-300 text-amber-300" />
-        <span className="text-sm font-black">{coins}</span>
-      </button>
-    </div>
-
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#D7E9FE] via-[#E4F0FF] to-[#EAF3FF] p-5 shadow-md border-2 border-blue-100 mb-4">
-      <div className="max-w-[62%] z-10 relative">
-        <span className="text-xs font-black text-blue-700 block mb-1">Today's Good Habit</span>
-        <h3 className="text-base font-black text-slate-800 leading-snug mb-3">
-          "Kindness makes the world a better place."
-        </h3>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              playSfx('pop', isAudioMuted);
-              speak('Kindness makes the world a better place.');
-              if (!habitClaimed) {
-                setHabitClaimed(true);
-                earnCoins(100);
-              }
-            }}
-            className="kid-3d-btn flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-full text-xs font-black"
-          >
-            <span>Listen</span>
-            <Play className="w-3.5 h-3.5 fill-current" />
-          </button>
-          <div className="flex items-center gap-1 text-xs font-black text-amber-700 bg-white/80 px-3 py-1.5 rounded-full shadow-sm">
-            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-            <span>+100</span>
-          </div>
-        </div>
-      </div>
-      <div className="absolute -right-1 bottom-0 animate-kid-bounce">
-        <BlueBirdIcon />
-      </div>
-    </div>
-
-    <div className="grid grid-cols-3 gap-3 mb-4">
-      <button
-        onClick={() => {
-          playSfx('click', isAudioMuted);
-          speak('Welcome to Alphabets Explorer!');
-          setCurrentScreen('image2-fun');
-        }}
-        className="kid-3d-btn bg-[#EDF5FF] hover:bg-blue-100 rounded-3xl p-3.5 flex flex-col items-center text-center border-2 border-blue-200"
-      >
-        <span className="text-4xl mb-1 animate-kid-bounce">🐧</span>
-        <span className="text-xs sm:text-sm font-black text-slate-800">Alphabets</span>
-      </button>
-      <button
-        onClick={() => {
-          playSfx('click', isAudioMuted);
-          speak('Numbers Fun!');
-          setCurrentScreen('image5-quiz');
-        }}
-        className="kid-3d-btn bg-[#FFF0F3] hover:bg-pink-100 rounded-3xl p-3.5 flex flex-col items-center text-center border-2 border-pink-200"
-      >
-        <span className="text-4xl mb-1 animate-kid-wiggle">🦊</span>
-        <span className="text-xs sm:text-sm font-black text-slate-800">Numbers</span>
-      </button>
-      <button
-        onClick={() => {
-          playSfx('pop', isAudioMuted);
-          setCurrentScreen('image1-modal');
-        }}
-        className="kid-3d-btn bg-[#FFF6ED] hover:bg-amber-100 rounded-3xl p-3.5 flex flex-col items-center text-center border-2 border-amber-200"
-      >
-        <span className="text-4xl mb-1 animate-kid-bounce">🐻</span>
-        <span className="text-xs sm:text-sm font-black text-slate-800">More Fun</span>
-      </button>
-    </div>
-
-    <div className="bg-white rounded-3xl p-4 shadow-md border-2 border-slate-100 flex items-center justify-between mb-4">
-      <div>
-        <h3 className="text-base font-black text-slate-800">Puzzle Game 🧩</h3>
-        <p className="text-xs font-bold text-slate-400">Play & match animal tiles</p>
-      </div>
-      <button
-        onClick={() => {
-          playSfx('pop', isAudioMuted);
-          setActiveModalGame('puzzle');
-        }}
-        className="kid-3d-btn flex items-center gap-1.5 bg-[#2E79E6] hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-xs sm:text-sm font-black"
-      >
-        <span>Play</span>
-        <Play className="w-3.5 h-3.5 fill-current" />
-      </button>
-    </div>
-
-    <div
-      onClick={() => {
-        playSfx('pop', isAudioMuted);
-        speak('Story About The Happy Lion. A wonderful tale of kindness in the forest.');
-        setCurrentScreen('image6-reader');
-      }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#FFF6E5] to-[#FFEDD5] p-5 shadow-md border-2 border-amber-200 cursor-pointer hover:shadow-lg transition"
-    >
-      <div className="max-w-[60%] z-10 relative">
-        <span className="text-xs font-black text-amber-700 uppercase block mb-1">Featured Story</span>
-        <h4 className="text-base font-black text-slate-800 leading-tight mb-3">
-          "Story About The Happy Lion"
-        </h4>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-white text-amber-800 px-3.5 py-1.5 rounded-full text-xs font-black shadow-sm">
-            <span>Play Story</span>
-            <Play className="w-3 h-3 fill-current" />
-          </div>
-          <div className="flex items-center gap-1 text-xs text-slate-500 font-bold">
-            <Clock className="w-4 h-4 text-slate-400" />
-            <span>14 min</span>
-          </div>
-        </div>
-      </div>
-      <div className="absolute right-0 bottom-0 animate-kid-bounce">
-        <HappyLionIcon />
-      </div>
-    </div>
-  </div>
-));
-
-const ScreenImage1Modal = memo(({ setCurrentScreen, setActiveModalGame, showToast, isAudioMuted }) => {
-  const [activeFlashcard, setActiveFlashcard] = useState(null);
-
-  const categories = [
-    { id: 'draw', title: 'Drawing Board', icon: '🎨', desc: 'Freehand canvas with vibrant colors' },
-    { id: 'puzzle', title: 'Picture Puzzle', icon: '🧩', desc: 'Slide & order cute animal tiles' },
-    { id: 'shapes', title: 'Shapes', icon: '🧊', desc: 'Circles, triangles, and cubes' },
-    { id: 'fruits', title: 'Fruit & Veggies', icon: '🍎', desc: 'Apples, bananas, and vitamins' },
-    { id: 'colors', title: 'Colors', icon: '🌈', desc: 'Rainbows and paint mixes' },
-    { id: 'animals', title: 'Animals', icon: '🐮', desc: 'Lions, tigers, and friendly pets' },
-    { id: 'sports', title: 'Sports', icon: '⚽', desc: 'Soccer, basketball, and active games' },
-    { id: 'birds', title: 'Birds', icon: '🐦', desc: 'Bluebirds, robins, and owls' },
-    { id: 'coloring', title: 'Coloring Book', icon: '🐱', desc: 'Fun outlined animal templates' },
-    { id: 'words', title: 'Word Puzzle', icon: '🔡', desc: 'Spelling and phonics builder' }
-  ];
-
-  return (
-    <div className="flex flex-col h-full bg-[#FFF1F3] p-4 overflow-y-auto no-scrollbar justify-between">
-      <div>
-        <div className="w-16 h-2 bg-pink-300 rounded-full mx-auto mb-4" />
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-black text-slate-800">Explore Categories</h2>
-          <span className="text-xs font-bold text-pink-700 bg-pink-100 px-3 py-1 rounded-full">
-            10 Topics 🌟
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          {categories.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => {
-                playSfx('click', isAudioMuted);
-                if (c.id === 'draw') {
-                  setActiveModalGame('drawing');
-                } else if (c.id === 'puzzle') {
-                  setActiveModalGame('puzzle');
-                } else {
-                  speak(`${c.title}. ${c.desc}`);
-                  setActiveFlashcard(c);
-                }
-              }}
-              className="kid-3d-btn bg-white rounded-3xl p-4 flex flex-col items-center text-center border-2 border-pink-200"
-            >
-              <span className="text-4xl mb-2 animate-kid-bounce">{c.icon}</span>
-              <span className="text-sm font-black text-slate-800 leading-snug">{c.title}</span>
-              <span className="text-[11px] font-bold text-slate-400 mt-1 line-clamp-1">{c.desc}</span>
-            </button>
-          ))}
-        </div>
-
-        {activeFlashcard && (
-          <div className="bg-white p-4 rounded-3xl border-3 border-pink-400 shadow-xl mb-4 animate-kid-bounce">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-3xl">{activeFlashcard.icon}</span>
-              <button
-                onClick={() => setActiveFlashcard(null)}
-                className="p-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600"
-              >
-                <X className="w-4 h-4" />
+        <div className="grid grid-cols-4 gap-3">
+          {cards.map(card => {
+            const isFlipped = flipped.find(f => f.id === card.id) || matched.includes(card.emoji);
+            return (
+              <button key={card.id} onClick={() => handleFlip(card)}
+                className={`kid-3d-btn aspect-square rounded-2xl text-3xl flex items-center justify-center font-bold transition-all ${isFlipped ? 'bg-white shadow-lg' : 'bg-gradient-to-br from-purple-400 to-blue-500'}`}>
+                {isFlipped ? card.emoji : '?'}
               </button>
+            );
+          })}
+        </div>
+        {matched.length === 6 && (
+          <div className="mt-6 text-center">
+            <div className="bg-white rounded-2xl p-6 shadow-xl">
+              <div className="text-4xl mb-2">🏆</div>
+              <div className="text-xl font-black text-gray-800">You Win!</div>
+              <div className="text-gray-500 text-sm">Completed in {moves} moves</div>
             </div>
-            <h4 className="text-base font-black text-slate-800">{activeFlashcard.title}</h4>
-            <p className="text-xs font-bold text-slate-600 mt-1">{activeFlashcard.desc}</p>
           </div>
         )}
       </div>
-
-      <div className="pt-2 flex justify-center">
-        <button
-          onClick={() => {
-            playSfx('pop', isAudioMuted);
-            setCurrentScreen('image1-home');
-          }}
-          className="kid-3d-btn flex items-center gap-2 bg-[#FF6B81] hover:bg-[#F4516C] text-white px-8 py-3.5 rounded-full font-black text-sm shadow-lg"
-        >
-          <span>Close Sheet</span>
-          <X className="w-4 h-4 text-white" />
-        </button>
-      </div>
     </div>
   );
 });
 
-const ScreenImage1Profile = memo(({ coins, earnCoins, selectedRank, setSelectedRank, setCurrentScreen, showToast, isAudioMuted }) => {
-  const ranks = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond'];
-  const badges = [
-    { id: 1, icon: '🏆', name: 'Master' },
-    { id: 2, icon: '🎁', name: 'Surprise' },
-    { id: 3, icon: '👑', name: 'Royalty' },
-    { id: 4, icon: '🎫', name: 'Pass' },
-    { id: 5, icon: '🎯', name: 'Bulls-Eye' },
-    { id: 6, icon: '🎖️', name: 'Medal' },
-    { id: 7, icon: '💎', name: 'Gem' },
-    { id: 8, icon: '🎵', name: 'Music' }
-  ];
+const STORIES = [
+  { id: 1, title: 'The Brave Little Fox', emoji: '🦊', color: '#F59E0B', pages: [
+    { text: 'Once upon a time, a little fox named Rex lived in a green forest.', img: '🌲🦊' },
+    { text: 'Rex loved to explore every corner of the forest.', img: '🦊🔍' },
+    { text: 'One day, Rex found a baby bird stuck in a bush.', img: '🐦🌿' },
+    { text: 'Rex carefully helped the bird and brought it back to its nest.', img: '🦊🐦🏠' },
+    { text: 'The bird was so happy! They became best friends forever.', img: '🦊🐦❤️' },
+  ]},
+  { id: 2, title: 'The Curious Turtle', emoji: '🐢', color: '#22C55E', pages: [
+    { text: 'Toby the turtle loved reading books under the big tree.', img: '🐢📖🌳' },
+    { text: 'One day he found a mysterious map!', img: '🗺️🐢' },
+    { text: 'Toby followed the map through mountains and rivers.', img: '⛰️🐢🌊' },
+    { text: 'At the end, he found a treasure chest full of storybooks!', img: '📚🐢✨' },
+    { text: 'Toby shared the books with all his friends.', img: '🐢🐰🦊📚' },
+  ]},
+  { id: 3, title: 'The Smart Owl', emoji: '🦉', color: '#7C3AED', pages: [
+    { text: 'Olivia the owl was the wisest in the forest school.', img: '🦉🏫' },
+    { text: 'She taught her friends about the stars and moon.', img: '🦉🌙⭐' },
+    { text: 'The little animals loved learning with Olivia.', img: '🦉🐱🐶🐰' },
+    { text: 'They had a big science fair and everyone won a prize!', img: '🏆🦉' },
+    { text: 'Olivia was so proud of all her friends!', img: '🦉💕' },
+  ]},
+];
 
-  return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-white">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setCurrentScreen('image1-home')}
-          className="kid-3d-btn p-3 rounded-2xl bg-slate-100 border text-slate-700"
-          aria-label="Go home"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h2 className="text-lg font-black text-slate-800">Kids Profile</h2>
-        <button
-          onClick={() => setCurrentScreen('champion-badges')}
-          className="kid-3d-btn px-3.5 py-1.5 bg-rose-100 border border-rose-300 text-rose-700 rounded-full font-black text-xs"
-        >
-          Trophies 🏆
-        </button>
-      </div>
+const StoryReaderScreen = memo(({ onBack }) => {
+  const [story, setStory] = useState(null);
+  const [page, setPage] = useState(0);
 
-      <div className="flex flex-col items-center justify-center mb-4">
-        <div className="relative">
-          <div className="w-24 h-24 rounded-full border-4 border-blue-500 overflow-hidden shadow-xl bg-blue-600">
-            <MaheenAvatar />
-          </div>
-          <button
-            onClick={() => showToast('Avatar Photo Updated!', 'celebrate')}
-            className="kid-3d-btn absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center border-2 border-white shadow-md hover:bg-blue-600"
-            aria-label="Update avatar"
-          >
-            <Camera className="w-4 h-4" />
-          </button>
+  if (!story) return (
+    <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={() => { playSfx('whoosh'); onBack(); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
+          <h1 className="text-xl font-black text-white">Story Reader</h1>
         </div>
-        <h3 className="text-lg font-black text-slate-800 mt-2">Maheen Hassan</h3>
-        <div className="flex items-center gap-1.5 text-blue-600 text-sm font-black mt-0.5">
-          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-          <span>{coins.toLocaleString()} Stars</span>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between gap-1 mb-4 bg-slate-100 p-1.5 rounded-2xl border">
-        {ranks.map((r) => (
-          <button
-            key={r}
-            onClick={() => {
-              playSfx('click', isAudioMuted);
-              setSelectedRank(r);
-            }}
-            className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${
-              selectedRank === r ? 'kid-3d-btn bg-[#E56372] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            {r}
-          </button>
-        ))}
-      </div>
-
-      <div className="bg-slate-50 rounded-3xl p-4 border-2 border-slate-200 mb-4">
-        <h4 className="text-sm font-black text-slate-800 mb-3">My Earned Badges</h4>
-        <div className="grid grid-cols-4 gap-2.5">
-          {badges.map((b) => (
-            <button
-              key={b.id}
-              onClick={() => {
-                playSfx('pop', isAudioMuted);
-                earnCoins(5);
-                showToast(`Badge ${b.name} tapped!`);
-              }}
-              className="kid-3d-btn p-3 bg-white border-2 border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm"
-            >
-              <span className="text-3xl mb-1">{b.icon}</span>
-              <span className="text-[10px] font-black text-slate-700">{b.name}</span>
+        <div className="space-y-4">
+          {STORIES.map(s => (
+            <button key={s.id} onClick={() => { setStory(s); setPage(0); playSfx('pop'); speak(s.title); }}
+              className="kid-3d-btn w-full p-5 rounded-2xl bg-white/95 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl" style={{ background: s.color + '20' }}>{s.emoji}</div>
+              <div className="text-left"><div className="font-bold text-gray-800">{s.title}</div><div className="text-xs text-gray-400">{s.pages.length} pages</div></div>
             </button>
           ))}
         </div>
       </div>
-
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-4 border-2 border-blue-200 flex items-center justify-between">
-        <div>
-          <span className="text-xs font-black text-blue-600 uppercase">Star Shop</span>
-          <h4 className="text-sm font-black text-slate-800">Bonus Treasure Pack</h4>
-          <p className="text-xs font-bold text-slate-500">Add 100 bonus stars</p>
-        </div>
-        <button
-          onClick={() => {
-            earnCoins(100);
-            showToast('Purchased 100 Stars!', 'celebrate');
-          }}
-          className="kid-3d-btn px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-md transition"
-        >
-          <Star className="w-4 h-4 fill-amber-300 inline mr-1" />
-          Buy +100 ⭐
-        </button>
-      </div>
     </div>
   );
-});
 
-// ─── Stub screens for design-internal navigation targets ─────────────────────
-// The design navigates to image2-fun, image5-quiz, image6-reader which are
-// not defined in the prototype. These stubs provide basic content until the
-// full content screens are wired from the existing grade banks.
-
-const ScreenImage2Fun = memo(({ onBack, speak, playSfx, isAudioMuted }) => {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const p = story.pages[page];
   return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-[#EDF5FF]">
-      <div className="flex items-center justify-between mb-4">
-        <button onClick={onBack} className="kid-3d-btn p-3 bg-white rounded-2xl border-2 border-blue-200 text-blue-700">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h2 className="text-lg font-black text-slate-800">Alphabets Explorer 🐧</h2>
-        <div className="w-12" />
-      </div>
-      <div className="grid grid-cols-6 gap-2.5">
-        {alphabet.map((letter) => (
-          <button
-            key={letter}
-            onClick={() => { playSfx('pop', isAudioMuted); speak(letter); }}
-            className="kid-3d-btn bg-white rounded-2xl p-3 flex items-center justify-center border-2 border-blue-200 hover:border-blue-400 transition-all"
-          >
-            <span className="text-2xl font-black text-blue-700">{letter}</span>
+    <div className="min-h-screen px-4 py-6" style={{ background: `linear-gradient(135deg, ${story.color}dd, ${story.color}88)` }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-4">
+          <button onClick={() => { setStory(null); playSfx('whoosh'); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
+          <div className="flex-1 text-center text-white font-bold">{story.title}</div>
+          <div className="text-white/70 text-sm">{page+1}/{story.pages.length}</div>
+        </div>
+        <div className="bg-white rounded-3xl p-6 shadow-2xl text-center mb-4">
+          <div className="text-6xl mb-6 animate-kid-bounce">{p.img}</div>
+          <p className="text-lg text-gray-800 font-medium leading-relaxed">{p.text}</p>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={() => { setPage(Math.max(0, page-1)); playSfx('click'); }} disabled={page===0}
+            className="kid-3d-btn flex-1 py-3 rounded-2xl bg-white/90 text-gray-700 font-bold disabled:opacity-40">
+            <ChevronLeft size={18} className="inline" /> Back
           </button>
-        ))}
-      </div>
-    </div>
-  );
-});
-
-const ScreenImage5Quiz = memo(({ onBack, playSfx, isAudioMuted, speak, earnCoins }) => {
-  const [selected, setSelected] = useState(null);
-  const [correct, setCorrect] = useState(false);
-  const q = useMemo(() => {
-    const a = Math.floor(Math.random() * 20) + 1;
-    const b = Math.floor(Math.random() * 20) + 1;
-    const ans = a + b;
-    const opts = [ans, ans + 3, ans - 2, ans + 1].sort(() => Math.random() - 0.5);
-    return { a, b, ans, opts };
-  }, [selected]);
-  const handlePick = (v) => {
-    setSelected(v);
-    if (v === q.ans) { setCorrect(true); playSfx('correct', isAudioMuted); speak('Correct!'); earnCoins(15); }
-    else { playSfx('pop', isAudioMuted); speak('Try again!'); }
-  };
-  return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-gradient-to-b from-pink-50 to-white">
-      <div className="flex items-center justify-between mb-4">
-        <button onClick={onBack} className="kid-3d-btn p-3 bg-white rounded-2xl border-2 border-pink-200 text-pink-700">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h2 className="text-lg font-black text-slate-800">Numbers Fun 🦊</h2>
-        <div className="w-12" />
-      </div>
-      <div className="bg-white rounded-3xl p-6 shadow-lg border-2 border-pink-200 text-center mb-6">
-        <span className="text-xs font-black text-pink-500 block mb-2 uppercase tracking-wider">Solve This!</span>
-        <h2 className="text-4xl font-black text-slate-800">{q.a} + {q.b} = ?</h2>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        {q.opts.map((opt) => (
-          <button
-            key={opt}
-            onClick={() => handlePick(opt)}
-            className={`kid-3d-btn p-5 rounded-3xl text-2xl font-black border-3 transition-all ${
-              selected === opt
-                ? opt === q.ans ? 'bg-emerald-100 border-emerald-500 text-emerald-800 ring-4 ring-emerald-300' : 'bg-rose-100 border-rose-400 text-rose-800'
-                : 'bg-white border-slate-200 text-slate-800 hover:border-pink-300'
-            }`}
-          >{opt}</button>
-        ))}
-      </div>
-      {correct && (
-        <div className="mt-4 bg-emerald-100 border-2 border-emerald-400 rounded-3xl p-4 text-center animate-kid-bounce">
-          <p className="font-black text-emerald-800 text-lg">🎉 Correct! +15 Stars!</p>
+          <button onClick={() => speak(p.text)} className="kid-3d-btn px-4 py-3 rounded-2xl bg-white/90 text-gray-700">
+            <Volume2 size={18} />
+          </button>
+          {page < story.pages.length - 1 ? (
+            <button onClick={() => { setPage(page+1); playSfx('click'); speak(story.pages[page+1].text); }}
+              className="kid-3d-btn flex-1 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
+              Next <ChevronRight size={18} className="inline" />
+            </button>
+          ) : (
+            <button onClick={() => { playSfx('celebrate'); speak('Great job finishing the story!'); setStory(null); }}
+              className="kid-3d-btn flex-1 py-3 rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold">
+              Done!
+            </button>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 });
 
-const ScreenImage6Reader = memo(({ onBack, speak, playSfx, isAudioMuted }) => {
-  const [page, setPage] = useState(0);
-  const story = [
-    "Once upon a time, a brave little lion named Leo lived in the golden savanna.",
-    "Leo loved to play with his friends under the warm African sun every day.",
-    "One morning, Leo found a lost baby bird crying near the river.",
-    "He gently carried the bird back to its mother in the tall acacia tree.",
-    "The mother bird sang a beautiful song to thank Leo for his kindness.",
-    "Leo smiled and ran home, knowing that helping others makes the heart happy.",
-    "That night, the stars twinkled extra bright, just for Leo.",
-    "And Leo dreamed of more adventures to come in the morning."
+const EduPlayHubScreen = memo(({ profile, onBack }) => {
+  const activities = [
+    { id: 'quiz', icon: '🧠', title: 'Quiz Challenge', desc: 'Answer questions and earn stars', color: '#3B82F6', bg: 'from-blue-400 to-indigo-500' },
+    { id: 'memory', icon: '🃏', title: 'Memory Match', desc: 'Find all the matching pairs', color: '#8B5CF6', bg: 'from-purple-400 to-pink-500' },
+    { id: 'drawing', icon: '🎨', title: 'Draw & Color', desc: 'Express yourself with art', color: '#EC4899', bg: 'from-pink-400 to-rose-500' },
+    { id: 'stories', icon: '📖', title: 'Story Reader', desc: 'Read fun interactive stories', color: '#F59E0B', bg: 'from-amber-400 to-orange-500' },
+    { id: 'math', icon: '🔢', title: 'Math Master', desc: 'Practice your math skills', color: '#10B981', bg: 'from-emerald-400 to-teal-500' },
+    { id: 'vocab', icon: '📚', title: 'Vocabulary', desc: 'Learn new words every day', color: '#06B6D4', bg: 'from-cyan-400 to-blue-500' },
   ];
-  const read = () => { speak(story[page]); playSfx('pop', isAudioMuted); };
   return (
-    <div className="flex flex-col h-full overflow-y-auto px-4 pt-4 pb-28 no-scrollbar bg-[#FFF6E5]">
-      <div className="flex items-center justify-between mb-4">
-        <button onClick={onBack} className="kid-3d-btn p-3 bg-white rounded-2xl border-2 border-amber-200 text-amber-700">
-          <ArrowLeft className="w-6 h-6" />
+    <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={() => { playSfx('whoosh'); onBack(); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
+          <div><h1 className="text-xl font-black text-white">EduPlay Hub</h1><p className="text-white/70 text-xs">Pick an activity!</p></div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {activities.map(a => (
+            <button key={a.id} onClick={() => { playSfx('pop'); }}
+              className={`kid-3d-btn p-5 rounded-2xl bg-gradient-to-br ${a.bg} text-white text-left`}>
+              <div className="text-3xl mb-3">{a.icon}</div>
+              <div className="font-bold text-sm">{a.title}</div>
+              <div className="text-white/70 text-xs mt-1">{a.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const ProfileScreen = memo(({ profile, onBack, onUpdate }) => {
+  const [editName, setEditName] = useState(false);
+  const [name, setName] = useState(profile.name);
+  const gradeObj = GRADES.find(g => g.id === profile.grade) || GRADES[2];
+  const handleSave = () => { if (!name.trim()) return; const p = { ...profile, name: name.trim() }; onUpdate(p); setEditName(false); playSfx('coin'); speak(`Name changed to ${name.trim()}!`); };
+  return (
+    <div className="min-h-screen px-4 py-8" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={() => { playSfx('whoosh'); onBack(); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
+          <h1 className="text-xl font-black text-white">My Profile</h1>
+        </div>
+        <div className="bg-white/95 backdrop-blur rounded-3xl p-6 shadow-2xl text-center mb-4">
+          <div className="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center text-4xl" style={{ background: (profile.avatar?.color || '#3B82F6') + '20' }}>
+            {profile.avatar?.emoji || '🦊'}
+          </div>
+          {editName ? (
+            <div className="flex items-center gap-2 justify-center mb-2">
+              <input value={name} onChange={e => setName(e.target.value)} className="px-3 py-1 rounded-lg border-2 border-purple-300 text-center font-bold" autoFocus onKeyDown={e => e.key === 'Enter' && handleSave()} />
+              <button onClick={handleSave} className="text-green-500"><Check size={20} /></button>
+            </div>
+          ) : (
+            <h2 className="text-xl font-black text-gray-800 mb-1">{profile.name}</h2>
+          )}
+          <p className="text-sm text-gray-400">{gradeObj.label} · {gradeObj.age}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-yellow-500">{profile.coins || 0}</div><div className="text-xs text-gray-400">Coins</div></div>
+          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-blue-500">{profile.stars || 0}</div><div className="text-xs text-gray-400">Stars</div></div>
+          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-red-500">{profile.streak || 0}</div><div className="text-xs text-gray-400">Streak</div></div>
+        </div>
+        <button onClick={() => { setEditName(true); playSfx('click'); }}
+          className="kid-3d-btn w-full py-3 rounded-2xl bg-white/90 text-gray-700 font-bold mb-3">
+          Edit Name
         </button>
-        <span className="text-sm font-black text-amber-800 bg-amber-100 px-4 py-1.5 rounded-full border border-amber-200">
-          Page {page + 1} of {story.length}
-        </span>
-        <button onClick={read} className="kid-3d-btn px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-black text-xs flex items-center gap-1">
-          <Volume2 className="w-4 h-4" /> Listen
-        </button>
-      </div>
-      <div className="bg-white rounded-[32px] p-6 shadow-lg border-2 border-amber-100 flex-1 flex items-center justify-center mb-4">
-        <HappyLionIcon />
-      </div>
-      <div className="bg-white p-4 rounded-2xl border-2 border-amber-100 shadow-sm mb-4">
-        <p className="text-base font-bold text-slate-700 leading-relaxed text-center">"{story[page]}"</p>
-      </div>
-      <div className="flex gap-3">
-        <button disabled={page === 0} onClick={() => { playSfx('pop', isAudioMuted); setPage(p => p - 1); }}
-          className="kid-3d-btn flex-1 py-4 bg-white border-2 border-slate-300 text-slate-800 disabled:opacity-40 rounded-2xl font-black transition">Back</button>
-        <button onClick={() => { if (page < story.length - 1) { playSfx('pop', isAudioMuted); setPage(p => p + 1); } else { playSfx('celebrate', isAudioMuted); speak('Great job finishing the story!'); } }}
-          className="kid-3d-btn flex-1 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl font-black shadow-lg transition">
-          {page === story.length - 1 ? 'Finish 🎉' : 'Next ➡️'}
+        <button onClick={() => { playSfx('click'); speak('Grade updated!'); }}
+          className="kid-3d-btn w-full py-3 rounded-2xl bg-white/90 text-gray-700 font-bold mb-3">
+          Change Grade
         </button>
       </div>
     </div>
   );
 });
 
-// ─── Shuffle helper ──────────────────────────────────────────────────────────
-const shuffleArray = (arr) => {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-};
+const HomeScreen = memo(({ profile, onNavigate }) => {
+  const gradeObj = GRADES.find(g => g.id === profile.grade) || GRADES[2];
+  const subjects = getSubjectsForGrade(gradeObj.id);
+  const quickActions = [
+    { id: 'quiz', icon: '🧠', label: 'Quiz', color: '#3B82F6' },
+    { id: 'memory', icon: '🃏', label: 'Memory', color: '#8B5CF6' },
+    { id: 'drawing', icon: '🎨', label: 'Draw', color: '#EC4899' },
+    { id: 'stories', icon: '📖', label: 'Stories', color: '#F59E0B' },
+  ];
 
-// ─── Grade 3 Content (500+ questions embedded) ──────────────────────────────
-const GRADE3_QUESTIONS = shuffleArray([
-  { q: 'What is 12 + 7?', opts: ['19', '17', '21', '15'], ans: '19' },
-  { q: 'What is 56 - 23?', opts: ['33', '35', '31', '37'], ans: '33' },
-  { q: 'What is 8 × 6?', opts: ['48', '42', '56', '54'], ans: '48' },
-  { q: 'What is 72 ÷ 8?', opts: ['9', '7', '8', '10'], ans: '9' },
-  { q: 'Which planet is closest to the Sun?', opts: ['Mercury', 'Venus', 'Mars', 'Earth'], ans: 'Mercury' },
-  { q: 'What is the capital of Egypt?', opts: ['Cairo', 'Alexandria', 'Giza', 'Luxor'], ans: 'Cairo' },
-  { q: 'How many sides does a hexagon have?', opts: ['6', '5', '7', '8'], ans: '6' },
-  { q: 'What gas do plants absorb?', opts: ['Carbon Dioxide', 'Oxygen', 'Nitrogen', 'Helium'], ans: 'Carbon Dioxide' },
-  { q: 'What is 144 ÷ 12?', opts: ['12', '11', '13', '14'], ans: '12' },
-  { q: 'Which animal is a mammal?', opts: ['Dolphin', 'Shark', 'Lizard', 'Salmon'], ans: 'Dolphin' },
-  { q: 'What is 9 × 9?', opts: ['81', '72', '89', '91'], ans: '81' },
-  { q: 'What is the freezing point of water?', opts: ['0°C', '100°C', '32°C', '50°C'], ans: '0°C' },
-  { q: 'Which continent is Egypt in?', opts: ['Africa', 'Asia', 'Europe', 'America'], ans: 'Africa' },
-  { q: 'What is 25 + 37?', opts: ['62', '64', '58', '66'], ans: '62' },
-  { q: 'What shape has 4 equal sides?', opts: ['Square', 'Rectangle', 'Triangle', 'Pentagon'], ans: 'Square' },
-  { q: 'What is 100 - 45?', opts: ['55', '65', '50', '45'], ans: '55' },
-  { q: 'Which org- produces milk in a farm?', opts: ['Cow', 'Dog', 'Cat', 'Bird'], ans: 'Cow' },
-  { q: 'What is 7 × 8?', opts: ['56', '48', '63', '49'], ans: '56' },
-  { q: 'How many months have 31 days?', opts: ['7', '6', '5', '8'], ans: '7' },
-  { q: 'What is 81 ÷ 9?', opts: ['9', '8', '7', '11'], ans: '9' },
-  { q: 'Which season comes after winter?', opts: ['Spring', 'Summer', 'Autumn', 'Winter'], ans: 'Spring' },
-  { q: 'What is 34 + 28?', opts: ['62', '54', '66', '60'], ans: '62' },
-  { q: 'What is 15 × 4?', opts: ['60', '56', '64', '55'], ans: '60' },
-  { q: 'What is the color of the sky on a clear day?', opts: ['Blue', 'Green', 'Red', 'Yellow'], ans: 'Blue' },
-  { q: 'How many legs does a spider have?', opts: ['8', '6', '10', '4'], ans: '8' },
-]);
+  return (
+    <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(180deg, #eef2ff 0%, #e0e7ff 30%, #f0f4ff 100%)' }}>
+      <KidStyles />
+      {/* Header */}
+      <div className="px-4 pt-6 pb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+        <div className="max-w-md mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <button onClick={() => onNavigate('profile')} className="kid-3d-btn w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl" style={{ background: (profile.avatar?.color || '#3B82F6') }}>
+                  {profile.avatar?.emoji || '🦊'}
+                </div>
+              </button>
+              <div>
+                <div className="text-white font-bold text-lg">{profile.name}</div>
+                <div className="text-white/70 text-xs">{gradeObj.label} · 🪙 {profile.coins || 0}</div>
+              </div>
+            </div>
+            <button onClick={() => onNavigate('settings')} className="kid-3d-btn w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white"><Settings size={18} /></button>
+          </div>
+          {/* Stats bar */}
+          <div className="flex gap-3">
+            <div className="flex-1 bg-white/15 rounded-2xl p-3 text-center">
+              <div className="text-white text-xl font-black">{profile.stars || 0}</div>
+              <div className="text-white/60 text-xs">Stars</div>
+            </div>
+            <div className="flex-1 bg-white/15 rounded-2xl p-3 text-center">
+              <div className="text-white text-xl font-black">🔥 {profile.streak || 0}</div>
+              <div className="text-white/60 text-xs">Streak</div>
+            </div>
+            <div className="flex-1 bg-white/15 rounded-2xl p-3 text-center">
+              <div className="text-white text-xl font-black">{subjects.length}</div>
+              <div className="text-white/60 text-xs">Subjects</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-// ─── Main App wrapper ────────────────────────────────────────────────────────
-export default function NewDesignApp() {
-  const [currentScreen, setCurrentScreen] = useState('image1-home');
-  const [coins, setCoins] = useState(() => {
-    try { return parseInt(localStorage.getItem('kidplay_coins') || '0', 10); } catch { return 0; }
-  });
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
-  const [activeModalGame, setActiveModalGame] = useState(null);
-  const [habitClaimed, setHabitClaimed] = useState(false);
-  const [selectedRank, setSelectedRank] = useState('Bronze');
+      <div className="max-w-md mx-auto px-4">
+        {/* Mascot Welcome */}
+        <div className="flex items-center gap-3 py-6">
+          <BlueBirdIcon />
+          <div className="bg-white rounded-2xl p-4 shadow-lg flex-1 relative">
+            <div className="absolute -left-3 top-4 w-0 h-0 border-t-8 border-t-transparent border-r-8 border-r-white border-b-8 border-b-transparent" />
+            <p className="text-gray-700 text-sm font-medium">Hi {profile.name}! Ready to learn and play today?</p>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-black text-gray-800">Quick Play</h2>
+          </div>
+          <div className="grid grid-cols-4 gap-3">
+            {quickActions.map(a => (
+              <button key={a.id} onClick={() => { playSfx('pop'); onNavigate(a.id); }}
+                className="kid-3d-btn flex flex-col items-center p-3 rounded-2xl bg-white shadow-md">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-1" style={{ background: a.color + '15' }}>{a.icon}</div>
+                <span className="text-xs font-bold text-gray-600">{a.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Characters Section */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-black text-gray-800">Meet the Friends</h2>
+          </div>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+            <div className="flex-shrink-0 text-center">
+              <div className="bg-blue-50 rounded-2xl p-3 mb-1"><BlueBirdIcon /></div>
+              <div className="text-xs font-bold text-gray-600">Bella</div>
+            </div>
+            <div className="flex-shrink-0 text-center">
+              <div className="bg-yellow-50 rounded-2xl p-3 mb-1"><HappyLionIcon /></div>
+              <div className="text-xs font-bold text-gray-600">Leo</div>
+            </div>
+            <div className="flex-shrink-0 text-center">
+              <div className="bg-green-50 rounded-2xl p-3 mb-1"><FriendlyDinoIcon /></div>
+              <div className="text-xs font-bold text-gray-600">Dino</div>
+            </div>
+            <div className="flex-shrink-0 text-center">
+              <div className="bg-purple-50 rounded-2xl p-3 mb-1"><TobyTurtleIcon className="w-20 h-24" /></div>
+              <div className="text-xs font-black text-gray-600">Toby</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Safari Adventure Banner */}
+        <div className="mb-6">
+          <div onClick={() => { playSfx('whoosh'); onNavigate('quiz'); }}
+            className="kid-3d-btn rounded-3xl overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
+            <div className="p-5 flex items-center gap-4">
+              <SafariJeepIcon />
+              <div>
+                <div className="text-white font-black text-lg">Safari Adventure</div>
+                <div className="text-white/80 text-sm">Learn with friends!</div>
+              </div>
+              <ChevronRight size={24} className="text-white/60 ml-auto" />
+            </div>
+          </div>
+        </div>
+
+        {/* Subjects for Grade */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-black text-gray-800">{gradeObj.label} Subjects</h2>
+          </div>
+          <div className="space-y-3">
+            {subjects.map((s, i) => {
+              const icons = { math: '🔢', english: '🔤', science: '🔬', general: '🌍', vocabulary: '📚' };
+              const colors = ['#3B82F6', '#EC4899', '#10B981', '#F59E0B', '#8B5CF6'];
+              return (
+                <button key={s.id} onClick={() => { playSfx('pop'); onNavigate('subject', { subject: s }); }}
+                  className="kid-3d-btn w-full flex items-center gap-4 p-4 rounded-2xl bg-white shadow-md">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl" style={{ background: colors[i % 5] + '15' }}>
+                    {icons[s.id] || '📖'}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-bold text-gray-800">{s.name}</div>
+                    <div className="text-xs text-gray-400">{s.questionCount || 10} questions</div>
+                  </div>
+                  <ChevronRight size={18} className="text-gray-300" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Alphabet Banner */}
+        <div className="mb-6">
+          <div className="rounded-3xl overflow-hidden bg-gradient-to-r from-red-100 to-red-50 p-5 flex items-center gap-4">
+            <LetterEKidIcon />
+            <div>
+              <div className="font-black text-gray-800 text-lg">Alphabet Fun</div>
+              <div className="text-gray-500 text-sm">Learn A to Z</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Daily Challenge */}
+        <div className="mb-6">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-5 text-white">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">⚡</div>
+              <div>
+                <div className="font-black">Daily Challenge</div>
+                <div className="text-white/70 text-xs">Complete 5 quizzes today</div>
+              </div>
+            </div>
+            <div className="h-2 bg-white/30 rounded-full overflow-hidden mt-3">
+              <div className="h-full bg-white rounded-full" style={{ width: '40%' }} />
+            </div>
+            <div className="text-white/70 text-xs mt-1">2/5 completed</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-4 py-2 z-50">
+        <div className="max-w-md mx-auto flex justify-around">
+          {[
+            { id: 'home', icon: Home, label: 'Home', active: true },
+            { id: 'quiz', icon: Gamepad2, label: 'Play' },
+            { id: 'profile', icon: User, label: 'Profile' },
+          ].map(tab => (
+            <button key={tab.id} onClick={() => { playSfx('click'); onNavigate(tab.id); }}
+              className={`kid-3d-btn flex flex-col items-center px-4 py-2 rounded-2xl ${tab.active ? 'bg-purple-100 text-purple-600' : 'text-gray-400'}`}>
+              <tab.icon size={22} strokeWidth={tab.active ? 2.5 : 2} />
+              <span className="text-xs font-bold mt-1">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// ─── App Router ──────────────────────────────────────────────────────────────
+function AppRouter() {
+  const [profile, setProfile] = useState(null);
+  const [screen, setScreen] = useState('init');
+  const [screenData, setScreenData] = useState({});
+  const [audioMuted, setAudioMuted] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const earnCoins = useCallback((n) => {
-    setCoins((c) => {
-      const next = c + n;
-      try { localStorage.setItem('kidplay_coins', String(next)); } catch {}
-      return next;
-    });
-  }, []);
-
-  const showToast = useCallback((msg, type = 'info') => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 2500);
-  }, []);
-
-  const goBack = useCallback(() => setCurrentScreen('image1-home'), []);
-
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'image1-home':
-        return (
-          <ScreenImage1Home
-            coins={coins}
-            earnCoins={earnCoins}
-            habitClaimed={habitClaimed}
-            setHabitClaimed={setHabitClaimed}
-            setCurrentScreen={setCurrentScreen}
-            setActiveModalGame={setActiveModalGame}
-            isAudioMuted={isAudioMuted}
-          />
-        );
-      case 'image1-profile':
-        return (
-          <ScreenImage1Profile
-            coins={coins}
-            earnCoins={earnCoins}
-            selectedRank={selectedRank}
-            setSelectedRank={setSelectedRank}
-            setCurrentScreen={setCurrentScreen}
-            showToast={showToast}
-            isAudioMuted={isAudioMuted}
-          />
-        );
-      case 'image1-modal':
-        return (
-          <ScreenImage1Modal
-            setCurrentScreen={setCurrentScreen}
-            setActiveModalGame={setActiveModalGame}
-            showToast={showToast}
-            isAudioMuted={isAudioMuted}
-          />
-        );
-      case 'champion-badges':
-        return (
-          <ChampionBadgesScreen
-            onBack={goBack}
-            coins={coins}
-            earnCoins={earnCoins}
-            isAudioMuted={isAudioMuted}
-          />
-        );
-      case 'toby-book':
-        return <TobyTurtleBookScreen onBack={goBack} isAudioMuted={isAudioMuted} earnCoins={earnCoins} />;
-      case 'eduplay':
-        return (
-          <EduPlayHubScreen
-            setCurrentScreen={setCurrentScreen}
-            earnCoins={earnCoins}
-            isAudioMuted={isAudioMuted}
-          />
-        );
-      case 'eduplay-math':
-        return <EduPlayMathQuiz onBack={goBack} earnCoins={earnCoins} isAudioMuted={isAudioMuted} />;
-      case 'animal-match-game':
-        return <AnimalGridMatchGame earnCoins={earnCoins} isAudioMuted={isAudioMuted} onBack={goBack} />;
-      case 'image2-fun':
-        return <ScreenImage2Fun onBack={goBack} speak={speak} playSfx={playSfx} isAudioMuted={isAudioMuted} />;
-      case 'image5-quiz':
-        return <ScreenImage5Quiz onBack={goBack} playSfx={playSfx} isAudioMuted={isAudioMuted} speak={speak} earnCoins={earnCoins} />;
-      case 'image6-reader':
-        return <ScreenImage6Reader onBack={goBack} speak={speak} playSfx={playSfx} isAudioMuted={isAudioMuted} />;
-      default:
-        return (
-          <ScreenImage1Home
-            coins={coins}
-            earnCoins={earnCoins}
-            habitClaimed={habitClaimed}
-            setHabitClaimed={setHabitClaimed}
-            setCurrentScreen={setCurrentScreen}
-            setActiveModalGame={setActiveModalGame}
-            isAudioMuted={isAudioMuted}
-          />
-        );
+  useEffect(() => {
+    const id = loadActiveProfile();
+    const profiles = loadProfiles();
+    if (id && profiles.find(p => p.id === id)) {
+      setProfile(profiles.find(p => p.id === id));
+      setScreen('home');
+    } else if (profiles.length > 0) {
+      setScreen('select');
+    } else {
+      setScreen('create');
     }
+  }, []);
+
+  const navigate = (s, data = {}) => { playSfx('whoosh', audioMuted); setScreen(s); setScreenData(data); };
+  const goHome = () => navigate('home');
+
+  const updateProfile = (p) => {
+    setProfile(p);
+    const profiles = loadProfiles().map(x => x.id === p.id ? p : x);
+    saveProfiles(profiles);
   };
 
-  return (
-    <div className="relative w-full h-full bg-white overflow-hidden" style={{ fontFamily: "'Fredoka', -apple-system, sans-serif" }}>
-      <KidStyles />
-      {renderScreen()}
+  const handleQuizFinish = (result) => {
+    if (profile) {
+      const updated = { ...profile, coins: result.coins, stars: result.stars };
+      updateProfile(updated);
+    }
+    goHome();
+  };
 
-      {/* Game overlays */}
-      {activeModalGame === 'drawing' && (
-        <div className="fixed inset-0 z-50 bg-white">
-          <DrawingCanvas earnCoins={earnCoins} setActiveModalGame={setActiveModalGame} isAudioMuted={isAudioMuted} />
-        </div>
-      )}
-      {activeModalGame === 'puzzle' && (
-        <div className="fixed inset-0 z-50 bg-white">
-          <div className="absolute top-3 right-3 z-50">
-            <button onClick={() => setActiveModalGame(null)} className="kid-3d-btn p-2 bg-slate-100 rounded-full">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <PuzzleBoard earnCoins={earnCoins} isAudioMuted={isAudioMuted} />
-        </div>
-      )}
-
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[9999] px-6 py-3 rounded-2xl font-black text-sm shadow-xl animate-kid-bounce ${
-          toast.type === 'celebrate' ? 'bg-amber-400 text-amber-900' : 'bg-slate-800 text-white'
-        }`}>
-          {toast.msg}
-        </div>
-      )}
-
-      {/* Mute toggle */}
-      <button
-        onClick={() => setIsAudioMuted((m) => !m)}
-        className="fixed bottom-4 right-4 z-50 kid-3d-btn p-3 bg-white rounded-full shadow-lg border-2 border-slate-200"
-        aria-label="Toggle audio"
-      >
-        {isAudioMuted ? <VolumeX className="w-5 h-5 text-slate-600" /> : <Volume2 className="w-5 h-5 text-blue-600" />}
-      </button>
+  // Loading
+  if (screen === 'init') return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div className="text-center animate-kid-bounce">
+        <BlueBirdIcon />
+        <div className="text-white font-black text-2xl mt-4">Kidsy</div>
+        <div className="text-white/60 text-sm">Loading...</div>
+      </div>
     </div>
   );
+
+  // Create Profile
+  if (screen === 'create') return <CreateProfileScreen onDone={(p) => { setProfile(p); setScreen('home'); }} />;
+
+  // Select Profile
+  if (screen === 'select') return <ProfileSelectScreen onSelect={(p) => { setProfile(p); setScreen('home'); }} onAddNew={() => setScreen('create')} />;
+
+  // Grade Select
+  if (screen === 'grades') return <GradeSelectScreen onSelect={(g) => navigate('subjects', { grade: g })} onBack={goHome} />;
+
+  // Subject Select
+  if (screen === 'subjects') return <SubjectSelectScreen grade={screenData.grade || GRADES[2]} onSelect={(s) => navigate('quiz', { grade: screenData.grade, subject: s })} onBack={() => navigate('grades')} />;
+
+  // Quiz
+  if (screen === 'quiz') return <QuizScreen grade={screenData.grade || GRADES.find(g => g.id === profile?.grade) || GRADES[2]} subject={screenData.subject} onFinish={handleQuizFinish} onBack={goHome} profile={profile} />;
+
+  // Drawing
+  if (screen === 'drawing') return <DrawingCanvas onBack={goHome} />;
+
+  // Memory
+  if (screen === 'memory') return <MemoryGame onBack={goHome} />;
+
+  // Stories
+  if (screen === 'stories') return <StoryReaderScreen onBack={goHome} />;
+
+  // Profile
+  if (screen === 'profile') return <ProfileScreen profile={profile} onBack={goHome} onUpdate={updateProfile} />;
+
+  // EduPlay Hub
+  if (screen === 'hub') return <EduPlayHubScreen profile={profile} onBack={goHome} />;
+
+  // Home
+  return (
+    <HomeScreen
+      profile={profile}
+      onNavigate={(s, data) => {
+        if (s === 'quiz') navigate('grades');
+        else if (s === 'profile') navigate('profile');
+        else navigate(s, data || {});
+      }}
+    />
+  );
+}
+
+export default function NewDesignApp() {
+  return <AppRouter />;
 }
