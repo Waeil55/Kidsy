@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import {
   Home, MessageSquare, User, Play, Pause, Star, Volume2, VolumeX,
   ArrowLeft, Camera, Clock, X, Sparkles, Trophy, Award, Palette,
@@ -12,28 +12,69 @@ import {
 import { GRADES, shuffleArray, getQuestionsForGrade, getSubjectsForGrade } from './content.js';
 
 let _sctx = null;
-const _gac = () => { if(typeof window==='undefined')return null; const A=window.AudioContext||window.webkitAudioContext; if(!A)return null; if(!_sctx)_sctx=new A(); if(_sctx.state==='suspended')_sctx.resume().catch(()=>{}); return _sctx; };
+const _gac = () => {
+  if (typeof window === 'undefined') return null;
+  const A = window.AudioContext || window.webkitAudioContext;
+  if (!A) return null;
+  if (!_sctx) _sctx = new A();
+  if (_sctx.state === 'suspended') _sctx.resume().catch(() => {});
+  return _sctx;
+};
 
-export const playSfx = (type='click', muted=false) => {
-  if(muted)return; try{const c=_gac();if(!c)return;const n=c.currentTime;
-  const m=(f,d,w='sine',v=0.18)=>{const o=c.createOscillator(),g=c.createGain();o.type=w;o.frequency.setValueAtTime(f,n);g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(0.001,n+d);o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+d);};
-  if(type==='click')m(480,0.06);else if(type==='pop'){m(320,0.1);setTimeout(()=>m(850,0.09),10);}else if(type==='coin'){m(987.77,0.35);setTimeout(()=>m(1318.51,0.2),80);}else if(type==='correct')[523.25,659.25,783.99,1046.5].forEach((f,i)=>setTimeout(()=>m(f,0.22,'triangle'),i*80));else if(type==='celebrate')[440,554.37,659.25,880,1108.73].forEach((f,i)=>setTimeout(()=>m(f,0.3),i*90));}catch{}};
+export const playSfx = (type = 'click', muted = false) => {
+  if (muted) return;
+  try {
+    const c = _gac();
+    if (!c) return;
+    const n = c.currentTime;
+    const m = (f, d, w = 'sine', v = 0.18) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = w;
+      o.frequency.setValueAtTime(f, n);
+      g.gain.setValueAtTime(v, n);
+      g.gain.exponentialRampToValueAtTime(0.001, n + d);
+      o.connect(g);
+      g.connect(c.destination);
+      o.start(n);
+      o.stop(n + d);
+    };
+    if (type === 'click') m(480, 0.06);
+    else if (type === 'pop') { m(320, 0.1); setTimeout(() => m(850, 0.09), 10); }
+    else if (type === 'coin') { m(987.77, 0.35); setTimeout(() => m(1318.51, 0.2), 80); }
+    else if (type === 'correct') [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => setTimeout(() => m(f, 0.22, 'triangle'), i * 80));
+    else if (type === 'celebrate') [440, 554.37, 659.25, 880, 1108.73].forEach((f, i) => setTimeout(() => m(f, 0.3), i * 90));
+  } catch {}
+};
 
-export const speak = (text, lang='en-US') => { if(typeof window!=='undefined'&&'speechSynthesis' in window){try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=0.96;u.pitch=1.15;u.lang=lang;window.speechSynthesis.speak(u);}catch{}} };
+export const speak = (text, lang = 'en-US') => {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(String(text || ''));
+      u.rate = 0.96;
+      u.pitch = 1.15;
+      u.lang = lang;
+      window.speechSynthesis.speak(u);
+    } catch {}
+  }
+};
 
-const KidStyles = () => (<style>{`
-@keyframes kid-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px) scale(1.02)}}
-@keyframes kid-wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
-@keyframes kid-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px) rotate(2deg)}}
-.animate-kid-bounce{animation:kid-bounce 2.5s ease-in-out infinite}
-.animate-kid-wiggle{animation:kid-wiggle 1.8s ease-in-out infinite}
-.animate-kid-float{animation:kid-float 3s ease-in-out infinite}
-.kid-3d-btn{transition:all .12s cubic-bezier(.34,1.56,.64,1);box-shadow:0 5px 0 rgba(0,0,0,.16),0 8px 16px rgba(0,0,0,.1);cursor:pointer;user-select:none}
-.kid-3d-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 7px 0 rgba(0,0,0,.2),0 12px 20px rgba(0,0,0,.14)}
-.kid-3d-btn:active{transform:translateY(4px) scale(.98);box-shadow:0 1px 0 rgba(0,0,0,.2),0 3px 6px rgba(0,0,0,.1)}
-.no-scrollbar::-webkit-scrollbar{display:none}
-.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
-`}</style>);
+const KidStyles = () => (
+  <style>{`
+    @keyframes kid-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px) scale(1.02)}}
+    @keyframes kid-wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+    @keyframes kid-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px) rotate(2deg)}}
+    .animate-kid-bounce{animation:kid-bounce 2.5s ease-in-out infinite}
+    .animate-kid-wiggle{animation:kid-wiggle 1.8s ease-in-out infinite}
+    .animate-kid-float{animation:kid-float 3s ease-in-out infinite}
+    .kid-3d-btn{transition:all .12s cubic-bezier(.34,1.56,.64,1);box-shadow:0 5px 0 rgba(0,0,0,.16),0 8px 16px rgba(0,0,0,.1);cursor:pointer;user-select:none}
+    .kid-3d-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 7px 0 rgba(0,0,0,.2),0 12px 20px rgba(0,0,0,.14)}
+    .kid-3d-btn:active{transform:translateY(4px) scale(.98);box-shadow:0 1px 0 rgba(0,0,0,.2),0 3px 6px rgba(0,0,0,.1)}
+    .no-scrollbar::-webkit-scrollbar{display:none}
+    .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+  `}</style>
+);
+
 const BlueBirdIcon = memo(() => (
   <svg viewBox="0 0 120 120" className="w-24 h-24 select-none drop-shadow-md animate-[bounce_3s_ease-in-out_infinite]">
     <ellipse cx="60" cy="65" rx="36" ry="38" fill="#4B96FF"/>
@@ -82,24 +123,8 @@ const FriendlyDinoIcon = memo(() => (
   </svg>
 ));
 
-const EduPlayOwlIcon = memo(({ className = "w-16 h-16" }) => (
-  <svg viewBox="0 0 140 140" className={`${className} select-none drop-shadow-md`}>
-    <ellipse cx="70" cy="80" rx="42" ry="46" fill="#7C3AED"/>
-    <ellipse cx="70" cy="86" rx="30" ry="34" fill="#DDD6FE"/>
-    <ellipse cx="28" cy="80" rx="10" ry="22" fill="#6D28D9" transform="rotate(18 28 80)"/>
-    <ellipse cx="112" cy="80" rx="10" ry="22" fill="#6D28D9" transform="rotate(-18 112 80)"/>
-    <circle cx="52" cy="62" r="18" fill="#FFF"/><circle cx="52" cy="62" r="11" fill="#3B82F6"/>
-    <circle cx="53" cy="61" r="6" fill="#1E1B4B"/><circle cx="55" cy="58" r="2.5" fill="#FFF"/>
-    <circle cx="88" cy="62" r="18" fill="#FFF"/><circle cx="88" cy="62" r="11" fill="#3B82F6"/>
-    <circle cx="87" cy="61" r="6" fill="#1E1B4B"/><circle cx="89" cy="58" r="2.5" fill="#FFF"/>
-    <polygon points="70,72 64,80 76,80" fill="#F59E0B"/>
-    <polygon points="70,18 26,35 70,48 114,35" fill="#1E293B"/>
-    <rect x="52" y="38" width="36" height="12" rx="4" fill="#0F172A"/>
-  </svg>
-));
-
 const TobyTurtleIcon = memo(({ className = "w-32 h-36" }) => (
-  <svg viewBox="0 0 160 180" className={`${className} select-none drop-shadow-md`}>
+  <svg viewBox="0 0 160 180" className={className + " select-none drop-shadow-md"}>
     <ellipse cx="80" cy="100" rx="48" ry="42" fill="#22C55E"/>
     <ellipse cx="80" cy="98" rx="42" ry="36" fill="#4ADE80" stroke="#15803D" strokeWidth="3"/>
     <path d="M60 85L100 85L110 102L95 120L65 120L50 102Z" fill="#86EFAC" stroke="#16A34A" strokeWidth="2"/>
@@ -115,33 +140,30 @@ const TobyTurtleIcon = memo(({ className = "w-32 h-36" }) => (
   </svg>
 ));
 
-const PolarBearIcon = memo(({ className = "w-40 h-40" }) => (
-  <svg viewBox="0 0 160 170" className={`${className} select-none drop-shadow-md`}>
-    <circle cx="50" cy="48" r="12" fill="#FFF" stroke="#E2E8F0" strokeWidth="2"/><circle cx="50" cy="48" r="6" fill="#FDA4AF"/>
-    <circle cx="110" cy="48" r="12" fill="#FFF" stroke="#E2E8F0" strokeWidth="2"/><circle cx="110" cy="48" r="6" fill="#FDA4AF"/>
-    <ellipse cx="80" cy="115" rx="38" ry="42" fill="#1E293B"/>
-    <circle cx="80" cy="72" r="32" fill="#FFF" stroke="#E2E8F0" strokeWidth="2"/>
-    <circle cx="70" cy="68" r="4" fill="#0F172A"/><circle cx="90" cy="68" r="4" fill="#0F172A"/>
-    <ellipse cx="80" cy="78" rx="10" ry="7" fill="#F1F5F9"/>
-    <ellipse cx="80" cy="76" rx="4" ry="2.5" fill="#0F172A"/>
-    <path d="M77 81Q80 84 83 81" stroke="#0F172A" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-    <ellipse cx="64" cy="76" rx="4" ry="2" fill="#FCA5A5" opacity="0.8"/>
-    <ellipse cx="96" cy="76" rx="4" ry="2" fill="#FCA5A5" opacity="0.8"/>
-    <path d="M72 104L80 118L88 104" stroke="#DC2626" strokeWidth="5" fill="none"/>
-    <circle cx="80" cy="120" r="7" fill="#F59E0B" stroke="#B45309" strokeWidth="1.5"/>
-    <polygon points="80,24 38,40 80,50 122,40" fill="#0F172A"/>
-    <rect x="62" y="44" width="36" height="8" rx="3" fill="#1E293B"/>
+const SafariJeepIcon = memo(({ className = "w-28 h-24" }) => (
+  <svg viewBox="0 0 140 120" className={className + " select-none drop-shadow-sm"}>
+    <circle cx="92" cy="30" r="10" fill="#F59E0B"/>
+    <rect x="90" y="36" width="6" height="20" fill="#F59E0B"/>
+    <circle cx="48" cy="46" r="12" fill="#94A3B8"/>
+    <circle cx="70" cy="48" r="11" fill="#FB923C"/>
+    <circle cx="67" cy="46" r="1.5" fill="#000"/><circle cx="73" cy="46" r="1.5" fill="#000"/>
+    <polygon points="70,49 68,52 72,52" fill="#B45309"/>
+    <rect x="30" y="62" width="80" height="30" rx="8" fill="#EF4444"/>
+    <rect x="36" y="65" width="68" height="12" rx="3" fill="#FEF08A" opacity="0.8"/>
+    <circle cx="48" cy="94" r="11" fill="#1E293B"/><circle cx="48" cy="94" r="5" fill="#94A3B8"/>
+    <circle cx="92" cy="94" r="11" fill="#1E293B"/><circle cx="92" cy="94" r="5" fill="#94A3B8"/>
   </svg>
 ));
 
-const KidAvatar = memo(({ name = '?', color = '#2563EB', size = 48 }) => {
-  const initial = (name || '?')[0].toUpperCase();
-  return (
-    <div className="rounded-full flex items-center justify-center font-black text-white select-none" style={{ width: size, height: size, background: color, fontSize: size * 0.4 }}>
-      {initial}
-    </div>
-  );
-});
+const LetterEKidIcon = memo(({ className = "w-28 h-24" }) => (
+  <svg viewBox="0 0 140 120" className={className + " select-none drop-shadow-sm"}>
+    <circle cx="45" cy="60" r="18" fill="#CBD5E1"/>
+    <circle cx="45" cy="58" r="11" fill="#FED7AA"/>
+    <circle cx="42" cy="56" r="1.5" fill="#000"/><circle cx="48" cy="56" r="1.5" fill="#000"/>
+    <path d="M72 32L112 32M72 32L72 88L112 88M72 60L104 60" stroke="#F87171" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <path d="M72 32L112 32M72 32L72 88L112 88M72 60L104 60" stroke="#FFF" strokeWidth="2" strokeDasharray="3 3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+  </svg>
+));
 
 const AVATARS = [
   { id: 'rex', emoji: '🦊', color: '#F59E0B' },
@@ -158,6 +180,7 @@ function loadProfiles() { try { return JSON.parse(localStorage.getItem('kidplay_
 function saveProfiles(p) { localStorage.setItem('kidplay_profiles', JSON.stringify(p)); }
 function loadActiveProfile() { try { return JSON.parse(localStorage.getItem('kidplay_active_profile') || 'null'); } catch { return null; } }
 function saveActiveProfile(id) { localStorage.setItem('kidplay_active_profile', JSON.stringify(id)); }
+
 const CreateProfileScreen = memo(({ onDone }) => {
   const [name, setName] = useState('');
   const [grade, setGrade] = useState('G3');
@@ -165,24 +188,24 @@ const CreateProfileScreen = memo(({ onDone }) => {
   const handleCreate = () => {
     if (!name.trim()) return;
     const profiles = loadProfiles();
-    const p = { id: `p-${Date.now()}`, name: name.trim(), grade, avatar: AVATARS[avatarIdx], coins: 0, streak: 0, stars: 0, createdAt: Date.now() };
+    const p = { id: 'p-' + Date.now(), name: name.trim(), grade, avatar: AVATARS[avatarIdx], coins: 0, streak: 0, stars: 0, createdAt: Date.now() };
     profiles.push(p);
     saveProfiles(profiles);
     saveActiveProfile(p.id);
     playSfx('celebrate');
-    speak(`Welcome ${p.name}! Let's learn and play!`);
+    speak('Welcome ' + p.name + '! Let us learn and play!');
     onDone(p);
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <div className="bg-white/95 backdrop-blur rounded-3xl p-8 w-full max-w-sm shadow-2xl">
         <h1 className="text-2xl font-black text-center mb-1" style={{ color: '#6B21A8' }}>Create Your Profile</h1>
-        <p className="text-center text-sm text-gray-500 mb-6">Who's learning today?</p>
+        <p className="text-center text-sm text-gray-500 mb-6">Who is learning today?</p>
         <div className="flex flex-wrap gap-3 justify-center mb-6">
           {AVATARS.map((av, i) => (
             <button key={av.id} onClick={() => setAvatarIdx(i)}
-              className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all ${i === avatarIdx ? 'ring-4 scale-110 shadow-lg' : 'opacity-70 hover:opacity-100'}`}
-              style={{ background: av.color + '20', ringColor: av.color }}>
+              className={'w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all ' + (i === avatarIdx ? 'ring-4 scale-110 shadow-lg' : 'opacity-70 hover:opacity-100')}
+              style={{ background: av.color + '20', '--tw-ring-color': av.color }}>
               {av.emoji}
             </button>
           ))}
@@ -195,7 +218,7 @@ const CreateProfileScreen = memo(({ onDone }) => {
           <div className="flex flex-wrap gap-2 justify-center">
             {GRADES.map(g => (
               <button key={g.id} onClick={() => setGrade(g.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${grade === g.id ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                className={'px-3 py-1.5 rounded-full text-xs font-bold transition-all ' + (grade === g.id ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}
                 style={grade === g.id ? { background: g.color } : {}}>
                 {g.label}
               </button>
@@ -205,7 +228,7 @@ const CreateProfileScreen = memo(({ onDone }) => {
         <button onClick={handleCreate} disabled={!name.trim()}
           className="kid-3d-btn w-full py-3 rounded-2xl text-white font-black text-lg disabled:opacity-40"
           style={{ background: name.trim() ? AVATARS[avatarIdx].color : '#ccc' }}>
-          Let's Go! 🚀
+          Let's Go!
         </button>
       </div>
     </div>
@@ -214,27 +237,27 @@ const CreateProfileScreen = memo(({ onDone }) => {
 
 const ProfileSelectScreen = memo(({ onSelect, onAddNew }) => {
   const profiles = loadProfiles();
-  const handleSelect = (p) => { saveActiveProfile(p.id); playSfx('pop'); speak(`Hi ${p.name}!`); onSelect(p); };
-  const handleDelete = (e, p) => { e.stopPropagation(); if (confirm(`Delete ${p.name}'s profile?`)) { saveProfiles(profiles.filter(x => x.id !== p.id)); location.reload(); } };
+  const handleSelect = (p) => { saveActiveProfile(p.id); playSfx('pop'); speak('Hi ' + p.name + '!'); onSelect(p); };
+  const handleDelete = (e, p) => { e.stopPropagation(); if (confirm('Delete ' + p.name + '\'s profile?')) { saveProfiles(profiles.filter(x => x.id !== p.id)); location.reload(); } };
   if (profiles.length === 0) return null;
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }}>
       <div className="bg-white/95 backdrop-blur rounded-3xl p-8 w-full max-w-sm shadow-2xl">
-        <h1 className="text-2xl font-black text-center mb-1" style={{ color: '#7C3AED' }}>Who's Playing?</h1>
+        <h1 className="text-2xl font-black text-center mb-1" style={{ color: '#7C3AED' }}>Who is Playing?</h1>
         <p className="text-center text-sm text-gray-500 mb-6">Choose your profile</p>
         <div className="space-y-3 mb-6">
           {profiles.map(p => (
             <button key={p.id} onClick={() => handleSelect(p)}
               className="kid-3d-btn w-full flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 text-left border-2 border-transparent hover:border-purple-200">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: (p.avatar?.color || '#3B82F6') + '20' }}>
-                {p.avatar?.emoji || '🦊'}
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: (p.avatar && p.avatar.color ? p.avatar.color : '#3B82F6') + '20' }}>
+                {p.avatar && p.avatar.emoji ? p.avatar.emoji : '🦊'}
               </div>
               <div className="flex-1">
                 <div className="font-bold text-gray-800">{p.name}</div>
-                <div className="text-xs text-gray-400">{GRADES.find(g => g.id === p.grade)?.label || p.grade} · {p.stars || 0} ⭐</div>
+                <div className="text-xs text-gray-400">{(GRADES.find(g => g.id === p.grade) || GRADES[2]).label} - {(p.stars || 0)} stars</div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-lg">🪙 {p.coins || 0}</span>
+                <span className="text-lg">{p.coins || 0} coins</span>
                 <button onClick={(e) => handleDelete(e, p)} className="text-red-400 hover:text-red-600 p-1"><Trash2 size={14}/></button>
               </div>
             </button>
@@ -247,6 +270,7 @@ const ProfileSelectScreen = memo(({ onSelect, onAddNew }) => {
     </div>
   );
 });
+
 const GradeSelectScreen = memo(({ onSelect, onBack }) => (
   <div className="min-h-screen px-4 py-8" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
     <div className="max-w-md mx-auto">
@@ -260,7 +284,7 @@ const GradeSelectScreen = memo(({ onSelect, onBack }) => (
         {GRADES.map(g => (
           <button key={g.id} onClick={() => { playSfx('pop'); onSelect(g); }}
             className="kid-3d-btn p-6 rounded-3xl text-left relative overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${g.color}ee, ${g.color}99)` }}>
+            style={{ background: 'linear-gradient(135deg, ' + g.color + 'ee, ' + g.color + '99)' }}>
             <div className="absolute -top-4 -right-4 text-7xl opacity-10 font-black">{g.id.replace('G','')}</div>
             <div className="text-white text-2xl font-black mb-1">{g.label}</div>
             <div className="text-white/70 text-xs font-medium">{g.age}</div>
@@ -274,9 +298,9 @@ const GradeSelectScreen = memo(({ onSelect, onBack }) => (
 
 const SubjectSelectScreen = memo(({ grade, onSelect, onBack }) => {
   const subjects = getSubjectsForGrade(grade.id);
-  const icons = { math: '🔢', english: '🔤', science: '🔬', general: '🌍', vocabulary: '📚' };
+  const icons = { math: '🧮', reading: '🔤', science: '🔬', social: '🌍' };
   return (
-    <div className="min-h-screen px-4 py-8" style={{ background: `linear-gradient(135deg, ${grade.color}dd, ${grade.color}88)` }}>
+    <div className="min-h-screen px-4 py-8" style={{ background: 'linear-gradient(135deg, ' + grade.color + 'dd, ' + grade.color + '88)' }}>
       <div className="max-w-md mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button onClick={onBack} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600">
@@ -296,7 +320,7 @@ const SubjectSelectScreen = memo(({ grade, onSelect, onBack }) => {
               </div>
               <div className="flex-1 text-left">
                 <div className="font-bold text-gray-800 text-lg">{s.name}</div>
-                <div className="text-xs text-gray-400">{s.questionCount || 10} questions</div>
+                <div className="text-xs text-gray-400">10 questions</div>
               </div>
               <ChevronRight size={20} className="text-gray-300" />
             </button>
@@ -306,6 +330,7 @@ const SubjectSelectScreen = memo(({ grade, onSelect, onBack }) => {
     </div>
   );
 });
+
 const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, onBack, profile }) => {
   const questions = useMemo(() => {
     if (propQuestions && propQuestions.length) return shuffleArray([...propQuestions]);
@@ -317,46 +342,64 @@ const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, o
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
-  const [coins, setCoins] = useState(profile?.coins || 0);
-  const [stars, setStars] = useState(profile?.stars || 0);
   const [timer, setTimer] = useState(30);
 
-  const q = questions[idx];
-  const progress = ((idx + 1) / questions.length) * 100;
+  const idxRef = useRef(0);
+  const answeredRef = useRef(false);
+  const showResultRef = useRef(false);
+  const questionsRef = useRef(questions);
 
-  useEffect(() => {
-    if (!answered && !showResult) {
-      const t = setInterval(() => setTimer(p => { if (p <= 1) { handleAnswer(-1); return 30; } return p - 1; }), 1000);
-      return () => clearInterval(t);
-    }
-  }, [idx, answered, showResult]);
+  useEffect(() => { idxRef.current = idx; }, [idx]);
+  useEffect(() => { answeredRef.current = answered; }, [answered]);
+  useEffect(() => { showResultRef.current = showResult; }, [showResult]);
+  useEffect(() => { questionsRef.current = questions; }, [questions]);
 
-  const handleAnswer = (ansIdx) => {
-    if (answered || showResult) return;
+  const handleAnswer = useCallback((ansIdx) => {
+    if (answeredRef.current || showResultRef.current) return;
     setSelected(ansIdx);
     setAnswered(true);
-    const isCorrect = ansIdx === q.correct;
+    const curQ = questionsRef.current[idxRef.current];
+    if (!curQ) return;
+    const isCorrect = ansIdx >= 0 && ansIdx < curQ.options.length && curQ.options[ansIdx] === curQ.correct;
     if (isCorrect) {
       playSfx('correct');
-      speak(q.explanation || 'Correct!');
+      speak('Correct!');
       setScore(s => s + 1);
-      setCoins(c => c + 5);
-      setStars(s => s + 1);
     } else {
       playSfx('click');
-      speak(q.explanation || `The answer is ${q.options[q.correct]}`);
+      speak('The answer is ' + (curQ.correct || ''));
     }
     setTimeout(() => {
       setSelected(null);
       setAnswered(false);
       setTimer(30);
-      if (idx + 1 < questions.length) setIdx(i => i + 1);
+      const curIdx = idxRef.current;
+      const curQs = questionsRef.current;
+      if (curIdx + 1 < curQs.length) setIdx(curIdx + 1);
       else setShowResult(true);
     }, 1800);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!answered && !showResult) {
+      const t = setInterval(() => {
+        setTimer(p => {
+          if (p <= 1) {
+            handleAnswer(-1);
+            return 30;
+          }
+          return p - 1;
+        });
+      }, 1000);
+      return () => clearInterval(t);
+    }
+  }, [idx, answered, showResult, handleAnswer]);
+
+  const q = questions[idx];
+  const progress = questions.length > 0 ? ((idx + 1) / questions.length) * 100 : 0;
 
   if (showResult) {
-    const pct = Math.round((score / questions.length) * 100);
+    const pct = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
     const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
     const newCoins = score * 5;
     return (
@@ -371,7 +414,7 @@ const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, o
             <div className="text-center"><div className="text-2xl font-black text-green-500">{pct}%</div><div className="text-xs text-gray-400">Score</div></div>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => { playSfx('click'); onFinish({ score, coins: (profile?.coins||0) + newCoins, stars: (profile?.stars||0) + score }); }}
+            <button onClick={() => { playSfx('click'); onFinish({ score, coins: ((profile && profile.coins) || 0) + newCoins, stars: ((profile && profile.stars) || 0) + score }); }}
               className="kid-3d-btn flex-1 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold">
               Done
             </button>
@@ -385,22 +428,29 @@ const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, o
     );
   }
 
-  if (!q) return null;
+  if (!q || !q.options || q.options.length === 0) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div className="bg-white rounded-3xl p-8 text-center">
+        <p className="text-gray-600 mb-4">No questions available for this grade.</p>
+        <button onClick={onBack} className="kid-3d-btn px-6 py-3 rounded-2xl bg-purple-500 text-white font-bold">Go Back</button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen px-4 py-6" style={{ background: `linear-gradient(135deg, ${grade.color}dd, ${grade.color}88)` }}>
+    <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, ' + (grade.color || '#3B82F6') + 'dd, ' + (grade.color || '#3B82F6') + '88)' }}>
       <div className="max-w-md mx-auto">
         <div className="flex items-center gap-3 mb-4">
           <button onClick={onBack} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
           <div className="flex-1">
-            <div className="h-2 bg-white/30 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full transition-all" style={{ width: `${progress}%` }}/></div>
+            <div className="h-2 bg-white/30 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full transition-all" style={{ width: progress + '%' }}/></div>
           </div>
           <div className="bg-white/90 rounded-full px-3 py-1 text-xs font-bold text-gray-700">{idx+1}/{questions.length}</div>
         </div>
         <div className="bg-white/95 backdrop-blur rounded-3xl p-6 shadow-2xl mb-4">
           <div className="flex items-center gap-2 mb-4">
             <Clock size={16} className={timer <= 10 ? 'text-red-500' : 'text-gray-400'} />
-            <span className={`text-sm font-bold ${timer <= 10 ? 'text-red-500' : 'text-gray-500'}`}>{timer}s</span>
+            <span className={'text-sm font-bold ' + (timer <= 10 ? 'text-red-500' : 'text-gray-500')}>{timer}s</span>
             <div className="flex-1" />
             <Star size={16} className="text-yellow-500" />
             <span className="text-sm font-bold text-yellow-500">{score}</span>
@@ -414,12 +464,12 @@ const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, o
             {q.options.map((opt, i) => {
               let bg = 'bg-gray-50 hover:bg-gray-100 border-gray-200';
               if (answered) {
-                if (i === q.correct) bg = 'bg-green-100 border-green-500 text-green-800';
-                else if (i === selected && i !== q.correct) bg = 'bg-red-100 border-red-500 text-red-800';
+                if (opt === q.correct) bg = 'bg-green-100 border-green-500 text-green-800';
+                else if (i === selected) bg = 'bg-red-100 border-red-500 text-red-800';
               }
               return (
                 <button key={i} onClick={() => handleAnswer(i)} disabled={answered}
-                  className={`kid-3d-btn w-full p-4 rounded-xl text-left font-semibold border-2 transition-all ${bg}`}>
+                  className={'kid-3d-btn w-full p-4 rounded-xl text-left font-semibold border-2 transition-all ' + bg}>
                   <span className="inline-block w-7 h-7 rounded-full bg-white/80 text-center leading-7 text-sm font-bold text-gray-500 mr-3">{String.fromCharCode(65 + i)}</span>
                   {opt}
                 </button>
@@ -428,7 +478,7 @@ const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, o
           </div>
           {q.explanation && answered && (
             <div className="mt-4 p-3 rounded-xl bg-blue-50 border border-blue-200 text-sm text-blue-800">
-              💡 {q.explanation}
+              {q.explanation}
             </div>
           )}
         </div>
@@ -436,6 +486,7 @@ const QuizScreen = memo(({ grade, subject, questions: propQuestions, onFinish, o
     </div>
   );
 });
+
 const COLORS = ['#EF4444','#F97316','#F59E0B','#22C55E','#3B82F6','#8B5CF6','#EC4899','#000000'];
 
 const DrawingCanvas = memo(({ onBack }) => {
@@ -445,23 +496,27 @@ const DrawingCanvas = memo(({ onBack }) => {
   const drawing = useRef(false);
 
   useEffect(() => {
-    const c = canvasRef.current; if (!c) return;
+    const c = canvasRef.current;
+    if (!c) return;
     const ctx = c.getContext('2d');
-    c.width = c.offsetWidth * 2; c.height = c.offsetHeight * 2;
+    c.width = c.offsetWidth * 2;
+    c.height = c.offsetHeight * 2;
     ctx.scale(2, 2);
-    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, c.offsetWidth, c.offsetHeight);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, c.offsetWidth, c.offsetHeight);
   }, []);
 
   const getPos = (e) => {
     const c = canvasRef.current;
+    if (!c) return { x: 0, y: 0 };
     const r = c.getBoundingClientRect();
     const touch = e.touches ? e.touches[0] : e;
     return { x: touch.clientX - r.left, y: touch.clientY - r.top };
   };
-  const startDraw = (e) => { drawing.current = true; const p = getPos(e); const ctx = canvasRef.current.getContext('2d'); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
-  const draw = (e) => { if (!drawing.current) return; e.preventDefault(); const p = getPos(e); const ctx = canvasRef.current.getContext('2d'); ctx.lineWidth = size; ctx.lineCap = 'round'; ctx.strokeStyle = color; ctx.lineTo(p.x, p.y); ctx.stroke(); };
+  const startDraw = (e) => { drawing.current = true; const p = getPos(e); const ctx = canvasRef.current && canvasRef.current.getContext('2d'); if (ctx) { ctx.beginPath(); ctx.moveTo(p.x, p.y); } };
+  const draw = (e) => { if (!drawing.current) return; e.preventDefault(); const p = getPos(e); const ctx = canvasRef.current && canvasRef.current.getContext('2d'); if (ctx) { ctx.lineWidth = size; ctx.lineCap = 'round'; ctx.strokeStyle = color; ctx.lineTo(p.x, p.y); ctx.stroke(); } };
   const endDraw = () => { drawing.current = false; };
-  const clear = () => { const c = canvasRef.current; const ctx = c.getContext('2d'); ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, c.offsetWidth, c.offsetHeight); };
+  const clear = () => { const c = canvasRef.current; if (!c) return; const ctx = c.getContext('2d'); ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, c.offsetWidth, c.offsetHeight); };
 
   return (
     <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)' }}>
@@ -479,7 +534,7 @@ const DrawingCanvas = memo(({ onBack }) => {
           <div className="flex gap-2 flex-wrap justify-center mb-3">
             {COLORS.map(c => (
               <button key={c} onClick={() => { setColor(c); playSfx('click'); }}
-                className={`w-9 h-9 rounded-full border-3 transition-all ${c === color ? 'scale-125 border-gray-800 shadow-lg' : 'border-white hover:scale-110'}`}
+                className={'w-9 h-9 rounded-full border-3 transition-all ' + (c === color ? 'scale-125 border-gray-800 shadow-lg' : 'border-white hover:scale-110')}
                 style={{ background: c }} />
             ))}
           </div>
@@ -487,7 +542,7 @@ const DrawingCanvas = memo(({ onBack }) => {
             <span className="text-xs text-gray-400">Brush:</span>
             {[4,8,16,24].map(s => (
               <button key={s} onClick={() => { setSize(s); playSfx('click'); }}
-                className={`rounded-full transition-all ${s === size ? 'bg-blue-500' : 'bg-gray-200 hover:bg-gray-300'}`}
+                className={'rounded-full transition-all ' + (s === size ? 'bg-blue-500' : 'bg-gray-200 hover:bg-gray-300')}
                 style={{ width: s + 16, height: s + 16 }}>
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="rounded-full bg-white" style={{ width: s, height: s }} />
@@ -550,7 +605,7 @@ const MemoryGame = memo(({ onBack }) => {
             const isFlipped = flipped.find(f => f.id === card.id) || matched.includes(card.emoji);
             return (
               <button key={card.id} onClick={() => handleFlip(card)}
-                className={`kid-3d-btn aspect-square rounded-2xl text-3xl flex items-center justify-center font-bold transition-all ${isFlipped ? 'bg-white shadow-lg' : 'bg-gradient-to-br from-purple-400 to-blue-500'}`}>
+                className={'kid-3d-btn aspect-square rounded-2xl text-3xl flex items-center justify-center font-bold transition-all ' + (isFlipped ? 'bg-white shadow-lg' : 'bg-gradient-to-br from-purple-400 to-blue-500')}>
                 {isFlipped ? card.emoji : '?'}
               </button>
             );
@@ -559,7 +614,7 @@ const MemoryGame = memo(({ onBack }) => {
         {matched.length === 6 && (
           <div className="mt-6 text-center">
             <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <div className="text-4xl mb-2">🏆</div>
+              <div className="text-4xl mb-2">trophy</div>
               <div className="text-xl font-black text-gray-800">You Win!</div>
               <div className="text-gray-500 text-sm">Completed in {moves} moves</div>
             </div>
@@ -618,9 +673,9 @@ const StoryReaderScreen = memo(({ onBack }) => {
     </div>
   );
 
-  const p = story.pages[page];
+  const storyPage = story.pages[page];
   return (
-    <div className="min-h-screen px-4 py-6" style={{ background: `linear-gradient(135deg, ${story.color}dd, ${story.color}88)` }}>
+    <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, ' + story.color + 'dd, ' + story.color + '88)' }}>
       <div className="max-w-md mx-auto">
         <div className="flex items-center gap-3 mb-4">
           <button onClick={() => { setStory(null); playSfx('whoosh'); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
@@ -628,15 +683,15 @@ const StoryReaderScreen = memo(({ onBack }) => {
           <div className="text-white/70 text-sm">{page+1}/{story.pages.length}</div>
         </div>
         <div className="bg-white rounded-3xl p-6 shadow-2xl text-center mb-4">
-          <div className="text-6xl mb-6 animate-kid-bounce">{p.img}</div>
-          <p className="text-lg text-gray-800 font-medium leading-relaxed">{p.text}</p>
+          <div className="text-6xl mb-6 animate-kid-bounce">{storyPage.img}</div>
+          <p className="text-lg text-gray-800 font-medium leading-relaxed">{storyPage.text}</p>
         </div>
         <div className="flex gap-3">
           <button onClick={() => { setPage(Math.max(0, page-1)); playSfx('click'); }} disabled={page===0}
             className="kid-3d-btn flex-1 py-3 rounded-2xl bg-white/90 text-gray-700 font-bold disabled:opacity-40">
             <ChevronLeft size={18} className="inline" /> Back
           </button>
-          <button onClick={() => speak(p.text)} className="kid-3d-btn px-4 py-3 rounded-2xl bg-white/90 text-gray-700">
+          <button onClick={() => speak(storyPage.text)} className="kid-3d-btn px-4 py-3 rounded-2xl bg-white/90 text-gray-700">
             <Volume2 size={18} />
           </button>
           {page < story.pages.length - 1 ? (
@@ -658,12 +713,12 @@ const StoryReaderScreen = memo(({ onBack }) => {
 
 const EduPlayHubScreen = memo(({ profile, onBack }) => {
   const activities = [
-    { id: 'quiz', icon: '🧠', title: 'Quiz Challenge', desc: 'Answer questions and earn stars', color: '#3B82F6', bg: 'from-blue-400 to-indigo-500' },
-    { id: 'memory', icon: '🃏', title: 'Memory Match', desc: 'Find all the matching pairs', color: '#8B5CF6', bg: 'from-purple-400 to-pink-500' },
-    { id: 'drawing', icon: '🎨', title: 'Draw & Color', desc: 'Express yourself with art', color: '#EC4899', bg: 'from-pink-400 to-rose-500' },
-    { id: 'stories', icon: '📖', title: 'Story Reader', desc: 'Read fun interactive stories', color: '#F59E0B', bg: 'from-amber-400 to-orange-500' },
-    { id: 'math', icon: '🔢', title: 'Math Master', desc: 'Practice your math skills', color: '#10B981', bg: 'from-emerald-400 to-teal-500' },
-    { id: 'vocab', icon: '📚', title: 'Vocabulary', desc: 'Learn new words every day', color: '#06B6D4', bg: 'from-cyan-400 to-blue-500' },
+    { id: 'quiz', icon: '🧠', title: 'Quiz Challenge', desc: 'Answer questions and earn stars', bg: 'from-blue-400 to-indigo-500' },
+    { id: 'memory', icon: '🃏', title: 'Memory Match', desc: 'Find all the matching pairs', bg: 'from-purple-400 to-pink-500' },
+    { id: 'drawing', icon: '🎨', title: 'Draw & Color', desc: 'Express yourself with art', bg: 'from-pink-400 to-rose-500' },
+    { id: 'stories', icon: '📖', title: 'Story Reader', desc: 'Read fun interactive stories', bg: 'from-amber-400 to-orange-500' },
+    { id: 'math', icon: '🔢', title: 'Math Master', desc: 'Practice your math skills', bg: 'from-emerald-400 to-teal-500' },
+    { id: 'vocab', icon: '📚', title: 'Vocabulary', desc: 'Learn new words every day', bg: 'from-cyan-400 to-blue-500' },
   ];
   return (
     <div className="min-h-screen px-4 py-6" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
@@ -675,7 +730,7 @@ const EduPlayHubScreen = memo(({ profile, onBack }) => {
         <div className="grid grid-cols-2 gap-4">
           {activities.map(a => (
             <button key={a.id} onClick={() => { playSfx('pop'); }}
-              className={`kid-3d-btn p-5 rounded-2xl bg-gradient-to-br ${a.bg} text-white text-left`}>
+              className={'kid-3d-btn p-5 rounded-2xl bg-gradient-to-br ' + a.bg + ' text-white text-left'}>
               <div className="text-3xl mb-3">{a.icon}</div>
               <div className="font-bold text-sm">{a.title}</div>
               <div className="text-white/70 text-xs mt-1">{a.desc}</div>
@@ -689,9 +744,9 @@ const EduPlayHubScreen = memo(({ profile, onBack }) => {
 
 const ProfileScreen = memo(({ profile, onBack, onUpdate }) => {
   const [editName, setEditName] = useState(false);
-  const [name, setName] = useState(profile.name);
-  const gradeObj = GRADES.find(g => g.id === profile.grade) || GRADES[2];
-  const handleSave = () => { if (!name.trim()) return; const p = { ...profile, name: name.trim() }; onUpdate(p); setEditName(false); playSfx('coin'); speak(`Name changed to ${name.trim()}!`); };
+  const [name, setName] = useState(profile ? profile.name : '');
+  const gradeObj = GRADES.find(g => g.id === (profile && profile.grade)) || GRADES[2];
+  const handleSave = () => { if (!name.trim()) return; const p = { ...profile, name: name.trim() }; onUpdate(p); setEditName(false); playSfx('coin'); speak('Name changed to ' + name.trim() + '!'); };
   return (
     <div className="min-h-screen px-4 py-8" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <div className="max-w-md mx-auto">
@@ -700,8 +755,8 @@ const ProfileScreen = memo(({ profile, onBack, onUpdate }) => {
           <h1 className="text-xl font-black text-white">My Profile</h1>
         </div>
         <div className="bg-white/95 backdrop-blur rounded-3xl p-6 shadow-2xl text-center mb-4">
-          <div className="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center text-4xl" style={{ background: (profile.avatar?.color || '#3B82F6') + '20' }}>
-            {profile.avatar?.emoji || '🦊'}
+          <div className="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center text-4xl" style={{ background: ((profile && profile.avatar && profile.avatar.color) || '#3B82F6') + '20' }}>
+            {profile && profile.avatar && profile.avatar.emoji ? profile.avatar.emoji : '🦊'}
           </div>
           {editName ? (
             <div className="flex items-center gap-2 justify-center mb-2">
@@ -709,22 +764,18 @@ const ProfileScreen = memo(({ profile, onBack, onUpdate }) => {
               <button onClick={handleSave} className="text-green-500"><Check size={20} /></button>
             </div>
           ) : (
-            <h2 className="text-xl font-black text-gray-800 mb-1">{profile.name}</h2>
+            <h2 className="text-xl font-black text-gray-800 mb-1">{profile && profile.name}</h2>
           )}
-          <p className="text-sm text-gray-400">{gradeObj.label} · {gradeObj.age}</p>
+          <p className="text-sm text-gray-400">{gradeObj.label} - {gradeObj.age}</p>
         </div>
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-yellow-500">{profile.coins || 0}</div><div className="text-xs text-gray-400">Coins</div></div>
-          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-blue-500">{profile.stars || 0}</div><div className="text-xs text-gray-400">Stars</div></div>
-          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-red-500">{profile.streak || 0}</div><div className="text-xs text-gray-400">Streak</div></div>
+          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-yellow-500">{(profile && profile.coins) || 0}</div><div className="text-xs text-gray-400">Coins</div></div>
+          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-blue-500">{(profile && profile.stars) || 0}</div><div className="text-xs text-gray-400">Stars</div></div>
+          <div className="bg-white/90 rounded-2xl p-4 text-center shadow-lg"><div className="text-2xl font-black text-red-500">{(profile && profile.streak) || 0}</div><div className="text-xs text-gray-400">Streak</div></div>
         </div>
         <button onClick={() => { setEditName(true); playSfx('click'); }}
           className="kid-3d-btn w-full py-3 rounded-2xl bg-white/90 text-gray-700 font-bold mb-3">
           Edit Name
-        </button>
-        <button onClick={() => { playSfx('click'); speak('Grade updated!'); }}
-          className="kid-3d-btn w-full py-3 rounded-2xl bg-white/90 text-gray-700 font-bold mb-3">
-          Change Grade
         </button>
       </div>
     </div>
@@ -732,6 +783,7 @@ const ProfileScreen = memo(({ profile, onBack, onUpdate }) => {
 });
 
 const HomeScreen = memo(({ profile, onNavigate }) => {
+  if (!profile) return null;
   const gradeObj = GRADES.find(g => g.id === profile.grade) || GRADES[2];
   const subjects = getSubjectsForGrade(gradeObj.id);
   const quickActions = [
@@ -744,31 +796,28 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
   return (
     <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(180deg, #eef2ff 0%, #e0e7ff 30%, #f0f4ff 100%)' }}>
       <KidStyles />
-      {/* Header */}
       <div className="px-4 pt-6 pb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <button onClick={() => onNavigate('profile')} className="kid-3d-btn w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl" style={{ background: (profile.avatar?.color || '#3B82F6') }}>
-                  {profile.avatar?.emoji || '🦊'}
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl" style={{ background: (profile.avatar && profile.avatar.color) || '#3B82F6' }}>
+                  {profile.avatar && profile.avatar.emoji ? profile.avatar.emoji : '🦊'}
                 </div>
               </button>
               <div>
                 <div className="text-white font-bold text-lg">{profile.name}</div>
-                <div className="text-white/70 text-xs">{gradeObj.label} · 🪙 {profile.coins || 0}</div>
+                <div className="text-white/70 text-xs">{gradeObj.label} - {profile.coins || 0} coins</div>
               </div>
             </div>
-            <button onClick={() => onNavigate('settings')} className="kid-3d-btn w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white"><Settings size={18} /></button>
           </div>
-          {/* Stats bar */}
           <div className="flex gap-3">
             <div className="flex-1 bg-white/15 rounded-2xl p-3 text-center">
               <div className="text-white text-xl font-black">{profile.stars || 0}</div>
               <div className="text-white/60 text-xs">Stars</div>
             </div>
             <div className="flex-1 bg-white/15 rounded-2xl p-3 text-center">
-              <div className="text-white text-xl font-black">🔥 {profile.streak || 0}</div>
+              <div className="text-white text-xl font-black">{profile.streak || 0}</div>
               <div className="text-white/60 text-xs">Streak</div>
             </div>
             <div className="flex-1 bg-white/15 rounded-2xl p-3 text-center">
@@ -780,7 +829,6 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
       </div>
 
       <div className="max-w-md mx-auto px-4">
-        {/* Mascot Welcome */}
         <div className="flex items-center gap-3 py-6">
           <BlueBirdIcon />
           <div className="bg-white rounded-2xl p-4 shadow-lg flex-1 relative">
@@ -789,7 +837,6 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
           </div>
         </div>
 
-        {/* Quick Actions */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-black text-gray-800">Quick Play</h2>
@@ -805,7 +852,6 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
           </div>
         </div>
 
-        {/* Characters Section */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-black text-gray-800">Meet the Friends</h2>
@@ -830,7 +876,6 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
           </div>
         </div>
 
-        {/* Safari Adventure Banner */}
         <div className="mb-6">
           <div onClick={() => { playSfx('whoosh'); onNavigate('quiz'); }}
             className="kid-3d-btn rounded-3xl overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
@@ -845,24 +890,23 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
           </div>
         </div>
 
-        {/* Subjects for Grade */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-black text-gray-800">{gradeObj.label} Subjects</h2>
           </div>
           <div className="space-y-3">
             {subjects.map((s, i) => {
-              const icons = { math: '🔢', english: '🔤', science: '🔬', general: '🌍', vocabulary: '📚' };
+              const subjectIcons = { math: '🧮', reading: '🔤', science: '🔬', social: '🌍' };
               const colors = ['#3B82F6', '#EC4899', '#10B981', '#F59E0B', '#8B5CF6'];
               return (
-                <button key={s.id} onClick={() => { playSfx('pop'); onNavigate('subject', { subject: s }); }}
+                <button key={s.id} onClick={() => { playSfx('pop'); onNavigate('quiz', { grade: gradeObj, subject: s }); }}
                   className="kid-3d-btn w-full flex items-center gap-4 p-4 rounded-2xl bg-white shadow-md">
                   <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl" style={{ background: colors[i % 5] + '15' }}>
-                    {icons[s.id] || '📖'}
+                    {subjectIcons[s.id] || '📖'}
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-bold text-gray-800">{s.name}</div>
-                    <div className="text-xs text-gray-400">{s.questionCount || 10} questions</div>
+                    <div className="text-xs text-gray-400">10 questions</div>
                   </div>
                   <ChevronRight size={18} className="text-gray-300" />
                 </button>
@@ -871,7 +915,6 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
           </div>
         </div>
 
-        {/* Alphabet Banner */}
         <div className="mb-6">
           <div className="rounded-3xl overflow-hidden bg-gradient-to-r from-red-100 to-red-50 p-5 flex items-center gap-4">
             <LetterEKidIcon />
@@ -882,11 +925,10 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
           </div>
         </div>
 
-        {/* Daily Challenge */}
         <div className="mb-6">
           <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-5 text-white">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">⚡</div>
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">lightning</div>
               <div>
                 <div className="font-black">Daily Challenge</div>
                 <div className="text-white/70 text-xs">Complete 5 quizzes today</div>
@@ -900,7 +942,6 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-4 py-2 z-50">
         <div className="max-w-md mx-auto flex justify-around">
           {[
@@ -909,7 +950,7 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
             { id: 'profile', icon: User, label: 'Profile' },
           ].map(tab => (
             <button key={tab.id} onClick={() => { playSfx('click'); onNavigate(tab.id); }}
-              className={`kid-3d-btn flex flex-col items-center px-4 py-2 rounded-2xl ${tab.active ? 'bg-purple-100 text-purple-600' : 'text-gray-400'}`}>
+              className={'kid-3d-btn flex flex-col items-center px-4 py-2 rounded-2xl ' + (tab.active ? 'bg-purple-100 text-purple-600' : 'text-gray-400')}>
               <tab.icon size={22} strokeWidth={tab.active ? 2.5 : 2} />
               <span className="text-xs font-bold mt-1">{tab.label}</span>
             </button>
@@ -920,13 +961,11 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
   );
 });
 
-// ─── App Router ──────────────────────────────────────────────────────────────
 function AppRouter() {
   const [profile, setProfile] = useState(null);
   const [screen, setScreen] = useState('init');
   const [screenData, setScreenData] = useState({});
   const [audioMuted, setAudioMuted] = useState(false);
-  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const id = loadActiveProfile();
@@ -941,24 +980,25 @@ function AppRouter() {
     }
   }, []);
 
-  const navigate = (s, data = {}) => { playSfx('whoosh', audioMuted); setScreen(s); setScreenData(data); };
-  const goHome = () => navigate('home');
+  const navigate = useCallback((s, data) => { setScreen(s); setScreenData(data || {}); }, []);
 
-  const updateProfile = (p) => {
+  const updateProfile = useCallback((p) => {
     setProfile(p);
     const profiles = loadProfiles().map(x => x.id === p.id ? p : x);
     saveProfiles(profiles);
-  };
+  }, []);
 
-  const handleQuizFinish = (result) => {
-    if (profile) {
-      const updated = { ...profile, coins: result.coins, stars: result.stars };
-      updateProfile(updated);
-    }
-    goHome();
-  };
+  const handleQuizFinish = useCallback((result) => {
+    setProfile(prev => {
+      if (!prev) return prev;
+      const updated = { ...prev, coins: result.coins, stars: result.stars };
+      const profiles = loadProfiles().map(x => x.id === updated.id ? updated : x);
+      saveProfiles(profiles);
+      return updated;
+    });
+    navigate('home');
+  }, [navigate]);
 
-  // Loading
   if (screen === 'init') return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <div className="text-center animate-kid-bounce">
@@ -969,37 +1009,26 @@ function AppRouter() {
     </div>
   );
 
-  // Create Profile
   if (screen === 'create') return <CreateProfileScreen onDone={(p) => { setProfile(p); setScreen('home'); }} />;
 
-  // Select Profile
   if (screen === 'select') return <ProfileSelectScreen onSelect={(p) => { setProfile(p); setScreen('home'); }} onAddNew={() => setScreen('create')} />;
 
-  // Grade Select
-  if (screen === 'grades') return <GradeSelectScreen onSelect={(g) => navigate('subjects', { grade: g })} onBack={goHome} />;
+  if (screen === 'grades') return <GradeSelectScreen onSelect={(g) => navigate('subjects', { grade: g })} onBack={() => navigate('home')} />;
 
-  // Subject Select
-  if (screen === 'subjects') return <SubjectSelectScreen grade={screenData.grade || GRADES[2]} onSelect={(s) => navigate('quiz', { grade: screenData.grade, subject: s })} onBack={() => navigate('grades')} />;
+  if (screen === 'subjects') return <SubjectSelectScreen grade={(screenData && screenData.grade) || GRADES[2]} onSelect={(s) => navigate('quiz', { grade: (screenData && screenData.grade) || GRADES[2], subject: s })} onBack={() => navigate('grades')} />;
 
-  // Quiz
-  if (screen === 'quiz') return <QuizScreen grade={screenData.grade || GRADES.find(g => g.id === profile?.grade) || GRADES[2]} subject={screenData.subject} onFinish={handleQuizFinish} onBack={goHome} profile={profile} />;
+  if (screen === 'quiz') return <QuizScreen grade={(screenData && screenData.grade) || GRADES.find(g => g.id === (profile && profile.grade)) || GRADES[2]} subject={screenData && screenData.subject} onFinish={handleQuizFinish} onBack={() => navigate('home')} profile={profile} />;
 
-  // Drawing
-  if (screen === 'drawing') return <DrawingCanvas onBack={goHome} />;
+  if (screen === 'drawing') return <DrawingCanvas onBack={() => navigate('home')} />;
 
-  // Memory
-  if (screen === 'memory') return <MemoryGame onBack={goHome} />;
+  if (screen === 'memory') return <MemoryGame onBack={() => navigate('home')} />;
 
-  // Stories
-  if (screen === 'stories') return <StoryReaderScreen onBack={goHome} />;
+  if (screen === 'stories') return <StoryReaderScreen onBack={() => navigate('home')} />;
 
-  // Profile
-  if (screen === 'profile') return <ProfileScreen profile={profile} onBack={goHome} onUpdate={updateProfile} />;
+  if (screen === 'profile') return <ProfileScreen profile={profile} onBack={() => navigate('home')} onUpdate={updateProfile} />;
 
-  // EduPlay Hub
-  if (screen === 'hub') return <EduPlayHubScreen profile={profile} onBack={goHome} />;
+  if (screen === 'hub') return <EduPlayHubScreen profile={profile} onBack={() => navigate('home')} />;
 
-  // Home
   return (
     <HomeScreen
       profile={profile}
