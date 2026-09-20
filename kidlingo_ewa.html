@@ -1,933 +1,492 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="purple">
+﻿<!DOCTYPE html>
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kidsy: Learn With Fun (KG - Grade 6)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            display: ['Fredoka', 'sans-serif'],
-            body: ['Nunito', 'sans-serif'],
-            serif: ['Lora', 'serif'],
+            sans: ['Nunito', 'sans-serif'],
+            display: ['Fredoka', 'Nunito', 'sans-serif'],
+            serif: ['Lora', 'Georgia', 'serif'],
+          },
+          boxShadow: {
+            'card-3d': '0 8px 0 rgba(0,0,0,0.05), 0 12px 20px -3px rgba(0,0,0,0.08)',
           }
         }
       }
-    }
+    };
   </script>
   <style>
-    :root {
-      --theme-hue: 280;
-      --theme-main: #8b5cf6;
-      --theme-solid: #7c3aed;
-      --theme-light: #ede9fe;
-      --theme-dark: #6d28d9;
-      --theme-ring: rgba(139, 92, 246, 0.4);
-    }
-    [data-theme="purple"] {
-      --theme-hue: 280;
-      --theme-main: #8b5cf6;
-      --theme-solid: #7c3aed;
-      --theme-light: #ede9fe;
-      --theme-dark: #6d28d9;
-      --theme-ring: rgba(139, 92, 246, 0.4);
-    }
-    [data-theme="blue"] {
-      --theme-hue: 220;
-      --theme-main: #3b82f6;
-      --theme-solid: #2563eb;
-      --theme-light: #dbeafe;
-      --theme-dark: #1d4ed8;
-      --theme-ring: rgba(59, 130, 246, 0.4);
-    }
-    [data-theme="green"] {
-      --theme-hue: 150;
-      --theme-main: #22c55e;
-      --theme-solid: #16a34a;
-      --theme-light: #dcfce7;
-      --theme-dark: #15803d;
-      --theme-ring: rgba(34, 197, 94, 0.4);
-    }
-    [data-theme="coral"] {
-      --theme-hue: 10;
-      --theme-main: #f43f5e;
-      --theme-solid: #e11d48;
-      --theme-light: #ffe4e6;
-      --theme-dark: #be123c;
-      --theme-ring: rgba(244, 63, 94, 0.4);
-    }
-    [data-theme="amber"] {
-      --theme-hue: 40;
-      --theme-main: #f59e0b;
-      --theme-solid: #d97706;
-      --theme-light: #fef3c7;
-      --theme-dark: #b45309;
-      --theme-ring: rgba(245, 158, 11, 0.4);
-    }
-    [data-theme="pink"] {
-      --theme-hue: 330;
-      --theme-main: #ec4899;
-      --theme-solid: #db2777;
-      --theme-light: #fce7f3;
-      --theme-dark: #be185d;
-      --theme-ring: rgba(236, 72, 153, 0.4);
-    }
-    .bg-theme-main { background-color: var(--theme-main); }
-    .bg-theme-solid { background-color: var(--theme-solid); }
-    .bg-theme-light { background-color: var(--theme-light); }
-    .text-theme-main { color: var(--theme-main); }
-    .border-theme-main { border-color: var(--theme-main); }
-    .border-theme-light { border-color: var(--theme-light); }
-
-    body { font-family: 'Nunito', sans-serif; }
-    .font-display { font-family: 'Fredoka', sans-serif; }
-    .font-serif { font-family: 'Lora', serif; }
-
-    /* Phone Preview Simulator */
-    .phone-frame {
-      width: 375px;
-      height: 740px;
-      border-radius: 40px;
-      border: 8px solid #1a1a2e;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.1);
-      overflow: hidden;
-      position: relative;
-      background: #fafafa;
-    }
-    .phone-notch {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 150px;
-      height: 28px;
-      background: #1a1a2e;
-      border-radius: 0 0 18px 18px;
-      z-index: 50;
-    }
-    .phone-notch::after {
-      content: '';
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 6px;
-      background: #333;
-      border-radius: 3px;
-    }
-
-    /* EWA Word Tokens */
-    .ewa-word {
-      display: inline-block;
-      padding: 2px 6px;
-      margin: 1px 2px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: 2px solid transparent;
-      font-size: 1.1em;
-      line-height: 1.6;
-    }
-    .ewa-word:hover {
-      background-color: var(--theme-light);
-      border-color: var(--theme-main);
-      transform: translateY(-1px);
-    }
-    .ewa-word.active-word {
-      background-color: var(--theme-main);
-      color: white;
-      border-color: var(--theme-dark);
-      box-shadow: 0 2px 8px var(--theme-ring);
-      animation: pulse-word 1s ease-in-out infinite;
-    }
-    .ewa-word.speaking-now {
-      background-color: #fbbf24;
-      color: #1a1a2e;
-      border-color: #f59e0b;
-      animation: pulse-word 0.5s ease-in-out infinite;
-    }
-    .ewa-word.status-learned {
-      background-color: #dcfce7;
-      color: #166534;
-      border-color: #22c55e;
-    }
-    .ewa-word.status-learning {
-      background-color: #fef3c7;
-      color: #92400e;
-      border-color: #f59e0b;
-    }
-    @keyframes pulse-word {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    /* Floating Tooltip Bubble */
-    .ewa-bubble {
-      position: fixed;
-      z-index: 9999;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08);
-      padding: 16px 20px;
-      max-width: 320px;
-      min-width: 220px;
-      pointer-events: auto;
-      animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border: 2px solid var(--theme-light);
-    }
-    .ewa-bubble-arrow {
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 10px solid white;
-    }
-    .ewa-bubble-arrow::after {
-      content: '';
-      position: absolute;
-      bottom: 2px;
-      left: -10px;
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 10px solid var(--theme-light);
-    }
-    @keyframes popIn {
-      0% { opacity: 0; transform: scale(0.8) translateY(8px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb { background: var(--theme-main); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--theme-dark); }
-
-    .screen-section { display: none; }
-    .screen-section.active { display: block; }
-
-    @media (max-width: 768px) {
-      #desktopSidebar { display: none; }
-      .mobile-bottom-nav { display: flex !important; }
-    }
-    @media (min-width: 769px) {
-      .mobile-bottom-nav { display: none !important; }
-    }
+    :root{--theme-primary:#7551f0;--theme-secondary:#5831e5;--theme-light:#f3effe;--theme-border:#dcd0fb;--theme-shadow:#4622cf;--theme-gradient:linear-gradient(135deg,#8b68f6 0%,#6842ea 100%)}
+    [data-theme="blue"]{--theme-primary:#0284c7;--theme-secondary:#0369a1;--theme-light:#e0f2fe;--theme-border:#bae6fd;--theme-shadow:#0284c7;--theme-gradient:linear-gradient(135deg,#38bdf8 0%,#0284c7 100%)}
+    [data-theme="green"]{--theme-primary:#059669;--theme-secondary:#047857;--theme-light:#ecfdf5;--theme-border:#a7f3d0;--theme-shadow:#065f46;--theme-gradient:linear-gradient(135deg,#34d399 0%,#059669 100%)}
+    [data-theme="coral"]{--theme-primary:#e11d48;--theme-secondary:#be123c;--theme-light:#fff1f2;--theme-border:#fecdd3;--theme-shadow:#9f1239;--theme-gradient:linear-gradient(135deg,#fb7185 0%,#e11d48 100%)}
+    [data-theme="amber"]{--theme-primary:#d97706;--theme-secondary:#b45309;--theme-light:#fffbeb;--theme-border:#fde68a;--theme-shadow:#92400e;--theme-gradient:linear-gradient(135deg,#fbbf24 0%,#d97706 100%)}
+    [data-theme="pink"]{--theme-primary:#db2777;--theme-secondary:#be185d;--theme-light:#fdf2f8;--theme-border:#fbcfe8;--theme-shadow:#9d174d;--theme-gradient:linear-gradient(135deg,#f472b6 0%,#db2777 100%)}
+    [data-theme="purple"]{--theme-primary:#7551f0;--theme-secondary:#5831e5;--theme-light:#f3effe;--theme-border:#dcd0fb;--theme-shadow:#4622cf;--theme-gradient:linear-gradient(135deg,#8b68f6 0%,#6842ea 100%)}
+    .bg-theme-main{background:var(--theme-gradient)}.bg-theme-solid{background-color:var(--theme-primary)}.bg-theme-light{background-color:var(--theme-light)}.text-theme-main{color:var(--theme-primary)}.border-theme-main{border-color:var(--theme-primary)}.border-theme-light{border-color:var(--theme-border)}
+    body.device-phone-preview{background:#0f172a;padding:1.5rem;display:flex;justify-content:center;align-items:center}
+    body.device-phone-preview #appRoot{max-width:420px;height:94vh;max-height:890px;border-radius:44px;border:8px solid #1e293b;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5)}
+    body.device-phone-preview #desktopSidebar{display:none!important}body.device-phone-preview #mobileNavBar{display:flex!important}
+    .ewa-word{cursor:pointer;display:inline-block;transition:all .15s ease;border-radius:6px;padding:1px 3px;margin:0 1px}
+    .ewa-word:hover{background-color:var(--theme-light);color:var(--theme-primary)}
+    .ewa-word.active-word{background-color:var(--theme-primary)!important;color:#fff!important;border-radius:6px}
+    .ewa-word.speaking-now{background-color:#fde047!important;color:#713f12!important;font-weight:800;border-radius:6px;transform:scale(1.05)}
+    .ewa-word.status-learned{text-decoration:underline;text-decoration-color:#10b981;text-decoration-thickness:3px;text-underline-offset:4px}
+    .ewa-word.status-learning{text-decoration:underline;text-decoration-color:var(--theme-primary);text-decoration-thickness:3px;text-underline-offset:4px}
+    .ewa-bubble{position:absolute;z-index:60;box-shadow:0 20px 35px -5px rgba(0,0,0,0.2),0 8px 15px -3px rgba(0,0,0,0.08);animation:popIn .2s cubic-bezier(0.175,0.885,0.32,1.25) forwards;transform-origin:bottom center}
+    @keyframes popIn{0%{opacity:0;transform:translateY(8px) scale(0.92)}100%{opacity:1;transform:translateY(0) scale(1)}}
+    .ewa-bubble-arrow{position:absolute;bottom:-9px;left:calc(var(--arrow-left,50%) - 9px);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid var(--theme-primary);pointer-events:none}
+    ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:9999px}
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen" data-theme="purple">
-  <div id="appRoot" class="flex min-h-screen">
-    <!-- DESKTOP SIDEBAR -->
-    <aside id="desktopSidebar" class="hidden md:flex w-64 flex-col bg-white border-r border-gray-200 shadow-sm sticky top-0 h-screen overflow-y-auto">
-      <div class="p-5 border-b border-gray-100">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-theme-main rounded-xl flex items-center justify-center">
-            <i class="fas fa-star text-white text-lg"></i>
-          </div>
+<body data-theme="purple" class="bg-slate-100 text-slate-800 font-sans h-full select-none overflow-hidden">
+  <div id="appRoot" class="w-full h-full flex flex-col md:flex-row bg-white overflow-hidden relative shadow-sm">
+
+    <!-- ==================== DESKTOP SIDEBAR ==================== -->
+    <aside id="desktopSidebar" class="hidden md:flex flex-col w-64 h-full bg-slate-50 border-r border-slate-200 flex-shrink-0">
+      <div class="p-4 border-b border-slate-200">
+        <div class="flex items-center gap-3 mb-3">
+          <div id="sidebarAvatarBadge" class="w-10 h-10 rounded-2xl bg-theme-main flex items-center justify-center text-xl text-white shadow-md">&#x1F466;</div>
           <div>
-            <h1 class="font-display text-xl font-bold text-theme-main">Kidsy</h1>
-            <p class="text-xs text-gray-400 font-body">Learn With Fun</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Welcome back</p>
+            <h3 id="sidebarGreetingName" class="font-display font-black text-slate-800 text-sm">Arab</h3>
           </div>
         </div>
-      </div>
-
-      <div class="p-4 border-b border-gray-100">
-        <div class="flex items-center gap-3 p-3 bg-theme-light rounded-xl">
-          <div class="w-10 h-10 rounded-full bg-theme-main flex items-center justify-center text-white font-bold text-sm" id="sidebarAvatar">A</div>
-          <div>
-            <p class="font-display font-semibold text-sm" id="sidebarName">Little Explorer</p>
-            <p class="text-xs text-gray-500">Grade: <span id="sidebarGrade">KG</span></p>
-          </div>
+        <div class="flex items-center gap-2">
+          <span id="sidebarGradePill" class="px-2.5 py-0.5 rounded-full bg-theme-main text-white text-[10px] font-black">G1</span>
+          <span id="sidebarStreakBadge" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold"><i class="fa-solid fa-fire text-[9px]"></i> 0 Day</span>
         </div>
       </div>
-
-      <div class="p-4 border-b border-gray-100">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">Select Grade</p>
-        <div class="grid grid-cols-4 gap-2" id="gradeSelector">
-          <button class="grade-btn active text-xs font-bold py-2 px-1 rounded-lg bg-theme-main text-white transition-all" data-grade="KG">KG</button>
-          <button class="grade-btn text-xs font-bold py-2 px-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-theme-light hover:text-theme-main transition-all" data-grade="G1">G1</button>
-          <button class="grade-btn text-xs font-bold py-2 px-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-theme-light hover:text-theme-main transition-all" data-grade="G2">G2</button>
-          <button class="grade-btn text-xs font-bold py-2 px-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-theme-light hover:text-theme-main transition-all" data-grade="G3">G3</button>
-          <button class="grade-btn text-xs font-bold py-2 px-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-theme-light hover:text-theme-main transition-all" data-grade="G4">G4</button>
-          <button class="grade-btn text-xs font-bold py-2 px-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-theme-light hover:text-theme-main transition-all" data-grade="G5">G5</button>
-          <button class="grade-btn text-xs font-bold py-2 px-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-theme-light hover:text-theme-main transition-all" data-grade="G6">G6</button>
+      <div class="p-3 border-b border-slate-200">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1">Select Grade</p>
+        <div id="sidebarGradeSelectorGrid" class="grid grid-cols-4 gap-1.5">
+          <button data-grade="KG" class="h-9 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 hover:bg-theme-main hover:text-white transition">KG</button>
+          <button data-grade="G1" class="h-9 rounded-xl text-[11px] font-black bg-theme-main text-white ring-2 ring-theme-main">G1</button>
+          <button data-grade="G2" class="h-9 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 hover:bg-theme-main hover:text-white transition">G2</button>
+          <button data-grade="G3" class="h-9 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 hover:bg-theme-main hover:text-white transition">G3</button>
+          <button data-grade="G4" class="h-9 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 hover:bg-theme-main hover:text-white transition">G4</button>
+          <button data-grade="G5" class="h-9 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 hover:bg-theme-main hover:text-white transition">G5</button>
+          <button data-grade="G6" class="h-9 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 hover:bg-theme-main hover:text-white transition">G6</button>
         </div>
       </div>
-
-      <nav class="flex-1 p-3 space-y-1" id="sidebarNav">
-        <button class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm" data-screen="screenHome">
-          <i class="fas fa-home w-5 text-center"></i> Home
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenReader">
-          <i class="fas fa-book-open w-5 text-center"></i> Story & 10 Qs
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenQuiz">
-          <i class="fas fa-paw w-5 text-center"></i> Animals & Words
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenMath">
-          <i class="fas fa-calculator w-5 text-center"></i> 500 Math Drills
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenFill">
-          <i class="fas fa-pen-fancy w-5 text-center"></i> Sentences to Fill
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenExtractor">
-          <i class="fas fa-cloud-upload-alt w-5 text-center"></i> School Extractor
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenStudio">
-          <i class="fas fa-magic w-5 text-center"></i> Creator Studio
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenRewards">
-          <i class="fas fa-trophy w-5 text-center"></i> Rewards & Stars
-        </button>
-        <button class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-semibold text-sm text-gray-500 hover:bg-gray-50" data-screen="screenProfile">
-          <i class="fas fa-cog w-5 text-center"></i> Themes & Profile
-        </button>
+      <nav id="sidebarNavLinks" class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <button data-target="screenHome" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-theme-main bg-theme-light transition"><i class="fa-solid fa-house w-5 text-center"></i> Home</button>
+        <button data-target="screenReader" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-book-open w-5 text-center"></i> Reader</button>
+        <button data-target="screenQuiz" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-puzzle-piece w-5 text-center"></i> Quiz</button>
+        <button data-target="screenMath" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-calculator w-5 text-center"></i> Math</button>
+        <button data-target="screenFill" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-spell-check w-5 text-center"></i> Fill</button>
+        <button data-target="screenExtractor" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i> Extractor</button>
+        <button data-target="screenStudio" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-palette w-5 text-center"></i> Studio</button>
+        <button data-target="screenRewards" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-star w-5 text-center"></i> Rewards</button>
+        <button data-target="screenProfile" class="nav-tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-user w-5 text-center"></i> Profile</button>
       </nav>
-
-      <div class="p-4 border-t border-gray-100 space-y-3">
-        <div class="flex items-center justify-between px-2">
-          <div class="flex items-center gap-2 text-amber-500">
-            <i class="fas fa-star"></i>
-            <span class="font-bold text-sm" id="starCount">0</span>
-          </div>
-          <div class="flex items-center gap-2 text-blue-500">
-            <i class="fas fa-bolt"></i>
-            <span class="font-bold text-sm" id="xpCount">0 XP</span>
-          </div>
+      <div class="p-3 border-t border-slate-200">
+        <div class="flex items-center justify-between mb-2">
+          <span id="sidebarStarCount" class="text-[11px] font-black text-amber-600"><i class="fa-solid fa-star"></i> 0 Stars</span>
+          <span id="sidebarXpCount" class="text-[11px] font-black text-violet-600">0 XP (Saved)</span>
         </div>
-        <button id="resetScoresBtn" class="w-full text-xs text-red-400 hover:text-red-600 hover:bg-red-50 py-2 px-3 rounded-lg transition-all">
-          <i class="fas fa-redo mr-1"></i> Reset Scores
-        </button>
+        <button id="btnOpenResetModal" class="w-full py-2 rounded-xl border border-red-200 text-red-500 text-[11px] font-bold hover:bg-red-50 transition"><i class="fa-solid fa-rotate-left mr-1"></i> Reset Progress</button>
       </div>
     </aside>
-    <!-- MAIN CONTENT AREA -->
-    <div class="flex-1 flex flex-col min-h-screen">
-      <!-- HEADER BAR -->
-      <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+
+    <!-- ==================== MAIN AREA ==================== -->
+    <main class="flex-1 h-full flex flex-col overflow-hidden">
+
+      <!-- TOP HEADER BAR -->
+      <header class="flex items-center justify-between px-4 md:px-8 py-3 border-b border-slate-100 bg-white flex-shrink-0">
         <div class="flex items-center gap-3">
-          <div class="md:hidden w-9 h-9 bg-theme-main rounded-xl flex items-center justify-center">
-            <i class="fas fa-star text-white text-sm"></i>
+          <div class="w-9 h-9 rounded-2xl bg-theme-main flex items-center justify-center text-white font-display font-black text-sm shadow-sm">K</div>
+          <div>
+            <h1 class="font-display font-black text-slate-800 text-sm leading-tight">Kidsy</h1>
+            <span id="currentGradeHeaderBadge" class="text-[10px] font-bold text-slate-400">G1 Standard</span>
           </div>
-          <span class="hidden md:inline-block px-3 py-1 bg-theme-light text-theme-main text-xs font-bold rounded-full" id="curriculumBadge">KG Curriculum</span>
         </div>
-        <div class="flex items-center gap-3">
-          <button id="micBtn" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-theme-light flex items-center justify-center transition-all" title="Voice Input">
-            <i class="fas fa-microphone text-gray-500 text-sm"></i>
-          </button>
-          <div class="flex items-center gap-1.5" id="themeCircles">
-            <button class="theme-circle w-6 h-6 rounded-full bg-purple-500 ring-2 ring-offset-1 ring-purple-400 transition-all" data-theme="purple" title="Purple"></button>
-            <button class="theme-circle w-6 h-6 rounded-full bg-blue-500 ring-0 ring-offset-1 ring-transparent hover:ring-blue-300 transition-all" data-theme="blue" title="Blue"></button>
-            <button class="theme-circle w-6 h-6 rounded-full bg-green-500 ring-0 ring-offset-1 ring-transparent hover:ring-green-300 transition-all" data-theme="green" title="Green"></button>
-            <button class="theme-circle w-6 h-6 rounded-full bg-rose-500 ring-0 ring-offset-1 ring-transparent hover:ring-rose-300 transition-all" data-theme="coral" title="Coral"></button>
-            <button class="theme-circle w-6 h-6 rounded-full bg-amber-500 ring-0 ring-offset-1 ring-transparent hover:ring-amber-300 transition-all" data-theme="amber" title="Amber"></button>
-            <button class="theme-circle w-6 h-6 rounded-full bg-pink-500 ring-0 ring-offset-1 ring-transparent hover:ring-pink-300 transition-all" data-theme="pink" title="Pink"></button>
-          </div>
+        <div class="flex items-center gap-2">
+          <button id="btnMicToggle" data-active="false" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm hover:bg-slate-200 transition"><i class="fa-solid fa-microphone"></i></button>
+          <button id="btnMobilePreview" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm hover:bg-slate-200 transition md:hidden"><i class="fa-solid fa-expand"></i></button>
         </div>
       </header>
 
-      <!-- SCREENS VIEWPORT -->
-      <main id="screensViewport" class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
-        <!-- SCREEN 1: HOME -->
-        <section id="screenHome" class="screen-section active space-y-6">
-          <div class="bg-gradient-to-r from-theme-main to-purple-600 rounded-2xl p-6 text-white relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
-            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-8 -mb-8"></div>
-            <div class="relative z-10">
-              <p class="text-white/80 text-sm font-semibold mb-1">Daily Challenge</p>
-              <h2 class="font-display text-2xl font-bold mb-3">Complete 3 Levels Today!</h2>
-              <div class="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-semibold">Progress</span>
-                  <span class="text-sm font-bold" id="dailyProgress">0 / 3</span>
-                </div>
-                <div class="w-full bg-white/30 rounded-full h-3">
-                  <div class="bg-white rounded-full h-3 transition-all duration-500" id="dailyProgressBar" style="width: 0%"></div>
-                </div>
-              </div>
+      <!-- SCREENS CONTAINER -->
+      <div class="flex-1 relative overflow-hidden">
+
+        <!-- ==================== SCREEN: HOME ==================== -->
+        <section id="screenHome" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Grade</p>
+              <h2 id="homeGradeLabel" class="font-display font-black text-2xl text-slate-800">G1</h2>
             </div>
+            <button id="btnDailyChallenge" class="px-4 py-2 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md hover:shadow-lg transition"><i class="fa-solid fa-bolt mr-1"></i> Daily Challenge</button>
           </div>
 
-          <div>
-            <h3 class="font-display text-lg font-bold text-gray-800 mb-3">Categories</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="categoriesGrid">
-              <div class="category-card bg-white rounded-2xl p-4 border-2 border-transparent hover:border-theme-main cursor-pointer transition-all shadow-sm hover:shadow-md text-center">
-                <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                  <i class="fas fa-paw text-2xl text-amber-500"></i>
-                </div>
-                <p class="font-display font-bold text-sm">Animals</p>
-                <p class="text-xs text-gray-400">24 words</p>
-              </div>
-              <div class="category-card bg-white rounded-2xl p-4 border-2 border-transparent hover:border-theme-main cursor-pointer transition-all shadow-sm hover:shadow-md text-center">
-                <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                  <i class="fas fa-seedling text-2xl text-green-500"></i>
-                </div>
-                <p class="font-display font-bold text-sm">Nature</p>
-                <p class="text-xs text-gray-400">30 words</p>
-              </div>
-              <div class="category-card bg-white rounded-2xl p-4 border-2 border-transparent hover:border-theme-main cursor-pointer transition-all shadow-sm hover:shadow-md text-center">
-                <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                  <i class="fas fa-shapes text-2xl text-blue-500"></i>
-                </div>
-                <p class="font-display font-bold text-sm">Shapes</p>
-                <p class="text-xs text-gray-400">16 words</p>
-              </div>
-              <div class="category-card bg-white rounded-2xl p-4 border-2 border-transparent hover:border-theme-main cursor-pointer transition-all shadow-sm hover:shadow-md text-center">
-                <div class="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                  <i class="fas fa-apple-alt text-2xl text-rose-500"></i>
-                </div>
-                <p class="font-display font-bold text-sm">Food</p>
-                <p class="text-xs text-gray-400">28 words</p>
-              </div>
-            </div>
+          <!-- CATEGORY CARDS -->
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <button data-nav="screenReader" class="category-card cat-card bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100 rounded-3xl p-4 text-left hover:scale-[1.02] transition shadow-sm">
+              <div class="w-11 h-11 rounded-2xl bg-violet-100 flex items-center justify-center text-violet-600 mb-2"><i class="fa-solid fa-book-open text-lg"></i></div>
+              <h3 class="font-display font-black text-slate-800 text-sm">Reader</h3>
+              <p class="text-[10px] text-slate-400 font-bold">Stories &amp; Words</p>
+            </button>
+            <button data-nav="screenQuiz" class="category-card cat-card bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-3xl p-4 text-left hover:scale-[1.02] transition shadow-sm">
+              <div class="w-11 h-11 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 mb-2"><i class="fa-solid fa-puzzle-piece text-lg"></i></div>
+              <h3 class="font-display font-black text-slate-800 text-sm">Quiz</h3>
+              <p class="text-[10px] text-slate-400 font-bold">Animal Quiz</p>
+            </button>
+            <button data-nav="screenMath" class="category-card cat-card bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100 rounded-3xl p-4 text-left hover:scale-[1.02] transition shadow-sm">
+              <div class="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 mb-2"><i class="fa-solid fa-calculator text-lg"></i></div>
+              <h3 class="font-display font-black text-slate-800 text-sm">Math</h3>
+              <p class="text-[10px] text-slate-400 font-bold">Math Drills</p>
+            </button>
+            <button data-nav="screenFill" class="category-card cat-card bg-gradient-to-br from-sky-50 to-blue-50 border border-sky-100 rounded-3xl p-4 text-left hover:scale-[1.02] transition shadow-sm">
+              <div class="w-11 h-11 rounded-2xl bg-sky-100 flex items-center justify-center text-sky-600 mb-2"><i class="fa-solid fa-spell-check text-lg"></i></div>
+              <h3 class="font-display font-black text-slate-800 text-sm">Fill</h3>
+              <p class="text-[10px] text-slate-400 font-bold">Fill the Blank</p>
+            </button>
+            <button data-nav="screenStudio" class="category-card cat-card bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-100 rounded-3xl p-4 text-left hover:scale-[1.02] transition shadow-sm">
+              <div class="w-11 h-11 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-600 mb-2"><i class="fa-solid fa-palette text-lg"></i></div>
+              <h3 class="font-display font-black text-slate-800 text-sm">Studio</h3>
+              <p class="text-[10px] text-slate-400 font-bold">Create Content</p>
+            </button>
+            <button data-nav="screenRewards" class="category-card cat-card bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-100 rounded-3xl p-4 text-left hover:scale-[1.02] transition shadow-sm">
+              <div class="w-11 h-11 rounded-2xl bg-yellow-100 flex items-center justify-center text-yellow-600 mb-2"><i class="fa-solid fa-star text-lg"></i></div>
+              <h3 class="font-display font-black text-slate-800 text-sm">Rewards</h3>
+              <p class="text-[10px] text-slate-400 font-bold">Stars &amp; Vocab</p>
+            </button>
           </div>
 
+          <!-- LEVELS SECTION -->
           <div>
-            <h3 class="font-display text-lg font-bold text-gray-800 mb-3">50 Levels</h3>
-            <div class="grid grid-cols-5 md:grid-cols-10 gap-2" id="levelsGrid">
+            <div class="flex items-center justify-between mb-3">
+              <h3 id="homeLevelsGradeTitle" class="font-display font-black text-slate-800 text-sm">G1</h3>
+              <span id="levelsUnlockedBadge" class="px-2.5 py-0.5 rounded-full bg-theme-light text-theme-main text-[10px] font-black">1 / 50 Unlocked</span>
+            </div>
+            <div id="homeLevelsGrid" class="grid grid-cols-10 gap-1.5">
+              <!-- Levels rendered by JS -->
             </div>
           </div>
         </section>
-        <!-- SCREEN 2: STORY READER -->
-        <section id="screenReader" class="screen-section space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="font-display text-xl font-bold text-gray-800">
-              <i class="fas fa-book-open text-theme-main mr-2"></i>Story & 10 Questions
-            </h2>
-            <select id="storySelector" class="px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-theme-main focus:border-theme-main">
-              <option value="0">The Clever Fox</option>
-              <option value="1">The Hungry Caterpillar</option>
-              <option value="2">The Little Star</option>
-              <option value="3">The Brave Turtle</option>
-              <option value="4">The Rainbow Bird</option>
+
+        <!-- ==================== SCREEN: READER ==================== -->
+        <section id="screenReader" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
+          <div class="flex items-center gap-3">
+            <button id="btnReaderBack" class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 text-sm"><i class="fa-solid fa-arrow-left"></i></button>
+            <div>
+              <p id="readerTopTitle" class="font-display font-black text-slate-800 text-sm">Story Title</p>
+              <span id="readerGradeBadge" class="text-[10px] font-bold text-slate-400">G1 Level 1</span>
+            </div>
+          </div>
+          <div class="bg-gradient-to-br from-sky-50 to-blue-50 rounded-3xl border border-sky-100 p-4 h-36 flex items-center justify-center overflow-hidden">
+            <div id="storyIllustrationSvg" class="w-full h-full"></div>
+          </div>
+          <div>
+            <h2 id="readerStoryTitle" class="font-display font-black text-slate-800 text-lg">Story Title</h2>
+            <p id="readerStorySubtitle" class="text-xs text-slate-400 font-bold">Subtitle</p>
+          </div>
+          <div id="readerStoryScrollArea" class="relative" style="position:relative;">
+            <div id="readerContent" class="text-sm leading-relaxed text-slate-700 font-serif">
+              <!-- Story paragraphs rendered by JS -->
+            </div>
+            <!-- WORD POPUP BUBBLE -->
+            <div id="wordPopup" class="ewa-bubble hidden bg-white rounded-2xl p-4 w-[264px] border border-slate-100">
+              <div id="popupArrow" class="ewa-bubble-arrow"></div>
+              <div class="flex items-center justify-between mb-2">
+                <h4 id="popupWord" class="font-display font-black text-slate-800 text-base capitalize">word</h4>
+                <button id="btnPopupClose" class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-xs"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <p id="popupIpa" class="text-[11px] font-mono text-slate-400 mb-1">|word|</p>
+              <p id="popupMeaning" class="text-xs text-slate-600 mb-2">Meaning goes here.</p>
+              <p id="popupSentence" class="text-[11px] italic text-slate-500 mb-3">"Example sentence."</p>
+              <div class="flex gap-2">
+                <button id="btnPopupSpeak" class="flex-1 py-1.5 rounded-xl bg-theme-light text-theme-main text-[11px] font-bold"><i class="fa-solid fa-volume-high mr-1"></i> Listen</button>
+                <button id="btnPopupMarkLearned" class="flex-1 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-[11px] font-bold">Learned</button>
+                <button id="btnPopupMarkLearning" class="flex-1 py-1.5 rounded-xl bg-amber-50 text-amber-700 text-[11px] font-bold">Learning</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- AUDIO CONTROLS -->
+          <div class="flex items-center gap-2 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+            <button id="btnAudioPlay" class="btnAudioTogglePlay w-9 h-9 rounded-xl bg-theme-main text-white flex items-center justify-center text-sm shadow-sm"><i class="fa-solid fa-play"></i></button>
+            <span id="audioPlayLabel" class="text-[11px] font-bold text-slate-600">Listen</span>
+            <div class="flex-1"></div>
+            <button id="btnSpeedCycle" class="btnAudioSpeedCycle px-2 py-1 rounded-lg bg-slate-200 text-[10px] font-black text-slate-600"><span id="speedLabel">1x</span></button>
+          </div>
+
+          <!-- SPLIT QUESTIONS PANEL -->
+          <div id="splitQuestionsPanel" class="bg-slate-50 rounded-3xl border border-slate-200 p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 id="splitQTitle" class="font-display font-black text-slate-800 text-sm">Question 1 of 10</h4>
+              <span id="splitQScoreBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black">Score: 0 / 10</span>
+            </div>
+            <div id="splitQDotsRow" class="flex gap-1">
+              <!-- Dots rendered by JS -->
+            </div>
+            <p id="splitQPromptText" class="font-bold text-slate-800 text-sm">Question text goes here?</p>
+            <div id="splitQChoicesList" class="space-y-2">
+              <!-- Choice buttons rendered by JS -->
+            </div>
+            <div class="flex gap-2">
+              <button id="btnSpeakSplitQ" class="flex-1 py-2.5 rounded-2xl bg-slate-200 text-slate-600 text-xs font-bold"><i class="fa-solid fa-volume-high mr-1"></i> Read Aloud</button>
+              <button id="btnNextSplitQ" class="hidden flex-1 py-2.5 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md">Next Question &#x27A1;</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SCREEN: QUIZ ==================== -->
+        <section id="screenQuiz" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
+          <div class="flex items-center gap-3">
+            <button id="btnQuizBack" class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 text-sm"><i class="fa-solid fa-arrow-left"></i></button>
+            <div>
+              <p class="font-display font-black text-slate-800 text-sm">Animal Quiz</p>
+              <span id="quizProgressText" class="text-[10px] font-bold text-slate-400">1 / 10 Q</span>
+            </div>
+          </div>
+          <p id="quizQuestionPrompt" class="font-display font-black text-slate-800 text-base text-center">Which animal says Moo?</p>
+          <div id="quizChoicesGrid" class="grid grid-cols-2 gap-3">
+            <!-- Quiz choice cards rendered by JS -->
+          </div>
+          <div class="flex gap-2">
+            <button id="btnQuizSoundPrompt" class="flex-1 py-2.5 rounded-2xl bg-amber-100 text-amber-700 text-xs font-bold"><i class="fa-solid fa-volume-high mr-1"></i> Hear it Again</button>
+            <button id="btnQuizNext" class="btnQuizNextAction flex-1 py-2.5 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md">Next &#x27A1;</button>
+          </div>
+        </section>
+
+        <!-- ==================== SCREEN: MATH ==================== -->
+        <section id="screenMath" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
+          <div class="flex items-center gap-3">
+            <button id="btnMathSkip" class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 text-sm"><i class="fa-solid fa-arrow-left"></i></button>
+            <div>
+              <p id="mathGradeLabel" class="font-display font-black text-slate-800 text-sm">G1 Math Drill</p>
+              <span class="text-[10px] font-bold text-slate-400">Tap the correct answer</span>
+            </div>
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-3xl border border-emerald-100 p-6 text-center">
+            <p id="mathPromptText" class="font-display font-black text-slate-800 text-2xl">2 + 3 = ?</p>
+          </div>
+          <div id="mathOptionsGrid" class="grid grid-cols-2 gap-3">
+            <!-- Math option buttons rendered by JS -->
+          </div>
+          <button id="btnNextMath" class="hidden w-full py-3 rounded-2xl bg-theme-main text-white font-black text-sm shadow-md">Next Problem &#x27A1;</button>
+        </section>
+
+        <!-- ==================== SCREEN: FILL ==================== -->
+        <section id="screenFill" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
+          <div class="flex items-center gap-3">
+            <button id="btnFillSkip" class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 text-sm"><i class="fa-solid fa-arrow-left"></i></button>
+            <div>
+              <p class="font-display font font-black text-slate-800 text-sm">Fill the Blank</p>
+              <span class="text-[10px] font-bold text-slate-400">Pick the missing word</span>
+            </div>
+          </div>
+          <div class="bg-gradient-to-br from-sky-50 to-blue-50 rounded-3xl border border-sky-100 p-6 text-center">
+            <p id="fillSentenceDisplay" class="font-serif text-slate-700 text-base leading-relaxed">The cat sat on the <span id="fillBlankTarget" class="inline-block px-3 py-0.5 rounded-xl border-2 border-dashed border-slate-300 text-slate-400">______</span>.</p>
+          </div>
+          <div id="fillWordsGrid" class="grid grid-cols-2 gap-3">
+            <!-- Fill word option buttons rendered by JS -->
+          </div>
+          <button id="btnNextFill" class="hidden w-full py-3 rounded-2xl bg-theme-main text-white font-black text-sm shadow-md">Next Sentence &#x27A1;</button>
+        </section>
+
+        <!-- ==================== SCREEN: EXTRACTOR ==================== -->
+        <section id="screenExtractor" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
+          <div>
+            <h2 class="font-display font-black text-slate-800 text-lg">Content Extractor</h2>
+            <p class="text-xs text-slate-400 font-bold">Paste text or upload a file to extract Q&A, Math, or Vocabulary</p>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Subject / Source</label>
+            <select id="extractorSubjectSelect" class="w-full mt-1 px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+              <option value="auto">Auto-detect</option>
+              <option value="reading">Reading Passage</option>
+              <option value="math">Math Problems</option>
+              <option value="qa">Questions &amp; Answers</option>
             </select>
           </div>
-
-          <div class="flex flex-col lg:flex-row gap-4">
-            <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <div class="flex items-center gap-2 mb-4">
-                <span class="px-3 py-1 bg-theme-light text-theme-main text-xs font-bold rounded-full">
-                  <i class="fas fa-signal mr-1"></i><span id="storyDifficulty">Easy</span>
-                </span>
-                <span class="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-bold rounded-full">
-                  <i class="fas fa-clock mr-1"></i><span id="storyTime">2 min</span>
-                </span>
-                <button id="speakStoryBtn" class="ml-auto px-4 py-2 bg-theme-main text-white text-xs font-bold rounded-xl hover:bg-theme-dark transition-all">
-                  <i class="fas fa-volume-up mr-1"></i>Read Aloud
-                </button>
-              </div>
-              <div id="storyText" class="font-serif text-gray-700 leading-relaxed text-lg space-y-4">
-              </div>
-            </div>
-
-            <div class="lg:w-80 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-              <h3 class="font-display font-bold text-gray-800 mb-3">
-                <i class="fas fa-question-circle text-theme-main mr-1"></i>10 Questions
-              </h3>
-              <div id="storyQuestions" class="space-y-3">
-              </div>
-              <button id="checkStoryAnswers" class="w-full mt-4 py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-                <i class="fas fa-check-circle mr-1"></i>Check Answers
-              </button>
-              <p class="text-center text-sm text-gray-500 mt-2" id="storyScore"></p>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Upload File</label>
+            <input id="extractorFileInput" type="file" accept=".txt,.csv" class="w-full mt-1 text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-theme-main file:text-white file:cursor-pointer file:hover:opacity-90">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Or Paste Text Below</label>
+            <textarea id="extractorSourceText" rows="6" placeholder="Paste your content here..." class="w-full mt-1 px-3 py-2.5 rounded-2xl border border-slate-200 text-sm text-slate-700 bg-white resize-none focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none"></textarea>
+          </div>
+          <button id="btnRunExtractor" class="w-full py-3 rounded-2xl bg-theme-main text-white font-black text-sm shadow-md hover:opacity-90 transition"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Extract Content</button>
+          <div id="extractorResultsBox">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Extraction Results</p>
+            <div id="extractorOutput" class="space-y-3">
+              <!-- Extraction results rendered by JS -->
             </div>
           </div>
         </section>
-        <!-- SCREEN 3: ANIMALS & WORDS QUIZ -->
-        <section id="screenQuiz" class="screen-section space-y-4">
+
+        <!-- ==================== SCREEN: STUDIO ==================== -->
+        <section id="screenStudio" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
+          <div>
+            <h2 class="font-display font-black text-slate-800 text-lg">My Studio</h2>
+            <p class="text-xs text-slate-400 font-bold">Create flashcards, stories, Q&A, math, and sentences</p>
+          </div>
+
+          <!-- STUDIO TABS -->
+          <div class="flex gap-1 bg-slate-100 rounded-2xl p-1">
+            <button data-panel="studioFlashcardPanel" class="studio-tab-btn flex-1 py-2 rounded-xl text-[11px] font-black bg-theme-main text-white transition">Flashcard</button>
+            <button data-panel="studioStoryPanel" class="studio-tab-btn flex-1 py-2 rounded-xl text-[11px] font-black text-slate-500 transition">Story</button>
+            <button data-panel="studioQaPanel" class="studio-tab-btn flex-1 py-2 rounded-xl text-[11px] font-black text-slate-500 transition">Q&A</button>
+            <button data-panel="studioMathPanel" class="studio-tab-btn flex-1 py-2 rounded-xl text-[11px] font-black text-slate-500 transition">Math</button>
+            <button data-panel="studioSentencePanel" class="studio-tab-btn flex-1 py-2 rounded-xl text-[11px] font-black text-slate-500 transition">Sentence</button>
+          </div>
+
+          <!-- FLASHCARD PANEL -->
+          <div id="studioFlashcardPanel" class="studio-panel space-y-3">
+            <h3 class="font-display font-black text-slate-800 text-sm">Create Flashcard</h3>
+            <input id="flashcardFrontInput" type="text" placeholder="Front (e.g. 'Cat')" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+            <input id="flashcardBackInput" type="text" placeholder="Back (e.g. 'A furry pet that says meow')" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+            <button id="btnSaveFlashcard" class="w-full py-2.5 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md">Save Flashcard</button>
+          </div>
+
+          <!-- STORY PANEL -->
+          <div id="studioStoryPanel" class="studio-panel space-y-3 hidden">
+            <h3 class="font-display font-black text-slate-800 text-sm">Create Story</h3>
+            <input id="storyTitleInput" type="text" placeholder="Story Title" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+            <textarea id="storyBodyInput" rows="4" placeholder="Write your story here. Separate paragraphs with a blank line." class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm text-slate-700 bg-white resize-none focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none"></textarea>
+            <button id="btnSaveStory" class="w-full py-2.5 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md">Save Story</button>
+          </div>
+
+          <!-- Q&A PANEL -->
+          <div id="studioQaPanel" class="studio-panel space-y-3 hidden">
+            <h3 class="font-display font-black text-slate-800 text-sm">Create Q&A Card</h3>
+            <input id="qaQuestionInput" type="text" placeholder="Question?" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+            <input id="qaAnswerInput" type="text" placeholder="Answer" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+            <button id="btnSaveQa" class="w-full py-2.5 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md">Save Q&A</button>
+          </div>
+
+          <!-- MATH PANEL -->
+          <div id="studioMathPanel" class="studio-panel space-y-3 hidden">
+            <h3 class="font-display font-black text-slate-800 text-sm">Create Math Problem</h3>
+            <input id="mathProblemInput" type="text" placeholder="Problem (e.g. '5 + 3')" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+            <input id="mathAnswerInput" type="text" placeholder="Answer (e.g. '8')" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+            <button id="btnSaveMath" class="w-full py-2.5 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md">Save Math Problem</button>
+          </div>
+
+          <!-- SENTENCE PANEL -->
+          <div id="studioSentencePanel" class="studio-panel space-y-3 hidden">
+            <h3 class="font-display font-black text-slate-800 text-sm">Create Vocabulary Sentence</h3>
+            <textarea id="sentenceInput" rows="3" placeholder="Write a sentence with interesting vocabulary words..." class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-sm text-slate-700 bg-white resize-none focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none"></textarea>
+            <button id="btnSaveSentence" class="w-full py-2.5 rounded-2xl bg-theme-main text-white text-xs font-black shadow-md">Save Sentence</button>
+          </div>
+
+          <!-- SAVED ITEMS -->
+          <div>
+            <h3 class="font-display font-black text-slate-800 text-sm mb-2">Saved in Studio</h3>
+            <div id="studioSavedList" class="space-y-2">
+              <!-- Saved items rendered by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SCREEN: REWARDS ==================== -->
+        <section id="screenRewards" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
           <div class="flex items-center justify-between">
-            <h2 class="font-display text-xl font-bold text-gray-800">
-              <i class="fas fa-paw text-theme-main mr-2"></i>Animals & Words Quiz
-            </h2>
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-gray-500">Score:</span>
-              <span class="px-3 py-1 bg-theme-light text-theme-main font-bold rounded-full text-sm" id="quizScore">0 / 0</span>
+            <div>
+              <h2 class="font-display font-black text-slate-800 text-lg">Rewards</h2>
+              <p class="text-xs text-slate-400 font-bold">Your stars and vocabulary</p>
             </div>
+            <span id="rewardsStarsPill" class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-black">&#x2B50; 0 Stars</span>
           </div>
-
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
-            <div id="quizAnimalIcon" class="w-32 h-32 mx-auto bg-amber-50 rounded-3xl flex items-center justify-center mb-4">
-              <i class="fas fa-question text-5xl text-amber-300"></i>
-            </div>
-            <p class="text-sm text-gray-400 mb-2">What animal is this?</p>
-            <h3 id="quizWord" class="font-display text-2xl font-bold text-gray-800 mb-6">???</h3>
-            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto" id="quizOptions">
-              <button class="quiz-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">Option A</button>
-              <button class="quiz-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">Option B</button>
-              <button class="quiz-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">Option C</button>
-              <button class="quiz-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">Option D</button>
-            </div>
-            <button id="nextQuizBtn" class="mt-6 px-8 py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all hidden">
-              <i class="fas fa-arrow-right mr-1"></i>Next
-            </button>
-          </div>
-        </section>
-        <!-- SCREEN 4: MATH DRILLS -->
-        <section id="screenMath" class="screen-section space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="font-display text-xl font-bold text-gray-800">
-              <i class="fas fa-calculator text-theme-main mr-2"></i>500 Math Drills
-            </h2>
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-gray-500">Score:</span>
-              <span class="px-3 py-1 bg-theme-light text-theme-main font-bold rounded-full text-sm" id="mathScore">0 / 0</span>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="flex items-center gap-3 mb-6">
-              <select id="mathOperation" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-theme-main">
-                <option value="add">Addition (+)</option>
-                <option value="sub">Subtraction (-)</option>
-                <option value="mul">Multiplication (x)</option>
-                <option value="div">Division (/)</option>
-                <option value="mixed">Mixed</option>
-              </select>
-              <select id="mathDifficulty" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-theme-main">
-                <option value="easy">Easy (1-10)</option>
-                <option value="medium">Medium (1-50)</option>
-                <option value="hard">Hard (1-100)</option>
-              </select>
-            </div>
-
-            <div class="text-center py-8">
-              <div class="flex items-center justify-center gap-4 mb-8">
-                <span id="mathNum1" class="font-display text-5xl font-bold text-gray-800">5</span>
-                <span id="mathOp" class="font-display text-4xl font-bold text-theme-main">+</span>
-                <span id="mathNum2" class="font-display text-5xl font-bold text-gray-800">3</span>
-                <span class="font-display text-4xl font-bold text-gray-400">=</span>
-                <span class="font-display text-5xl font-bold text-theme-main">?</span>
-              </div>
-              <div class="grid grid-cols-2 gap-3 max-w-sm mx-auto" id="mathOptions">
-                <button class="math-option py-4 px-6 bg-gray-50 border-2 border-gray-200 rounded-xl font-bold text-xl hover:border-theme-main hover:bg-theme-light transition-all">6</button>
-                <button class="math-option py-4 px-6 bg-gray-50 border-2 border-gray-200 rounded-xl font-bold text-xl hover:border-theme-main hover:bg-theme-light transition-all">8</button>
-                <button class="math-option py-4 px-6 bg-gray-50 border-2 border-gray-200 rounded-xl font-bold text-xl hover:border-theme-main hover:bg-theme-light transition-all">9</button>
-                <button class="math-option py-4 px-6 bg-gray-50 border-2 border-gray-200 rounded-xl font-bold text-xl hover:border-theme-main hover:bg-theme-light transition-all">7</button>
-              </div>
-              <p class="mt-4 text-sm text-gray-400" id="mathTimer">Time: 0s</p>
+          <div>
+            <h3 class="font-display font-black text-slate-800 text-sm mb-2">Saved Vocabulary</h3>
+            <div id="rewardsVocabList" class="space-y-2">
+              <!-- Vocabulary cards rendered by JS -->
             </div>
           </div>
         </section>
-        <!-- SCREEN 5: SENTENCES TO FILL -->
-        <section id="screenFill" class="screen-section space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="font-display text-xl font-bold text-gray-800">
-              <i class="fas fa-pen-fancy text-theme-main mr-2"></i>Sentences to Fill
-            </h2>
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-gray-500">Score:</span>
-              <span class="px-3 py-1 bg-theme-light text-theme-main font-bold rounded-full text-sm" id="fillScore">0 / 0</span>
+
+        <!-- ==================== SCREEN: PROFILE ==================== -->
+        <section id="screenProfile" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6 hidden">
+          <div>
+            <h2 class="font-display font-black text-slate-800 text-lg">Profile</h2>
+            <p class="text-xs text-slate-400 font-bold">Customize your avatar and name</p>
+          </div>
+          <div class="text-center">
+            <div id="profileAvatarDisplay" class="w-20 h-20 rounded-3xl bg-theme-main mx-auto flex items-center justify-center text-4xl text-white shadow-lg mb-3">&#x1F466;</div>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Your Name</label>
+            <input id="profileNameInput" type="text" value="Arab" class="w-full mt-1 px-3 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-700 bg-white focus:ring-2 focus:ring-theme-main focus:border-theme-main outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Choose Avatar</label>
+            <div class="grid grid-cols-5 gap-2">
+              <button data-avatar="&#x1F466;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F466;</button>
+              <button data-avatar="&#x1F467;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F467;</button>
+              <button data-avatar="&#x1F9D2;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F9D2;</button>
+              <button data-avatar="&#x1F436;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F436;</button>
+              <button data-avatar="&#x1F431;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F431;</button>
+              <button data-avatar="&#x1F984;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F984;</button>
+              <button data-avatar="&#x1F42F;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F42F;</button>
+              <button data-avatar="&#x1F43C;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F43C;</button>
+              <button data-avatar="&#x1F427;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F427;</button>
+              <button data-avatar="&#x1F452;" class="avatar-option avatar-opt-btn w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl hover:border-theme-main transition">&#x1F452;</button>
             </div>
           </div>
-
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="bg-theme-light rounded-xl p-5 mb-6">
-              <p class="font-serif text-lg text-gray-700 leading-relaxed" id="fillSentence">
-                The cat sat on the <span class="inline-block w-24 border-b-2 border-dashed border-theme-main mx-1 text-center font-bold text-theme-main" id="fillBlank">___</span>.
-              </p>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Theme Color</label>
+            <div id="themeCirclesRow" class="flex gap-3 flex-wrap">
+              <button data-theme="purple" class="theme-circle w-9 h-9 rounded-full bg-purple-500 border-2 border-white shadow-md hover:scale-110 transition"></button>
+              <button data-theme="blue" class="theme-circle w-9 h-9 rounded-full bg-blue-500 border-2 border-white shadow-md hover:scale-110 transition"></button>
+              <button data-theme="green" class="theme-circle w-9 h-9 rounded-full bg-emerald-500 border-2 border-white shadow-md hover:scale-110 transition"></button>
+              <button data-theme="coral" class="theme-circle w-9 h-9 rounded-full bg-rose-500 border-2 border-white shadow-md hover:scale-110 transition"></button>
+              <button data-theme="amber" class="theme-circle w-9 h-9 rounded-full bg-amber-500 border-2 border-white shadow-md hover:scale-110 transition"></button>
+              <button data-theme="pink" class="theme-circle w-9 h-9 rounded-full bg-pink-500 border-2 border-white shadow-md hover:scale-110 transition"></button>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="fillOptions">
-              <button class="fill-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">mat</button>
-              <button class="fill-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">hat</button>
-              <button class="fill-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">bat</button>
-              <button class="fill-option py-3 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl font-semibold text-sm hover:border-theme-main hover:bg-theme-light transition-all">dog</button>
-            </div>
-            <button id="nextFillBtn" class="mt-6 w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all hidden">
-              <i class="fas fa-arrow-right mr-1"></i>Next Sentence
-            </button>
           </div>
-        </section>
-        <!-- SCREEN 6: SCHOOL EXTRACTOR -->
-        <section id="screenExtractor" class="screen-section space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="font-display text-xl font-bold text-gray-800">
-              <i class="fas fa-cloud-upload-alt text-theme-main mr-2"></i>School Extractor
-            </h2>
-            <span class="px-3 py-1 bg-theme-light text-theme-main text-xs font-bold rounded-full">Beta</span>
-          </div>
-
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-2">Subject</label>
-              <select id="extractorSubject" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-theme-main">
-                <option value="english">English</option>
-                <option value="math">Math</option>
-                <option value="science">Science</option>
-                <option value="social">Social Studies</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-2">Upload File</label>
-              <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-theme-main hover:bg-theme-light transition-all cursor-pointer">
-                <i class="fas fa-cloud-upload-alt text-3xl text-gray-300 mb-2"></i>
-                <p class="text-sm text-gray-400">Drag & drop .txt or .md files here</p>
-                <p class="text-xs text-gray-300 mt-1">or click to browse</p>
-                <input type="file" id="fileInput" accept=".txt,.md" class="hidden">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-2">Or paste text</label>
-              <textarea id="extractorText" rows="6" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main resize-none" placeholder="Paste your school lesson text here..."></textarea>
-            </div>
-
-            <button id="extractBtn" class="w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-              <i class="fas fa-magic mr-2"></i>Extract Vocabulary & Questions
-            </button>
-
-            <div id="extractorResults" class="hidden space-y-4 pt-4 border-t border-gray-100">
-              <h3 class="font-display font-bold text-gray-800">
-                <i class="fas fa-check-circle text-green-500 mr-1"></i>Extracted Content
-              </h3>
-              <div id="extractedWords" class="space-y-2"></div>
-              <div id="extractedQuestions" class="space-y-2"></div>
-              <button id="saveExtracted" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition-all">
-                <i class="fas fa-save mr-1"></i>Save to Library
-              </button>
-            </div>
+          <div class="mt-4">
+            <button id="btnOpenResetModal" class="w-full py-3 rounded-2xl border-2 border-red-200 text-red-500 text-xs font-black hover:bg-red-50 transition"><i class="fa-solid fa-rotate-left mr-1"></i> Reset All Progress</button>
           </div>
         </section>
-        <!-- SCREEN 7: CREATOR STUDIO -->
-        <section id="screenStudio" class="screen-section space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="font-display text-xl font-bold text-gray-800">
-              <i class="fas fa-magic text-theme-main mr-2"></i>Creator Studio
-            </h2>
-            <span class="px-3 py-1 bg-amber-100 text-amber-600 text-xs font-bold rounded-full">
-              <i class="fas fa-crown mr-1"></i>Pro Feature
-            </span>
-          </div>
 
-          <div class="flex gap-2 overflow-x-auto pb-2" id="studioTabs">
-            <button class="studio-tab active px-4 py-2 bg-theme-main text-white text-xs font-bold rounded-xl whitespace-nowrap transition-all" data-tab="flashcard">
-              <i class="fas fa-clone mr-1"></i>Flashcard
-            </button>
-            <button class="studio-tab px-4 py-2 bg-gray-100 text-gray-500 text-xs font-bold rounded-xl whitespace-nowrap hover:bg-theme-light hover:text-theme-main transition-all" data-tab="story">
-              <i class="fas fa-book mr-1"></i>Story
-            </button>
-            <button class="studio-tab px-4 py-2 bg-gray-100 text-gray-500 text-xs font-bold rounded-xl whitespace-nowrap hover:bg-theme-light hover:text-theme-main transition-all" data-tab="qa">
-              <i class="fas fa-question-circle mr-1"></i>Q&A
-            </button>
-            <button class="studio-tab px-4 py-2 bg-gray-100 text-gray-500 text-xs font-bold rounded-xl whitespace-nowrap hover:bg-theme-light hover:text-theme-main transition-all" data-tab="mathdrill">
-              <i class="fas fa-calculator mr-1"></i>Math Drill
-            </button>
-            <button class="studio-tab px-4 py-2 bg-gray-100 text-gray-500 text-xs font-bold rounded-xl whitespace-nowrap hover:bg-theme-light hover:text-theme-main transition-all" data-tab="sentencefill">
-              <i class="fas fa-pen mr-1"></i>Sentence Fill
-            </button>
-          </div>
+      </div> <!-- end screens container -->
 
-          <!-- Flashcard Panel -->
-          <div id="panelFlashcard" class="studio-panel bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-            <h3 class="font-display font-bold text-gray-800">Create Flashcard</h3>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Word</label>
-              <input type="text" id="fcWord" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main" placeholder="e.g., Butterfly">
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Meaning</label>
-              <input type="text" id="fcMeaning" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main" placeholder="e.g., A beautiful insect with wings">
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Example Sentence</label>
-              <textarea id="fcSentence" rows="2" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main resize-none" placeholder="e.g., The butterfly flew over the garden."></textarea>
-            </div>
-            <button id="saveFlashcard" class="w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-              <i class="fas fa-save mr-1"></i>Save Flashcard
-            </button>
-          </div>
+    </main>
 
-          <!-- Story Panel -->
-          <div id="panelStory" class="studio-panel hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-            <h3 class="font-display font-bold text-gray-800">Create Story</h3>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Story Title</label>
-              <input type="text" id="stTitle" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main" placeholder="e.g., The Magic Garden">
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Story Text</label>
-              <textarea id="stText" rows="8" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main resize-none font-serif" placeholder="Write your story here... Use simple words for young readers."></textarea>
-            </div>
-            <button id="saveStory" class="w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-              <i class="fas fa-save mr-1"></i>Save Story
-            </button>
-          </div>
+    <!-- ==================== MOBILE BOTTOM NAV ==================== -->
+    <nav id="mobileNavBar" class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 flex justify-around items-center px-2 py-2 z-50" style="display:none;">
+      <button data-target="screenHome" class="nav-tab-btn flex flex-col items-center justify-center py-1 px-2 text-theme-main"><i class="fa-solid fa-house text-lg"></i><span class="text-[9px] font-bold mt-0.5">Home</span></button>
+      <button data-target="screenReader" class="nav-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-400"><i class="fa-solid fa-book-open text-lg"></i><span class="text-[9px] font-bold mt-0.5">Reader</span></button>
+      <button data-target="screenQuiz" class="nav-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-400"><i class="fa-solid fa-puzzle-piece text-lg"></i><span class="text-[9px] font-bold mt-0.5">Quiz</span></button>
+      <button data-target="screenMath" class="nav-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-400"><i class="fa-solid fa-calculator text-lg"></i><span class="text-[9px] font-bold mt-0.5">Math</span></button>
+      <button data-target="screenStudio" class="nav-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-400"><i class="fa-solid fa-palette text-lg"></i><span class="text-[9px] font-bold mt-0.5">Studio</span></button>
+      <button data-target="screenProfile" class="nav-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-400"><i class="fa-solid fa-user text-lg"></i><span class="text-[9px] font-bold mt-0.5">Profile</span></button>
+    </nav>
 
-          <!-- Q&A Panel -->
-          <div id="panelQA" class="studio-panel hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-            <h3 class="font-display font-bold text-gray-800">Create Q&A</h3>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Question</label>
-              <input type="text" id="qaQuestion" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main" placeholder="e.g., What color is the sky?">
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Correct Answer</label>
-              <input type="text" id="qaCorrect" class="w-full px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm focus:ring-2 focus:ring-green-400" placeholder="e.g., Blue">
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 1</label>
-                <input type="text" id="qaWrong1" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="Red">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 2</label>
-                <input type="text" id="qaWrong2" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="Green">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 3</label>
-                <input type="text" id="qaWrong3" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="Yellow">
-              </div>
-            </div>
-            <button id="saveQA" class="w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-              <i class="fas fa-save mr-1"></i>Save Q&A
-            </button>
-          </div>
-          <!-- Math Drill Panel -->
-          <div id="panelMathDrill" class="studio-panel hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-            <h3 class="font-display font-bold text-gray-800">Create Math Drill</h3>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Problem</label>
-              <input type="text" id="mdProblem" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main" placeholder="e.g., 5 + 3 = ?">
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Correct Answer</label>
-              <input type="text" id="mdCorrect" class="w-full px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm focus:ring-2 focus:ring-green-400" placeholder="e.g., 8">
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 1</label>
-                <input type="text" id="mdWrong1" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="6">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 2</label>
-                <input type="text" id="mdWrong2" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="7">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 3</label>
-                <input type="text" id="mdWrong3" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="9">
-              </div>
-            </div>
-            <button id="saveMathDrill" class="w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-              <i class="fas fa-save mr-1"></i>Save Math Drill
-            </button>
-          </div>
-
-          <!-- Sentence Fill Panel -->
-          <div id="panelSentenceFill" class="studio-panel hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-            <h3 class="font-display font-bold text-gray-800">Create Sentence Fill</h3>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Sentence (use ___ for the blank)</label>
-              <textarea id="sfSentence" rows="2" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main resize-none" placeholder="e.g., The sun ___ in the sky."></textarea>
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-1">Correct Word</label>
-              <input type="text" id="sfCorrect" class="w-full px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm focus:ring-2 focus:ring-green-400" placeholder="e.g., shines">
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 1</label>
-                <input type="text" id="sfWrong1" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="runs">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 2</label>
-                <input type="text" id="sfWrong2" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="jumps">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">Wrong Option 3</label>
-                <input type="text" id="sfWrong3" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="swims">
-              </div>
-            </div>
-            <button id="saveSentenceFill" class="w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-              <i class="fas fa-save mr-1"></i>Save Sentence Fill
-            </button>
-          </div>
-        </section>
-        <!-- SCREEN 8: REWARDS -->
-        <section id="screenRewards" class="screen-section space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="font-display text-xl font-bold text-gray-800">
-              <i class="fas fa-trophy text-theme-main mr-2"></i>Rewards & Stars
-            </h2>
-            <div class="flex items-center gap-2">
-              <i class="fas fa-star text-amber-400"></i>
-              <span class="font-bold text-amber-500" id="rewardsStarCount">0</span>
-            </div>
-          </div>
-
-          <div class="bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-6 text-white">
-            <div class="flex items-center gap-4">
-              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-crown text-3xl"></i>
-              </div>
-              <div>
-                <h3 class="font-display text-lg font-bold">Vocabulary Deck</h3>
-                <p class="text-white/80 text-sm">Words you've learned from stories</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-display font-bold text-gray-800">Learned Words</h3>
-              <span class="text-sm text-gray-400" id="learnedWordCount">0 words</span>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="rewardVocabGrid">
-            </div>
-            <div id="noRewards" class="text-center py-8">
-              <i class="fas fa-gift text-4xl text-gray-200 mb-3"></i>
-              <p class="text-gray-400 text-sm">Complete quizzes to earn vocabulary rewards!</p>
-            </div>
-          </div>
-        </section>
-        <!-- SCREEN 9: PROFILE & THEMES -->
-        <section id="screenProfile" class="screen-section space-y-6">
-          <h2 class="font-display text-xl font-bold text-gray-800">
-            <i class="fas fa-cog text-theme-main mr-2"></i>Themes & Profile
-          </h2>
-
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
-            <div class="text-center">
-              <div class="w-20 h-20 bg-theme-main rounded-full flex items-center justify-center mx-auto mb-3 text-white text-2xl font-bold" id="profileAvatar">A</div>
-              <h3 class="font-display font-bold text-gray-800" id="profileName">Little Explorer</h3>
-              <p class="text-sm text-gray-400">Grade: <span id="profileGrade">KG</span></p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-2">Your Name</label>
-              <input type="text" id="profileNameInput" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-theme-main" placeholder="Enter your name" value="Little Explorer">
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-2">Choose Avatar</label>
-              <div class="grid grid-cols-6 gap-2" id="avatarGrid">
-                <button class="avatar-btn w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="A">A</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="B">B</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="C">C</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="D">D</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="E">E</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="F">F</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="G">G</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="H">H</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="I">I</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="J">J</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-lime-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="K">K</button>
-                <button class="avatar-btn w-12 h-12 rounded-full bg-fuchsia-100 flex items-center justify-center text-xl hover:ring-2 ring-theme-main transition-all" data-avatar="L">L</button>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-gray-600 mb-2">Theme Color</label>
-              <div class="flex items-center gap-3 flex-wrap" id="profileThemePicker">
-                <button class="profile-theme-btn w-10 h-10 rounded-full bg-purple-500 ring-2 ring-offset-2 ring-purple-400 transition-all" data-theme="purple"></button>
-                <button class="profile-theme-btn w-10 h-10 rounded-full bg-blue-500 ring-0 ring-offset-2 ring-transparent hover:ring-blue-300 transition-all" data-theme="blue"></button>
-                <button class="profile-theme-btn w-10 h-10 rounded-full bg-green-500 ring-0 ring-offset-2 ring-transparent hover:ring-green-300 transition-all" data-theme="green"></button>
-                <button class="profile-theme-btn w-10 h-10 rounded-full bg-rose-500 ring-0 ring-offset-2 ring-transparent hover:ring-rose-300 transition-all" data-theme="coral"></button>
-                <button class="profile-theme-btn w-10 h-10 rounded-full bg-amber-500 ring-0 ring-offset-2 ring-transparent hover:ring-amber-300 transition-all" data-theme="amber"></button>
-                <button class="profile-theme-btn w-10 h-10 rounded-full bg-pink-500 ring-0 ring-offset-2 ring-transparent hover:ring-pink-300 transition-all" data-theme="pink"></button>
-              </div>
-            </div>
-
-            <button id="saveProfile" class="w-full py-3 bg-theme-main text-white font-bold rounded-xl hover:bg-theme-dark transition-all">
-              <i class="fas fa-save mr-1"></i>Save Profile
-            </button>
-          </div>
-        </section>
-      </main>
-      <!-- END SCREENS VIEWPORT -->
-
-      <!-- MOBILE BOTTOM NAV -->
-      <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-1 flex items-center justify-around z-50 md:hidden">
-        <button class="mobile-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl text-theme-main" data-screen="screenHome">
-          <i class="fas fa-home text-lg"></i>
-          <span class="text-[10px] font-bold">Home</span>
-        </button>
-        <button class="mobile-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl text-gray-400" data-screen="screenReader">
-          <i class="fas fa-book-open text-lg"></i>
-          <span class="text-[10px] font-bold">Stories</span>
-        </button>
-        <button class="mobile-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl text-gray-400" data-screen="screenQuiz">
-          <i class="fas fa-paw text-lg"></i>
-          <span class="text-[10px] font-bold">Quiz</span>
-        </button>
-        <button class="mobile-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl text-gray-400" data-screen="screenMath">
-          <i class="fas fa-calculator text-lg"></i>
-          <span class="text-[10px] font-bold">Math</span>
-        </button>
-        <button class="mobile-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl text-gray-400" data-screen="screenRewards">
-          <i class="fas fa-trophy text-lg"></i>
-          <span class="text-[10px] font-bold">Rewards</span>
-        </button>
-      </nav>
-    </div>
-    <!-- END MAIN CONTENT -->
-
-    <!-- WORD POPUP TOOLTIP -->
-    <div id="wordPopup" class="ewa-bubble hidden" style="top: 0; left: 0;">
-      <div class="ewa-bubble-arrow"></div>
-      <div class="flex items-center justify-between mb-2">
-        <h4 class="font-display font-bold text-gray-800" id="popupWord">Word</h4>
-        <button id="popupClose" class="text-gray-400 hover:text-gray-600 text-sm">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <p class="text-sm text-gray-500 mb-2" id="popupMeaning">Meaning here</p>
-      <p class="text-xs text-gray-400 italic mb-3 font-serif" id="popupSentence">Example sentence here.</p>
-      <div class="flex gap-2">
-        <button id="popupSpeak" class="flex-1 py-2 bg-theme-main text-white text-xs font-bold rounded-lg hover:bg-theme-dark transition-all">
-          <i class="fas fa-volume-up mr-1"></i>Speak
-        </button>
-        <button id="popupLearn" class="flex-1 py-2 bg-green-500 text-white text-xs font-bold rounded-lg hover:bg-green-600 transition-all">
-          <i class="fas fa-check mr-1"></i>Learn
-        </button>
-        <button id="popupQuiz" class="flex-1 py-2 bg-amber-500 text-white text-xs font-bold rounded-lg hover:bg-amber-600 transition-all">
-          <i class="fas fa-question mr-1"></i>Quiz
-        </button>
-      </div>
-    </div>
-
-    <!-- RESET CONFIRMATION MODAL -->
-    <div id="resetModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-        <div class="text-center mb-4">
-          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
-          </div>
-          <h3 class="font-display font-bold text-gray-800 text-lg">Reset All Scores?</h3>
-          <p class="text-sm text-gray-400 mt-1">This will erase all your progress. This action cannot be undone.</p>
-        </div>
+    <!-- ==================== RESET MODAL ==================== -->
+    <div id="resetModal" class="hidden fixed inset-0 z-[200] bg-black/40 flex items-center justify-center p-6">
+      <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+        <h3 class="font-display font-black text-slate-800 text-base mb-2">Reset All Progress?</h3>
+        <p class="text-xs text-slate-500 mb-5">This will remove all your saved stars, XP, and vocabulary. This cannot be undone.</p>
         <div class="flex gap-3">
-          <button id="cancelReset" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all">
-            Cancel
-          </button>
-          <button id="confirmReset" class="flex-1 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-all">
-            Reset
-          </button>
+          <button id="btnCancelReset" class="flex-1 py-2.5 rounded-2xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition">Cancel</button>
+          <button id="btnConfirmReset" class="flex-1 py-2.5 rounded-2xl bg-red-500 text-white text-xs font-black shadow-md hover:bg-red-600 transition">Yes, Reset</button>
         </div>
       </div>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="hidden fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-semibold text-sm flex items-center gap-2">
-      <i class="fas fa-check-circle"></i>
-      <span id="toastMessage">Saved!</span>
-    </div>
+    <!-- ==================== TOAST ==================== -->
+    <div id="appToast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] px-5 py-2.5 rounded-2xl bg-slate-800 text-white text-xs font-bold shadow-xl opacity-0 -translate-y-2 transition-all duration-300 pointer-events-none">Toast message</div>
 
-  </div>
-  <!-- END appRoot -->
+  </div> <!-- end appRoot -->
 
   <script>
+
   // Kidsy Learning App â€” Part 1 (Sound Engine, Speech, State, Lexicon, KG Stories)
 
 // â”€â”€â”€ 1. Sound Engine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -3134,6 +2693,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
 
 
 </script>
