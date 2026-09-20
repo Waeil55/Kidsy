@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EWA Language Reader: Read & Understand</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ewa: {
+              blue: '#2db5ff',
+              lightBlue: '#4ec7ff',
+              darkBlue: '#1288c9',
+              accent: '#ffb300',
+              paper: '#fdfbf7',
+              border: '#e8edf3'
+            }
+          },
+          fontFamily: {
+            sans: ['Nunito', 'sans-serif'],
+            serif: ['Lora', 'Georgia', 'serif'],
+            title: ['Cinzel', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: text;
+    }
+
+    /* Word token styling */
+    .ewa-word {
+      cursor: pointer;
+      display: inline-block;
+      transition: all 0.15s ease;
+      border-radius: 4px;
+      padding: 0 2px;
+      margin: 0 1px;
+    }
+
+    .ewa-word:hover {
+      background-color: rgba(45, 181, 255, 0.15);
+      color: #0b80c2;
+    }
+
+    .ewa-word.active-word {
+      background-color: #2db5ff !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 2px rgba(45, 181, 255, 0.35);
+      border-radius: 4px;
+    }
+
+    .ewa-word.speaking-now {
+      background-color: #fde047 !important;
+      color: #713f12 !important;
+      font-weight: 700;
+      border-radius: 4px;
+      box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.5);
+    }
+
+    .ewa-word.status-learned {
+      text-decoration: underline;
+      text-decoration-color: #10b981;
+      text-decoration-thickness: 2.5px;
+      text-underline-offset: 3px;
+    }
+
+    .ewa-word.status-learning {
+      text-decoration: underline;
+      text-decoration-color: #2db5ff;
+      text-decoration-thickness: 2.5px;
+      text-underline-offset: 3px;
+    }
+
+    /* EWA Screenshot Bubble Tooltip with Downward Caret */
+    .ewa-bubble {
+      position: absolute;
+      z-index: 60;
+      box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.18), 0 6px 12px -2px rgba(15, 23, 42, 0.08);
+      animation: bubblePop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards;
+      transform-origin: bottom center;
+    }
+
+    @keyframes bubblePop {
+      0% { opacity: 0; transform: translateY(6px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .ewa-bubble-arrow {
+      position: absolute;
+      bottom: -9px;
+      left: calc(var(--arrow-left, 50%) - 9px);
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 9px solid #2db5ff;
+      pointer-events: none;
+    }
+
+    /* Subtle book page texture */
+    .vintage-vignette {
+      background: radial-gradient(circle, transparent 65%, rgba(139, 90, 43, 0.1) 100%);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans h-full flex justify-center items-start sm:py-5 overflow-hidden select-none">
+
+  <div id="appContainer" class="w-full sm:max-w-md h-full sm:h-[94vh] sm:max-h-[920px] bg-[#fcfbf7] sm:rounded-[36px] shadow-2xl flex flex-col overflow-hidden relative border border-slate-200">
+
+    <!-- Top App Bar -->
+    <header class="bg-white/95 backdrop-blur px-4 py-2.5 flex items-center justify-between border-b border-slate-200/80 shrink-0 z-20">
+      <div class="flex items-center space-x-2">
+        <button id="btnOpenLibrary" class="py-1.5 px-3 -ml-1 text-slate-700 hover:text-ewa-blue transition rounded-full hover:bg-slate-100 flex items-center text-xs font-black uppercase tracking-wider">
+          <i class="fa-solid fa-book-bookmark mr-2 text-ewa-blue text-sm"></i>
+          <span>Library</span>
+        </button>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <!-- Vocab Bank Button -->
+        <button id="btnOpenVocab" class="bg-sky-50 hover:bg-sky-100 text-ewa-darkBlue font-black text-xs px-3 py-1.5 rounded-full flex items-center transition border border-sky-100" title="Vocabulary Deck">
+          <i class="fa-solid fa-layer-group mr-1.5 text-ewa-blue"></i>
+          <span>Words</span>
+          <span id="savedWordsCount" class="ml-1.5 px-1.5 py-0.2 bg-ewa-blue text-white rounded-full text-[10px] font-bold">0</span>
+        </button>
+
+        <!-- Settings Modal Button -->
+        <button id="btnOpenSettings" class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-700 transition rounded-full hover:bg-slate-100" title="Reading Settings">
+          <i class="fa-solid fa-sliders text-sm"></i>
+        </button>
+      </div>
+    </header>
+
+    <main id="readerScrollArea" class="flex-1 overflow-y-auto relative bg-[#fcfbf7] select-text">
+
+      <!-- Story Banner / Illustration Section -->
+      <div id="bookCoverSection" class="relative w-full bg-[#f7eedc] border-b border-[#e5d9be] overflow-hidden select-none">
+        <div class="absolute inset-0 vintage-vignette pointer-events-none"></div>
+
+        <!-- Cover Titles -->
+        <div class="px-5 pt-4 pb-1 text-center relative z-10">
+          <h2 id="coverSubtitle" class="font-serif tracking-widest text-[#78593a] text-[11px] uppercase font-extrabold mb-0.5">
+            Short Words · Grade 1
+          </h2>
+          <h1 id="coverTitle" class="font-serif font-black text-xl sm:text-2xl tracking-wide text-[#341d11] uppercase">
+            Run, Play, Read!
+          </h1>
+        </div>
+
+        <!-- Illustration Canvas / SVG -->
+        <div id="coverIllustrationWrapper" class="relative w-full h-48 flex items-center justify-center overflow-hidden">
+          <svg id="coverSvg" class="w-full h-full object-cover" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Dynamic illustration injected via JS -->
+          </svg>
+
+          <!-- Chapter Badge -->
+          <div id="chapterBadge" class="absolute bottom-2.5 right-3 bg-white/95 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[11px] font-bold text-amber-900 shadow-sm border border-amber-200/80">
+            Level 1
+          </div>
+        </div>
+      </div>
+
+      <!-- Exact EWA Screenshot Dual Blue Header Bar: [Lee Libros] | [Escucha audiolibros] -->
+      <div class="sticky top-0 z-30 bg-white/95 backdrop-blur px-3.5 py-2.5 border-b border-slate-200/80 shadow-sm">
+        <div class="grid grid-cols-2 rounded-xl bg-ewa-blue p-1 gap-1 text-white shadow-md">
+          <!-- Read Mode -->
+          <button id="btnModeRead" class="flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition bg-white text-ewa-darkBlue shadow-sm">
+            <i class="fa-solid fa-book-open-reader text-sm"></i>
+            <span>Read Story</span>
+          </button>
+
+          <!-- Audiobook Mode -->
+          <button id="btnModeAudio" class="flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition text-white hover:bg-white/10">
+            <i class="fa-solid fa-headphones text-sm"></i>
+            <span>Listen Along</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Audiobook Player Widget -->
+      <div id="audioPlayerWidget" class="hidden bg-gradient-to-r from-sky-500 via-ewa-blue to-cyan-500 text-white p-3.5 mx-3 mt-3 rounded-2xl shadow-lg transition-all">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span>
+            <span class="text-xs font-black uppercase tracking-wider text-sky-100">Audio Narration</span>
+          </div>
+          <button id="btnSpeed" class="text-xs font-black bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded-full transition">1.0x</button>
+        </div>
+
+        <div class="flex items-center justify-center space-x-4 pt-1">
+          <button id="btnSkipPrev" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs transition active:scale-95">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+
+          <button id="btnPlayPauseAudio" class="w-11 h-11 rounded-full bg-white text-ewa-darkBlue shadow-md flex items-center justify-center text-lg transition active:scale-90 hover:scale-105">
+            <i id="playIcon" class="fa-solid fa-play ml-0.5"></i>
+          </button>
+
+          <button id="btnSkipNext" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs transition active:scale-95">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+        </div>
+
+        <div class="mt-2 text-center text-[11px] text-sky-100 font-medium">
+          Tap any word to begin audio narration from that spot
+        </div>
+      </div>
+
+      <div id="readerContent" class="p-5 sm:p-6 text-slate-800 font-serif leading-loose tracking-wide text-lg pb-24">
+        <!-- Content paragraphs and words injected dynamically by renderBook -->
+      </div>
+    </main>
+
+    <!-- Floating Word Bubble Tooltip (Matches screenshot with English meaning, sentence, question, and learn buttons) -->
+    <div id="wordPopup" class="ewa-bubble hidden bg-white rounded-2xl border border-sky-100 w-[240px] sm:w-[260px] select-none text-left overflow-hidden">
+      <!-- Caret pointing downward to the word -->
+      <div class="ewa-bubble-arrow" id="popupArrow"></div>
+
+      <!-- Top Section -->
+      <div class="p-3.5 pb-2.5 relative">
+        <!-- Pronounce Icon Button -->
+        <button id="popupSpeakBtn" class="absolute top-3 left-3 w-7 h-7 rounded-full bg-sky-50 text-ewa-blue hover:bg-sky-100 flex items-center justify-center transition active:scale-90" title="Listen to pronunciation">
+          <i class="fa-solid fa-volume-high text-xs"></i>
+        </button>
+
+        <button id="popupCloseBtn" class="absolute top-2.5 right-2.5 text-slate-300 hover:text-slate-500 w-5 h-5 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Centered Word & IPA -->
+        <div class="text-center pt-0.5">
+          <h3 id="popupWord" class="font-sans font-black text-xl text-slate-800 tracking-tight leading-none">
+            love
+          </h3>
+          <div id="popupIpa" class="text-xs font-mono text-slate-400 font-semibold tracking-wider mt-1">
+            |lʌv|
+          </div>
+        </div>
+
+        <!-- Meaning Box -->
+        <div class="mt-2.5 bg-slate-50 border border-slate-200/70 rounded-xl p-2.5 text-slate-700">
+          <div class="text-[10px] uppercase font-black tracking-wider text-ewa-darkBlue mb-0.5 flex items-center">
+            <i class="fa-solid fa-lightbulb text-amber-500 mr-1.5"></i> Meaning:
+          </div>
+          <div id="popupMeaning" class="text-[12px] leading-snug font-medium text-slate-700">
+            To care deeply about someone or like something very much.
+          </div>
+        </div>
+
+        <!-- In a Sentence Box -->
+        <div class="mt-1.5 bg-sky-50/70 border border-sky-100 rounded-xl p-2.5 text-slate-700">
+          <div class="text-[10px] uppercase font-black tracking-wider text-sky-700 mb-0.5 flex items-center">
+            <i class="fa-solid fa-quote-left mr-1.5"></i> In a sentence:
+          </div>
+          <div id="popupSentence" class="text-[11.5px] italic leading-snug text-slate-700">
+            "I love reading fun stories with mom."
+          </div>
+        </div>
+
+        <!-- Interactive Question Box -->
+        <div id="popupQuestionContainer" class="mt-1.5 hidden">
+          <div class="bg-amber-50/80 border border-amber-200/70 rounded-xl p-2.5">
+            <div class="text-[10px] uppercase font-black tracking-wider text-amber-800 mb-1 flex items-center">
+              <i class="fa-solid fa-circle-question mr-1.5"></i> Quick Quiz:
+            </div>
+            <p id="popupQuestionText" class="text-[11.5px] font-bold text-slate-800 mb-1.5"></p>
+            <div id="popupQuestionChoices" class="grid grid-cols-2 gap-1.5"></div>
+            <div id="popupQuestionFeedback" class="text-[11px] font-bold text-center mt-1 hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exact EWA Split Action Bar: [learned] | [learn] -->
+      <div class="grid grid-cols-2 bg-ewa-blue border-t border-sky-300/40 text-xs font-bold text-white text-center">
+        <button id="btnMarkLearned" class="py-2.5 hover:bg-sky-600/30 active:bg-sky-700/40 transition border-r border-white/20 flex items-center justify-center tracking-tight">
+          <i class="fa-solid fa-check text-[11px] mr-1 hidden" id="iconLearnedCheck"></i>
+          <span id="labelLearned">learned</span>
+        </button>
+
+        <button id="btnMarkLearn" class="py-2.5 hover:bg-sky-600/30 active:bg-sky-700/40 transition flex items-center justify-center tracking-tight bg-ewa-darkBlue/20 font-extrabold">
+          <i class="fa-solid fa-plus text-[11px] mr-1" id="iconLearnPlus"></i>
+          <span id="labelLearn">learn</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="absolute bottom-3 inset-x-4 pointer-events-none flex justify-between items-center z-20">
+      <!-- Sentence Comprehension Trigger -->
+      <button id="btnTranslateSentence" class="pointer-events-auto bg-white/95 backdrop-blur-md text-slate-700 text-xs font-extrabold px-3.5 py-2 rounded-full shadow-lg border border-slate-200 flex items-center hover:bg-slate-50 transition active:scale-95">
+        <i class="fa-solid fa-circle-question text-ewa-blue text-sm mr-1.5"></i>
+        <span>Sentence & Questions</span>
+      </button>
+
+      <!-- Scroll to Top -->
+      <button id="btnScrollTop" class="pointer-events-auto w-9 h-9 rounded-full bg-white/95 backdrop-blur-md text-slate-600 shadow-lg border border-slate-200 flex items-center justify-center hover:text-ewa-blue transition active:scale-95">
+        <i class="fa-solid fa-arrow-up text-xs"></i>
+      </button>
+    </div>
+
+    <!-- Sentence Breakdown & Story Questions Drawer -->
+    <div id="sentenceModal" class="absolute inset-x-0 bottom-0 z-40 bg-white rounded-t-3xl shadow-2xl border-t border-slate-200 p-5 transform translate-y-full transition-transform duration-300 ease-out max-h-[80%] overflow-y-auto">
+      <div class="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-black uppercase tracking-wider text-ewa-blue flex items-center">
+          <i class="fa-solid fa-puzzle-piece mr-1.5"></i> Sentence Breakdown & Quiz
+        </span>
+        <button id="btnCloseSentenceModal" class="text-slate-400 hover:text-slate-600 text-sm p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p id="sentenceOriginalText" class="font-serif text-sm text-slate-800 font-semibold mb-3 p-3 bg-slate-50 rounded-xl border border-slate-200/80"></p>
+      
+      <!-- Meaning explanation -->
+      <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-800 font-sans text-xs mb-3">
+        <span class="font-black text-ewa-darkBlue uppercase text-[10px] block mb-1">What this sentence means:</span>
+        <p id="sentenceExplanationText">Describes an action happening in the story using clear sight words.</p>
+      </div>
+
+      <!-- Story Questions -->
+      <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl p-3">
+        <span class="font-black text-amber-800 uppercase text-[10px] block mb-1">Comprehension Question:</span>
+        <p id="sentenceQuizPrompt" class="text-xs font-bold text-slate-800 mb-2"></p>
+        <div id="sentenceQuizButtons" class="space-y-1.5"></div>
+        <p id="sentenceQuizFeedback" class="text-xs font-bold mt-2 text-center hidden"></p>
+      </div>
+    </div>
+
+    <!-- Library Modal -->
+    <div id="libraryModal" class="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex-col justify-end transition-opacity">
+      <div class="bg-white rounded-t-3xl max-h-[85%] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 class="font-black text-lg text-slate-800">Stories & Books</h3>
+            <p class="text-xs text-slate-400 font-medium">Select a story to read and learn</p>
+          </div>
+          <button id="btnCloseLibrary" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="p-4 overflow-y-auto space-y-3" id="booksList">
+          <!-- Injected dynamically -->
+        </div>
+
+        <div class="p-4 border-t border-slate-100 bg-slate-50">
+          <button id="btnOpenCustomText" class="w-full py-2.5 px-4 rounded-xl border border-dashed border-ewa-blue text-ewa-darkBlue font-black text-xs flex items-center justify-center hover:bg-white transition">
+            <i class="fa-solid fa-file-circle-plus mr-2 text-sm"></i>
+            Paste My Own Story / Text
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Text Modal -->
+    <div id="customTextModal" class="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+      <div class="bg-white rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-800 text-sm">Read Any Custom Text</h3>
+          <button id="btnCloseCustomText" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <input id="customTextTitle" type="text" placeholder="Story Title (e.g. My Fun Day)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-ewa-blue">
+        <textarea id="customTextInput" rows="6" placeholder="Paste or type English sentences here. Every single word will be clickable for definitions, sentences, pronunciation, and questions..." class="w-full p-3 border border-slate-200 rounded-lg text-xs font-serif focus:outline-none focus:border-ewa-blue resize-none"></textarea>
+        <button id="btnLoadCustomText" class="w-full py-2 bg-ewa-blue text-white rounded-lg font-bold text-xs hover:bg-ewa-darkBlue transition">
+          Start Reading
+        </button>
+      </div>
+    </div>
+
+    <!-- Flashcards & Vocab Deck Modal -->
+    <div id="vocabModal" class="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex-col justify-end transition-opacity">
+      <div class="bg-[#fafafa] rounded-t-3xl h-[88%] flex flex-col overflow-hidden shadow-2xl">
+        <div class="px-5 py-4 bg-white border-b border-slate-100 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-full bg-ewa-blue/10 text-ewa-blue flex items-center justify-center text-sm font-black">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-slate-800 text-base">Vocabulary Deck</h3>
+              <p class="text-xs text-slate-400">Review meanings and sentences</p>
+            </div>
+          </div>
+          <button id="btnCloseVocab" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Vocab Tabs -->
+        <div class="flex px-4 pt-3 bg-white border-b border-slate-200 space-x-4">
+          <button id="tabStudy" class="pb-2.5 font-bold text-xs border-b-2 border-ewa-blue text-ewa-darkBlue">
+            Flashcards (<span id="studyBadgeCount">0</span>)
+          </button>
+          <button id="tabQuiz" class="pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600">
+            Word Quiz
+          </button>
+          <button id="tabList" class="pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600">
+            Word Bank
+          </button>
+        </div>
+
+        <!-- Flashcard View -->
+        <div id="vocabStudyContainer" class="flex-1 p-5 flex flex-col items-center justify-center">
+          <div id="flashcardCard" class="w-full max-w-[310px] min-h-[350px] bg-white rounded-3xl shadow-xl border border-slate-200 flex flex-col p-5 text-center cursor-pointer relative justify-between transition-transform duration-300 hover:scale-[1.01]">
+            <div class="flex justify-between items-center text-slate-400 text-xs">
+              <span id="flashcardIndex">Card 1</span>
+              <button id="flashcardAudioBtn" class="text-ewa-blue hover:text-sky-600 p-1">
+                <i class="fa-solid fa-volume-high text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Front / Back Card content -->
+            <div id="flashcardBody" class="my-auto py-2">
+              <h2 id="flashcardFrontWord" class="font-sans font-black text-3xl text-slate-800 mb-1">love</h2>
+              <p id="flashcardFrontIpa" class="text-xs text-slate-400 mb-3 font-mono">|lʌv|</p>
+              
+              <div id="flashcardBackContent" class="hidden text-left space-y-2">
+                <div class="bg-sky-50 rounded-xl p-2.5 border border-sky-100">
+                  <span class="text-[10px] font-black uppercase text-ewa-darkBlue block">Meaning:</span>
+                  <div id="flashcardMeaning" class="text-xs font-semibold text-slate-700 mt-0.5"></div>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                  <span class="text-[10px] font-black uppercase text-slate-500 block">Sentence:</span>
+                  <div id="flashcardSentence" class="text-xs italic text-slate-600 mt-0.5"></div>
+                </div>
+              </div>
+
+              <p id="flashcardHint" class="text-[11px] text-slate-400 mt-4 flex items-center justify-center">
+                <i class="fa-solid fa-hand-pointer mr-1.5 text-ewa-blue"></i> Tap card to flip
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+              <button id="btnFlashcardHard" class="py-2 rounded-xl bg-amber-50 text-amber-700 font-bold text-xs hover:bg-amber-100 transition">
+                Need Practice
+              </button>
+              <button id="btnFlashcardEasy" class="py-2 rounded-xl bg-emerald-50 text-emerald-700 font-bold text-xs hover:bg-emerald-100 transition">
+                I Know It!
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Word Quiz Tab View -->
+        <div id="vocabQuizContainer" class="flex-1 p-5 hidden flex-col items-center justify-center">
+          <div class="w-full max-w-[310px] bg-white rounded-3xl shadow-xl border border-slate-200 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
+                <span class="font-bold text-ewa-blue"><i class="fa-solid fa-star text-amber-400 mr-1"></i> Challenge</span>
+                <span id="quizWordCounter">1 of 5</span>
+              </div>
+              <p id="quizQuestionText" class="text-sm font-bold text-slate-800 mb-4 text-center"></p>
+              <div id="quizOptionsContainer" class="space-y-2 mb-3"></div>
+            </div>
+            <div id="quizFeedbackMessage" class="text-xs font-bold text-center py-1 hidden"></div>
+            <button id="btnQuizNext" class="mt-2 py-2 bg-ewa-blue text-white font-bold text-xs rounded-xl hover:bg-ewa-darkBlue transition">
+              Next Question
+            </button>
+          </div>
+        </div>
+
+        <!-- Vocab List View -->
+        <div id="vocabListContainer" class="flex-1 p-4 overflow-y-auto hidden space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+      <div class="bg-white rounded-2xl w-full max-w-xs p-5 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h3 class="font-black text-slate-800 text-sm">Reading Settings</h3>
+          <button id="btnCloseSettings" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Text Font Size</label>
+          <div class="flex items-center justify-between space-x-2">
+            <button id="btnFontSmaller" class="flex-1 py-1.5 bg-slate-100 rounded-lg text-xs font-bold hover:bg-slate-200">A-</button>
+            <button id="btnFontNormal" class="flex-1 py-1.5 bg-slate-100 rounded-lg text-xs font-bold hover:bg-slate-200">Normal</button>
+            <button id="btnFontLarger" class="flex-1 py-1.5 bg-slate-100 rounded-lg text-xs font-bold hover:bg-slate-200">A+</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Learning Experience</label>
+          <div class="text-[11px] text-slate-600 bg-sky-50 border border-sky-100 p-2.5 rounded-lg space-y-1">
+            <div class="font-bold text-ewa-darkBlue">English Meaning & Sentences</div>
+            <div>Tapping words shows easy definitions, sentences, and fun questions in English!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Toast Notification -->
+    <div id="appToast" class="absolute top-4 inset-x-6 z-50 bg-slate-900/90 backdrop-blur text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-xl text-center pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-2">
+      Notification text
+    </div>
+  </div>
+
+  <script>
+    /* Monolingual English Lexicon: Child-friendly meanings, sentences, and interactive questions */
+    const OFFLINE_DICTIONARY = {
+      // Grade 1 Core Sight and Action Words
+      "i": { ipa: "|aɪ|", meaning: "Used by a speaker to refer to himself or herself.", sentence: "I like to read exciting stories.", question: "Who does 'I' talk about?", choices: ["Myself", "A dog", "A book"], correct: 0 },
+      "see": { ipa: "|siː|", meaning: "To look at something using your eyes.", sentence: "I see a cute little kitten in the grass.", question: "What do you use to see?", choices: ["Eyes", "Ears", "Hands"], correct: 0 },
+      "a": { ipa: "|eɪ|", meaning: "Used when talking about one single thing.", sentence: "She has a red balloon.", question: "'A cat' means how many cats?", choices: ["One", "Three", "Ten"], correct: 0 },
+      "cat": { ipa: "|kæt|", meaning: "A small furry animal with whiskers that says meow.", sentence: "The cat plays with a yarn ball.", question: "What sound does a cat make?", choices: ["Meow", "Woof", "Ribbit"], correct: 0 },
+      "can": { ipa: "|kæn|", meaning: "Able to do something.", sentence: "You can jump very high!", question: "Which of these can fly?", choices: ["A bird", "A rock", "A table"], correct: 0 },
+      "run": { ipa: "|rʌn|", meaning: "To move quickly with your legs, faster than walking.", sentence: "The children run fast across the grass.", question: "When you run, what are you doing?", choices: ["Moving fast", "Sleeping", "Sitting"], correct: 0 },
+      "she": { ipa: "|ʃiː|", meaning: "A girl, woman, or female animal.", sentence: "She loves her new puppy.", question: "Who does 'she' refer to?", choices: ["A girl", "A boy", "A tree"], correct: 0 },
+      "jump": { ipa: "|dʒʌmp|", meaning: "To push yourself off the ground into the air.", sentence: "Frogs can jump across the pond.", question: "Which animal is famous for jumping?", choices: ["Kangaroo", "Fish", "Snail"], correct: 0 },
+      "play": { ipa: "|pleɪ|", meaning: "To do fun games or activities.", sentence: "We play tag during recess.", question: "Why do friends play together?", choices: ["To have fun", "To be bored", "To cry"], correct: 0 },
+      "he": { ipa: "|hiː|", meaning: "A boy, man, or male animal.", sentence: "He is wearing a blue hat.", question: "Who does 'he' talk about?", choices: ["A boy", "A girl", "A house"], correct: 0 },
+      "has": { ipa: "|hæz|", meaning: "To own, hold, or have something.", sentence: "He has a bright red bicycle.", question: "If he has an apple, what does he hold?", choices: ["An apple", "A banana", "Nothing"], correct: 0 },
+      "dog": { ipa: "|dɔːɡ|", meaning: "A friendly four-legged animal that wags its tail and barks.", sentence: "The happy dog runs in circles.", question: "What sound does a dog make?", choices: ["Woof", "Meow", "Chirp"], correct: 0 },
+      "love": { ipa: "|lʌv|", meaning: "To care deeply about someone or like something very much.", sentence: "I love reading fun stories.", question: "How do you feel when you love something?", choices: ["Very happy", "Angry", "Bored"], correct: 0 },
+      "my": { ipa: "|maɪ|", meaning: "Belonging to me.", sentence: "This is my favorite bedtime story.", question: "'My dog' belongs to whom?", choices: ["Me", "A stranger", "Nobody"], correct: 0 },
+      "will": { ipa: "|wɪl|", meaning: "Something that is going to happen in the future.", sentence: "We will go to the park this afternoon.", question: "'We will play' happens when?", choices: ["In the future", "Yesterday", "Never"], correct: 0 },
+      "go": { ipa: "|ɡoʊ|", meaning: "To move from one spot to another.", sentence: "Let us go outside to play.", question: "What is the opposite of 'go'?", choices: ["Stop", "Run", "Walk"], correct: 0 },
+      "get": { ipa: "|ɡɛt|", meaning: "To receive, fetch, or pick up something.", sentence: "Please go get your school shoes.", question: "If you get the ball, what did you do?", choices: ["Picked it up", "Lost it", "Hid it"], correct: 0 },
+      "the": { ipa: "|ðə|", meaning: "Points to a specific person, animal, or thing.", sentence: "Look at the big yellow sun.", question: "'The sun' points to what?", choices: ["The specific sun", "Any moon", "A cloud"], correct: 0 },
+      "red": { ipa: "|rɛd|", meaning: "A bright color like ripe strawberries or fire engines.", sentence: "He kicked the red ball into the grass.", question: "Which fruit is usually red?", choices: ["A strawberry", "A blueberry", "A lime"], correct: 0 },
+      "ball": { ipa: "|bɔːl|", meaning: "A round toy that bounces and rolls.", sentence: "The puppy chased the bouncy ball.", question: "What shape is a ball?", choices: ["Round", "Square", "Triangle"], correct: 0 },
+      "we": { ipa: "|wiː|", meaning: "You, me, and others together as a group.", sentence: "We are learning new words today.", question: "Does 'we' mean just one person?", choices: ["More than one", "Only one", "Nobody"], correct: 0 },
+      "sit": { ipa: "|sɪt|", meaning: "To rest your body on a chair or the floor.", sentence: "Please sit down on the cozy rug.", question: "Where do you usually sit?", choices: ["On a chair", "On a cloud", "In the sky"], correct: 0 },
+      "back": { ipa: "|bæk|", meaning: "Returning to a place where you were before.", sentence: "The dog brought the toy back to me.", question: "If you come back, did you return?", choices: ["Yes", "No", "Maybe"], correct: 0 },
+      "to": { ipa: "|tuː|", meaning: "Moving in the direction of someone or somewhere.", sentence: "Walk over to your desk.", question: "Where are you going 'to' the school?", choices: ["Toward school", "Away from school", "Under ground"], correct: 0 },
+      "me": { ipa: "|miː|", meaning: "The person talking or writing.", sentence: "Give the book to me, please.", question: "Who is 'me'?", choices: ["Myself", "A stranger", "A chair"], correct: 0 },
+      "read": { ipa: "|riːd|", meaning: "To look at words and understand what they say.", sentence: "I read my book every evening.", question: "What can you read?", choices: ["A book", "A glass of milk", "A shoe"], correct: 0 },
+      "big": { ipa: "|bɪɡ|", meaning: "Large in size, opposite of small.", sentence: "An elephant is a very big animal.", question: "Which animal is big?", choices: ["An elephant", "An ant", "A bee"], correct: 0 },
+      "book": { ipa: "|bʊk|", meaning: "Sheets of paper bound together with stories and pictures.", sentence: "This storybook is fun to read.", question: "What is inside a storybook?", choices: ["Words and pictures", "Soup", "Shoes"], correct: 0 },
+      "with": { ipa: "|wɪð|", meaning: "Together in company with someone.", sentence: "I walked with my best friend.", question: "'Playing with a friend' means doing what?", choices: ["Together", "Alone", "Asleep"], correct: 0 },
+      "mom": { ipa: "|mɑːm|", meaning: "A mother, a loving parent.", sentence: "Mom gives the best warm hugs.", question: "Who is mom?", choices: ["A mother", "A toy", "A tree"], correct: 0 },
+      "all": { ipa: "|ɔːl|", meaning: "Every single one of something.", sentence: "We sang all the fun songs.", question: "'All the cookies' means what?", choices: ["Every cookie", "Zero cookies", "Half"], correct: 0 },
+      "day": { ipa: "|deɪ|", meaning: "The daytime hours when the sun is shining.", sentence: "It was a warm and sunny day.", question: "What shines in the sky during the day?", choices: ["The sun", "The stars", "Nothing"], correct: 0 },
+      "sun": { ipa: "|sʌn|", meaning: "The bright star in the sky that gives warmth and light.", sentence: "The morning sun warmed up the yard.", question: "What does the sun give us?", choices: ["Light and heat", "Snow", "Darkness"], correct: 0 },
+      "and": { ipa: "|ænd|", meaning: "Used to connect words or sentences together.", sentence: "I like apples and oranges.", question: "'Cats and dogs' mentions which animals?", choices: ["Both cats and dogs", "Only cats", "Neither"], correct: 0 },
+
+      // Classic Tom Sawyer Lexicon
+      "mr": { ipa: "|ˈmɪs.tər|", meaning: "A title used before a man's name.", sentence: "Mr. Sedley sat down at the table.", question: "What is Mr. used for?", choices: ["A man", "A girl", "A baby"], correct: 0 },
+      "took": { ipa: "|tʊk|", meaning: "Held or guided someone or something.", sentence: "He took his jacket off the hook.", question: "'Took' is the past of what word?", choices: ["Take", "Give", "See"], correct: 0 },
+      "his": { ipa: "|hɪz|", meaning: "Belonging to a boy or man.", sentence: "He put on his warm winter coat.", question: "'His hat' belongs to whom?", choices: ["A boy or man", "A girl", "Nobody"], correct: 0 },
+      "son": { ipa: "|sʌn|", meaning: "A male child in relation to his parents.", sentence: "He smiled proudly at his son.", question: "A son is what kind of child?", choices: ["A boy child", "A girl child", "A cousin"], correct: 0 },
+      "aside": { ipa: "|əˈsaɪd|", meaning: "To one side, out of the way or privately.", sentence: "He pulled his friend aside to whisper.", question: "Talking aside means doing what?", choices: ["Privately", "Very loudly", "On TV"], correct: 0 },
+      "after": { ipa: "|ˈæf.tər|", meaning: "Later in time than something else.", sentence: "We ate dessert after our dinner.", question: "What is the opposite of 'after'?", choices: ["Before", "During", "Never"], correct: 0 },
+      "dinner": { ipa: "|ˈdɪn.ər|", meaning: "The main meal of the evening.", sentence: "We had pasta and vegetables for dinner.", question: "When is dinner usually eaten?", choices: ["In the evening", "At breakfast", "At midnight"], correct: 0 },
+      "gave": { ipa: "|ɡeɪv|", meaning: "Handed over or offered something to someone.", sentence: "She gave her sister a pretty flower.", question: "'Gave' is the past of what word?", choices: ["Give", "Get", "Take"], correct: 0 },
+      "him": { ipa: "|hɪm|", meaning: "Referring to a boy, man, or male animal.", sentence: "I waved to him from across the yard.", question: "Who does 'him' refer to?", choices: ["A boy or man", "A girl", "A dog only"], correct: 0 },
+      "some": { ipa: "|sʌm|", meaning: "An unspecified amount or number of something.", sentence: "May I have some cold water?", question: "'Some water' means what?", choices: ["A portion", "Zero water", "An ocean"], correct: 0 },
+      "advice": { ipa: "|ədˈvaɪs|", meaning: "Helpful suggestions or guidance about what to do.", sentence: "Her teacher gave her great advice on studying.", question: "Why do people share advice?", choices: ["To help", "To confuse", "To make noise"], correct: 0 },
+      "determined": { ipa: "|dɪˈtɜː.mɪnd|", meaning: "Having made a firm decision and refusing to give up.", sentence: "He was determined to win the race.", question: "If you are determined, are you trying hard?", choices: ["Yes, very hard", "No, quitting", "Not caring"], correct: 0 },
+      "marry": { ipa: "|ˈmær.i|", meaning: "To become legally joined in marriage as partners.", sentence: "They decided to marry in a sunny garden.", question: "What does marry mean?", choices: ["Become partners", "Play tag", "Go to sleep"], correct: 0 },
+      "you": { ipa: "|juː|", meaning: "The person or people being spoken to.", sentence: "You are doing a fantastic job!", question: "Who is 'you'?", choices: ["The person spoken to", "Nobody", "A tree"], correct: 0 },
+      "said": { ipa: "|sɛd|", meaning: "Spoke words aloud.", sentence: "'Good morning!' said the cheerful teacher.", question: "'Said' means what?", choices: ["Spoke words", "Ran fast", "Drew pictures"], correct: 0 },
+      "young": { ipa: "|jʌŋ|", meaning: "Having lived or existed for only a short time; not old.", sentence: "The young puppy was very playful.", question: "What is the opposite of 'young'?", choices: ["Old", "Small", "Fast"], correct: 0 },
+      "man": { ipa: "|mæn|", meaning: "An adult male human.", sentence: "The tall man walked his dog.", question: "What is an adult male called?", choices: ["A man", "A puppy", "A building"], correct: 0 },
+      "replied": { ipa: "|rɪˈplaɪd|", meaning: "Answered or responded to a question.", sentence: "'Yes, I am ready,' replied the boy.", question: "What did you do if you replied?", choices: ["Answered", "Ignored", "Whispered"], correct: 0 },
+      "but": { ipa: "|bʌt|", meaning: "Used to introduce an added statement or contrast.", sentence: "I wanted to play outside, but it rained.", question: "What does 'but' show?", choices: ["A contrast", "A number", "A color"], correct: 0 },
+      "very": { ipa: "|ˈvɛr.i|", meaning: "To a great degree; extremely.", sentence: "The kitten was very sleepy.", question: "'Very cold' means how cold?", choices: ["Extremely cold", "Warm", "Boiling"], correct: 0 },
+      "shy": { ipa: "|ʃaɪ|", meaning: "Feeling nervous or bashful around other people.", sentence: "The new student felt a little shy on day one.", question: "How does a shy person feel?", choices: ["Quiet or nervous", "Angry", "Loud"], correct: 0 },
+      "began": { ipa: "|bɪˈɡæn|", meaning: "Started doing something.", sentence: "The band began to play music.", question: "What is the opposite of 'began'?", choices: ["Finished", "Continued", "Paused"], correct: 0 },
+      "think": { ipa: "|θɪŋk|", meaning: "To use your mind to consider ideas.", sentence: "Take your time to think of the answer.", question: "What do you use to think?", choices: ["Your mind", "Your elbow", "Your shoe"], correct: 0 },
+      "about": { ipa: "|əˈbaʊt|", meaning: "Concerning or on the subject of something.", sentence: "We read a book about dinosaurs.", question: "A book 'about' dogs discusses what?", choices: ["Dogs", "Spaceships", "Rocks"], correct: 0 },
+      "more": { ipa: "|mɔːr|", meaning: "A greater amount or quantity.", sentence: "Can I please have more strawberries?", question: "What is the opposite of 'more'?", choices: ["Less", "Many", "Extra"], correct: 0 },
+      "convinced": { ipa: "|kənˈvɪnst|", meaning: "Completely sure and having no doubt about something.", sentence: "She was convinced she had found the clue.", question: "If you are convinced, are you sure?", choices: ["Yes, totally sure", "No, doubting", "Confused"], correct: 0 },
+      "that": { ipa: "|ðæt|", meaning: "Used to identify a specific person, thing, or idea.", sentence: "That blue bird has pretty feathers.", question: "What does 'that' do?", choices: ["Points to something", "Counts to ten", "Runs fast"], correct: 0 },
+      "in": { ipa: "|ɪn|", meaning: "Inside or within the borders of something.", sentence: "The kitten is sleeping in the basket.", question: "Where is an apple 'in' the bowl?", choices: ["Inside the bowl", "Under the floor", "On the roof"], correct: 0 },
+      "her": { ipa: "|hɜːr|", meaning: "Belonging to or referring to a female.", sentence: "We celebrated her birthday today.", question: "Who does 'her' refer to?", choices: ["A girl or woman", "A boy", "A table"], correct: 0 },
+      "behaviour": { ipa: "|bɪˈheɪ.vjər|", meaning: "The way someone acts or conducts themselves.", sentence: "Good behaviour in class helps everyone learn.", question: "What is behaviour?", choices: ["The way you act", "Your shoes", "The weather"], correct: 0 },
+      "towards": { ipa: "|təˈwɔːdz|", meaning: "In the direction of someone or something.", sentence: "He walked towards the friendly dog.", question: "Walking towards means what?", choices: ["Moving closer", "Running away", "Stopping"], correct: 0 },
+      "became": { ipa: "|bɪˈkeɪm|", meaning: "Grew or changed into something new.", sentence: "The caterpillar became a colorful butterfly.", question: "What did the caterpillar become?", choices: ["A butterfly", "A rock", "A leaf"], correct: 0 },
+      "stranger": { ipa: "|ˈstreɪn.dʒər|", meaning: "More unusual, surprising, or curious.", sentence: "The mystery became stranger as we explored.", question: "'Stranger' means more of what?", choices: ["Unusual", "Normal", "Boring"], correct: 0 },
+      "as": { ipa: "|æz|", meaning: "While or at the same time that something happens.", sentence: "He smiled as he opened the present.", question: "What does 'as' show here?", choices: ["At the same time", "Never", "Yesterday"], correct: 0 },
+      "struggled": { ipa: "|ˈstrʌɡ.əld|", meaning: "Tried very hard to do something difficult.", sentence: "The small turtle struggled up the sandy hill.", question: "When you struggle, is it easy or hard?", choices: ["Hard", "Super easy", "Instant"], correct: 0 },
+      "against": { ipa: "|əˈɡɛnst|", meaning: "In opposition or battle to something.", sentence: "He fought against the strong cold wind.", question: "What does against mean?", choices: ["In opposition", "Together with", "Underneath"], correct: 0 },
+      "shyness": { ipa: "|ˈʃaɪ.nəs|", meaning: "The feeling of being timid or quiet around others.", sentence: "She smiled to overcome her shyness.", question: "What is shyness?", choices: ["Being bashful", "Being loud", "Being fast"], correct: 0 },
+      "thought": { ipa: "|θɔːt|", meaning: "Believed or considered in one's mind.", sentence: "Becky thought the story was exciting.", question: "'Thought' is the past of what?", choices: ["Think", "Talk", "Sing"], correct: 0 },
+      "perhaps": { ipa: "|pərˈhæps|", meaning: "Maybe; possibly true.", sentence: "Perhaps it will stay sunny all afternoon.", question: "What does 'perhaps' mean?", choices: ["Maybe", "Definitely no", "Never"], correct: 0 },
+      "might": { ipa: "|maɪt|", meaning: "Expressing possibility.", sentence: "We might visit the zoo tomorrow.", question: "What does 'might' mean?", choices: ["Could happen", "Will never happen", "Already done"], correct: 0 },
+      "ask": { ipa: "|æsk|", meaning: "To say a question to find out information.", sentence: "Always ask questions if you want to learn.", question: "Why do you ask questions?", choices: ["To find answers", "To fall asleep", "To make tea"], correct: 0 },
+      "future": { ipa: "|ˈfjuː.tʃər|", meaning: "The period of time that will come later.", sentence: "In the future, cars might fly in the sky.", question: "When is the future?", choices: ["Time coming up", "Yesterday", "Last year"], correct: 0 },
+      "looked": { ipa: "|lʊkt|", meaning: "Appeared or seemed to be.", sentence: "The bright blue sky looked so peaceful.", question: "'Looked bright' means what?", choices: ["Seemed bright", "Was dark", "Disappeared"], correct: 0 },
+      "bright": { ipa: "|braɪt|", meaning: "Filled with light, cheerful, or promising.", sentence: "The morning sun was warm and bright.", question: "What is something bright?", choices: ["A light bulb", "A dark cave", "A shadow"], correct: 0 },
+      "for": { ipa: "|fɔːr|", meaning: "Used to indicate the person receiving something.", sentence: "This special card is for you.", question: "Who is the card for?", choices: ["You", "Nobody", "A wall"], correct: 0 },
+      "there": { ipa: "|ðɛər|", meaning: "In or at that place.", sentence: "Look over there under the big tree.", question: "What does 'there' point to?", choices: ["A place", "A number", "A clock"], correct: 0 },
+      "were": { ipa: "|wɜːr|", meaning: "Existed in the past (plural of was).", sentence: "There were two playful birds on the fence.", question: "Does 'were two birds' mean past or future?", choices: ["Past", "Future", "Never"], correct: 0 },
+      "two": { ipa: "|tuː|", meaning: "The number after one and before three (2).", sentence: "I have two hands and two eyes.", question: "How many is two?", choices: ["2", "1", "10"], correct: 0 },
+      "frequent": { ipa: "|ˈfriː.kwənt|", meaning: "Happening often or regularly.", sentence: "He made frequent visits to the library.", question: "A frequent visitor comes how often?", choices: ["Often", "Never", "Only once"], correct: 0 },
+      "visitors": { ipa: "|ˈvɪz.ɪ.tərz|", meaning: "People who go to see another person or place.", sentence: "Friendly visitors knocked on our door.", question: "Who are visitors?", choices: ["Guests who visit", "Furniture", "Books"], correct: 0 },
+      "household": { ipa: "|ˈhaʊs.hoʊld|", meaning: "A house and all the family members living inside.", sentence: "It was a busy morning in the household.", question: "What is a household?", choices: ["Home & family", "A bicycle", "A tree"], correct: 0 },
+      "during": { ipa: "|ˈdʊr.ɪŋ|", meaning: "Throughout the period of time of an event.", sentence: "We stayed quiet during the movie.", question: "What does 'during' mean?", choices: ["While it happened", "Before it", "Never"], correct: 0 },
+      "stay": { ipa: "|steɪ|", meaning: "To remain in a place for a period of time.", sentence: "She came to stay for the weekend.", question: "What is the opposite of 'stay'?", choices: ["Leave", "Sit", "Wait"], correct: 0 },
+      "they": { ipa: "|ðeɪ|", meaning: "Used to refer to two or more people or things.", sentence: "They are playing together on the swings.", question: "Who does 'they' refer to?", choices: ["Multiple people", "One person", "Nobody"], correct: 0 },
+      "adventurous": { ipa: "|ədˈvɛn.tʃər.əs|", meaning: "Willing to take risks or try exciting new experiences.", sentence: "The adventurous explorers climbed the hill.", question: "How does an adventurous person act?", choices: ["Daring & bold", "Scared of everything", "Sleepy"], correct: 0 },
+      "friends": { ipa: "|frɛndz|", meaning: "People you know well and like being with.", sentence: "Best friends share their toys and laughs.", question: "Who are friends?", choices: ["People you like", "Enemies", "Strangers"], correct: 0 },
+      "of": { ipa: "|ʌv|", meaning: "Expressing the relationship between a part and a whole.", sentence: "A piece of delicious apple pie.", question: "What does 'of' connect?", choices: ["Parts together", "Numbers only", "Letters"], correct: 0 }
+    };
+
+    /* Available Books in Library */
+    const BOOKS = [
+      {
+        id: 'grade_one_story',
+        title: 'Run, Play, Read!',
+        subtitle: 'Grade 1 · Short Words',
+        level: 'Grade 1 Beginner',
+        theme: '#f7eedc',
+        paragraphs: [
+          "I see a cat. The cat can run. Run, cat, run!",
+          "She can jump and she can play. He has a dog. I love my dog.",
+          "He will go and get the red ball. We run and play in the sun.",
+          "The dog will sit, get the ball, and go back to me.",
+          "I love to read my big book with my mom. We read, go, and play all day!"
+        ],
+        sentenceExplains: [
+          "Points to a fast cat that can run across the soft green grass.",
+          "Shows how the kitten jumps and plays, and shows love for a pet dog.",
+          "The boy and his puppy chase after a bright red bouncing ball in the sunshine.",
+          "The well-trained puppy sits down nicely and brings the ball back.",
+          "A heartwarming moment of reading big books together with mom all afternoon."
+        ],
+        sentenceQuestions: [
+          { q: "What can the cat do?", options: ["Run fast", "Drive a car", "Swim underwater"], correct: 0 },
+          { q: "Who can jump and play?", options: ["She", "A rock", "A chair"], correct: 0 },
+          { q: "What color is the toy ball?", options: ["Red", "Purple", "Green"], correct: 0 },
+          { q: "What does the dog do with the ball?", options: ["Brings it back to me", "Eats it", "Hides it forever"], correct: 0 },
+          { q: "Who does the child love to read with?", options: ["Mom", "A tiger", "The mailman"], correct: 0 }
+        ],
+        illustration: `
+          <rect width="400" height="220" fill="#fcf6e6"/>
+          <!-- Rolling Hill -->
+          <path d="M0,165 Q120,135 250,150 T400,140 L400,220 L0,220 Z" fill="#9ec482" opacity="0.8"/>
+          <path d="M0,185 Q160,170 320,180 T400,170 L400,220 L0,220 Z" fill="#7ba85e"/>
+          <!-- Sun -->
+          <circle cx="70" cy="50" r="28" fill="#fde047" opacity="0.9"/>
+          <circle cx="70" cy="50" r="36" fill="#fef08a" opacity="0.3"/>
+          <!-- Cat running -->
+          <g transform="translate(60, 110)">
+            <ellipse cx="40" cy="35" rx="18" ry="12" fill="#f97316"/>
+            <circle cx="26" cy="24" r="10" fill="#f97316"/>
+            <!-- Cat Ears -->
+            <polygon points="20,17 24,9 28,18" fill="#c2410c"/>
+            <polygon points="27,17 31,9 35,18" fill="#c2410c"/>
+            <!-- Whiskers & Eyes -->
+            <circle cx="23" cy="23" r="1.5" fill="#431407"/>
+            <!-- Tail -->
+            <path d="M58,35 Q70,25 72,15" stroke="#f97316" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <!-- Legs running -->
+            <line x1="30" y1="45" x2="22" y2="58" stroke="#ea580c" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="48" y1="45" x2="58" y2="58" stroke="#ea580c" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+          <!-- Dog running happily -->
+          <g transform="translate(190, 100)">
+            <ellipse cx="50" cy="40" rx="24" ry="15" fill="#d97706"/>
+            <circle cx="72" cy="26" r="12" fill="#d97706"/>
+            <!-- Floppy Ear -->
+            <ellipse cx="66" cy="26" rx="4" ry="10" fill="#92400e" transform="rotate(-15 66 26)"/>
+            <circle cx="77" cy="24" r="1.8" fill="#451a03"/>
+            <!-- Tail -->
+            <path d="M26,38 Q15,25 18,15" stroke="#d97706" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <!-- Legs -->
+            <line x1="38" y1="52" x2="28" y2="66" stroke="#b45309" stroke-width="4" stroke-linecap="round"/>
+            <line x1="62" y1="52" x2="72" y2="66" stroke="#b45309" stroke-width="4" stroke-linecap="round"/>
+          </g>
+          <!-- Red bouncy ball -->
+          <g transform="translate(325, 135)">
+            <circle cx="15" cy="15" r="14" fill="#ef4444" stroke="#b91c1c" stroke-width="1.5"/>
+            <path d="M6,10 Q15,3 24,10" stroke="#fca5a5" stroke-width="2.5" fill="none"/>
+            <ellipse cx="15" cy="28" rx="10" ry="3" fill="#000000" opacity="0.15"/>
+          </g>
+        `
+      },
+      {
+        id: 'tom_sawyer',
+        title: 'De Tom Sawyer',
+        subtitle: 'Las Aventuras',
+        level: 'Level A2 · Classic',
+        theme: '#f6eddc',
+        paragraphs: [
+          "Mr Sedley took his son aside after dinner, and gave him some advice.",
+          "'I am determined to marry you,' he said. The young man replied, but he was very shy. He began to think about Becky more and more.",
+          "He was convinced that he was in love with her. His behaviour towards her became stranger and stranger as he struggled against his shyness. Becky thought he was in love, and perhaps he might ask her to marry him.",
+          "The future looked bright for her. There were two frequent visitors to the Sedley household during Miss Sharp's stay there. They were two adventurous friends of Tom Sawyer."
+        ],
+        sentenceExplains: [
+          "A thoughtful father has a private conversation with his son to give guidance.",
+          "A young man feels bashful and nervous about romance.",
+          "He battles his shyness while feeling deeply in love with Becky.",
+          "The characters feel optimistic about upcoming days and new visitors."
+        ],
+        sentenceQuestions: [
+          { q: "What did Mr. Sedley give his son?", options: ["Advice", "A horse", "A sack of gold"], correct: 0 },
+          { q: "How did the young man feel?", options: ["Very shy", "Furious", "Tired"], correct: 0 },
+          { q: "What was he convinced of?", options: ["He was in love", "He was lost in the woods", "He was asleep"], correct: 0 },
+          { q: "How did the future look for Becky?", options: ["Bright", "Dark and scary", "Hopeless"], correct: 0 }
+        ],
+        illustration: `
+          <rect width="400" height="220" fill="#fcf6e6"/>
+          <path d="M0,170 Q100,155 200,165 T400,160 L400,220 L0,220 Z" fill="#9db788" opacity="0.4"/>
+          <!-- Wooden Fence in background -->
+          <g stroke="#916c47" stroke-width="2" opacity="0.45">
+            <line x1="30" y1="20" x2="30" y2="180" stroke-width="4"/>
+            <line x1="70" y1="15" x2="70" y2="180" stroke-width="4"/>
+            <line x1="110" y1="25" x2="110" y2="180" stroke-width="4"/>
+            <line x1="10" y1="45" x2="160" y2="45"/>
+            <line x1="10" y1="75" x2="160" y2="75"/>
+            <line x1="10" y1="105" x2="160" y2="105"/>
+            <line x1="10" y1="135" x2="160" y2="135"/>
+          </g>
+          <!-- Foliage -->
+          <path d="M-10,210 Q20,110 60,130 Q90,70 120,130 Q140,170 160,210 Z" fill="#587d46" opacity="0.85"/>
+          <path d="M280,220 Q320,130 350,150 Q370,110 410,160 L410,220 L260,220 Z" fill="#466935" opacity="0.85"/>
+          <!-- Tom leaning barefoot with red apple -->
+          <g transform="translate(10, -10)">
+            <path d="M120,20 Q145,110 135,210" stroke="#68472b" stroke-width="24" stroke-linecap="round"/>
+            <path d="M100,30 Q140,70 160,10" stroke="#486835" stroke-width="14" stroke-linecap="round"/>
+            <!-- Yellow Overalls & Legs -->
+            <path d="M170,140 Q215,160 250,130 L260,115 L245,112 Q205,145 165,130 Z" fill="#d9ad43" stroke="#875815" stroke-width="2"/>
+            <path d="M185,140 L195,155 M210,145 L220,158 M230,138 L240,150" stroke="#a2422b" stroke-width="1.8"/>
+            <path d="M255,115 C265,110 278,110 274,122 C271,130 258,128 252,120 Z" fill="#f8cfab" stroke="#87522e" stroke-width="2"/>
+            <!-- Shirt & Arm holding apple -->
+            <path d="M140,110 C145,85 160,80 185,90 C180,115 170,135 155,135 Z" fill="#fff5d9" stroke="#9a7442" stroke-width="2"/>
+            <circle cx="178" cy="67" r="7" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/>
+            <!-- Head and blonde curls -->
+            <ellipse cx="148" cy="65" rx="13" ry="15" fill="#f8cfab" stroke="#87522e" stroke-width="2"/>
+            <path d="M135,65 C132,48 155,42 163,52 C168,60 162,70 160,72 C155,62 145,55 135,65 Z" fill="#eab308" stroke="#854d0e" stroke-width="2"/>
+            <circle cx="154" cy="64" r="1.5" fill="#382112"/>
+          </g>
+        `
+      }
+    ];
+
+    /* App Global State */
+    let currentBookIndex = 0;
+    let savedVocabulary = [];
+    let currentActiveWordSpan = null;
+    let currentPopupData = null;
+    let isAudioPlaying = false;
+    let audioCurrentWordIndex = 0;
+    let audioSpeed = 1.0;
+    let wordSpansArray = [];
+    let readerFontSize = 18;
+    const runtimeWordCache = new Map();
+  </script>
+
+  <script>
+    /**
+     * Clean punctuation from token
+     */
+    function cleanWordToken(str) {
+      return str.toLowerCase().replace(/[^a-z']/g, '').replace(/^'|'$/g, '');
+    }
+
+    /**
+     * Renders book paragraphs into the reader container
+     */
+    function renderBook(bookIdx) {
+      const book = BOOKS[bookIdx];
+      if (!book) return;
+
+      // Update Cover Banner
+      document.getElementById('coverTitle').textContent = book.title;
+      document.getElementById('coverSubtitle').textContent = book.subtitle;
+      document.getElementById('chapterBadge').textContent = book.level;
+      document.getElementById('coverSvg').innerHTML = book.illustration || '';
+
+      // Render Paragraphs
+      const container = document.getElementById('readerContent');
+      container.innerHTML = '';
+      wordSpansArray = [];
+
+      book.paragraphs.forEach((paraText, pIdx) => {
+        const pEl = document.createElement('p');
+        pEl.className = 'mb-5 text-slate-800 tracking-wide font-serif leading-loose';
+        pEl.dataset.paragraphIndex = pIdx;
+
+        // Tokenize into words and punctuation
+        const tokens = paraText.match(/[\w']+|[^\s\w']+|\s+/g) || [paraText];
+
+        tokens.forEach(tok => {
+          if (/^\s+$/.test(tok)) {
+            pEl.appendChild(document.createTextNode(tok));
+          } else if (/^[\w']+$/.test(tok)) {
+            const clean = cleanWordToken(tok);
+            const span = document.createElement('span');
+            span.className = 'ewa-word';
+            span.textContent = tok;
+            span.dataset.cleanWord = clean;
+            span.dataset.rawWord = tok;
+            span.dataset.pIndex = pIdx;
+
+            // Check if word has been learned or is being learned
+            const saved = savedVocabulary.find(v => v.word.toLowerCase() === clean);
+            if (saved) {
+              span.classList.add(saved.status === 'learned' ? 'status-learned' : 'status-learning');
+            }
+
+            span.addEventListener('click', (e) => onWordClick(e, span));
+            pEl.appendChild(span);
+            wordSpansArray.push(span);
+          } else {
+            // Punctuation
+            pEl.appendChild(document.createTextNode(tok));
+          }
+        });
+
+        container.appendChild(pEl);
+      });
+
+      // Update text font size
+      container.style.fontSize = `${readerFontSize}px`;
+    }
+
+    /**
+     * Handle tapping a word in the text
+     */
+    async function onWordClick(event, span) {
+      event.stopPropagation();
+
+      // Deselect previously active word
+      if (currentActiveWordSpan) {
+        currentActiveWordSpan.classList.remove('active-word');
+      }
+      currentActiveWordSpan = span;
+      span.classList.add('active-word');
+
+      const rawWord = span.dataset.rawWord;
+      const cleanWord = span.dataset.cleanWord;
+
+      // Position bubble immediately above the word
+      positionWordPopup(span);
+      showWordPopupLoading(rawWord, cleanWord);
+
+      // Play pronunciation sound immediately on tap
+      speakWord(cleanWord);
+
+      // Fetch or retrieve English definition, sentence, and question
+      const wordData = await resolveWordData(cleanWord, rawWord);
+      renderWordPopupContent(wordData, span);
+      positionWordPopup(span); // Adjust once content height is known
+    }
+
+    /**
+     * Dynamic positioning of EWA downward-arrow bubble above the tapped word
+     */
+    function positionWordPopup(span) {
+      const popup = document.getElementById('wordPopup');
+      const arrow = document.getElementById('popupArrow');
+      const scrollArea = document.getElementById('readerScrollArea');
+
+      const spanRect = span.getBoundingClientRect();
+      const scrollRect = scrollArea.getBoundingClientRect();
+
+      popup.classList.remove('hidden');
+
+      const popupWidth = popup.offsetWidth || 250;
+      const popupHeight = popup.offsetHeight || 190;
+
+      // Center horizontally relative to word
+      let left = (spanRect.left - scrollRect.left) + (spanRect.width / 2) - (popupWidth / 2);
+      
+      // Keep within bounds of the reader
+      const padding = 10;
+      if (left < padding) left = padding;
+      if (left + popupWidth > scrollRect.width - padding) {
+        left = scrollRect.width - popupWidth - padding;
+      }
+
+      // Calculate arrow position pointing directly at center of word
+      const arrowLeft = (spanRect.left - scrollRect.left) + (spanRect.width / 2) - left;
+      arrow.style.setProperty('--arrow-left', `${arrowLeft}px`);
+
+      // Position vertically above the word
+      let top = (spanRect.top - scrollRect.top) + scrollArea.scrollTop - popupHeight - 12;
+
+      // If near very top, position below
+      if (top < scrollArea.scrollTop + 10) {
+        top = (spanRect.bottom - scrollRect.top) + scrollArea.scrollTop + 12;
+        arrow.style.bottom = 'auto';
+        arrow.style.top = '-9px';
+        arrow.style.borderTop = 'none';
+        arrow.style.borderBottom = '9px solid #2db5ff';
+      } else {
+        arrow.style.top = 'auto';
+        arrow.style.bottom = '-9px';
+        arrow.style.borderBottom = 'none';
+        arrow.style.borderTop = '9px solid #2db5ff';
+      }
+
+      popup.style.left = `${left}px`;
+      popup.style.top = `${top}px`;
+    }
+
+    /**
+     * Hide word popover
+     */
+    function hideWordPopup() {
+      const popup = document.getElementById('wordPopup');
+      popup.classList.add('hidden');
+      if (currentActiveWordSpan) {
+        currentActiveWordSpan.classList.remove('active-word');
+        currentActiveWordSpan = null;
+      }
+      currentPopupData = null;
+    }
+
+    /**
+     * Show initial loading state inside popover
+     */
+    function showWordPopupLoading(rawWord, cleanWord) {
+      const popup = document.getElementById('wordPopup');
+      document.getElementById('popupWord').textContent = rawWord;
+      document.getElementById('popupIpa').textContent = `|...|`;
+      document.getElementById('popupMeaning').innerHTML = `<i class="fa-solid fa-spinner fa-spin text-ewa-blue text-xs mr-1"></i> Finding definition...`;
+      document.getElementById('popupSentence').innerHTML = `...`;
+      document.getElementById('popupQuestionContainer').classList.add('hidden');
+
+      const saved = savedVocabulary.find(v => v.word.toLowerCase() === cleanWord);
+      updatePopupButtons(saved ? saved.status : null);
+
+      popup.classList.remove('hidden');
+    }
+
+    /**
+     * Resolves word IPA, definition, sentence, and question (Offline Lexicon -> Dictionary API -> Fallback)
+     */
+    async function resolveWordData(cleanWord, rawWord) {
+      if (runtimeWordCache.has(cleanWord)) {
+        return runtimeWordCache.get(cleanWord);
+      }
+
+      if (OFFLINE_DICTIONARY[cleanWord]) {
+        const item = OFFLINE_DICTIONARY[cleanWord];
+        const res = {
+          word: cleanWord,
+          ipa: item.ipa || `|${cleanWord}|`,
+          meaning: item.meaning,
+          sentence: item.sentence,
+          question: item.question,
+          choices: item.choices,
+          correct: item.correct
+        };
+        runtimeWordCache.set(cleanWord, res);
+        return res;
+      }
+
+      // Online fallback to Free Dictionary API
+      let ipa = `|${cleanWord}|`;
+      let meaning = `A word used in English to describe ${cleanWord}.`;
+      let sentence = `She knows how to use the word "${cleanWord}".`;
+      let question = `Can you use "${cleanWord}" when you talk?`;
+      let choices = ["Yes, I can!", "Not yet", "Tell me again"];
+      let correct = 0;
+
+      try {
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data[0]) {
+            const phonetic = data[0].phonetic || (data[0].phonetics && data[0].phonetics.find(p => p.text)?.text);
+            if (phonetic) ipa = `|${phonetic.replace(/\//g, '')}|`;
+
+            const firstMeaning = data[0].meanings && data[0].meanings[0];
+            if (firstMeaning && firstMeaning.definitions && firstMeaning.definitions[0]) {
+              if (firstMeaning.definitions[0].definition) {
+                meaning = firstMeaning.definitions[0].definition;
+              }
+              if (firstMeaning.definitions[0].example) {
+                sentence = `"${firstMeaning.definitions[0].example}"`;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Dictionary API fallback warning:', e);
+      }
+
+      const res = { word: cleanWord, ipa, meaning, sentence, question, choices, correct };
+      runtimeWordCache.set(cleanWord, res);
+      return res;
+    }
+
+    /**
+     * Render the word popup with meaning, sentence, and mini question
+     */
+    function renderWordPopupContent(wordInfo, spanElement) {
+      document.getElementById('popupWord').textContent = wordInfo.word;
+      document.getElementById('popupIpa').textContent = wordInfo.ipa;
+      document.getElementById('popupMeaning').textContent = wordInfo.meaning;
+      document.getElementById('popupSentence').textContent = `"${wordInfo.sentence.replace(/^["']|["']$/g, '')}"`;
+
+      // Mini Question
+      const qContainer = document.getElementById('popupQuestionContainer');
+      const qText = document.getElementById('popupQuestionText');
+      const qChoices = document.getElementById('popupQuestionChoices');
+      const qFeedback = document.getElementById('popupQuestionFeedback');
+
+      if (wordInfo.question && wordInfo.choices) {
+        qText.textContent = wordInfo.question;
+        qChoices.innerHTML = '';
+        qFeedback.classList.add('hidden');
+
+        wordInfo.choices.forEach((choice, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'text-[10px] font-bold py-1 px-1.5 bg-white hover:bg-amber-100 text-slate-700 rounded-lg border border-amber-200 transition active:scale-95 text-center';
+          btn.textContent = choice;
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (idx === wordInfo.correct) {
+              qFeedback.textContent = '★ Excellent! That is correct!';
+              qFeedback.className = 'text-[11px] font-bold text-center mt-1 text-emerald-600 block';
+              btn.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+            } else {
+              qFeedback.textContent = 'Try again! Think about the meaning.';
+              qFeedback.className = 'text-[11px] font-bold text-center mt-1 text-amber-700 block';
+              btn.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
+            }
+          });
+          qChoices.appendChild(btn);
+        });
+
+        qContainer.classList.remove('hidden');
+      } else {
+        qContainer.classList.add('hidden');
+      }
+
+      currentPopupData = {
+        word: wordInfo.word,
+        ipa: wordInfo.ipa,
+        meaning: wordInfo.meaning,
+        sentence: wordInfo.sentence,
+        question: wordInfo.question,
+        span: spanElement,
+        contextSentence: spanElement.parentElement ? spanElement.parentElement.textContent.trim() : ''
+      };
+
+      const saved = savedVocabulary.find(v => v.word.toLowerCase() === wordInfo.word.toLowerCase());
+      updatePopupButtons(saved ? saved.status : null);
+    }
+
+    /**
+     * Update visual state of learned / learn buttons
+     */
+    function updatePopupButtons(status) {
+      const btnLearned = document.getElementById('btnMarkLearned');
+      const btnLearn = document.getElementById('btnMarkLearn');
+      const iconLearnedCheck = document.getElementById('iconLearnedCheck');
+      const iconLearnPlus = document.getElementById('iconLearnPlus');
+      const labelLearned = document.getElementById('labelLearned');
+      const labelLearn = document.getElementById('labelLearn');
+
+      if (status === 'learned') {
+        btnLearned.className = 'py-2.5 bg-emerald-600 font-extrabold text-white transition border-r border-white/20 flex items-center justify-center';
+        iconLearnedCheck.classList.remove('hidden');
+        labelLearned.textContent = 'learned ✓';
+        btnLearn.className = 'py-2.5 hover:bg-sky-600/30 active:bg-sky-700/40 transition flex items-center justify-center bg-ewa-darkBlue/20 font-bold';
+        iconLearnPlus.classList.remove('hidden');
+        labelLearn.textContent = 'learn';
+      } else if (status === 'learning') {
+        btnLearned.className = 'py-2.5 hover:bg-sky-600/30 active:bg-sky-700/40 transition border-r border-white/20 flex items-center justify-center';
+        iconLearnedCheck.classList.add('hidden');
+        labelLearned.textContent = 'learned';
+        btnLearn.className = 'py-2.5 bg-sky-700 font-extrabold text-white transition flex items-center justify-center';
+        iconLearnPlus.classList.add('hidden');
+        labelLearn.textContent = 'in deck ★';
+      } else {
+        btnLearned.className = 'py-2.5 hover:bg-sky-600/30 active:bg-sky-700/40 transition border-r border-white/20 flex items-center justify-center';
+        iconLearnedCheck.classList.add('hidden');
+        labelLearned.textContent = 'learned';
+        btnLearn.className = 'py-2.5 hover:bg-sky-600/30 active:bg-sky-700/40 transition flex items-center justify-center bg-ewa-darkBlue/20 font-bold';
+        iconLearnPlus.classList.remove('hidden');
+        labelLearn.textContent = 'learn';
+      }
+    }
+
+    /**
+     * Save word to study deck
+     */
+    function saveWordToVocab(status) {
+      if (!currentPopupData) return;
+      const word = currentPopupData.word.toLowerCase();
+      const existingIdx = savedVocabulary.findIndex(v => v.word.toLowerCase() === word);
+
+      const item = {
+        word: currentPopupData.word,
+        ipa: currentPopupData.ipa,
+        meaning: currentPopupData.meaning,
+        sentence: currentPopupData.sentence,
+        question: currentPopupData.question,
+        contextSentence: currentPopupData.contextSentence,
+        status: status,
+        timestamp: Date.now()
+      };
+
+      if (existingIdx >= 0) {
+        savedVocabulary[existingIdx] = item;
+      } else {
+        savedVocabulary.unshift(item);
+      }
+
+      // Update underline styling on all matching words
+      wordSpansArray.forEach(s => {
+        if (s.dataset.cleanWord === word) {
+          s.classList.remove('status-learned', 'status-learning');
+          s.classList.add(status === 'learned' ? 'status-learned' : 'status-learning');
+        }
+      });
+
+      updateSavedCounter();
+      updatePopupButtons(status);
+      showToast(status === 'learned' ? `"${word}" marked as learned!` : `"${word}" added to flashcard deck!`);
+      setTimeout(hideWordPopup, 350);
+    }
+
+    /**
+     * Update saved counter badge
+     */
+    function updateSavedCounter() {
+      const countEl = document.getElementById('savedWordsCount');
+      const badgeEl = document.getElementById('studyBadgeCount');
+      if (countEl) countEl.textContent = savedVocabulary.length;
+      if (badgeEl) badgeEl.textContent = savedVocabulary.length;
+    }
+
+    /**
+     * Pronounce word using Web Speech API
+     */
+    function speakWord(word) {
+      if (!word || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      const utter = new SpeechSynthesisUtterance(word);
+      utter.lang = 'en-US';
+      utter.rate = 0.9;
+
+      const voices = window.speechSynthesis.getVoices();
+      const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Karen')));
+      if (enVoice) utter.voice = enVoice;
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    /**
+     * Show toast message
+     */
+    function showToast(msg) {
+      const toast = document.getElementById('appToast');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0', '-translate-y-2');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+      }, 2000);
+    }
+  </script>
+
+  <script>
+    /**
+     * Audiobook Playback Engine with synchronized karaoke word highlight
+     */
+    function startAudiobookPlayback(startIdx = 0) {
+      if (wordSpansArray.length === 0) return;
+      isAudioPlaying = true;
+      audioCurrentWordIndex = startIdx;
+
+      document.getElementById('playIcon').className = 'fa-solid fa-pause';
+      playNextAudioWord();
+    }
+
+    function pauseAudiobookPlayback() {
+      isAudioPlaying = false;
+      window.speechSynthesis.cancel();
+      document.getElementById('playIcon').className = 'fa-solid fa-play ml-0.5';
+
+      // Clear highlights
+      wordSpansArray.forEach(s => s.classList.remove('speaking-now'));
+    }
+
+    function playNextAudioWord() {
+      if (!isAudioPlaying || audioCurrentWordIndex >= wordSpansArray.length) {
+        pauseAudiobookPlayback();
+        return;
+      }
+
+      // Highlight current word
+      wordSpansArray.forEach(s => s.classList.remove('speaking-now'));
+      const activeSpan = wordSpansArray[audioCurrentWordIndex];
+      activeSpan.classList.add('speaking-now');
+
+      // Scroll into view gently
+      activeSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      const word = activeSpan.dataset.cleanWord;
+      const utter = new SpeechSynthesisUtterance(word);
+      utter.lang = 'en-US';
+      utter.rate = audioSpeed;
+
+      const voices = window.speechSynthesis.getVoices();
+      const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google')));
+      if (enVoice) utter.voice = enVoice;
+
+      utter.onend = () => {
+        if (!isAudioPlaying) return;
+        audioCurrentWordIndex++;
+        // Small pause between words for natural narration flow
+        setTimeout(playNextAudioWord, 120 / audioSpeed);
+      };
+
+      utter.onerror = () => {
+        if (!isAudioPlaying) return;
+        audioCurrentWordIndex++;
+        setTimeout(playNextAudioWord, 100);
+      };
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    /**
+     * Flashcards Deck Logic
+     */
+    let flashcardCurrentIndex = 0;
+    let flashcardList = [];
+
+    function renderFlashcard() {
+      flashcardList = savedVocabulary.length > 0 ? savedVocabulary : Object.keys(OFFLINE_DICTIONARY).map(k => ({ word: k, ...OFFLINE_DICTIONARY[k] }));
+
+      const back = document.getElementById('flashcardBackContent');
+      const hint = document.getElementById('flashcardHint');
+      back.classList.add('hidden');
+      hint.classList.remove('hidden');
+
+      if (flashcardList.length === 0) {
+        document.getElementById('flashcardIndex').textContent = '0 of 0';
+        document.getElementById('flashcardFrontWord').textContent = 'No words yet!';
+        document.getElementById('flashcardFrontIpa').textContent = 'Tap words while reading';
+        return;
+      }
+
+      if (flashcardCurrentIndex >= flashcardList.length) {
+        flashcardCurrentIndex = 0;
+      }
+
+      const item = flashcardList[flashcardCurrentIndex];
+      document.getElementById('flashcardIndex').textContent = `Card ${flashcardCurrentIndex + 1} of ${flashcardList.length}`;
+      document.getElementById('flashcardFrontWord').textContent = item.word;
+      document.getElementById('flashcardFrontIpa').textContent = item.ipa || `|${item.word}|`;
+      document.getElementById('flashcardMeaning').textContent = item.meaning || 'Tap to learn meaning';
+      document.getElementById('flashcardSentence').textContent = item.sentence ? `"${item.sentence.replace(/^["']|["']$/g, '')}"` : '';
+    }
+
+    function flipFlashcard() {
+      const back = document.getElementById('flashcardBackContent');
+      const hint = document.getElementById('flashcardHint');
+      if (back.classList.contains('hidden')) {
+        back.classList.remove('hidden');
+        hint.classList.add('hidden');
+        speakWord(flashcardList[flashcardCurrentIndex]?.word);
+      } else {
+        back.classList.add('hidden');
+        hint.classList.remove('hidden');
+      }
+    }
+
+    /**
+     * Word Quiz Logic
+     */
+    let quizCurrentIndex = 0;
+
+    function renderWordQuiz() {
+      const wordsToQuiz = savedVocabulary.length > 0 ? savedVocabulary : Object.keys(OFFLINE_DICTIONARY).map(k => ({ word: k, ...OFFLINE_DICTIONARY[k] }));
+      if (quizCurrentIndex >= wordsToQuiz.length) quizCurrentIndex = 0;
+
+      const current = wordsToQuiz[quizCurrentIndex];
+      document.getElementById('quizWordCounter').textContent = `${quizCurrentIndex + 1} of ${wordsToQuiz.length}`;
+      document.getElementById('quizQuestionText').textContent = current.meaning ? `Which word means: "${current.meaning}"?` : `Which word is: "${current.word}"?`;
+
+      const optionsBox = document.getElementById('quizOptionsContainer');
+      const feedback = document.getElementById('quizFeedbackMessage');
+      optionsBox.innerHTML = '';
+      feedback.classList.add('hidden');
+
+      const allWords = Object.keys(OFFLINE_DICTIONARY).filter(w => w !== current.word);
+      const randomDistractors = allWords.sort(() => 0.5 - Math.random()).slice(0, 2);
+      const choices = [current.word, ...randomDistractors].sort(() => 0.5 - Math.random());
+
+      choices.forEach(ch => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-2.5 px-4 bg-slate-50 hover:bg-sky-50 border border-slate-200 text-slate-800 font-bold text-xs rounded-xl transition text-left flex items-center justify-between';
+        btn.innerHTML = `<span>${ch}</span><i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>`;
+        btn.addEventListener('click', () => {
+          if (ch === current.word) {
+            feedback.textContent = '★ Excellent! That is the right word!';
+            feedback.className = 'text-xs font-bold text-center py-1 text-emerald-600 block';
+            btn.classList.add('bg-emerald-100', 'border-emerald-300', 'text-emerald-800');
+            speakWord(current.word);
+          } else {
+            feedback.textContent = `Not quite! The word was "${current.word}".`;
+            feedback.className = 'text-xs font-bold text-center py-1 text-rose-600 block';
+            btn.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-800');
+          }
+        });
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    /**
+     * Vocab List View
+     */
+    function renderVocabList() {
+      const container = document.getElementById('vocabListContainer');
+      container.innerHTML = '';
+
+      if (savedVocabulary.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-400 text-xs">
+            <i class="fa-solid fa-bookmark text-2xl mb-2 text-slate-300"></i>
+            <p>You haven't saved any words yet.</p>
+            <p class="mt-1 font-semibold text-ewa-blue">Tap any word in the story to add it!</p>
+          </div>
+        `;
+        return;
+      }
+
+      savedVocabulary.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'bg-white p-3 rounded-xl border border-slate-200/80 flex items-center justify-between';
+        row.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <button class="w-8 h-8 rounded-full bg-sky-50 text-ewa-blue hover:bg-sky-100 flex items-center justify-center text-xs vocab-speak-btn">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="font-black text-slate-800 text-sm">${item.word}</span>
+                <span class="text-[11px] text-slate-400 font-mono">${item.ipa}</span>
+              </div>
+              <p class="text-xs text-slate-600 line-clamp-1">${item.meaning || item.sentence || ''}</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full ${item.status === 'learned' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'}">
+              ${item.status}
+            </span>
+            <button class="text-slate-300 hover:text-rose-500 p-1 text-xs remove-vocab-btn">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+
+        row.querySelector('.vocab-speak-btn').addEventListener('click', () => speakWord(item.word));
+        row.querySelector('.remove-vocab-btn').addEventListener('click', () => {
+          savedVocabulary.splice(idx, 1);
+          renderVocabList();
+          updateSavedCounter();
+          renderBook(currentBookIndex);
+        });
+
+        container.appendChild(row);
+      });
+    }
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Initial Render
+      renderBook(currentBookIndex);
+      updateSavedCounter();
+
+      // 2. Pronounce word inside popup
+      document.getElementById('popupSpeakBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentPopupData) {
+          speakWord(currentPopupData.word);
+        }
+      });
+
+      // 3. Mark Learned / Learn Buttons
+      document.getElementById('btnMarkLearned').addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveWordToVocab('learned');
+      });
+
+      document.getElementById('btnMarkLearn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveWordToVocab('learning');
+      });
+
+      document.getElementById('popupCloseBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideWordPopup();
+      });
+
+      // 4. Click outside to dismiss popup
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#wordPopup') && !e.target.closest('.ewa-word')) {
+          hideWordPopup();
+        }
+      });
+
+      // 5. Dual Mode Toggle: Read Story vs Listen Along
+      const btnModeRead = document.getElementById('btnModeRead');
+      const btnModeAudio = document.getElementById('btnModeAudio');
+      const audioWidget = document.getElementById('audioPlayerWidget');
+
+      btnModeRead.addEventListener('click', () => {
+        btnModeRead.className = 'flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition bg-white text-ewa-darkBlue shadow-sm';
+        btnModeAudio.className = 'flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition text-white hover:bg-white/10';
+        audioWidget.classList.add('hidden');
+        pauseAudiobookPlayback();
+      });
+
+      btnModeAudio.addEventListener('click', () => {
+        btnModeAudio.className = 'flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition bg-white text-ewa-darkBlue shadow-sm';
+        btnModeRead.className = 'flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition text-white hover:bg-white/10';
+        audioWidget.classList.remove('hidden');
+        hideWordPopup();
+        startAudiobookPlayback(0);
+      });
+
+      // 6. Audio Player Controls
+      document.getElementById('btnPlayPauseAudio').addEventListener('click', () => {
+        if (isAudioPlaying) {
+          pauseAudiobookPlayback();
+        } else {
+          startAudiobookPlayback(audioCurrentWordIndex);
+        }
+      });
+
+      document.getElementById('btnSkipNext').addEventListener('click', () => {
+        audioCurrentWordIndex = Math.min(wordSpansArray.length - 1, audioCurrentWordIndex + 10);
+        if (isAudioPlaying) {
+          window.speechSynthesis.cancel();
+          playNextAudioWord();
+        }
+      });
+
+      document.getElementById('btnSkipPrev').addEventListener('click', () => {
+        audioCurrentWordIndex = Math.max(0, audioCurrentWordIndex - 10);
+        if (isAudioPlaying) {
+          window.speechSynthesis.cancel();
+          playNextAudioWord();
+        }
+      });
+
+      const speedBtn = document.getElementById('btnSpeed');
+      speedBtn.addEventListener('click', () => {
+        if (audioSpeed === 1.0) audioSpeed = 1.25;
+        else if (audioSpeed === 1.25) audioSpeed = 0.8;
+        else audioSpeed = 1.0;
+        speedBtn.textContent = `${audioSpeed}x`;
+      });
+
+      // 7. Sentence Breakdown & Comprehension Drawer
+      document.getElementById('btnTranslateSentence').addEventListener('click', () => {
+        const sentenceModal = document.getElementById('sentenceModal');
+        const activeParagraph = currentActiveWordSpan ? currentActiveWordSpan.closest('p') : document.querySelector('#readerContent p');
+        const pIdx = activeParagraph ? parseInt(activeParagraph.dataset.paragraphIndex || 0, 10) : 0;
+        const book = BOOKS[currentBookIndex];
+        const sentence = book.paragraphs[pIdx] || book.paragraphs[0];
+        const explanation = (book.sentenceExplains && book.sentenceExplains[pIdx]) || "Describes actions in the story using clear sight words.";
+        const quiz = (book.sentenceQuestions && book.sentenceQuestions[pIdx]) || { q: "What is this sentence talking about?", options: ["The story", "A dance", "A clock"], correct: 0 };
+
+        document.getElementById('sentenceOriginalText').textContent = `"${sentence}"`;
+        document.getElementById('sentenceExplanationText').textContent = explanation;
+        document.getElementById('sentenceQuizPrompt').textContent = quiz.q;
+
+        const quizButtonsBox = document.getElementById('sentenceQuizButtons');
+        const feedback = document.getElementById('sentenceQuizFeedback');
+        quizButtonsBox.innerHTML = '';
+        feedback.classList.add('hidden');
+
+        quiz.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'w-full py-2 px-3 bg-white hover:bg-amber-100 text-slate-800 text-xs font-bold rounded-lg border border-amber-200 transition text-left flex items-center justify-between';
+          btn.innerHTML = `<span>${opt}</span><i class="fa-solid fa-check text-[10px] text-amber-500 opacity-0"></i>`;
+          btn.addEventListener('click', () => {
+            if (idx === quiz.correct) {
+              feedback.textContent = '★ Correct! You understood the sentence well!';
+              feedback.className = 'text-xs font-bold mt-2 text-center text-emerald-600 block';
+              btn.classList.add('bg-emerald-100', 'border-emerald-400', 'text-emerald-800');
+              btn.querySelector('i').classList.remove('opacity-0');
+            } else {
+              feedback.textContent = 'Try again! Read the sentence carefully.';
+              feedback.className = 'text-xs font-bold mt-2 text-center text-rose-600 block';
+              btn.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-800');
+            }
+          });
+          quizButtonsBox.appendChild(btn);
+        });
+
+        sentenceModal.classList.remove('translate-y-full');
+      });
+
+      document.getElementById('btnCloseSentenceModal').addEventListener('click', () => {
+        document.getElementById('sentenceModal').classList.add('translate-y-full');
+      });
+
+      // 8. Library Modal
+      const libraryModal = document.getElementById('libraryModal');
+      const booksList = document.getElementById('booksList');
+
+      document.getElementById('btnOpenLibrary').addEventListener('click', () => {
+        booksList.innerHTML = '';
+        BOOKS.forEach((b, idx) => {
+          const card = document.createElement('div');
+          card.className = `p-3.5 rounded-2xl border transition cursor-pointer flex items-center justify-between ${idx === currentBookIndex ? 'border-ewa-blue bg-sky-50/70' : 'border-slate-200 hover:border-slate-300 bg-white'}`;
+          card.innerHTML = `
+            <div>
+              <span class="text-[10px] font-black uppercase text-ewa-blue">${b.level}</span>
+              <h4 class="font-bold text-slate-800 text-sm">${b.subtitle} - ${b.title}</h4>
+              <p class="text-xs text-slate-400">${b.paragraphs.length} paragraphs</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+          `;
+          card.addEventListener('click', () => {
+            currentBookIndex = idx;
+            renderBook(currentBookIndex);
+            libraryModal.classList.add('hidden');
+            libraryModal.classList.remove('flex');
+            pauseAudiobookPlayback();
+          });
+          booksList.appendChild(card);
+        });
+
+        libraryModal.classList.remove('hidden');
+        libraryModal.classList.add('flex');
+      });
+
+      document.getElementById('btnCloseLibrary').addEventListener('click', () => {
+        libraryModal.classList.add('hidden');
+        libraryModal.classList.remove('flex');
+      });
+
+      // 9. Custom Text Input
+      const customTextModal = document.getElementById('customTextModal');
+      document.getElementById('btnOpenCustomText').addEventListener('click', () => {
+        libraryModal.classList.add('hidden');
+        libraryModal.classList.remove('flex');
+        customTextModal.classList.remove('hidden');
+        customTextModal.classList.add('flex');
+      });
+
+      document.getElementById('btnCloseCustomText').addEventListener('click', () => {
+        customTextModal.classList.add('hidden');
+        customTextModal.classList.remove('flex');
+      });
+
+      document.getElementById('btnLoadCustomText').addEventListener('click', () => {
+        const title = document.getElementById('customTextTitle').value.trim() || 'My Custom Story';
+        const text = document.getElementById('customTextInput').value.trim();
+        if (!text) {
+          showToast('Please type or paste some English sentences');
+          return;
+        }
+
+        const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 0);
+        BOOKS.push({
+          id: 'custom_' + Date.now(),
+          title: title,
+          subtitle: 'Custom Practice',
+          level: 'Grade 1 Practice',
+          theme: '#ffffff',
+          paragraphs: paragraphs
+        });
+
+        currentBookIndex = BOOKS.length - 1;
+        renderBook(currentBookIndex);
+        customTextModal.classList.add('hidden');
+        customTextModal.classList.remove('flex');
+        showToast('Story loaded successfully!');
+      });
+
+      // 10. Flashcards & Vocab Deck
+      const vocabModal = document.getElementById('vocabModal');
+      document.getElementById('btnOpenVocab').addEventListener('click', () => {
+        flashcardCurrentIndex = 0;
+        renderFlashcard();
+        vocabModal.classList.remove('hidden');
+        vocabModal.classList.add('flex');
+      });
+
+      document.getElementById('btnCloseVocab').addEventListener('click', () => {
+        vocabModal.classList.add('hidden');
+        vocabModal.classList.remove('flex');
+      });
+
+      document.getElementById('flashcardCard').addEventListener('click', (e) => {
+        if (!e.target.closest('button')) {
+          flipFlashcard();
+        }
+      });
+
+      document.getElementById('flashcardAudioBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (flashcardList[flashcardCurrentIndex]) {
+          speakWord(flashcardList[flashcardCurrentIndex].word);
+        }
+      });
+
+      document.getElementById('btnFlashcardEasy').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (flashcardList[flashcardCurrentIndex]) {
+          flashcardList[flashcardCurrentIndex].status = 'learned';
+          renderBook(currentBookIndex);
+          flashcardCurrentIndex++;
+          renderFlashcard();
+        }
+      });
+
+      document.getElementById('btnFlashcardHard').addEventListener('click', (e) => {
+        e.stopPropagation();
+        flashcardCurrentIndex++;
+        renderFlashcard();
+      });
+
+      // Sub-tabs
+      const tabStudy = document.getElementById('tabStudy');
+      const tabQuiz = document.getElementById('tabQuiz');
+      const tabList = document.getElementById('tabList');
+      const studyContainer = document.getElementById('vocabStudyContainer');
+      const quizContainer = document.getElementById('vocabQuizContainer');
+      const listContainer = document.getElementById('vocabListContainer');
+
+      tabStudy.addEventListener('click', () => {
+        tabStudy.className = 'pb-2.5 font-bold text-xs border-b-2 border-ewa-blue text-ewa-darkBlue';
+        tabQuiz.className = 'pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600';
+        tabList.className = 'pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600';
+        studyContainer.classList.remove('hidden');
+        quizContainer.classList.add('hidden');
+        listContainer.classList.add('hidden');
+        renderFlashcard();
+      });
+
+      tabQuiz.addEventListener('click', () => {
+        tabQuiz.className = 'pb-2.5 font-bold text-xs border-b-2 border-ewa-blue text-ewa-darkBlue';
+        tabStudy.className = 'pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600';
+        tabList.className = 'pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600';
+        quizContainer.classList.remove('hidden');
+        quizContainer.classList.add('flex');
+        studyContainer.classList.add('hidden');
+        listContainer.classList.add('hidden');
+        renderWordQuiz();
+      });
+
+      tabList.addEventListener('click', () => {
+        tabList.className = 'pb-2.5 font-bold text-xs border-b-2 border-ewa-blue text-ewa-darkBlue';
+        tabStudy.className = 'pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600';
+        tabQuiz.className = 'pb-2.5 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-600';
+        listContainer.classList.remove('hidden');
+        quizContainer.classList.add('hidden');
+        studyContainer.classList.add('hidden');
+        renderVocabList();
+      });
+
+      document.getElementById('btnQuizNext').addEventListener('click', () => {
+        quizCurrentIndex++;
+        renderWordQuiz();
+      });
+
+      // 11. Font Resizer
+      const settingsModal = document.getElementById('settingsModal');
+      document.getElementById('btnOpenSettings').addEventListener('click', () => {
+        settingsModal.classList.remove('hidden');
+        settingsModal.classList.add('flex');
+      });
+
+      document.getElementById('btnCloseSettings').addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+        settingsModal.classList.remove('flex');
+      });
+
+      document.getElementById('btnFontSmaller').addEventListener('click', () => {
+        readerFontSize = Math.max(14, readerFontSize - 2);
+        document.getElementById('readerContent').style.fontSize = `${readerFontSize}px`;
+      });
+
+      document.getElementById('btnFontNormal').addEventListener('click', () => {
+        readerFontSize = 18;
+        document.getElementById('readerContent').style.fontSize = `${readerFontSize}px`;
+      });
+
+      document.getElementById('btnFontLarger').addEventListener('click', () => {
+        readerFontSize = Math.min(26, readerFontSize + 2);
+        document.getElementById('readerContent').style.fontSize = `${readerFontSize}px`;
+      });
+
+      // 12. Scroll Top Button
+      document.getElementById('btnScrollTop').addEventListener('click', () => {
+        document.getElementById('readerScrollArea').scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>

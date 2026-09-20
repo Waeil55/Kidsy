@@ -1,13 +1,11 @@
 {
-  "name": "MerolaApp Enterprise",
-  "short_name": "MerolaApp",
-  "description": "Duolingo-grade K-6 learning suite featuring Grade 3 Week 5 curriculum.",
+  "name": "EWA Language Reader: Read & Understand",
+  "short_name": "EWA Reader",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#f5f9ff",
-  "theme_color": "#159eea",
+  "background_color": "#fcfbf7",
+  "theme_color": "#2db5ff",
   "icons": [
     {
       "src": "./icon.svg",

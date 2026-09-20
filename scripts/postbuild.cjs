@@ -1,106 +1,40 @@
 const fs = require('fs');
 const path = require('path');
 
-const rootDir = path.resolve(__dirname, '..');
+const root = path.join(__dirname, '..');
+const dist = path.join(root, 'dist');
 
-// 1. Copy dist/assets to assets/
-const distAssetsDir = path.join(rootDir, 'dist', 'assets');
-const rootAssetsDir = path.join(rootDir, 'assets');
-if (fs.existsSync(distAssetsDir)) {
-  if (fs.existsSync(rootAssetsDir)) {
-    fs.rmSync(rootAssetsDir, { recursive: true, force: true });
+function copyFile(src, dest) {
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(src, dest);
+}
+
+// dist/assets -> assets/ (clean + copy)
+const distAssets = path.join(dist, 'assets');
+const rootAssets = path.join(root, 'assets');
+if (fs.existsSync(rootAssets)) fs.rmSync(rootAssets, { recursive: true, force: true });
+if (fs.existsSync(distAssets)) {
+  fs.mkdirSync(rootAssets, { recursive: true });
+  for (const f of fs.readdirSync(distAssets)) {
+    copyFile(path.join(distAssets, f), path.join(rootAssets, f));
   }
-  fs.cpSync(distAssetsDir, rootAssetsDir, { recursive: true });
   console.log('[Postbuild] Cleaned and copied dist/assets to assets/');
 }
 
-// 2. Read dist/index.html
-const distIndexFile = path.join(rootDir, 'dist', 'index.html');
-if (fs.existsSync(distIndexFile)) {
-  let html = fs.readFileSync(distIndexFile, 'utf8');
+// dist/index.html -> root index.html with relative asset paths
+let html = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+html = html.replace(/href="\/manifest\.webmanifest"/, 'href="./manifest.webmanifest"');
+html = html.replace(/href="\/icon\.svg"/, 'href="./icon.svg"');
+fs.writeFileSync(path.join(root, 'index.html'), html);
+console.log('[Postbuild] Generated root index.html');
 
-  // Fix manifest link to always point to root ./manifest.webmanifest
-  html = html.replace(/href="\.\/assets\/manifest-[^"]+\.webmanifest"/g, 'href="./manifest.webmanifest"');
+// 404.html for GitHub Pages SPA routing
+const notFound = `<!DOCTYPE html><html><head><meta charset="utf-8"><script>location.replace(location.href.replace(/\\/Kidsy\\/.*/, '/Kidsy/index.html'));</script></head><body></body></html>`;
+fs.writeFileSync(path.join(root, '404.html'), notFound);
 
-  // Write to root index.html
-  fs.writeFileSync(path.join(rootDir, 'index.html'), html, 'utf8');
-  console.log('[Postbuild] Generated root index.html with direct manifest link');
-
-  // 3. Create 404.html with automatic SPA redirection for GitHub Pages
-  // If user opens a missing URL or launches PWA from /Kidsy/assets/ or /, redirect to /Kidsy/index.html
-  const redirectScript = `
-  <script>
-    (function() {
-      // GitHub Pages SPA Redirect Handler
-      var path = window.location.pathname;
-      if (!path.endsWith('.html') && !path.endsWith('.js') && !path.endsWith('.css') && !path.endsWith('.svg') && !path.endsWith('.webmanifest')) {
-        // Redirect to repository base
-        if (path.indexOf('/Kidsy') !== -1 && path !== '/Kidsy/' && path !== '/Kidsy/index.html') {
-          window.location.replace('/Kidsy/index.html');
-        }
-      }
-    })();
-  </script>`;
-
-  const html404 = html.replace('</head>', redirectScript + '\n</head>');
-  fs.writeFileSync(path.join(rootDir, '404.html'), html404, 'utf8');
-  console.log('[Postbuild] Generated 404.html for GitHub Pages SPA routing');
-}
-
-// 4. Create robust root manifest.webmanifest
-const rootManifest = {
-  name: "MerolaApp Enterprise",
-  short_name: "MerolaApp",
-  description: "Duolingo-grade K-6 learning suite featuring Grade 3 Week 5 curriculum.",
-  start_url: "./index.html",
-  scope: "./",
-  display: "standalone",
-  orientation: "any",
-  background_color: "#f5f9ff",
-  theme_color: "#159eea",
-  icons: [
-    {
-      src: "./icon.svg",
-      sizes: "any",
-      type: "image/svg+xml"
-    }
-  ]
-};
-
-fs.writeFileSync(
-  path.join(rootDir, 'manifest.webmanifest'),
-  JSON.stringify(rootManifest, null, 2),
-  'utf8'
-);
-console.log('[Postbuild] Generated root manifest.webmanifest with start_url: "./index.html"');
-
-// 5. Also patch any manifest inside assets/
-if (fs.existsSync(rootAssetsDir)) {
-  const files = fs.readdirSync(rootAssetsDir);
-  for (const f of files) {
-    if (f.endsWith('.webmanifest')) {
-      const assetManifest = {
-        ...rootManifest,
-        start_url: "../index.html",
-        scope: "../",
-        icons: [{ src: "../icon.svg", sizes: "any", type: "image/svg+xml" }]
-      };
-      fs.writeFileSync(
-        path.join(rootAssetsDir, f),
-        JSON.stringify(assetManifest, null, 2),
-        'utf8'
-      );
-      console.log(`[Postbuild] Patched ${f} in assets/ to relative parent start_url`);
-    }
-  }
-}
-
-// 6. Copy root files: sw.js, icon.svg, .nojekyll
-if (fs.existsSync(path.join(rootDir, 'dist', 'sw.js'))) {
-  fs.copyFileSync(path.join(rootDir, 'dist', 'sw.js'), path.join(rootDir, 'sw.js'));
-}
-if (fs.existsSync(path.join(rootDir, 'dist', 'icon.svg'))) {
-  fs.copyFileSync(path.join(rootDir, 'dist', 'icon.svg'), path.join(rootDir, 'icon.svg'));
-}
-fs.writeFileSync(path.join(rootDir, '.nojekyll'), '', 'utf8');
-console.log('[Postbuild] Created .nojekyll and verified root files.');
+// root manifest + sw + icon + .nojekyll
+copyFile(path.join(root, 'public', 'manifest.webmanifest'), path.join(root, 'manifest.webmanifest'));
+copyFile(path.join(dist, 'sw.js'), path.join(root, 'sw.js'));
+copyFile(path.join(root, 'public', 'icon.svg'), path.join(root, 'icon.svg'));
+fs.writeFileSync(path.join(root, '.nojekyll'), '');
+console.log('[Postbuild] Generated 404.html, manifest, sw.js, icon.svg, .nojekyll');

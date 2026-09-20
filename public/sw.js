@@ -1,5 +1,5 @@
-// MerolaApp Production Service Worker - Resilient Offline Caching
-const CACHE_NAME = 'kidsy-v9-8tab-stories-reels-gift';
+// EWA Language Reader — Production Service Worker
+const CACHE_NAME = 'ewa-reader-v1';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -7,7 +7,6 @@ const PRECACHE_ASSETS = [
   './icon.svg'
 ];
 
-// Install: pre-cache shell and skip waiting
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -16,14 +15,12 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: clean up ALL old caches immediately and claim clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('[SW] Purging outdated cache:', key);
             return caches.delete(key);
           }
         })
@@ -32,13 +29,10 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch handler: Network-first for HTML navigations, Cache-first for static assets
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  // 1. Navigation requests (HTML document): Network-First so users always get the latest build
-  // CRITICAL: If network returns 404 on PWA launch or sub-path, fallback to cached index.html!
   if (req.mode === 'navigate' || req.destination === 'document') {
     event.respondWith(
       fetch(req)
@@ -48,7 +42,6 @@ self.addEventListener('fetch', (event) => {
             caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
             return networkRes;
           }
-          // If GitHub Pages returns 404, deliver cached app shell!
           return caches.match('./index.html').then((cachedHtml) => {
             if (cachedHtml) return cachedHtml;
             return caches.match('./').then((rootRes) => rootRes || networkRes);
@@ -64,12 +57,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Static assets (JS, CSS, SVGs, Fonts): Stale-while-revalidate or Cache-first
-  // IMPORTANT: NEVER return index.html for failed JS/CSS requests!
   event.respondWith(
     caches.match(req).then((cachedRes) => {
       if (cachedRes) return cachedRes;
-
       return fetch(req).then((networkRes) => {
         if (networkRes && networkRes.status === 200) {
           const copy = networkRes.clone();

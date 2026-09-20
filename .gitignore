@@ -1,11 +1,6 @@
-﻿# built/deploy artifacts & importable prototype bundles (not source)
 node_modules
 dist/
 dist-ssr/
-races/
-routes/
-backup*
 *.zip
 *.rar
 *.7z
-newDesign/design-reference.png
