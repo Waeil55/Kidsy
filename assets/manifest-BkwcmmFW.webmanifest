@@ -1,0 +1,16 @@
+{
+  "name": "EWA Language Reader: Read & Understand",
+  "short_name": "EWA Reader",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fcfbf7",
+  "theme_color": "#2db5ff",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

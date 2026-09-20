@@ -1,15 +1,76 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-  INITIAL_BOOKS,
-  cleanWordToken,
-  tokenizeParagraph,
-  resolveWordData,
-  speakWord,
-  stripQuotes,
-} from './data/ewaData.js';
-import { LibraryModal, CustomTextModal, SettingsModal } from './components/Modals.jsx';
-import VocabDeck from './components/VocabDeck.jsx';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { GRADES, gradeName, genStory, STORIES_PER_GRADE } from './data/grades.js';
+import { featuredStory } from './data/gradeStories.js';
+import { loadScores, saveScores, gradeScores, touchStreak } from './store/scores.js';
+import { loadCustom } from './lib/schoolParse.js';
+import Reader from './components/Reader.jsx';
+import QuizPanel from './components/QuizPanel.jsx';
+import { LevelsStrip, LevelRunner } from './components/Levels.jsx';
+import RewardsPanel from './components/RewardsPanel.jsx';
+import { StudioPanel, SchoolPanel } from './components/Studio.jsx';
 
+
+const THEMES = [
+  ['purple', 'Purple Magic', '#7551f0'],
+  ['blue', 'EWA Sky Blue', '#2db5ff'],
+  ['green', 'Mint Green', '#10b981'],
+  ['coral', 'Coral Sunset', '#ff6b6b'],
+  ['pink', 'Bubblegum Pink', '#f43f5e'],
+  ['amber', 'Sunshine Gold', '#f59e0b'],
+];
+const AVATARS = ['👦', '👧', '🐼', '🦁', '🚀'];
+
+function speakText(text, rate = 0.9) {
+  if (!('speechSynthesis' in window) || !text) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = rate;
+  window.speechSynthesis.speak(utter);
+}
+
+let chimeCtx = null;
+function playChime(type = 'success') {
+  try {
+    chimeCtx = chimeCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (chimeCtx.state === 'suspended') chimeCtx.resume();
+    const osc = chimeCtx.createOscillator();
+    const gain = chimeCtx.createGain();
+    osc.connect(gain);
+    gain.connect(chimeCtx.destination);
+    const now = chimeCtx.currentTime;
+    if (type === 'success') {
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.35);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } else if (type === 'pop') {
+      osc.frequency.setValueAtTime(400, now);
+      osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.1);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } else {
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.linearRampToValueAtTime(180, now + 0.15);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.2);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    }
+  } catch (e) { /* silent */ }
+}
+
+function loadProfile() {
+  try {
+    return { name: 'Arab', avatar: '👦', gradeKey: 'G1', theme: 'purple', ...(JSON.parse(localStorage.getItem('kidlingo-profile') || '{}')) };
+  } catch (e) {
+    return { name: 'Arab', avatar: '👦', gradeKey: 'G1', theme: 'purple' };
+  }
+}
 function loadSaved() {
   try {
     return JSON.parse(localStorage.getItem('ewa-saved-vocab') || '[]');
@@ -18,644 +79,553 @@ function loadSaved() {
   }
 }
 
+const NAV = [
+  ['home', 'Home', 'fa-house'],
+  ['reader', 'Stories', 'fa-book-open'],
+  ['quiz', 'Quiz', 'fa-gamepad'],
+  ['rewards', 'Rewards', 'fa-gift'],
+  ['profile', 'Profile', 'fa-user'],
+];
+const BREADCRUMB = {
+  home: 'Home Dashboard',
+  reader: 'Story Reader & Word Study',
+  quiz: 'Smart Quiz — Your Grade Only',
+  rewards: 'Stars, Trophies & Flashcards',
+  profile: 'Settings & Color Customization',
+  school: 'School Lessons Upload',
+  studio: 'Content Studio',
+};
+
 export default function App() {
-  const [books, setBooks] = useState(INITIAL_BOOKS);
-  const [bookIdx, setBookIdx] = useState(() => {
-    const n = parseInt(localStorage.getItem('ewa-book-idx') || '0', 10);
-    return Number.isNaN(n) ? 0 : n;
-  });
+  const [profile, setProfile] = useState(loadProfile);
+  const [screen, setScreen] = useState('home');
+  const [scores, setScores] = useState(loadScores);
   const [saved, setSaved] = useState(loadSaved);
-  const [activeKey, setActiveKey] = useState(null);
-  const [popup, setPopup] = useState(null); // { anchorKey, loading, data, quizPicked, quizOk }
-  const [pos, setPos] = useState({ left: 10, top: 100, arrowUp: false });
-  const [mode, setMode] = useState('read');
-  const [audioPlaying, setAudioPlaying] = useState(false);
-  const [audioSpeed, setAudioSpeed] = useState(1.0);
-  const [speakingKey, setSpeakingKey] = useState(null);
-  const [fontSize, setFontSize] = useState(() => parseInt(localStorage.getItem('ewa-font-size') || '18', 10));
-  const [toast, setToast] = useState(null);
+  const [book, setBook] = useState(() => featuredStory(loadProfile().gradeKey));
+  const [readerMode, setReaderMode] = useState('read');
   const [libraryOpen, setLibraryOpen] = useState(false);
-  const [customOpen, setCustomOpen] = useState(false);
-  const [vocabOpen, setVocabOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [sentence, setSentence] = useState(null); // { open, text, explanation, quiz, picked, ok }
-
-  const scrollRef = useRef(null);
-  const popupRef = useRef(null);
-  const wordEls = useRef(new Map());
-  const audioRef = useRef({ playing: false, idx: 0, speed: 1.0 });
+  const [fontSize, setFontSize] = useState(18);
+  const [toast, setToast] = useState(null);
+  const [clock, setClock] = useState('9:41');
+  const [phonePreview, setPhonePreview] = useState(false);
+  const [levelN, setLevelN] = useState(null);
+  const [libCount, setLibCount] = useState(50);
   const toastTimer = useRef(null);
-  const savedRef = useRef(saved);
-  savedRef.current = saved;
 
-  const book = books[bookIdx] || books[0];
+  const gradeKey = profile.gradeKey;
 
+  useEffect(() => {
+    localStorage.setItem('kidlingo-profile', JSON.stringify(profile));
+    document.body.setAttribute('data-theme', profile.theme);
+  }, [profile]);
   useEffect(() => {
     localStorage.setItem('ewa-saved-vocab', JSON.stringify(saved));
   }, [saved]);
   useEffect(() => {
-    localStorage.setItem('ewa-book-idx', String(bookIdx));
-  }, [bookIdx]);
-  useEffect(() => {
-    localStorage.setItem('ewa-font-size', String(fontSize));
-  }, [fontSize]);
-  useEffect(() => () => {
-    window.speechSynthesis && window.speechSynthesis.cancel();
+    setScores((prev) => {
+      const next = touchStreak({ ...prev, streak: { ...prev.streak } });
+      saveScores(next);
+      return next;
+    });
   }, []);
+  useEffect(() => {
+    const t = setInterval(() => {
+      const now = new Date();
+      setClock(`${now.getHours()}:${now.getMinutes() < 10 ? '0' : ''}${now.getMinutes()}`);
+    }, 10000);
+    return () => clearInterval(t);
+  }, []);
+  useEffect(() => {
+    document.body.classList.toggle('device-phone-preview', phonePreview);
+  }, [phonePreview]);
 
-  const showToast = useCallback((msg) => {
+  const notify = useCallback((msg) => {
     setToast(msg);
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 2000);
+    toastTimer.current = setTimeout(() => setToast(null), 2200);
   }, []);
 
-  // Ordered word keys for the audiobook engine
-  const orderedKeys = useMemo(() => {
-    const keys = [];
-    book.paragraphs.forEach((para, pIdx) => {
-      const toks = tokenizeParagraph(para);
-      let w = 0;
-      toks.forEach((tok) => {
-        if (/^[\w']+$/.test(tok)) {
-          keys.push(`${pIdx}:${w}`);
-          w++;
-        }
-      });
-    });
-    return keys;
-  }, [book]);
-
-  const savedStatus = useCallback(
-    (clean) => {
-      const s = savedRef.current.find((v) => v.word.toLowerCase() === clean);
-      return s ? s.status : null;
-    },
-    []
-  );
-
-  // Position the bubble above/below the anchor word (same math as original)
-  useLayoutEffect(() => {
-    if (!popup || !scrollRef.current) return;
-    const anchorEl = wordEls.current.get(popup.anchorKey);
-    const popupEl = popupRef.current;
-    if (!anchorEl || !popupEl) return;
-    const scrollArea = scrollRef.current;
-    const spanRect = anchorEl.getBoundingClientRect();
-    const scrollRect = scrollArea.getBoundingClientRect();
-    const popupWidth = popupEl.offsetWidth || 250;
-    const popupHeight = popupEl.offsetHeight || 190;
-
-    let left = spanRect.left - scrollRect.left + spanRect.width / 2 - popupWidth / 2;
-    const padding = 10;
-    if (left < padding) left = padding;
-    if (left + popupWidth > scrollRect.width - padding) left = scrollRect.width - popupWidth - padding;
-
-    const arrowLeft = spanRect.left - scrollRect.left + spanRect.width / 2 - left;
-    popupEl.style.setProperty('--arrow-left', `${arrowLeft}px`);
-
-    let top = spanRect.top - scrollRect.top + scrollArea.scrollTop - popupHeight - 12;
-    let arrowUp = false;
-    if (top < scrollArea.scrollTop + 10) {
-      top = spanRect.bottom - scrollRect.top + scrollArea.scrollTop + 12;
-      arrowUp = true;
-    }
-    setPos({ left, top, arrowUp });
-  }, [popup && popup.anchorKey, popup && popup.loading, popup && popup.data, bookIdx]);
-
-  const closePopup = useCallback(() => {
-    setPopup(null);
-    setActiveKey(null);
-  }, []);
-
-  const onWordClick = useCallback(
-    async (e, key, clean, raw) => {
-      e.stopPropagation();
-      pauseAudio();
-      setActiveKey(key);
-      setPopup({ anchorKey: key, loading: true, data: null, quizPicked: null, quizOk: null });
-      speakWord(clean);
-      const data = await resolveWordData(clean);
-      setPopup((p) => (p && p.anchorKey === key ? { ...p, loading: false, data: { ...data, raw } } : p));
-    },
-    []
-  );
-
-  const saveWord = useCallback(
-    (status) => {
-      setPopup((p) => {
-        if (!p || !p.data) return p;
-        const word = p.data.word.toLowerCase();
-        setSaved((prev) => {
-          const item = {
-            word: p.data.word,
-            ipa: p.data.ipa,
-            meaning: p.data.meaning,
-            sentence: p.data.sentence,
-            question: p.data.question,
-            status,
-            timestamp: Date.now(),
-          };
-          const i = prev.findIndex((v) => v.word.toLowerCase() === word);
-          if (i >= 0) {
-            const next = [...prev];
-            next[i] = item;
-            return next;
-          }
-          return [item, ...prev];
-        });
-        showToast(status === 'learned' ? `"${word}" marked as learned!` : `"${word}" added to flashcard deck!`);
-        return p;
-      });
-      setTimeout(closePopup, 350);
-    },
-    [closePopup, showToast]
-  );
-
-  // ── Audiobook engine ──
-  const playWordAt = useCallback(
-    (idx) => {
-      const st = audioRef.current;
-      if (!st.playing || idx >= orderedKeys.length) {
-        pauseAudio();
-        return;
-      }
-      st.idx = idx;
-      const key = orderedKeys[idx];
-      setSpeakingKey(key);
-      const el = wordEls.current.get(key);
-      if (el && el.scrollIntoView) {
-        try {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } catch (e) { /* ignore */ }
-      }
-      const clean = el ? el.dataset.clean : '';
-      const utter = new SpeechSynthesisUtterance(clean);
-      utter.lang = 'en-US';
-      utter.rate = st.speed;
-      try {
-        const voices = window.speechSynthesis.getVoices();
-        const enVoice = voices.find((v) => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google')));
-        if (enVoice) utter.voice = enVoice;
-      } catch (e) { /* ignore */ }
-      utter.onend = () => {
-        if (!audioRef.current.playing) return;
-        setTimeout(() => playWordAt(idx + 1), 120 / audioRef.current.speed);
-      };
-      utter.onerror = () => {
-        if (!audioRef.current.playing) return;
-        setTimeout(() => playWordAt(idx + 1), 100);
-      };
-      window.speechSynthesis.speak(utter);
-    },
-    [orderedKeys]
-  );
-
-  const startAudio = useCallback(
-    (fromIdx = 0) => {
-      if (orderedKeys.length === 0) return;
-      audioRef.current.playing = true;
-      setAudioPlaying(true);
-      closePopup();
-      playWordAt(fromIdx);
-    },
-    [orderedKeys, playWordAt, closePopup]
-  );
-
-  function pauseAudio() {
-    audioRef.current.playing = false;
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    setAudioPlaying(false);
-    setSpeakingKey(null);
-  }
-
-  const skipAudio = useCallback(
-    (delta) => {
-      const st = audioRef.current;
-      st.idx = Math.max(0, Math.min(orderedKeys.length - 1, st.idx + delta));
-      if (st.playing) {
-        window.speechSynthesis.cancel();
-        playWordAt(st.idx);
-      }
-    },
-    [orderedKeys.length, playWordAt]
-  );
-
-  const cycleSpeed = useCallback(() => {
-    setAudioSpeed((s) => {
-      const n = s === 1.0 ? 1.25 : s === 1.25 ? 0.8 : 1.0;
-      audioRef.current.speed = n;
-      return n;
+  const updateScores = useCallback((fn) => {
+    setScores((prev) => {
+      const next = fn(structuredClone(prev));
+      saveScores(next);
+      return next;
     });
   }, []);
 
-  const setModeAudio = () => {
-    setMode('audio');
-    closePopup();
-    startAudio(0);
-  };
-  const setModeRead = () => {
-    setMode('read');
-    pauseAudio();
-  };
-
-  // ── Sentence drawer ──
-  const openSentence = useCallback(() => {
-    let pIdx = 0;
-    if (activeKey) {
-      const parts = activeKey.split(':');
-      pIdx = parseInt(parts[0], 10) || 0;
-    }
-    const sentenceText = book.paragraphs[pIdx] || book.paragraphs[0];
-    const explanation = (book.sentenceExplains && book.sentenceExplains[pIdx]) || 'Describes actions in the story using clear sight words.';
-    const quiz = (book.sentenceQuestions && book.sentenceQuestions[pIdx]) || { q: 'What is this sentence talking about?', options: ['The story', 'A dance', 'A clock'], correct: 0 };
-    setSentence({ open: true, text: sentenceText, explanation, quiz, picked: null, ok: null });
-  }, [activeKey, book]);
-
-  // ── Library / custom text ──
-  const selectBook = (idx) => {
-    pauseAudio();
-    closePopup();
-    setBookIdx(idx);
-    setLibraryOpen(false);
-    if (scrollRef.current) scrollRef.current.scrollTo({ top: 0 });
+  const setGrade = (gk) => {
+    playChime('pop');
+    setProfile((p) => ({ ...p, gradeKey: gk }));
+    setBook(featuredStory(gk));
+    setReaderMode('read');
+    setLibCount(50);
+    notify(`Switched to ${gradeName(gk)}!`);
   };
 
-  const loadCustom = (title, text) => {
-    if (!text) {
-      showToast('Please type or paste some English sentences');
-      return false;
-    }
-    const paragraphs = text.split(/\n+/).filter((p) => p.trim().length > 0);
-    const nb = {
-      id: 'custom_' + Date.now(),
-      title,
-      subtitle: 'Custom Practice',
-      level: 'Grade 1 Practice',
-      theme: '#ffffff',
-      paragraphs,
-    };
-    setBooks((prev) => [...prev, nb]);
-    setBookIdx(books.length);
-    setCustomOpen(false);
-    showToast('Story loaded successfully!');
-    return true;
+  const setTheme = (t) => {
+    playChime('pop');
+    setProfile((p) => ({ ...p, theme: t }));
   };
 
-  const removeWord = (idx) => {
-    setSaved((prev) => prev.filter((_, i) => i !== idx));
+  const go = (s) => {
+    playChime('pop');
+    setScreen(s);
   };
 
-  const markEasy = (item) => {
-    const word = item.word.toLowerCase();
+  const saveWord = useCallback((data, status) => {
+    if (!data) return;
+    const word = data.word.toLowerCase();
     setSaved((prev) => {
       const i = prev.findIndex((v) => v.word.toLowerCase() === word);
+      const item = { word: data.word, ipa: data.ipa, meaning: data.meaning, sentence: data.sentence, question: data.question, status, grade: gradeKey, timestamp: Date.now() };
       if (i >= 0) {
         const next = [...prev];
-        next[i] = { ...next[i], status: 'learned' };
+        const wasLearned = next[i].status === 'learned';
+        next[i] = item;
+        if (status === 'learned' && !wasLearned) {
+          updateScores((s) => { s.vocabLearned = (s.vocabLearned || 0) + 1; s.xp += 5; s.stars += 2; return s; });
+        }
         return next;
       }
-      return [{ ...item, status: 'learned', timestamp: Date.now() }, ...prev];
+      if (status === 'learned') {
+        updateScores((s) => { s.vocabLearned = (s.vocabLearned || 0) + 1; s.xp += 5; s.stars += 2; return s; });
+      }
+      return [item, ...prev];
     });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gradeKey]);
 
-  // ── Render paragraphs into tappable tokens ──
-  const renderParagraphs = () =>
-    book.paragraphs.map((paraText, pIdx) => {
-      const toks = tokenizeParagraph(paraText);
-      let w = 0;
-      const nodes = [];
-      toks.forEach((tok, tIdx) => {
-        if (/^\s+$/.test(tok)) {
-          nodes.push(<React.Fragment key={tIdx}>{tok}</React.Fragment>);
-        } else if (/^[\w']+$/.test(tok)) {
-          const key = `${pIdx}:${w}`;
-          const clean = cleanWordToken(tok);
-          const st = saved.find((v) => v.word.toLowerCase() === clean);
-          w++;
-          nodes.push(
-            <span
-              key={tIdx}
-              ref={(el) => {
-                if (el) {
-                  el.dataset.clean = clean;
-                  wordEls.current.set(key, el);
-                } else {
-                  wordEls.current.delete(key);
-                }
-              }}
-              data-clean={clean}
-              onClick={(e) => onWordClick(e, key, clean, tok)}
-              className={
-                'ewa-word' +
-                (activeKey === key ? ' active-word' : '') +
-                (speakingKey === key ? ' speaking-now' : '') +
-                (st ? (st.status === 'learned' ? ' status-learned' : ' status-learning') : '')
-              }
-            >
-              {tok}
-            </span>
-          );
-        } else {
-          nodes.push(<React.Fragment key={tIdx}>{tok}</React.Fragment>);
-        }
-      });
-      return (
-        <p key={pIdx} className="mb-5 text-slate-800 tracking-wide font-serif leading-loose">
-          {nodes}
-        </p>
-      );
+  const finishQuiz = useCallback(({ total, correct }) => {
+    updateScores((s) => {
+      const g = gradeScores(s, gradeKey);
+      g.quizN += total;
+      g.quizCorrect += correct;
+      const gained = correct * 10;
+      s.xp += gained;
+      s.stars += correct * 2;
+      return s;
     });
+    if (correct === total) {
+      playChime('success');
+      notify(`★ Perfect! +${correct * 10} XP Earned!`);
+    } else {
+      playChime('pop');
+      notify(`${correct}/${total} correct! +${correct * 10} XP`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gradeKey]);
 
-  const popupStatus = popup && popup.data ? savedStatus(popup.data.word.toLowerCase()) : null;
-
-  const answerPopupQuiz = (idx) => {
-    setPopup((p) => {
-      if (!p || !p.data) return p;
-      return { ...p, quizPicked: idx, quizOk: idx === p.data.correct };
+  const completeLevel = useCallback((n, reward) => {
+    updateScores((s) => {
+      const g = gradeScores(s, gradeKey);
+      if (!g.levelsDone.includes(n)) g.levelsDone.push(n);
+      if (!g.storiesRead.includes(`${gradeKey}-story-${((n - 1) * 7) % 500}`)) g.storiesRead.push(`${gradeKey}-story-${((n - 1) * 7) % 500}`);
+      g.mathDone += 1;
+      g.mathCorrect += 1;
+      s.xp += reward.xp;
+      s.stars += reward.stars;
+      return s;
     });
-  };
+    playChime('success');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gradeKey]);
 
-  const answerSentenceQuiz = (idx) => {
-    setSentence((s) => {
-      if (!s) return s;
-      return { ...s, picked: idx, ok: idx === s.quiz.correct };
-    });
-  };
+  // Grade story list: custom + featured + generated (paged)
+  const storyList = useMemo(() => {
+    const c = loadCustom();
+    const custom = c.stories.filter((s) => s.grade === gradeKey);
+    const feat = { ...featuredStory(gradeKey), id: `${gradeKey}-featured` };
+    const gen = [];
+    for (let i = 0; i < Math.min(libCount, STORIES_PER_GRADE); i++) {
+      const s = genStory(gradeKey, i);
+      gen.push({ ...s, title: s.title, subtitle: `${gradeName(gradeKey)} · Story ${i + 1}`, level: `${gradeName(gradeKey)} · #${i + 1}` });
+    }
+    return [...custom, feat, ...gen];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gradeKey, libCount, screen]);
+
+  const themeLabel = (THEMES.find(([k]) => k === profile.theme) || THEMES[0])[1];
+
+  const navBtn = (id, icon, label, extra = '') => (
+    <button
+      key={id}
+      onClick={() => go(id)}
+      className={`flex flex-col items-center justify-center space-y-1 transition ${extra} ${screen === id ? 'text-theme-main' : 'text-slate-400 hover:text-slate-600'}`}
+    >
+      <i className={`fa-solid ${icon} text-lg`}></i>
+      <span className={`text-[10px] font-display ${screen === id ? 'font-black' : 'font-bold'}`}>{label}</span>
+    </button>
+  );
 
   return (
-    <div className="bg-slate-100 text-slate-800 font-sans h-full flex justify-center items-start sm:py-5 overflow-hidden select-none" onClick={(e) => {
-      if (!e.target.closest('#wordPopup') && !e.target.closest('.ewa-word')) closePopup();
-    }}>
-      <div className="w-full sm:max-w-md h-full sm:h-[94vh] sm:max-h-[920px] bg-[#fcfbf7] sm:rounded-[36px] shadow-2xl flex flex-col overflow-hidden relative border border-slate-200">
-        {/* Top App Bar */}
-        <header className="bg-white/95 backdrop-blur px-4 py-2.5 flex items-center justify-between border-b border-slate-200/80 shrink-0 z-20">
-          <div className="flex items-center space-x-2">
-            <button onClick={() => setLibraryOpen(true)} className="py-1.5 px-3 -ml-1 text-slate-700 hover:text-ewa-blue transition rounded-full hover:bg-slate-100 flex items-center text-xs font-black uppercase tracking-wider">
-              <i className="fa-solid fa-book-bookmark mr-2 text-ewa-blue text-sm"></i>
-              <span>Library</span>
+    <div id="appRoot" className="w-full h-full flex flex-col md:flex-row bg-white overflow-hidden relative shadow-sm transition-all duration-300">
+      {/* Desktop sidebar */}
+      <aside id="desktopSidebar" className="hidden md:flex flex-col w-64 lg:w-72 bg-white border-r border-slate-200 shrink-0 select-none z-30 justify-between p-4">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between px-2 pt-2">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-2xl bg-theme-main text-white flex items-center justify-center font-display font-black text-xl shadow-md">K</div>
+              <div>
+                <h1 className="font-display font-black text-lg text-slate-800 leading-tight">KidLingo</h1>
+                <span className="text-[11px] font-bold text-slate-400">EWA Kids Reader</span>
+              </div>
+            </div>
+            <button onClick={() => setPhonePreview(!phonePreview)} className="text-[11px] p-2 rounded-xl bg-slate-100 hover:bg-theme-light text-slate-600 hover:text-theme-main transition" title="Toggle Phone Frame Simulator">
+              <i className={`fa-solid ${phonePreview ? 'fa-desktop' : 'fa-mobile-screen'}`}></i>
             </button>
           </div>
+
+          <div onClick={() => go('profile')} className="bg-slate-50 border border-slate-200/80 rounded-3xl p-3.5 flex items-center space-x-3 cursor-pointer hover:bg-theme-light/50 transition">
+            <div className="w-11 h-11 rounded-2xl bg-amber-200 border-2 border-white shadow-sm flex items-center justify-center text-2xl">{profile.avatar}</div>
+            <div className="flex-1 min-w-0">
+              <span className="font-display font-black text-slate-800 text-sm truncate block">Hi, {profile.name}</span>
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-theme-light text-theme-main inline-block">{gradeName(gradeKey)}</span>
+            </div>
+            <i className="fa-solid fa-gear text-slate-400 text-xs"></i>
+          </div>
+
+          <div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-2">Grade Level:</div>
+            <div className="grid grid-cols-4 gap-1.5">
+              {GRADES.map((g) => (
+                <button
+                  key={g.key}
+                  onClick={() => setGrade(g.key)}
+                  className={`py-1 px-1 text-center rounded-xl font-display font-black text-[11px] transition ${g.key === gradeKey ? 'bg-theme-main text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                >
+                  {g.short}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <nav className="space-y-1.5">
+            {[...NAV.map(([id, label, icon]) => ({ id, label, icon })), { id: 'school', label: 'School Lessons', icon: 'fa-school' }, { id: 'studio', label: 'Create Content', icon: 'fa-wand-magic-sparkles' }].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => go(t.id)}
+                className={`w-full flex items-center space-x-3.5 px-3.5 py-3 rounded-2xl font-display text-sm transition text-left ${screen === t.id ? 'text-theme-main bg-theme-light font-black' : 'text-slate-500 hover:bg-slate-50 font-bold'}`}
+              >
+                <i className={`fa-solid ${t.icon} text-base w-5 text-center`}></i>
+                <span>{t.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="bg-amber-50/80 border border-amber-200/70 rounded-3xl p-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <button onClick={() => setVocabOpen(true)} className="bg-sky-50 hover:bg-sky-100 text-ewa-darkBlue font-black text-xs px-3 py-1.5 rounded-full flex items-center transition border border-sky-100" title="Vocabulary Deck">
-              <i className="fa-solid fa-layer-group mr-1.5 text-ewa-blue"></i>
-              <span>Words</span>
-              <span className="ml-1.5 px-1.5 py-0.2 bg-ewa-blue text-white rounded-full text-[10px] font-bold">{saved.length}</span>
-            </button>
-            <button onClick={() => setSettingsOpen(true)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-700 transition rounded-full hover:bg-slate-100" title="Reading Settings">
-              <i className="fa-solid fa-sliders text-sm"></i>
-            </button>
+            <span className="text-xl">⭐</span>
+            <div>
+              <span className="font-display font-black text-xs text-amber-900 block">{scores.stars} Stars</span>
+              <span className="text-[10px] text-amber-700 font-bold">Streak: {scores.streak.count || 0} Days · {scores.xp} XP</span>
+            </div>
+          </div>
+          <button onClick={() => go('profile')} className="w-8 h-8 rounded-xl bg-white border border-amber-200 text-amber-600 flex items-center justify-center text-xs hover:bg-amber-100" title="Quick Theme">
+            <i className="fa-solid fa-palette"></i>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main stage */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        <div id="mobileStatusBar" className="h-6 w-full bg-transparent px-7 flex md:hidden items-center justify-between text-[11px] font-bold text-slate-500 shrink-0 z-30 pt-1">
+          <span>{clock}</span>
+          <div className="flex items-center space-x-1.5">
+            <i className="fa-solid fa-signal text-[9px]"></i>
+            <i className="fa-solid fa-wifi text-[10px]"></i>
+            <i className="fa-solid fa-battery-full text-xs"></i>
+          </div>
+        </div>
+
+        <header id="desktopTopHeader" className="hidden md:flex h-16 bg-white border-b border-slate-200 px-6 items-center justify-between shrink-0 z-20">
+          <div className="flex items-center space-x-3">
+            <span className="text-xs font-bold text-slate-400">Current Section:</span>
+            <span className="font-display font-black text-sm text-slate-800">{BREADCRUMB[screen] || 'KidLingo'}</span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1.5 bg-theme-light text-theme-main px-3 py-1.5 rounded-full font-display font-black text-xs border border-theme-light">
+              <i className="fa-solid fa-graduation-cap"></i>
+              <span>{gradeName(gradeKey)}</span>
+            </div>
+            <div className="flex items-center space-x-2 border-l border-slate-200 pl-4">
+              <span className="text-xs text-slate-400 font-bold">Theme:</span>
+              <div className="flex space-x-1.5">
+                {THEMES.slice(0, 4).map(([k, , color]) => (
+                  <button key={k} onClick={() => setTheme(k)} className="w-6 h-6 rounded-full border-2 border-white shadow-sm hover:scale-110 transition" style={{ background: color }} title={k}></button>
+                ))}
+              </div>
+            </div>
           </div>
         </header>
 
-        <main ref={scrollRef} className="flex-1 overflow-y-auto relative bg-[#fcfbf7] select-text">
-          {/* Story Banner */}
-          <div className="relative w-full bg-[#f7eedc] border-b border-[#e5d9be] overflow-hidden select-none" style={book.theme && book.theme !== '#f7eedc' ? { background: book.theme } : undefined}>
-            <div className="absolute inset-0 vintage-vignette pointer-events-none"></div>
-            <div className="px-5 pt-4 pb-1 text-center relative z-10">
-              <h2 className="font-serif tracking-widest text-[#78593a] text-[11px] uppercase font-extrabold mb-0.5">
-                {book.subtitle}
-              </h2>
-              <h1 className="font-serif font-black text-xl sm:text-2xl tracking-wide text-[#341d11] uppercase">
-                {book.title}
-              </h1>
-            </div>
-            {book.illustration && (
-              <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
-                <svg className="w-full h-full object-cover" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg" dangerouslySetInnerHTML={{ __html: book.illustration }} />
-                <div className="absolute bottom-2.5 right-3 bg-white/95 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[11px] font-bold text-amber-900 shadow-sm border border-amber-200/80">
-                  {book.level}
+        <div id="screensViewport" className="flex-1 overflow-hidden relative bg-[#faf9f6]">
+          {screen === 'home' && (
+            <section className="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-5">
+              <div className="flex md:hidden items-center justify-between pt-1">
+                <div className="flex items-center space-x-3 cursor-pointer" onClick={() => go('profile')}>
+                  <div className="w-12 h-12 rounded-2xl bg-amber-200 border-2 border-white shadow-md flex items-center justify-center text-2xl overflow-hidden">{profile.avatar}</div>
+                  <div>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="font-display font-black text-slate-800 text-base">Hi, {profile.name}</span>
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-theme-light text-theme-main border border-theme-light">{gradeName(gradeKey)}</span>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium">Let&apos;s learn something new!</p>
+                  </div>
+                </div>
+                <button onClick={() => go('profile')} className="w-10 h-10 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-500 transition active:scale-95" title="Change Theme Color">
+                  <i className="fa-solid fa-palette text-sm"></i>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+                <div className="md:col-span-6 rounded-3xl bg-theme-main p-6 text-white shadow-xl relative overflow-hidden flex items-center justify-between min-h-[160px]">
+                  <i className="fa-solid fa-star absolute top-3 right-36 text-amber-300 text-xs animate-pulse"></i>
+                  <i className="fa-solid fa-star absolute bottom-4 left-36 text-amber-300 text-sm"></i>
+                  <div className="max-w-[60%] z-10">
+                    <h3 className="font-display font-black text-2xl leading-tight">Daily<br />Challenge</h3>
+                    <p className="text-xs text-white/85 font-medium my-2.5">Complete a quiz and earn 20 XP &amp; stars!</p>
+                    <button onClick={() => go('quiz')} className="py-2.5 px-6 bg-white text-theme-main font-display font-black text-xs rounded-xl shadow-md hover:bg-amber-100 transition active:scale-95">
+                      Let&apos;s Go
+                    </button>
+                  </div>
+                  <div className="w-32 h-32 relative flex items-center justify-center">
+                    <svg viewBox="0 0 120 120" className="w-full h-full drop-shadow-lg">
+                      <rect x="42" y="94" width="36" height="12" rx="4" fill="#d97706" />
+                      <polygon points="50,94 70,94 65,78 55,78" fill="#b45309" />
+                      <path d="M30 30 C30 70, 90 70, 90 30 Z" fill="#fbbf24" />
+                      <path d="M35 30 C35 64, 85 64, 85 30 Z" fill="#fde047" />
+                      <circle cx="60" cy="46" r="10" fill="#f59e0b" />
+                      <polygon points="60,39 63,45 69,45 64,49 66,55 60,51 54,55 56,49 51,45 57,45" fill="#ffffff" />
+                      <path d="M30 36 C18 36, 18 56, 33 60" stroke="#f59e0b" strokeWidth="5" strokeLinecap="round" fill="none" />
+                      <path d="M90 36 C102 36, 102 56, 87 60" stroke="#f59e0b" strokeWidth="5" strokeLinecap="round" fill="none" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="md:col-span-6 bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-700 font-display">Featured Story for {gradeName(gradeKey)}</span>
+                    </div>
+                    <button onClick={() => setLibraryOpen(true)} className="text-xs font-black text-theme-main hover:underline">
+                      Change Story
+                    </button>
+                  </div>
+                  <div onClick={() => go('reader')} className="bg-[#fef9ee] rounded-2xl p-4 border border-amber-200/70 flex items-center justify-between cursor-pointer hover:bg-amber-50 transition">
+                    <div className="space-y-1">
+                      <div className="text-[11px] font-black uppercase tracking-wider text-amber-700">{book.subtitle}</div>
+                      <h4 className="font-serif font-black text-slate-900 text-lg">{book.title}</h4>
+                      <div className="flex items-center space-x-4 text-xs text-slate-500 pt-1">
+                        <span><i className="fa-solid fa-book-open text-theme-main mr-1"></i> Tap any word for meaning</span>
+                        <span><i className="fa-solid fa-volume-high text-emerald-500 mr-1"></i> Audio</span>
+                      </div>
+                    </div>
+                    <button className="w-12 h-12 rounded-2xl bg-theme-solid text-white flex items-center justify-center text-lg shadow-md shrink-0 ml-3">
+                      <i className="fa-solid fa-arrow-right"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Dual Mode Bar */}
-          <div className="sticky top-0 z-30 bg-white/95 backdrop-blur px-3.5 py-2.5 border-b border-slate-200/80 shadow-sm">
-            <div className="grid grid-cols-2 rounded-xl bg-ewa-blue p-1 gap-1 text-white shadow-md">
-              <button
-                onClick={setModeRead}
-                className={'flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition ' + (mode === 'read' ? 'bg-white text-ewa-darkBlue shadow-sm' : 'text-white hover:bg-white/10')}
-              >
-                <i className="fa-solid fa-book-open-reader text-sm"></i>
-                <span>Read Story</span>
-              </button>
-              <button
-                onClick={setModeAudio}
-                className={'flex items-center justify-center space-x-2 py-2 px-3 rounded-lg font-black text-xs uppercase tracking-wider transition ' + (mode === 'audio' ? 'bg-white text-ewa-darkBlue shadow-sm' : 'text-white hover:bg-white/10')}
-              >
-                <i className="fa-solid fa-headphones text-sm"></i>
-                <span>Listen Along</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Audiobook Player Widget */}
-          {mode === 'audio' && (
-            <div className="bg-gradient-to-r from-sky-500 via-ewa-blue to-cyan-500 text-white p-3.5 mx-3 mt-3 rounded-2xl shadow-lg transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                  <span className="text-xs font-black uppercase tracking-wider text-sky-100">Audio Narration</span>
+              <div className="pt-2">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-display font-black text-xl text-slate-800">Categories</h3>
+                  <span className="text-xs font-bold text-slate-400">Choose a world to explore</span>
                 </div>
-                <button onClick={cycleSpeed} className="text-xs font-black bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded-full transition">{audioSpeed}x</button>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { cat: 'abc', bg: 'bg-amber-100/70', body: (<span><span className="text-emerald-500">A</span><span className="text-rose-500">B</span><span className="text-sky-500">C</span></span>), title: 'ABC', sub: 'Phonics & Letters', go: 'reader' },
+                    { cat: 'numbers', bg: 'bg-sky-100/70', body: (<span><span className="text-rose-500">1</span><span className="text-amber-500">2</span><span className="text-purple-500">3</span></span>), title: 'Numbers', sub: 'Counting Fun', go: 'quiz' },
+                    { cat: 'animals', bg: 'bg-emerald-100/70', body: '🦁', title: 'Animals', sub: 'World & Sounds', go: 'quiz' },
+                    { cat: 'shapes', bg: 'bg-rose-100/70', body: '⭐', title: 'Shapes', sub: '& Colors', go: 'reader' },
+                  ].map((c) => (
+                    <div key={c.cat} onClick={() => go(c.go)} className="bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-[1.03] transition flex flex-col items-center text-center">
+                      <div className={`w-16 h-16 rounded-2xl ${c.bg} flex items-center justify-center text-3xl font-display font-black tracking-tighter shadow-inner mb-3`}>
+                        {c.body}
+                      </div>
+                      <span className="font-display font-black text-slate-800 text-base">{c.title}</span>
+                      <span className="text-xs text-slate-400 font-bold">{c.sub}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center justify-center space-x-4 pt-1">
-                <button onClick={() => skipAudio(-10)} className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs transition active:scale-95">
-                  <i className="fa-solid fa-backward-step"></i>
-                </button>
-                <button onClick={() => (audioPlaying ? pauseAudio() : startAudio(audioRef.current.idx))} className="w-11 h-11 rounded-full bg-white text-ewa-darkBlue shadow-md flex items-center justify-center text-lg transition active:scale-90 hover:scale-105">
-                  <i className={'fa-solid ' + (audioPlaying ? 'fa-pause' : 'fa-play ml-0.5')}></i>
-                </button>
-                <button onClick={() => skipAudio(10)} className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs transition active:scale-95">
-                  <i className="fa-solid fa-forward-step"></i>
-                </button>
+
+              <LevelsStrip gradeKey={gradeKey} scores={scores} onPlay={(n) => setLevelN(n)} />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div onClick={() => go('school')} className="bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-[1.02] transition flex items-center space-x-3">
+                  <div className="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center text-xl">🏫</div>
+                  <div>
+                    <div className="font-display font-black text-slate-800 text-sm">School Lessons</div>
+                    <div className="text-xs text-slate-400 font-bold">Upload &amp; extract</div>
+                  </div>
+                </div>
+                <div onClick={() => go('studio')} className="bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-[1.02] transition flex items-center space-x-3">
+                  <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">✨</div>
+                  <div>
+                    <div className="font-display font-black text-slate-800 text-sm">Create Content</div>
+                    <div className="text-xs text-slate-400 font-bold">Cards · stories · math</div>
+                  </div>
+                </div>
               </div>
-              <div className="mt-2 text-center text-[11px] text-sky-100 font-medium">
-                Tap any word to begin audio narration from that spot
-              </div>
-            </div>
+            </section>
           )}
 
-          <div className="p-5 sm:p-6 text-slate-800 font-serif leading-loose tracking-wide text-lg pb-24" style={{ fontSize }}>
-            {renderParagraphs()}
-          </div>
-        </main>
+          {screen === 'reader' && (
+            <section className="absolute inset-0 flex flex-col bg-[#fdfbf7]">
+              <header className="bg-white/95 backdrop-blur px-4 md:px-8 py-3 flex items-center justify-between border-b border-slate-200 shrink-0 z-20">
+                <div className="flex items-center space-x-3">
+                  <button onClick={() => go('home')} className="w-9 h-9 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center hover:bg-slate-200 transition">
+                    <i className="fa-solid fa-chevron-left text-xs"></i>
+                  </button>
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-theme-main px-2 py-0.5 rounded-full bg-theme-light">{gradeName(gradeKey)}</span>
+                    <h3 className="font-display font-bold text-slate-800 text-sm md:text-base">{book.title}</h3>
+                  </div>
+                </div>
+                <button onClick={() => setLibraryOpen(true)} className="px-3.5 py-1.5 rounded-full bg-theme-light text-theme-main flex items-center space-x-2 font-display font-bold text-xs hover:opacity-80 transition" title="Select Story">
+                  <i className="fa-solid fa-book-bookmark"></i>
+                  <span className="hidden md:inline">Change Story</span>
+                </button>
+              </header>
+              <Reader
+                book={book}
+                gradeKey={gradeKey}
+                saved={saved}
+                onSaveWord={saveWord}
+                fontSize={fontSize}
+                mode={readerMode}
+                setMode={setReaderMode}
+                libraryOpen={libraryOpen}
+                setLibraryOpen={setLibraryOpen}
+                storyList={storyList}
+                onSelectStory={(s) => {
+                  if (s.library) {
+                    setLibCount((c) => Math.min(c + 100, STORIES_PER_GRADE));
+                    notify(`Library expanded — ${Math.min(libCount + 100, STORIES_PER_GRADE)} of ${STORIES_PER_GRADE} ${gradeName(gradeKey)} stories`);
+                    return;
+                  }
+                  setBook(s);
+                  setLibraryOpen(false);
+                  setReaderMode('read');
+                }}
+              />
+            </section>
+          )}
 
-        {/* Word Bubble */}
-        {popup && (
-          <div
-            id="wordPopup"
-            ref={popupRef}
-            onClick={(e) => e.stopPropagation()}
-            className="ewa-bubble bg-white rounded-2xl border border-sky-100 w-[240px] sm:w-[260px] select-none text-left overflow-hidden"
-            style={{ left: pos.left, top: pos.top }}
-          >
-            <div className={'ewa-bubble-arrow' + (pos.arrowUp ? ' arrow-up' : '')}></div>
-            <div className="p-3.5 pb-2.5 relative">
-              <button onClick={() => popup.data && speakWord(popup.data.word)} className="absolute top-3 left-3 w-7 h-7 rounded-full bg-sky-50 text-ewa-blue hover:bg-sky-100 flex items-center justify-center transition active:scale-90" title="Listen to pronunciation">
-                <i className="fa-solid fa-volume-high text-xs"></i>
-              </button>
-              <button onClick={closePopup} className="absolute top-2.5 right-2.5 text-slate-300 hover:text-slate-500 w-5 h-5 flex items-center justify-center text-xs">
-                <i className="fa-solid fa-xmark"></i>
-              </button>
-              <div className="text-center pt-0.5">
-                <h3 className="font-sans font-black text-xl text-slate-800 tracking-tight leading-none">
-                  {popup.loading ? (popup.data ? popup.data.word : '…') : popup.data.raw || popup.data.word}
-                </h3>
-                <div className="text-xs font-mono text-slate-400 font-semibold tracking-wider mt-1">
-                  {popup.loading ? '|...|' : popup.data.ipa}
-                </div>
-              </div>
-              <div className="mt-2.5 bg-slate-50 border border-slate-200/70 rounded-xl p-2.5 text-slate-700">
-                <div className="text-[10px] uppercase font-black tracking-wider text-ewa-darkBlue mb-0.5 flex items-center">
-                  <i className="fa-solid fa-lightbulb text-amber-500 mr-1.5"></i> Meaning:
-                </div>
-                <div className="text-[12px] leading-snug font-medium text-slate-700">
-                  {popup.loading ? (<span><i className="fa-solid fa-spinner fa-spin text-ewa-blue text-xs mr-1"></i> Finding definition...</span>) : popup.data.meaning}
-                </div>
-              </div>
-              <div className="mt-1.5 bg-sky-50/70 border border-sky-100 rounded-xl p-2.5 text-slate-700">
-                <div className="text-[10px] uppercase font-black tracking-wider text-sky-700 mb-0.5 flex items-center">
-                  <i className="fa-solid fa-quote-left mr-1.5"></i> In a sentence:
-                </div>
-                <div className="text-[11.5px] italic leading-snug text-slate-700">
-                  {popup.loading ? '...' : `"${stripQuotes(popup.data.sentence)}"`}
-                </div>
-              </div>
-              {!popup.loading && popup.data.question && popup.data.choices && (
-                <div className="mt-1.5">
-                  <div className="bg-amber-50/80 border border-amber-200/70 rounded-xl p-2.5">
-                    <div className="text-[10px] uppercase font-black tracking-wider text-amber-800 mb-1 flex items-center">
-                      <i className="fa-solid fa-circle-question mr-1.5"></i> Quick Quiz:
-                    </div>
-                    <p className="text-[11.5px] font-bold text-slate-800 mb-1.5">{popup.data.question}</p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {popup.data.choices.map((choice, idx) => (
-                        <button
-                          key={idx}
-                          onClick={(e) => { e.stopPropagation(); answerPopupQuiz(idx); }}
-                          className={'text-[10px] font-bold py-1 px-1.5 rounded-lg border transition active:scale-95 text-center ' + (
-                            popup.quizPicked === idx
-                              ? popup.quizOk
-                                ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                                : 'bg-rose-50 text-rose-700 border-rose-200'
-                              : 'bg-white hover:bg-amber-100 text-slate-700 border-amber-200'
-                          )}
-                        >
-                          {choice}
+          {screen === 'quiz' && (
+            <section className="absolute inset-0 flex flex-col bg-[#fbfaff] p-4 md:p-8 overflow-y-auto">
+              <QuizPanel gradeKey={gradeKey} story={book} saved={saved} onFinish={finishQuiz} speak={(t) => { speakText(t); }} />
+            </section>
+          )}
+
+          {screen === 'rewards' && (
+            <section className="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 overflow-y-auto pb-24">
+              <RewardsPanel scores={scores} saved={saved} notify={notify} onScoresChange={setScores} />
+            </section>
+          )}
+
+          {screen === 'profile' && (
+            <section className="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 overflow-y-auto pb-24">
+              <div className="max-w-3xl mx-auto w-full space-y-6">
+                <h2 className="font-display font-black text-2xl md:text-3xl text-slate-800 pt-1">Kid&apos;s Profile &amp; Themes</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d flex flex-col items-center text-center space-y-4">
+                    <div className="w-24 h-24 rounded-3xl bg-amber-200 border-4 border-white shadow-lg flex items-center justify-center text-5xl">{profile.avatar}</div>
+                    <div className="text-xs text-slate-400 font-bold">Tap an avatar to choose:</div>
+                    <div className="flex space-x-2">
+                      {AVATARS.map((a) => (
+                        <button key={a} onClick={() => { playChime('pop'); setProfile((p) => ({ ...p, avatar: a })); }} className="w-11 h-11 rounded-2xl bg-slate-100 hover:bg-amber-100 text-2xl flex items-center justify-center">
+                          {a}
                         </button>
                       ))}
                     </div>
-                    {popup.quizPicked !== null && (
-                      <div className={'text-[11px] font-bold text-center mt-1 ' + (popup.quizOk ? 'text-emerald-600' : 'text-amber-700')}>
-                        {popup.quizOk ? '★ Excellent! That is correct!' : 'Try again! Think about the meaning.'}
+                    <div className="w-full text-left pt-2">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Child&apos;s Name</label>
+                      <input value={profile.name} onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value || 'Kid' }))} type="text" className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 font-display font-bold text-slate-800 focus:outline-none focus:border-theme-main text-sm" />
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Current Grade Level</label>
+                      <span className="text-xs font-black text-theme-main">{gradeName(gradeKey)}</span>
+                    </div>
+                    <p className="text-xs text-slate-400">Pick any grade to instantly adjust stories, phonics, and challenges!</p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {GRADES.map((g) => (
+                        <button key={g.key} onClick={() => setGrade(g.key)} className={`py-2 px-1 text-center rounded-2xl font-display font-black text-xs transition border ${g.key === gradeKey ? 'bg-theme-main text-white border-theme-main shadow-md' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}`}>
+                          {g.short}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="pt-1">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Text Font Size</label>
+                      <div className="flex space-x-2">
+                        <button onClick={() => setFontSize((f) => Math.max(14, f - 2))} className="flex-1 py-1.5 bg-slate-100 rounded-lg text-xs font-bold">A−</button>
+                        <button onClick={() => setFontSize(18)} className="flex-1 py-1.5 bg-slate-100 rounded-lg text-xs font-bold">Normal</button>
+                        <button onClick={() => setFontSize((f) => Math.min(26, f + 2))} className="flex-1 py-1.5 bg-slate-100 rounded-lg text-xs font-bold">A+</button>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
-            <div className="grid grid-cols-2 bg-ewa-blue border-t border-sky-300/40 text-xs font-bold text-white text-center">
-              <button
-                onClick={(e) => { e.stopPropagation(); saveWord('learned'); }}
-                className={'py-2.5 transition border-r border-white/20 flex items-center justify-center tracking-tight ' + (popupStatus === 'learned' ? 'bg-emerald-600 font-extrabold text-white' : 'hover:bg-sky-600/30 active:bg-sky-700/40')}
-              >
-                <i className={'fa-solid fa-check text-[11px] mr-1 ' + (popupStatus === 'learned' ? '' : 'hidden')}></i>
-                <span>{popupStatus === 'learned' ? 'learned ✓' : 'learned'}</span>
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); saveWord('learning'); }}
-                className={'py-2.5 transition flex items-center justify-center tracking-tight bg-ewa-darkBlue/20 ' + (popupStatus === 'learning' ? 'bg-sky-700 font-extrabold text-white' : 'hover:bg-sky-600/30 active:bg-sky-700/40 font-bold')}
-              >
-                <i className={'fa-solid fa-plus text-[11px] mr-1 ' + (popupStatus === 'learning' ? 'hidden' : '')}></i>
-                <span>{popupStatus === 'learning' ? 'in deck ★' : 'learn'}</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Bottom floating buttons */}
-        <div className="absolute bottom-3 inset-x-4 pointer-events-none flex justify-between items-center z-20">
-          <button onClick={openSentence} className="pointer-events-auto bg-white/95 backdrop-blur-md text-slate-700 text-xs font-extrabold px-3.5 py-2 rounded-full shadow-lg border border-slate-200 flex items-center hover:bg-slate-50 transition active:scale-95">
-            <i className="fa-solid fa-circle-question text-ewa-blue text-sm mr-1.5"></i>
-            <span>Sentence &amp; Questions</span>
-          </button>
-          <button onClick={() => scrollRef.current && scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' })} className="pointer-events-auto w-9 h-9 rounded-full bg-white/95 backdrop-blur-md text-slate-600 shadow-lg border border-slate-200 flex items-center justify-center hover:text-ewa-blue transition active:scale-95">
-            <i className="fa-solid fa-arrow-up text-xs"></i>
-          </button>
-        </div>
-
-        {/* Sentence drawer */}
-        <div className={'absolute inset-x-0 bottom-0 z-40 bg-white rounded-t-3xl shadow-2xl border-t border-slate-200 p-5 transform transition-transform duration-300 ease-out max-h-[80%] overflow-y-auto ' + (!sentence || !sentence.open ? 'translate-y-full' : '')}>
-          <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-3"></div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-black uppercase tracking-wider text-ewa-blue flex items-center">
-              <i className="fa-solid fa-puzzle-piece mr-1.5"></i> Sentence Breakdown &amp; Quiz
-            </span>
-            <button onClick={() => setSentence((s) => s && { ...s, open: false })} className="text-slate-400 hover:text-slate-600 text-sm p-1">
-              <i className="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          {sentence && (
-            <>
-              <p className="font-serif text-sm text-slate-800 font-semibold mb-3 p-3 bg-slate-50 rounded-xl border border-slate-200/80">&quot;{sentence.text}&quot;</p>
-              <div className="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-800 font-sans text-xs mb-3">
-                <span className="font-black text-ewa-darkBlue uppercase text-[10px] block mb-1">What this sentence means:</span>
-                <p>{sentence.explanation}</p>
-              </div>
-              <div className="bg-amber-50/80 border border-amber-200/80 rounded-xl p-3">
-                <span className="font-black text-amber-800 uppercase text-[10px] block mb-1">Comprehension Question:</span>
-                <p className="text-xs font-bold text-slate-800 mb-2">{sentence.quiz.q}</p>
-                <div className="space-y-1.5">
-                  {sentence.quiz.options.map((opt, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => answerSentenceQuiz(idx)}
-                      className={'w-full py-2 px-3 text-slate-800 text-xs font-bold rounded-lg border transition text-left flex items-center justify-between ' + (
-                        sentence.picked === idx
-                          ? sentence.ok
-                            ? 'bg-emerald-100 border-emerald-400 text-emerald-800'
-                            : 'bg-rose-50 border-rose-300 text-rose-800'
-                          : 'bg-white hover:bg-amber-100 border-amber-200'
-                      )}
-                    >
-                      <span>{opt}</span>
-                      <i className={'fa-solid fa-check text-[10px] text-amber-500 ' + (sentence.picked === idx && sentence.ok ? '' : 'opacity-0')}></i>
-                    </button>
-                  ))}
+                <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Favorite App Color Palette</label>
+                    <span className="text-xs font-black text-slate-500">{themeLabel}</span>
+                  </div>
+                  <p className="text-xs text-slate-400">Pick any color palette for buttons, cards, and stories!</p>
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3 pt-1">
+                    {THEMES.map(([k, label, color]) => (
+                      <button key={k} onClick={() => setTheme(k)} className={`p-3.5 rounded-2xl border-2 flex flex-col items-center space-y-1.5 transition active:scale-95 ${profile.theme === k ? 'border-slate-800 bg-slate-50' : 'border-slate-100'}`}>
+                        <span className="w-7 h-7 rounded-full shadow-sm" style={{ background: color }}></span>
+                        <span className="text-xs font-bold text-slate-700">{label.split(' ')[0] === 'EWA' ? 'EWA Blue' : label.split(' ')[0] === 'Bubblegum' ? 'Bubble Pink' : label.split(' ')[0] === 'Sunshine' ? 'Sunshine' : label.split(' ')[0]}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                {sentence.picked !== null && (
-                  <p className={'text-xs font-bold mt-2 text-center ' + (sentence.ok ? 'text-emerald-600' : 'text-rose-600')}>
-                    {sentence.ok ? '★ Correct! You understood the sentence well!' : 'Try again! Read the sentence carefully.'}
-                  </p>
-                )}
               </div>
-            </>
+            </section>
+          )}
+
+          {screen === 'school' && (
+            <section className="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 overflow-y-auto pb-24">
+              <div className="max-w-3xl mx-auto w-full">
+                <h2 className="font-display font-black text-2xl text-slate-800 pt-1 mb-1">School Lessons</h2>
+                <p className="text-xs text-slate-400 mb-4">Upload once — the app files every item into its exact grade + subject.</p>
+                <SchoolPanel notify={notify} />
+              </div>
+            </section>
+          )}
+
+          {screen === 'studio' && (
+            <section className="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 overflow-y-auto pb-24">
+              <div className="max-w-3xl mx-auto w-full">
+                <h2 className="font-display font-black text-2xl text-slate-800 pt-1 mb-1">Content Studio</h2>
+                <p className="text-xs text-slate-400 mb-4">Flashcards, stories, Q&amp;A, math, fill-in sentences — grade-locked.</p>
+                <StudioPanel notify={notify} />
+              </div>
+            </section>
           )}
         </div>
 
-        <LibraryModal
-          open={libraryOpen}
-          books={books}
-          currentIndex={bookIdx}
-          onSelect={selectBook}
-          onClose={() => setLibraryOpen(false)}
-          onOpenCustom={() => { setLibraryOpen(false); setCustomOpen(true); }}
-        />
-        <CustomTextModal open={customOpen} onClose={() => setCustomOpen(false)} onLoad={loadCustom} />
-        <VocabDeck open={vocabOpen} onClose={() => setVocabOpen(false)} saved={saved} onMarkEasy={markEasy} onRemove={removeWord} />
-        <SettingsModal
-          open={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
-          onSmaller={() => setFontSize((f) => Math.max(14, f - 2))}
-          onNormal={() => setFontSize(18)}
-          onLarger={() => setFontSize((f) => Math.min(26, f + 2))}
-        />
+        <nav id="mobileNavBar" className="h-16 bg-white/95 backdrop-blur border-t border-slate-200/80 px-4 flex md:hidden items-center justify-around shrink-0 z-30">
+          {NAV.map(([id, label, icon]) => navBtn(id, icon, label))}
+        </nav>
+      </div>
 
-        {/* Toast */}
-        <div className={'absolute top-4 inset-x-6 z-50 bg-slate-900/90 backdrop-blur text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-xl text-center pointer-events-none transition-all duration-300 ' + (toast ? '' : 'opacity-0 -translate-y-2')}>
-          {toast || 'Notification text'}
-        </div>
+      {levelN && (
+        <LevelRunner
+          gradeKey={gradeKey}
+          levelN={levelN}
+          onClose={() => setLevelN(null)}
+          onComplete={(reward) => completeLevel(levelN, reward)}
+        />
+      )}
+
+      <div className={'absolute top-9 inset-x-6 z-[70] bg-slate-900/90 text-white text-xs font-bold py-2.5 px-4 rounded-2xl shadow-xl text-center pointer-events-none transition-all duration-300 ' + (toast ? '' : 'opacity-0 -translate-y-2')}>
+        {toast || 'Toast notification'}
       </div>
     </div>
   );

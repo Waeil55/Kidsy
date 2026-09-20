@@ -17,6 +17,10 @@ export default {
         sans: ['Nunito', 'sans-serif'],
         serif: ['Lora', 'Georgia', 'serif'],
         title: ['Cinzel', 'serif'],
+        display: ['Fredoka', 'Nunito', 'sans-serif'],
+      },
+      boxShadow: {
+        'card-3d': '0 8px 0 rgba(0,0,0,0.06), 0 12px 20px -3px rgba(0,0,0,0.08)',
       },
     },
   },

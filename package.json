@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/postbuild.cjs",
+    "build": "node -e \"require('fs').copyFileSync('template.html','index.html')\" && vite build && node scripts/postbuild.cjs",
     "preview": "vite preview"
   },
   "dependencies": {
