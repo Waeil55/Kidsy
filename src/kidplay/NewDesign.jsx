@@ -1037,7 +1037,10 @@ function AppRouter() {
     <HomeScreen
       profile={profile}
       onNavigate={(s, data) => {
-        if (s === 'quiz') navigate('grades');
+        if (s === 'quiz') {
+          if (profile && profile.grade) navigate('subjects', { grade: profile.grade });
+          else navigate('grades');
+        }
         else if (s === 'profile') navigate('profile');
         else navigate(s, data || {});
       }}

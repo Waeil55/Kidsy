@@ -1,5 +1,5 @@
 // MerolaApp Production Service Worker - Resilient Offline Caching
-const CACHE_NAME = 'merolaapp-v7-huge-modern';
+const CACHE_NAME = 'merolaapp-v8-huge-modern-sayit';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
