@@ -47,6 +47,8 @@ import JourneyMap from '../components/JourneyMap';
 import { useApp } from '../store/AppContext';
 import { playCorrect, playIncorrect, playPop, fireConfetti, speakText, stopAudio } from '../utils/audio';
 import { StoryReader } from '../components/StoryReader';
+import { PhonicsAdventure } from '../components/PhonicsAdventure';
+import { KidsReels } from './KidsReels';
 
 export function Learn({ initialSubject = 'all' }) {
   const { child, complete } = useApp();
@@ -92,7 +94,7 @@ export function Learn({ initialSubject = 'all' }) {
 
   useEffect(() => {
     if (initialSubject && initialSubject !== 'all') {
-      if (['mathlab', 'gradewords', 'adventure', 'school', 'arena', 'picturebook', 'curriculum', 'encyclopedia', 'stories'].includes(initialSubject)) {
+      if (['mathlab', 'gradewords', 'adventure', 'school', 'arena', 'picturebook', 'curriculum', 'encyclopedia', 'stories', 'phonics', 'reels'].includes(initialSubject)) {
         setActiveTab(initialSubject);
       } else {
         setSubject(initialSubject);
@@ -536,6 +538,38 @@ export function Learn({ initialSubject = 'all' }) {
         >
           <BookOpen size={16} color={activeTab === 'stories' ? '#db2777' : '#64748b'} />
           <span>Stories</span>
+        </button>
+
+        {/* Phonics Tab */}
+        <button
+          onClick={() => { playPop(); setActiveTab('phonics'); }}
+          style={{
+            padding: '9px 4px', borderRadius: '12px', border: 0,
+            background: activeTab === 'phonics' ? '#ffffff' : 'transparent',
+            color: activeTab === 'phonics' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'phonics' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            fontSize: '11.5px', fontWeight: 850, cursor: 'pointer',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px'
+          }}
+        >
+          <span style={{ fontSize: '16px', lineHeight: 1 }}>🔤</span>
+          <span>Phonics</span>
+        </button>
+
+        {/* Reels Tab */}
+        <button
+          onClick={() => { playPop(); setActiveTab('reels'); }}
+          style={{
+            padding: '9px 4px', borderRadius: '12px', border: 0,
+            background: activeTab === 'reels' ? '#ffffff' : 'transparent',
+            color: activeTab === 'reels' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'reels' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            fontSize: '11.5px', fontWeight: 850, cursor: 'pointer',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px'
+          }}
+        >
+          <span style={{ fontSize: '16px', lineHeight: 1 }}>🎬</span>
+          <span>Reels</span>
         </button>
       </div>
 
@@ -1560,6 +1594,23 @@ export function Learn({ initialSubject = 'all' }) {
         }}>
           <StoryReader onBack={() => setActiveTab('gradewords')} />
         </div>
+      )}
+
+      {/* Phonics Adventure Tab */}
+      {activeTab === 'phonics' && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          zIndex: 200,
+          background: '#f8f7ff',
+        }}>
+          <PhonicsAdventure onBack={() => setActiveTab('gradewords')} />
+        </div>
+      )}
+
+      {/* Reels Tab */}
+      {activeTab === 'reels' && (
+        <KidsReels onBack={() => setActiveTab('gradewords')} />
       )}
 
       {/* Gemini AI Studio Modal */}
