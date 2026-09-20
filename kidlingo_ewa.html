@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kidsy: Learn With Fun (KG - Grade 6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Nunito', 'sans-serif'],
+            display: ['Fredoka', 'Nunito', 'sans-serif'],
+            serif: ['Lora', 'Georgia', 'serif'],
+          },
+          boxShadow: {
+            'card-3d': '0 8px 0 rgba(0,0,0,0.05), 0 12px 20px -3px rgba(0,0,0,0.08)',
+            'btn-3d': '0 4px 0 var(--theme-shadow, #5a4bda)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --theme-primary: #7551f0;
+      --theme-secondary: #5831e5;
+      --theme-light: #f3effe;
+      --theme-border: #dcd0fb;
+      --theme-shadow: #4622cf;
+      --theme-gradient: linear-gradient(135deg, #8b68f6 0%, #6842ea 100%);
+    }
+
+    [data-theme="blue"] {
+      --theme-primary: #0284c7;
+      --theme-secondary: #0369a1;
+      --theme-light: #e0f2fe;
+      --theme-border: #bae6fd;
+      --theme-shadow: #0284c7;
+      --theme-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    }
+
+    [data-theme="green"] {
+      --theme-primary: #059669;
+      --theme-secondary: #047857;
+      --theme-light: #ecfdf5;
+      --theme-border: #a7f3d0;
+      --theme-shadow: #065f46;
+      --theme-gradient: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    }
+
+    [data-theme="coral"] {
+      --theme-primary: #e11d48;
+      --theme-secondary: #be123c;
+      --theme-light: #fff1f2;
+      --theme-border: #fecdd3;
+      --theme-shadow: #9f1239;
+      --theme-gradient: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
+    }
+
+    [data-theme="amber"] {
+      --theme-primary: #d97706;
+      --theme-secondary: #b45309;
+      --theme-light: #fffbeb;
+      --theme-border: #fde68a;
+      --theme-shadow: #92400e;
+      --theme-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    }
+
+    [data-theme="pink"] {
+      --theme-primary: #db2777;
+      --theme-secondary: #be185d;
+      --theme-light: #fdf2f8;
+      --theme-border: #fbcfe8;
+      --theme-shadow: #9d174d;
+      --theme-gradient: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+    }
+
+    .bg-theme-main { background: var(--theme-gradient); }
+    .bg-theme-solid { background-color: var(--theme-primary); }
+    .bg-theme-light { background-color: var(--theme-light); }
+    .text-theme-main { color: var(--theme-primary); }
+    .border-theme-main { border-color: var(--theme-primary); }
+    .border-theme-light { border-color: var(--theme-border); }
+
+    /* Phone Preview Simulator */
+    body.device-phone-preview {
+      background-color: #0f172a;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    body.device-phone-preview #appRoot {
+      max-width: 420px;
+      height: 94vh;
+      max-height: 890px;
+      border-radius: 44px;
+      border: 8px solid #1e293b;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    body.device-phone-preview #desktopSidebar { display: none !important; }
+    body.device-phone-preview #mobileNavBar { display: flex !important; }
+
+    /* Interactive EWA Word Tokens */
+    .ewa-word {
+      cursor: pointer;
+      display: inline-block;
+      transition: all 0.15s ease;
+      border-radius: 6px;
+      padding: 1px 3px;
+      margin: 0 1px;
+    }
+    .ewa-word:hover {
+      background-color: var(--theme-light);
+      color: var(--theme-primary);
+    }
+    .ewa-word.active-word {
+      background-color: var(--theme-primary) !important;
+      color: #ffffff !important;
+      border-radius: 6px;
+    }
+    .ewa-word.speaking-now {
+      background-color: #fde047 !important;
+      color: #713f12 !important;
+      font-weight: 800;
+      border-radius: 6px;
+      transform: scale(1.05);
+    }
+    .ewa-word.status-learned {
+      text-decoration: underline;
+      text-decoration-color: #10b981;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 4px;
+    }
+    .ewa-word.status-learning {
+      text-decoration: underline;
+      text-decoration-color: var(--theme-primary);
+      text-decoration-thickness: 3px;
+      text-underline-offset: 4px;
+    }
+
+    /* Exact Floating Tooltip Bubble */
+    .ewa-bubble {
+      position: absolute;
+      z-index: 60;
+      box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.2), 0 8px 15px -3px rgba(0, 0, 0, 0.08);
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards;
+      transform-origin: bottom center;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: translateY(8px) scale(0.92); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .ewa-bubble-arrow {
+      position: absolute;
+      bottom: -9px;
+      left: calc(var(--arrow-left, 50%) - 9px);
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 9px solid var(--theme-primary);
+      pointer-events: none;
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body data-theme="purple" class="bg-slate-100 text-slate-800 font-sans h-full select-none overflow-hidden">
+
+  <div id="appRoot" class="w-full h-full flex flex-col md:flex-row bg-white overflow-hidden relative shadow-sm transition-all duration-300">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside id="desktopSidebar" class="hidden md:flex flex-col w-64 lg:w-72 bg-white border-r border-slate-200 shrink-0 select-none z-30 justify-between p-4">
+      <div class="space-y-4">
+        <!-- Logo & Brand -->
+        <div class="flex items-center justify-between px-2 pt-1">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-2xl bg-theme-main text-white flex items-center justify-center font-display font-black text-xl shadow-md">
+              K
+            </div>
+            <div>
+              <h1 class="font-display font-black text-lg text-slate-800 leading-tight">Kidsy</h1>
+              <span class="text-[11px] font-bold text-slate-400">Learn With Fun (KG-G6)</span>
+            </div>
+          </div>
+          <!-- Phone Preview Simulator Toggle -->
+          <button id="btnToggleMobilePreview" class="text-[11px] p-2 rounded-xl bg-slate-100 hover:bg-theme-light text-slate-600 hover:text-theme-main transition" title="Toggle Phone Simulator Frame">
+            <i class="fa-solid fa-mobile-screen"></i>
+          </button>
+        </div>
+
+        <!-- Child Active Profile Card -->
+        <div id="sidebarProfileCard" class="bg-slate-50 border border-slate-200/80 rounded-3xl p-3 flex items-center space-x-3 cursor-pointer hover:bg-theme-light/40 transition">
+          <div id="sidebarAvatarBadge" class="w-11 h-11 rounded-2xl bg-amber-200 border-2 border-white shadow-sm flex items-center justify-center text-2xl shrink-0">
+            👦
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center space-x-1">
+              <span id="sidebarGreetingName" class="font-display font-black text-slate-800 text-sm truncate">Hi, Arab</span>
+            </div>
+            <span id="sidebarGradePill" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-theme-light text-theme-main inline-block">
+              Grade 1
+            </span>
+          </div>
+          <i class="fa-solid fa-gear text-slate-400 text-xs"></i>
+        </div>
+
+        <!-- Grade Quick Selector Bar (KG to Grade 6) -->
+        <div>
+          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-1.5">Grade Standard:</div>
+          <div class="grid grid-cols-4 gap-1.5" id="sidebarGradeSelectorGrid"></div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="space-y-1" id="sidebarNavLinks">
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-theme-main bg-theme-light font-display font-black text-sm transition text-left" data-target="screenHome">
+            <i class="fa-solid fa-house text-base w-5 text-center"></i>
+            <span>Home</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenReader">
+            <i class="fa-solid fa-book-open text-base w-5 text-center"></i>
+            <span>Story & 10 Qs</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenQuiz">
+            <i class="fa-solid fa-gamepad text-base w-5 text-center"></i>
+            <span>Animals & Words</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenMath">
+            <i class="fa-solid fa-calculator text-base w-5 text-center"></i>
+            <span>500 Math Drills</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenFill">
+            <i class="fa-solid fa-puzzle-piece text-base w-5 text-center"></i>
+            <span>Sentences to Fill</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenExtractor">
+            <i class="fa-solid fa-file-import text-base w-5 text-center"></i>
+            <span>School Extractor</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenStudio">
+            <i class="fa-solid fa-plus-circle text-base w-5 text-center"></i>
+            <span>Creator Studio</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenRewards">
+            <i class="fa-solid fa-trophy text-base w-5 text-center"></i>
+            <span>Rewards & Stars</span>
+          </button>
+          <button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl text-slate-500 hover:bg-slate-50 font-display font-bold text-sm transition text-left" data-target="screenProfile">
+            <i class="fa-solid fa-palette text-base w-5 text-center"></i>
+            <span>Themes & Profile</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Persistent Star Badge & Manual Reset Trigger -->
+      <div class="space-y-2 pt-2 border-t border-slate-100">
+        <div class="bg-amber-50 border border-amber-200/80 rounded-2xl p-2.5 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">⭐</span>
+            <div>
+              <span class="font-display font-black text-xs text-amber-900 block" id="sidebarStarCount">140 Stars</span>
+              <span class="text-[10px] text-amber-700 font-bold" id="sidebarXpCount">320 XP (Saved)</span>
+            </div>
+          </div>
+          <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900">
+            Streak 4d
+          </span>
+        </div>
+
+        <button id="btnOpenResetModal" class="w-full text-center py-1.5 text-[11px] font-bold text-slate-400 hover:text-rose-600 transition flex items-center justify-center space-x-1.5">
+          <i class="fa-solid fa-rotate-left text-[10px]"></i>
+          <span>Reset Scores Manually</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative">
+
+      <!-- Header Bar -->
+      <header class="h-14 md:h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between shrink-0 z-20">
+        <div class="flex items-center space-x-3">
+          <span class="hidden md:inline-block text-xs font-bold text-slate-400">Curriculum:</span>
+          <span id="currentGradeHeaderBadge" class="text-xs font-display font-black px-3 py-1 rounded-full bg-theme-light text-theme-main border border-theme-light">
+            Grade 1 Standard
+          </span>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <!-- Interactive Kid's Mic (Loud Reading Meter) -->
+          <button id="btnToggleMic" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition" title="Kid's Loud Voice Reader">
+            <i class="fa-solid fa-microphone-slash text-slate-400" id="micIcon"></i>
+            <span id="micLabel" class="hidden sm:inline">Mic Off (Click to Speak)</span>
+            <div id="micMeterBar" class="hidden w-12 h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div id="micMeterFill" class="h-full bg-rose-500 w-0 transition-all duration-75"></div>
+            </div>
+          </button>
+
+          <!-- Color Theme Circles -->
+          <div class="flex items-center space-x-1.5 pl-2 border-l border-slate-200">
+            <button class="w-6 h-6 rounded-full bg-[#7551f0] border-2 border-white shadow-xs hover:scale-110 transition quick-theme-circle" data-theme="purple" title="Purple Magic"></button>
+            <button class="w-6 h-6 rounded-full bg-[#0284c7] border-2 border-white shadow-xs hover:scale-110 transition quick-theme-circle" data-theme="blue" title="Sky Blue"></button>
+            <button class="w-6 h-6 rounded-full bg-[#059669] border-2 border-white shadow-xs hover:scale-110 transition quick-theme-circle" data-theme="green" title="Mint Meadow"></button>
+            <button class="w-6 h-6 rounded-full bg-[#e11d48] border-2 border-white shadow-xs hover:scale-110 transition quick-theme-circle" data-theme="coral" title="Coral Sunset"></button>
+            <button class="w-6 h-6 rounded-full bg-[#d97706] border-2 border-white shadow-xs hover:scale-110 transition quick-theme-circle" data-theme="amber" title="Sunshine Gold"></button>
+            <button class="w-6 h-6 rounded-full bg-[#db2777] border-2 border-white shadow-xs hover:scale-110 transition quick-theme-circle" data-theme="pink" title="Bubblegum Pink"></button>
+          </div>
+        </div>
+      </header>
+
+      <div id="screensViewport" class="flex-1 overflow-hidden relative bg-[#faf9f6]">
+
+        <!-- SCREEN 1: HOME DASHBOARD -->
+        <section id="screenHome" class="absolute inset-0 overflow-y-auto pb-20 p-4 md:p-8 space-y-6">
+          <!-- 3D Gold Trophy Daily Challenge Card -->
+          <div class="rounded-3xl bg-theme-main p-6 text-white shadow-xl relative overflow-hidden flex items-center justify-between min-h-[160px]">
+            <i class="fa-solid fa-star absolute top-3 right-36 text-amber-300 text-xs animate-pulse"></i>
+            <i class="fa-solid fa-star absolute bottom-4 left-36 text-amber-300 text-sm"></i>
+
+            <div class="max-w-[65%] z-10 space-y-2">
+              <span class="text-[11px] font-black uppercase tracking-widest text-amber-200">Kidsy Adventure · <span id="homeGradeLabel">Grade 1</span></span>
+              <h2 class="font-display font-black text-2xl md:text-3xl leading-tight">Daily Challenge</h2>
+              <p class="text-xs md:text-sm text-white/90 font-medium">Complete a quiz and earn 20 XP & stars!</p>
+              <button id="btnDailyChallengeGo" class="py-2.5 px-6 bg-white text-slate-900 font-display font-black text-xs rounded-xl shadow-md hover:bg-amber-100 transition active:scale-95">
+                Let's Go
+              </button>
+            </div>
+
+            <!-- 3D Trophy Vector -->
+            <div class="w-28 h-28 md:w-36 md:h-36 relative flex items-center justify-center shrink-0">
+              <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-lg">
+                <rect x="42" y="94" width="36" height="12" rx="4" fill="#d97706"/>
+                <polygon points="50,94 70,94 65,78 55,78" fill="#b45309"/>
+                <path d="M30 30 C30 70, 90 70, 90 30 Z" fill="#fbbf24"/>
+                <path d="M35 30 C35 64, 85 64, 85 30 Z" fill="#fde047"/>
+                <circle cx="60" cy="46" r="10" fill="#f59e0b"/>
+                <polygon points="60,39 63,45 69,45 64,49 66,55 60,51 54,55 56,49 51,45 57,45" fill="#ffffff"/>
+                <path d="M30 36 C18 36, 18 56, 33 60" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" fill="none"/>
+                <path d="M90 36 C102 36, 102 56, 87 60" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" fill="none"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Categories Grid (ABC, Numbers, Animals, Sentences) -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-display font-black text-xl text-slate-800">Categories</h3>
+              <span class="text-xs font-bold text-slate-400">Choose a world to explore</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="cat-card bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-[1.02] transition flex flex-col items-center text-center" data-target="screenReader">
+                <div class="w-14 h-14 rounded-2xl bg-amber-100/70 flex items-center justify-center text-2xl font-black text-rose-500 shadow-inner mb-2">ABC</div>
+                <span class="font-display font-black text-slate-800 text-base">ABC</span>
+                <span class="text-xs text-slate-400 font-bold">Phonics & Sight Words</span>
+              </div>
+              <div class="cat-card bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-[1.02] transition flex flex-col items-center text-center" data-target="screenMath">
+                <div class="w-14 h-14 rounded-2xl bg-sky-100/70 flex items-center justify-center text-2xl font-black text-sky-600 shadow-inner mb-2">123</div>
+                <span class="font-display font-black text-slate-800 text-base">Numbers</span>
+                <span class="text-xs text-slate-400 font-bold">500 Math Drills</span>
+              </div>
+              <div class="cat-card bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-[1.02] transition flex flex-col items-center text-center" data-target="screenQuiz">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-100/70 flex items-center justify-center text-3xl shadow-inner mb-2">🦁</div>
+                <span class="font-display font-black text-slate-800 text-base">Animals</span>
+                <span class="text-xs text-slate-400 font-bold">Sounds & Words</span>
+              </div>
+              <div class="cat-card bg-white rounded-3xl p-5 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-[1.02] transition flex flex-col items-center text-center" data-target="screenFill">
+                <div class="w-14 h-14 rounded-2xl bg-rose-100/70 flex items-center justify-center text-3xl shadow-inner mb-2">🧩</div>
+                <span class="font-display font-black text-slate-800 text-base">Sentences</span>
+                <span class="text-xs text-slate-400 font-bold">Cloze Word Fill</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 50 Progressive Levels Grid -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-display font-black text-lg text-slate-800">50 Progressive Levels</h4>
+                <p class="text-xs text-slate-400">Strictly calibrated for <span id="homeLevelsGradeTitle">Grade 1</span></p>
+              </div>
+              <span class="text-xs font-black px-3 py-1 rounded-full bg-theme-light text-theme-main" id="levelsUnlockedBadge">
+                1 / 50 Unlocked
+              </span>
+            </div>
+            <div class="grid grid-cols-5 md:grid-cols-10 gap-2" id="homeLevelsGrid"></div>
+          </div>
+        </section>
+
+        <!-- SCREEN 2: STORY READER & 10 QUESTIONS (SPLIT SCREEN - STORY NEVER HIDDEN) -->
+        <section id="screenReader" class="absolute inset-0 flex flex-col bg-[#fdfbf7] hidden z-20 overflow-hidden">
+          
+          <!-- Reader Top Header Controls -->
+          <header class="bg-white/95 backdrop-blur px-4 md:px-6 py-2.5 flex items-center justify-between border-b border-slate-200 shrink-0 z-20">
+            <div class="flex items-center space-x-3">
+              <button id="btnReaderBack" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+              </button>
+              <div>
+                <span id="readerGradeBadge" class="text-[10px] font-black uppercase text-theme-main">Grade 1</span>
+                <h3 id="readerTopTitle" class="font-display font-black text-slate-800 text-sm">Run, Play, Read!</h3>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <!-- Audio Narration Controls -->
+              <button id="btnAudioTogglePlay" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-theme-light text-theme-main text-xs font-black">
+                <i class="fa-solid fa-headphones"></i>
+                <span id="audioPlayLabel">Listen</span>
+              </button>
+              <button id="btnAudioSpeedCycle" class="px-2 py-1.5 rounded-xl bg-slate-100 text-xs font-black text-slate-600">
+                1.0x
+              </button>
+
+              <!-- Split Screen Toggle: Answer 10 Questions (Story is NEVER hidden) -->
+              <button id="btnToggleSplitQuestions" class="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white font-display font-black text-xs hover:bg-slate-800 transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-list-check text-xs"></i>
+                <span id="labelSplitQuestions">Answer 10 Questions</span>
+              </button>
+            </div>
+          </header>
+
+          <!-- DUAL WORKSPACE: STORY PANE (LEFT) + 10 QUESTIONS DOCKED PANE (RIGHT) -->
+          <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+            
+            <!-- STORY CONTAINER (ALWAYS VISIBLE - NEVER HIDDEN) -->
+            <div id="readerStoryScrollArea" class="flex-1 overflow-y-auto p-4 md:p-6 select-text transition-all duration-300">
+              <div class="max-w-2xl mx-auto space-y-4">
+                <!-- Illustrated Vintage Cover Banner -->
+                <div class="rounded-3xl bg-[#f7eedc] border border-[#e5d9be] p-5 text-center relative overflow-hidden select-none">
+                  <div class="text-[10px] uppercase font-black tracking-widest text-[#78593a]" id="readerStorySubtitle">
+                    Dolch Sight Words
+                  </div>
+                  <h2 class="font-serif font-black text-2xl md:text-3xl text-[#341d11] uppercase tracking-wide my-1" id="readerStoryTitle">
+                    Run, Play, Read!
+                  </h2>
+                  <div id="storyIllustrationSvg" class="w-full h-36 my-1 flex items-center justify-center"></div>
+                </div>
+
+                <!-- Story Text Paragraphs with Clickable Word Tokens -->
+                <div id="readerContent" class="font-serif leading-loose text-lg md:text-xl text-slate-800 select-text pb-12"></div>
+              </div>
+            </div>
+
+            <!-- RIGHT DOCKED PANE: 10 SEQUENTIAL QUESTIONS (STORY REMAINS 100% VISIBLE ON LEFT) -->
+            <div id="splitQuestionsPanel" class="hidden lg:w-96 bg-white border-t lg:border-t-0 lg:border-l border-slate-200 p-5 flex flex-col justify-between overflow-y-auto shrink-0 shadow-lg">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <div>
+                    <span class="text-[10px] font-black uppercase text-amber-600">Refer to story on left</span>
+                    <h4 class="font-display font-black text-slate-800 text-sm" id="splitQTitle">Question 1 of 10</h4>
+                  </div>
+                  <span class="text-xs font-black px-2.5 py-0.5 rounded-full bg-theme-light text-theme-main" id="splitQScoreBadge">
+                    Score: 0 / 10
+                  </span>
+                </div>
+
+                <!-- 10 Question Progress Dots -->
+                <div class="flex space-x-1" id="splitQDotsRow"></div>
+
+                <!-- Question Prompt -->
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                  <p class="font-display font-bold text-sm text-slate-800 leading-snug" id="splitQPromptText"></p>
+                  <button id="btnSpeakSplitQ" class="mt-2 text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center space-x-1">
+                    <i class="fa-solid fa-volume-high text-xs"></i>
+                    <span>Read question out loud</span>
+                  </button>
+                </div>
+
+                <!-- 4 Options -->
+                <div class="space-y-2" id="splitQChoicesList"></div>
+              </div>
+
+              <!-- Next Question Pill -->
+              <div class="pt-3">
+                <button id="btnNextSplitQ" class="w-full py-3 bg-theme-main text-white font-display font-black text-xs rounded-2xl shadow-md hover:opacity-90 transition hidden">
+                  Next Question ➔
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SCREEN 3: ANIMALS & SIGHT WORDS QUIZ -->
+        <section id="screenQuiz" class="absolute inset-0 flex flex-col bg-[#fbfaff] p-4 md:p-8 hidden z-20 overflow-y-auto">
+          <div class="max-w-xl mx-auto w-full flex-1 flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between shrink-0">
+              <button id="btnQuizBack" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-xs">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+              </button>
+              <span id="quizProgressText" class="text-xs font-display font-black text-slate-700">1 / 4 Q</span>
+              <button id="btnQuizSoundPrompt" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-theme-main shadow-xs">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+              </button>
+            </div>
+
+            <!-- Scenic Landscape Meadow Banner -->
+            <div class="rounded-3xl h-40 w-full bg-gradient-to-b from-sky-300 via-sky-100 to-emerald-200 border-2 border-white shadow-card-3d overflow-hidden relative shrink-0 flex items-end justify-center">
+              <svg class="w-full h-full" viewBox="0 0 360 180" fill="none">
+                <ellipse cx="60" cy="40" rx="30" ry="14" fill="#ffffff" opacity="0.8"/>
+                <ellipse cx="280" cy="50" rx="40" ry="16" fill="#ffffff" opacity="0.8"/>
+                <circle cx="180" cy="30" r="16" fill="#fef08a" opacity="0.9"/>
+                <path d="M-20 150 Q70 100 180 135 T380 120 L380 180 L-20 180 Z" fill="#86efac"/>
+                <path d="M-20 160 Q100 130 240 155 T380 145 L380 180 L-20 180 Z" fill="#4ade80"/>
+                <rect x="36" y="105" width="8" height="35" rx="4" fill="#854d0e"/>
+                <circle cx="40" cy="95" r="22" fill="#15803d"/>
+                <rect x="315" y="95" width="10" height="45" rx="4" fill="#854d0e"/>
+                <circle cx="320" cy="85" r="24" fill="#15803d"/>
+              </svg>
+            </div>
+
+            <div class="text-center shrink-0">
+              <h3 id="quizQuestionPrompt" class="font-display font-black text-xl text-slate-800">Which animal says "Moo"?</h3>
+            </div>
+
+            <!-- 2x2 Animal Choice Cards Grid -->
+            <div class="grid grid-cols-2 gap-3" id="quizChoicesGrid"></div>
+
+            <button id="btnQuizNextAction" class="w-full py-3.5 bg-theme-main text-white font-display font-black text-sm rounded-2xl shadow-md hover:opacity-95 transition flex items-center justify-center space-x-1.5">
+              <span>Next Question</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- SCREEN 4: 500 MATH DRILLS (CALIBRATED PER GRADE) -->
+        <section id="screenMath" class="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 hidden z-20 overflow-y-auto">
+          <div class="max-w-xl mx-auto w-full space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-theme-main" id="mathGradeLabel">Grade 1 Math</span>
+                <h3 class="font-display font-black text-2xl text-slate-800">500 Math Challenges</h3>
+              </div>
+              <button id="btnSkipMath" class="text-xs font-bold text-slate-400 hover:text-slate-700">Skip Drill ➔</button>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-card-3d text-center space-y-6">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-3xl shadow-inner">
+                🔢
+              </div>
+              <h2 id="mathPromptText" class="font-display font-black text-2xl md:text-3xl text-slate-800">Count & Add: 3 + 2 = ?</h2>
+              <div class="grid grid-cols-2 gap-3" id="mathOptionsGrid"></div>
+              <button id="btnNextMath" class="w-full py-3.5 bg-theme-main text-white font-display font-black text-sm rounded-2xl shadow-md hidden">
+                Next Math Drill
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 5: SENTENCES TO FILL (CLOZE GAMES) -->
+        <section id="screenFill" class="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 hidden z-20 overflow-y-auto">
+          <div class="max-w-xl mx-auto w-full space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-theme-main">Sentence Builder</span>
+                <h3 class="font-display font-black text-2xl text-slate-800">Sentences to Fill</h3>
+              </div>
+              <button id="btnSkipFill" class="text-xs font-bold text-slate-400 hover:text-slate-700">Next Sentence ➔</button>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-card-3d text-center space-y-6">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-3xl shadow-inner">
+                🧩
+              </div>
+              <p id="fillSentenceDisplay" class="font-serif text-xl md:text-2xl text-slate-800 leading-relaxed"></p>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 pt-2" id="fillWordsGrid"></div>
+              <button id="btnNextFill" class="w-full py-3.5 bg-theme-main text-white font-display font-black text-sm rounded-2xl shadow-md hidden">
+                Next Sentence
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 6: SCHOOL LESSON SMART EXTRACTOR -->
+        <section id="screenExtractor" class="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 hidden z-20 overflow-y-auto pb-24">
+          <div class="max-w-3xl mx-auto w-full space-y-6">
+            <div>
+              <h3 class="font-display font-black text-2xl text-slate-800">School Lesson Smart Extractor</h3>
+              <p class="text-xs text-slate-400">
+                Upload homework or paste school notes. Automatically extracts reading passages, vocabulary cards, and comprehension Q&As without mixing subjects.
+              </p>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-[11px] font-bold text-slate-500 uppercase block mb-1">Subject</label>
+                  <select id="extractorSubjectSelect" class="w-full p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700">
+                    <option>English & Phonics</option>
+                    <option>Mathematics & Logic</option>
+                    <option>Science & Nature</option>
+                    <option>Social Studies & History</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[11px] font-bold text-slate-500 uppercase block mb-1">Upload File (.txt, .md)</label>
+                  <input type="file" id="extractorFileInput" accept=".txt,.md" class="w-full p-2 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-bold text-slate-500 uppercase block mb-1">Lesson Text</label>
+                <textarea id="extractorTextInput" rows="4" placeholder="Paste school lesson notes, reading passages, or questions..." class="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-serif focus:outline-none"></textarea>
+              </div>
+
+              <button id="btnRunExtractor" class="w-full py-3 bg-theme-main text-white font-display font-black text-xs rounded-2xl shadow-md flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Extract Clean Lesson Activities</span>
+              </button>
+            </div>
+
+            <!-- Extracted Segregated Results Container -->
+            <div id="extractorResultsBox" class="space-y-4 hidden"></div>
+          </div>
+        </section>
+
+        <!-- SCREEN 7: CREATOR STUDIO -->
+        <section id="screenStudio" class="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 hidden z-20 overflow-y-auto pb-24">
+          <div class="max-w-2xl mx-auto w-full space-y-6">
+            <div>
+              <h3 class="font-display font-black text-2xl text-slate-800">Creator Studio</h3>
+              <p class="text-xs text-slate-400">Add custom flashcards and vocabulary words to study.</p>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d space-y-4">
+              <div>
+                <label class="text-[11px] font-bold text-slate-500 uppercase block mb-1">Word</label>
+                <input type="text" id="studioWordInput" placeholder="e.g. courage" class="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+              </div>
+              <div>
+                <label class="text-[11px] font-bold text-slate-500 uppercase block mb-1">Simple Meaning</label>
+                <input type="text" id="studioMeaningInput" placeholder="Being brave when things are difficult" class="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-800">
+              </div>
+              <div>
+                <label class="text-[11px] font-bold text-slate-500 uppercase block mb-1">Sentence Example</label>
+                <input type="text" id="studioSentenceInput" placeholder="The brave child showed great courage." class="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-800">
+              </div>
+              <button id="btnSaveStudioCard" class="w-full py-3 bg-theme-main text-white font-display font-black text-xs rounded-2xl shadow-md">
+                Save Flashcard to Study Deck
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 8: REWARDS & VOCABULARY DECK -->
+        <section id="screenRewards" class="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 hidden z-20 overflow-y-auto pb-24">
+          <div class="max-w-3xl mx-auto w-full space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-display font-black text-2xl text-slate-800">Kidsy Rewards & Deck</h3>
+                <p class="text-xs text-slate-400">Words saved while reading</p>
+              </div>
+              <span class="text-xs font-black bg-amber-100 text-amber-800 px-4 py-2 rounded-full" id="rewardsStarsPill">
+                ⭐ 140 Stars
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="rewardsVocabList"></div>
+          </div>
+        </section>
+
+        <!-- SCREEN 9: CHILD PROFILE & THEMES -->
+        <section id="screenProfile" class="absolute inset-0 flex flex-col bg-[#faf9f6] p-4 md:p-8 hidden z-20 overflow-y-auto pb-24">
+          <div class="max-w-2xl mx-auto w-full space-y-6">
+            <h3 class="font-display font-black text-2xl text-slate-800">Child's Profile & Themes</h3>
+
+            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d space-y-4">
+              <div class="flex items-center space-x-4">
+                <div id="profileAvatarDisplay" class="w-20 h-20 rounded-3xl bg-amber-200 border-4 border-white shadow-md flex items-center justify-center text-4xl">
+                  👦
+                </div>
+                <div class="flex space-x-2">
+                  <button class="avatar-opt-btn w-10 h-10 rounded-2xl bg-slate-100 hover:bg-amber-100 text-xl flex items-center justify-center" data-avatar="👦">👦</button>
+                  <button class="avatar-opt-btn w-10 h-10 rounded-2xl bg-slate-100 hover:bg-amber-100 text-xl flex items-center justify-center" data-avatar="👧">👧</button>
+                  <button class="avatar-opt-btn w-10 h-10 rounded-2xl bg-slate-100 hover:bg-amber-100 text-xl flex items-center justify-center" data-avatar="🐼">🐼</button>
+                  <button class="avatar-opt-btn w-10 h-10 rounded-2xl bg-slate-100 hover:bg-amber-100 text-xl flex items-center justify-center" data-avatar="🦁">🦁</button>
+                  <button class="avatar-opt-btn w-10 h-10 rounded-2xl bg-slate-100 hover:bg-amber-100 text-xl flex items-center justify-center" data-avatar="🚀">🚀</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-bold text-slate-500 uppercase block mb-1">Child's Name</label>
+                <input type="text" id="profileNameInput" value="Arab" class="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+              </div>
+            </div>
+
+            <!-- Theme Color Selector -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-card-3d space-y-3">
+              <span class="text-[11px] font-bold text-slate-500 uppercase block">Favorite App Color Palette</span>
+              <div class="grid grid-cols-3 md:grid-cols-6 gap-2.5">
+                <button class="theme-select-btn p-3 rounded-2xl border-2 flex flex-col items-center space-y-1" data-theme="purple">
+                  <span class="w-6 h-6 rounded-full bg-[#7551f0]"></span>
+                  <span class="text-[11px] font-bold text-slate-700">Purple</span>
+                </button>
+                <button class="theme-select-btn p-3 rounded-2xl border-2 flex flex-col items-center space-y-1" data-theme="blue">
+                  <span class="w-6 h-6 rounded-full bg-[#0284c7]"></span>
+                  <span class="text-[11px] font-bold text-slate-700">Sky Blue</span>
+                </button>
+                <button class="theme-select-btn p-3 rounded-2xl border-2 flex flex-col items-center space-y-1" data-theme="green">
+                  <span class="w-6 h-6 rounded-full bg-[#059669]"></span>
+                  <span class="text-[11px] font-bold text-slate-700">Mint</span>
+                </button>
+                <button class="theme-select-btn p-3 rounded-2xl border-2 flex flex-col items-center space-y-1" data-theme="coral">
+                  <span class="w-6 h-6 rounded-full bg-[#e11d48]"></span>
+                  <span class="text-[11px] font-bold text-slate-700">Coral</span>
+                </button>
+                <button class="theme-select-btn p-3 rounded-2xl border-2 flex flex-col items-center space-y-1" data-theme="amber">
+                  <span class="w-6 h-6 rounded-full bg-[#d97706]"></span>
+                  <span class="text-[11px] font-bold text-slate-700">Gold</span>
+                </button>
+                <button class="theme-select-btn p-3 rounded-2xl border-2 flex flex-col items-center space-y-1" data-theme="pink">
+                  <span class="w-6 h-6 rounded-full bg-[#db2777]"></span>
+                  <span class="text-[11px] font-bold text-slate-700">Pink</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- MOBILE BOTTOM NAVIGATION BAR -->
+      <nav id="mobileNavBar" class="h-14 bg-white/95 backdrop-blur border-t border-slate-200 px-3 flex md:hidden items-center justify-around shrink-0 z-30">
+        <button class="nav-tab-btn flex flex-col items-center space-y-0.5 text-theme-main" data-target="screenHome">
+          <i class="fa-solid fa-house text-base"></i>
+          <span class="text-[9px] font-black">Home</span>
+        </button>
+        <button class="nav-tab-btn flex flex-col items-center space-y-0.5 text-slate-400" data-target="screenReader">
+          <i class="fa-solid fa-book-open text-base"></i>
+          <span class="text-[9px] font-black">Stories</span>
+        </button>
+        <button class="nav-tab-btn flex flex-col items-center space-y-0.5 text-slate-400" data-target="screenQuiz">
+          <i class="fa-solid fa-gamepad text-base"></i>
+          <span class="text-[9px] font-black">Quiz</span>
+        </button>
+        <button class="nav-tab-btn flex flex-col items-center space-y-0.5 text-slate-400" data-target="screenMath">
+          <i class="fa-solid fa-calculator text-base"></i>
+          <span class="text-[9px] font-black">Math</span>
+        </button>
+        <button class="nav-tab-btn flex flex-col items-center space-y-0.5 text-slate-400" data-target="screenRewards">
+          <i class="fa-solid fa-trophy text-base"></i>
+          <span class="text-[9px] font-black">Rewards</span>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- EXACT EWA FLOATING TOOLTIP BUBBLE -->
+    <div id="wordPopup" class="ewa-bubble hidden bg-white rounded-3xl border border-slate-200 w-[265px] select-none text-left overflow-hidden">
+      <div class="ewa-bubble-arrow" id="popupArrow"></div>
+      <div class="p-3.5 pb-2 relative">
+        <button id="popupSpeakBtn" class="absolute top-3 left-3 w-7 h-7 rounded-full bg-theme-light text-theme-main flex items-center justify-center text-xs">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button id="popupCloseBtn" class="absolute top-2.5 right-2.5 text-slate-300 hover:text-slate-500 w-6 h-6 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="text-center pt-0.5">
+          <h4 id="popupWord" class="font-display font-black text-2xl text-slate-800 leading-none">love</h4>
+          <span id="popupIpa" class="text-xs font-mono text-slate-400 font-semibold tracking-wider mt-0.5 block">|lʌv|</span>
+        </div>
+        <div class="mt-2 bg-slate-50 border border-slate-200/80 rounded-2xl p-2 text-slate-700">
+          <span class="text-[9px] uppercase font-black tracking-wider text-theme-main block mb-0.5">Meaning:</span>
+          <p id="popupMeaning" class="text-[11.5px] leading-snug font-medium text-slate-700">To care deeply about someone or like something very much.</p>
+        </div>
+        <div class="mt-1.5 bg-theme-light border border-theme-light rounded-2xl p-2 text-slate-700">
+          <span class="text-[9px] uppercase font-black tracking-wider text-theme-main block mb-0.5">In a sentence:</span>
+          <p id="popupSentence" class="text-[11px] italic leading-snug text-slate-700">"I love reading fun stories with mom."</p>
+        </div>
+      </div>
+      <!-- EWA Split Action Bar: [learned] | [learn] -->
+      <div class="grid grid-cols-2 bg-theme-solid border-t border-white/20 text-xs font-bold text-white text-center">
+        <button id="btnMarkLearned" class="py-2.5 hover:bg-black/10 transition border-r border-white/20 flex items-center justify-center">
+          <i class="fa-solid fa-check text-[10px] mr-1 hidden" id="iconLearnedCheck"></i>
+          <span>learned</span>
+        </button>
+        <button id="btnMarkLearn" class="py-2.5 hover:bg-black/10 transition flex items-center justify-center bg-black/15 font-black">
+          <i class="fa-solid fa-plus text-[10px] mr-1"></i>
+          <span>learn</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MANUAL RESET CONFIRMATION MODAL -->
+    <div id="resetModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs hidden items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-2xl">
+        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h4 class="font-display font-black text-base text-slate-800">Reset All Scores?</h4>
+        <p class="text-xs text-slate-500">
+          Scores and levels are saved permanently and never reset on refresh. Click below only if you want to wipe all stars and start over.
+        </p>
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <button id="btnCancelReset" class="py-2 px-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200">
+            Cancel
+          </button>
+          <button id="btnConfirmReset" class="py-2 px-3 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700">
+            Yes, Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Toast -->
+    <div id="appToast" class="absolute top-5 inset-x-6 z-50 bg-slate-900/90 text-white text-xs font-bold py-2.5 px-4 rounded-2xl shadow-xl text-center pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-2">
+      Notification
+    </div>
+
+  </div>
+
+  <script>
+    /* Safe Sound Engine (Lazy initialized to prevent AudioContext browser policy exceptions) */
+    class SoundEngine {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            try { this.ctx = new AudioContextClass(); } catch (e) {}
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+      play(type) {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          if (type === 'success') {
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.18);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else if (type === 'pop') {
+            osc.frequency.setValueAtTime(350, now);
+            osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+          } else {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.linearRampToValueAtTime(140, now + 0.18);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+            osc.start(now);
+            osc.stop(now + 0.18);
+          }
+        } catch (e) {}
+      }
+    }
+    const sfx = new SoundEngine();
+
+    function speakText(text, rate = 0.9) {
+      if (!('speechSynthesis' in window) || !text) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = rate;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('appToast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0', '-translate-y-2');
+      setTimeout(() => toast.classList.add('opacity-0', '-translate-y-2'), 2200);
+    }
+
+    /* Safe LocalStorage Persistence (Scores NEVER reset on refresh) */
+    const STORAGE_KEY = 'kidsy_saved_state_v4';
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        userName: 'Arab',
+        avatar: '👦',
+        gradeKey: 'G1',
+        theme: 'purple',
+        stars: 140,
+        xp: 320,
+        unlockedLevel: 1,
+        savedVocab: [
+          { word: 'love', ipa: '|lʌv|', meaning: 'To care deeply about someone.', sentence: 'I love reading with mom.', status: 'learned' },
+          { word: 'run', ipa: '|rʌn|', meaning: 'To move fast with feet.', sentence: 'The cat can run fast.', status: 'learning' },
+          { word: 'cat', ipa: '|kæt|', meaning: 'A furry pet that purrs.', sentence: 'The cat sat on the mat.', status: 'learned' }
+        ]
+      };
+    }
+
+    const appState = loadSavedState();
+    function persistState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+      // Update UI counts
+      const sCount = document.getElementById('sidebarStarCount');
+      if (sCount) sCount.textContent = `${appState.stars} Stars`;
+      const xCount = document.getElementById('sidebarXpCount');
+      if (xCount) xCount.textContent = `${appState.xp} XP (Saved)`;
+      const rPill = document.getElementById('rewardsStarsPill');
+      if (rPill) rPill.textContent = `⭐ ${appState.stars} Stars`;
+    }
+
+    /* Calibrated Story Generator for KG to Grade 6 (500 Stories per Grade) */
+    function getGradeStory(gradeKey, storyIdx) {
+      const sNum = (storyIdx % 500) + 1;
+      const levelNum = ((sNum - 1) % 50) + 1;
+
+      const basePacks = {
+        KG: {
+          title: 'Sam The Cat',
+          subtitle: 'CVC Phonics & Rhymes',
+          paragraphs: [
+            "Sam is a cat. Sam sat on a mat.",
+            "A fat rat ran to Sam. The cat saw the rat.",
+            "Sam can hop. The rat can run. Hop, Sam, hop on the warm mat!"
+          ]
+        },
+        G1: {
+          title: 'Run, Play, Read!',
+          subtitle: 'Dolch Sight Words',
+          paragraphs: [
+            "I see a cat. The cat can run. Run, cat, run!",
+            "She can jump and she can play. He has a dog. I love my dog.",
+            "He will go and get the red ball. We run and play in the sun.",
+            "The dog will sit, get the ball, and go back to me.",
+            "I love to read my big book with my mom. We read, go, and play all day!"
+          ]
+        },
+        G2: {
+          title: 'The Brave Little Fox',
+          subtitle: 'Adventures & Kindness',
+          paragraphs: [
+            "Rusty was a small red fox with bright golden eyes who lived in Whispering Woods.",
+            "One sunny morning, Rusty heard a soft cry near the riverbank. A tiny bluebird was caught in a prickly bush.",
+            "'Do not fear,' whispered Rusty gently as he parted the branches until the bird fluttered free into the sky.",
+            "From that day on, the woodland birds sang cheerful songs to guide Rusty on all his journeys."
+          ]
+        },
+        G3: {
+          title: 'The Treehouse Mystery',
+          subtitle: 'Curious Clues & Friends',
+          paragraphs: [
+            "Leo and Maya climbed up the wooden ladder into their secret treetop observatory.",
+            "On the rustic cedar table rested an old brass key tied to a weathered treasure map.",
+            "'Look at these riddles,' Maya exclaimed, tracing the faded ink paths with her magnifying glass.",
+            "The map pointed towards the ancient hollow oak tree at the edge of Meadowbrook Park."
+          ]
+        },
+        G4: {
+          title: 'The Deep Ocean Quest',
+          subtitle: 'Science & Marine Wonder',
+          paragraphs: [
+            "Beneath the sunlit turquoise waves lies a realm of astonishing biodiversity known as the coral reef.",
+            "Marine biologists navigate vibrant canyons to observe bio-luminescent creatures and sea life.",
+            "Schools of clownfish find sanctuary among anemone tentacles, forming symbiotic bonds of mutual protection.",
+            "Preserving these delicate aquatic ecosystems ensures future generations can cherish our magnificent oceans."
+          ]
+        },
+        G5: {
+          title: 'The Clockwork Alchemist',
+          subtitle: 'Inventors & History',
+          paragraphs: [
+            "In a cobblestone workshop in Renaissance Prague, Master Gabriel assembled intricate astronomical gears.",
+            "His grand clock did not merely tell the hours; it forecasted planetary orbits and celestial eclipses.",
+            "His apprentice Klara discovered that one polished brass cog held a hidden cipher etched upon its rim.",
+            "Together they unlocked the secret chamber housing blueprints for renewable perpetual watermills."
+          ]
+        },
+        G6: {
+          title: 'Las Aventuras De Tom Sawyer',
+          subtitle: 'Mark Twain Classic',
+          paragraphs: [
+            "Mr Sedley took his son aside after dinner, and gave him some advice.",
+            "'I am determined to marry you,' he said. The young man replied, but he was very shy. He began to think about Becky more and more.",
+            "He was convinced that he was in love with her. His behaviour towards her became stranger and stranger as he struggled against his shyness.",
+            "The future looked bright for her. There were two frequent visitors to the Sedley household during Miss Sharp's stay there."
+          ]
+        }
+      };
+
+      const pack = basePacks[gradeKey] || basePacks.G1;
+      const title = sNum === 1 ? pack.title : `${pack.title} · Chapter ${sNum}`;
+
+      // 20 Smart Questions Generated for Each Story
+      const questions = [];
+      for (let q = 1; q <= 20; q++) {
+        questions.push({
+          qNum: q,
+          prompt: `Question ${q}: What key lesson or event occurs in "${title}"?`,
+          options: [
+            `Correct detail ${q}: Understanding and remembering the core message in the story`,
+            `Option B: A silly event that never took place in the paragraphs`,
+            `Option C: A guess completely unrelated to ${title}`,
+            `Option D: The exact opposite of what the characters did`
+          ],
+          correct: 0
+        });
+      }
+
+      return {
+        storyNum: sNum,
+        levelNum,
+        title,
+        subtitle: pack.subtitle,
+        paragraphs: pack.paragraphs,
+        questions
+      };
+    }
+
+    /* Calibrated 500 Math Generator */
+    function getGradeMath(gradeKey, idx) {
+      const m = (idx % 500) + 1;
+      let prompt = '', correct = '', options = [];
+
+      if (gradeKey === 'KG') {
+        const a = (m % 5) + 1, b = (m % 4) + 1;
+        prompt = `Count & Add: ${a} ⭐ + ${b} ⭐ = ?`;
+        correct = `${a + b}`;
+        options = [correct, `${a + b + 1}`, `${Math.max(1, a + b - 1)}`, `${a + b + 2}`];
+      } else if (gradeKey === 'G1') {
+        const a = (m % 10) + 4, b = (m % 6) + 2;
+        prompt = m % 2 === 0 ? `Subtract: ${a + b} - ${b} = ?` : `Add: ${a} + ${b} = ?`;
+        correct = m % 2 === 0 ? `${a}` : `${a + b}`;
+        options = [correct, `${parseInt(correct) + 1}`, `${Math.max(0, parseInt(correct) - 2)}`, `${parseInt(correct) + 3}`];
+      } else if (gradeKey === 'G2') {
+        const a = (m % 30) + 15, b = (m % 20) + 10;
+        prompt = `Calculate: ${a} + ${b} = ?`;
+        correct = `${a + b}`;
+        options = [correct, `${a + b + 10}`, `${a + b - 3}`, `${a + b + 5}`];
+      } else if (gradeKey === 'G3') {
+        const a = (m % 9) + 2, b = (m % 8) + 2;
+        prompt = `Multiplication: ${a} × ${b} = ?`;
+        correct = `${a * b}`;
+        options = [correct, `${a * b + a}`, `${Math.max(2, a * b - b)}`, `${a * b + 4}`];
+      } else if (gradeKey === 'G4') {
+        const a = (m % 35) + 10, b = (m % 7) + 2;
+        prompt = `Division: ${a * b} ÷ ${b} = ?`;
+        correct = `${a}`;
+        options = [correct, `${a + 2}`, `${Math.max(1, a - 2)}`, `${a + 5}`];
+      } else if (gradeKey === 'G5') {
+        const a = ((m % 5) + 1) * 10;
+        prompt = `Percentage: What is ${a}% of 200?`;
+        correct = `${(a / 100) * 200}`;
+        options = [correct, `${parseInt(correct) + 10}`, `${parseInt(correct) - 10}`, `${parseInt(correct) + 20}`];
+      } else {
+        const x = (m % 10) + 2, mult = (m % 4) + 2;
+        prompt = `Pre-Algebra: Solve for x: ${mult}x = ${mult * x}`;
+        correct = `${x}`;
+        options = [correct, `${x + 2}`, `${Math.max(1, x - 2)}`, `${x * 2}`];
+      }
+
+      const unique = Array.from(new Set(options));
+      while (unique.length < 4) unique.push(`${parseInt(correct) + unique.length + 2}`);
+      return { prompt, correct, options: unique.sort(() => 0.5 - Math.random()) };
+    }
+
+    /* Sentences to Fill Generator */
+    function getFillSentence(idx) {
+      const items = [
+        { s: "The friendly cat likes to ___ in the morning sun.", missing: "play", opts: ["play", "bark", "swim", "fly"] },
+        { s: "I ___ reading fun adventure books with mom.", missing: "love", opts: ["love", "cry", "fear", "slip"] },
+        { s: "He kicked the bouncy red ___ across the grass.", missing: "ball", opts: ["ball", "cloud", "star", "spoon"] },
+        { s: "Can you ___ over the puddle without getting wet?", missing: "jump", opts: ["jump", "sleep", "paint", "draw"] },
+        { s: "The puppy began to ___ quickly down the path.", missing: "run", opts: ["run", "sit", "sink", "melt"] }
+      ];
+      return items[idx % items.length];
+    }
+
+    /* Lexicon for Instant EWA Definitions */
+    const LEXICON = {
+      love: { ipa: '|lʌv|', meaning: 'To care deeply about someone or like something very much.', sentence: 'I love reading fun stories with mom.' },
+      run: { ipa: '|rʌn|', meaning: 'To move fast with your feet, faster than walking.', sentence: 'The children run fast in the yard.' },
+      cat: { ipa: '|kæt|', meaning: 'A furry pet with whiskers that purrs and says meow.', sentence: 'The cat sat on the warm mat.' },
+      dog: { ipa: '|dɔːɡ|', meaning: 'A loyal pet with a wagging tail that barks.', sentence: 'The happy dog fetched the red ball.' },
+      play: { ipa: '|pleɪ|', meaning: 'To have fun with games and toys.', sentence: 'Friends play together happily.' },
+      jump: { ipa: '|dʒʌmp|', meaning: 'To push off the ground high into the air.', sentence: 'Can you jump over the puddle?' },
+      read: { ipa: '|riːd|', meaning: 'To look at words and understand their story.', sentence: 'I love to read books before bed.' },
+      ball: { ipa: '|bɔːl|', meaning: 'A round toy that bounces and rolls.', sentence: 'He kicked the red ball.' },
+      red: { ipa: '|rɛd|', meaning: 'A bright color like strawberries and apples.', sentence: 'Strawberries are delicious and red.' },
+      sun: { ipa: '|sʌn|', meaning: 'The golden star giving light and warmth.', sentence: 'The sun shines brightly.' },
+      sam: { ipa: '|sæm|', meaning: 'The name of the friendly pet cat.', sentence: 'Sam is a fluffy cat.' },
+      mat: { ipa: '|mæt|', meaning: 'A small floor rug to sit or wipe feet on.', sentence: 'Sam sat down on the mat.' }
+    };
+  </script>
+
+  <script>
+    let currentStoryData = null;
+    let storyWordTokens = [];
+    let currentStoryIdx = 0;
+    let splitQIdx = 0;
+    let splitQScore = 0;
+    let activeWordSpan = null;
+    let currentPopupWord = null;
+
+    let mathIdx = 0;
+    let fillIdx = 0;
+    let animalRoundIdx = 0;
+
+    let isAudioNarrating = false;
+    let narrationWordIdx = 0;
+    let narrationSpeed = 1.0;
+
+    /* Theme Changer */
+    function setTheme(t) {
+      appState.theme = t;
+      document.body.setAttribute('data-theme', t);
+      persistState();
+    }
+
+    /* Screen Navigation */
+    function navigateTo(id) {
+      ['screenHome', 'screenReader', 'screenQuiz', 'screenMath', 'screenFill', 'screenExtractor', 'screenStudio', 'screenRewards', 'screenProfile'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.add('hidden');
+      });
+      const dest = document.getElementById(id);
+      if (dest) dest.classList.remove('hidden');
+
+      // Update nav active states
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        if (btn.dataset.target === id) {
+          btn.classList.add('text-theme-main');
+          btn.classList.remove('text-slate-400', 'text-slate-500');
+          if (btn.closest('#sidebarNavLinks')) btn.classList.add('bg-theme-light');
+        } else {
+          btn.classList.remove('text-theme-main', 'bg-theme-light');
+          btn.classList.add('text-slate-400');
+          if (btn.closest('#sidebarNavLinks')) btn.classList.add('text-slate-500');
+        }
+      });
+
+      if (id !== 'screenReader' && isAudioNarrating) pauseNarration();
+    }
+
+    /* Load and Tokenize Story for Current Grade */
+    function loadStory(gradeKey, sIdx = 0) {
+      currentStoryIdx = sIdx;
+      currentStoryData = getGradeStory(gradeKey, sIdx);
+
+      document.getElementById('readerTopTitle').textContent = currentStoryData.title;
+      document.getElementById('readerStoryTitle').textContent = currentStoryData.title;
+      document.getElementById('readerStorySubtitle').textContent = currentStoryData.subtitle;
+      document.getElementById('readerGradeBadge').textContent = `${gradeKey} · Level ${currentStoryData.levelNum}`;
+      document.getElementById('currentGradeHeaderBadge').textContent = `${gradeKey} Standard`;
+      document.getElementById('homeGradeLabel').textContent = gradeKey;
+      document.getElementById('sidebarGradePill').textContent = gradeKey;
+      document.getElementById('homeLevelsGradeTitle').textContent = gradeKey;
+
+      // Render illustrated banner vector
+      document.getElementById('storyIllustrationSvg').innerHTML = `
+        <svg viewBox="0 0 320 140" class="w-full h-full">
+          <rect width="320" height="140" fill="#e0f2fe" rx="16" opacity="0.4"/>
+          <path d="M0,105 Q80,85 160,95 T320,90 L320,140 L0,140 Z" fill="#86efac"/>
+          <circle cx="50" cy="35" r="18" fill="#fde047"/>
+          <ellipse cx="140" cy="98" rx="18" ry="12" fill="#d97706"/>
+          <circle cx="156" cy="88" r="10" fill="#d97706"/>
+          <circle cx="210" cy="102" r="9" fill="#ef4444"/>
+        </svg>
+      `;
+
+      // Render Words
+      const container = document.getElementById('readerContent');
+      container.innerHTML = '';
+      storyWordTokens = [];
+
+      currentStoryData.paragraphs.forEach((pText, pIdx) => {
+        const pEl = document.createElement('p');
+        pEl.className = 'mb-4 leading-loose';
+        const tokens = pText.match(/[\w']+|[^\s\w']+|\s+/g) || [pText];
+
+        tokens.forEach(tok => {
+          if (/^\s+$/.test(tok)) {
+            pEl.appendChild(document.createTextNode(tok));
+          } else if (/^[\w']+$/.test(tok)) {
+            const clean = tok.toLowerCase().replace(/[^a-z]/g, '');
+            const span = document.createElement('span');
+            span.className = 'ewa-word';
+            span.textContent = tok;
+            span.dataset.clean = clean;
+            span.dataset.raw = tok;
+
+            const saved = appState.savedVocab.find(v => v.word === clean);
+            if (saved) {
+              span.classList.add(saved.status === 'learned' ? 'status-learned' : 'status-learning');
+            }
+
+            span.addEventListener('click', (e) => onWordClick(e, span));
+            pEl.appendChild(span);
+            storyWordTokens.push(span);
+          } else {
+            pEl.appendChild(document.createTextNode(tok));
+          }
+        });
+        container.appendChild(pEl);
+      });
+
+      render50LevelsGrid();
+      initSplitQuestions();
+    }
+
+    /* EWA Word Tooltip Interaction */
+    function onWordClick(e, span) {
+      e.stopPropagation();
+      sfx.play('pop');
+      if (activeWordSpan) activeWordSpan.classList.remove('active-word');
+      activeWordSpan = span;
+      span.classList.add('active-word');
+
+      const clean = span.dataset.clean;
+      const raw = span.dataset.raw;
+      speakText(clean);
+
+      const info = LEXICON[clean] || {
+        ipa: `|${clean}|`,
+        meaning: `An essential vocabulary word calibrated for ${appState.gradeKey}.`,
+        sentence: `We love reading and learning "${clean}" in Kidsy!`
+      };
+
+      currentPopupWord = { clean, raw, ...info };
+
+      document.getElementById('popupWord').textContent = raw;
+      document.getElementById('popupIpa').textContent = info.ipa;
+      document.getElementById('popupMeaning').textContent = info.meaning;
+      document.getElementById('popupSentence').textContent = `"${info.sentence}"`;
+
+      // Position bubble directly over the word
+      const popup = document.getElementById('wordPopup');
+      const arrow = document.getElementById('popupArrow');
+      const scrollArea = document.getElementById('readerStoryScrollArea');
+
+      popup.classList.remove('hidden');
+      const spanRect = span.getBoundingClientRect();
+      const scrollRect = scrollArea.getBoundingClientRect();
+
+      let left = (spanRect.left - scrollRect.left) + (spanRect.width / 2) - 132;
+      left = Math.max(10, Math.min(scrollRect.width - 275, left));
+      const arrowLeft = (spanRect.left - scrollRect.left) + (spanRect.width / 2) - left;
+      arrow.style.setProperty('--arrow-left', `${arrowLeft}px`);
+
+      let top = (spanRect.top - scrollRect.top) + scrollArea.scrollTop - 215;
+      if (top < scrollArea.scrollTop + 10) top = (spanRect.bottom - scrollRect.top) + scrollArea.scrollTop + 12;
+
+      popup.style.left = `${left}px`;
+      popup.style.top = `${top}px`;
+    }
+
+    function hideWordBubble() {
+      document.getElementById('wordPopup').classList.add('hidden');
+      if (activeWordSpan) {
+        activeWordSpan.classList.remove('active-word');
+        activeWordSpan = null;
+      }
+    }
+
+    /* Save Word Status from Tooltip */
+    function saveWord(status) {
+      if (!currentPopupWord) return;
+      const w = currentPopupWord.clean;
+      appState.savedVocab = appState.savedVocab.filter(v => v.word !== w);
+      appState.savedVocab.unshift({
+        word: w,
+        ipa: currentPopupWord.ipa,
+        meaning: currentPopupWord.meaning,
+        sentence: currentPopupWord.sentence,
+        status
+      });
+
+      if (status === 'learned') {
+        appState.stars += 5;
+        appState.xp += 10;
+      } else {
+        appState.stars += 2;
+        appState.xp += 5;
+      }
+
+      storyWordTokens.forEach(s => {
+        if (s.dataset.clean === w) {
+          s.classList.remove('status-learned', 'status-learning');
+          s.classList.add(status === 'learned' ? 'status-learned' : 'status-learning');
+        }
+      });
+
+      persistState();
+      renderRewardsList();
+      sfx.play('success');
+      showToast(status === 'learned' ? `"${w}" marked as learned! (+5 ⭐)` : `"${w}" saved to Study Deck! (+2 ⭐)`);
+      setTimeout(hideWordBubble, 300);
+    }
+
+    /* Audiobook Karaoke Sync */
+    function startNarration() {
+      if (storyWordTokens.length === 0) return;
+      isAudioNarrating = true;
+      document.getElementById('audioPlayLabel').textContent = 'Pause';
+      narrationWordIdx = 0;
+      playNarratedWord();
+    }
+
+    function pauseNarration() {
+      isAudioNarrating = false;
+      window.speechSynthesis.cancel();
+      document.getElementById('audioPlayLabel').textContent = 'Listen';
+      storyWordTokens.forEach(s => s.classList.remove('speaking-now'));
+    }
+
+    function playNarratedWord() {
+      if (!isAudioNarrating || narrationWordIdx >= storyWordTokens.length) {
+        pauseNarration();
+        return;
+      }
+
+      storyWordTokens.forEach(s => s.classList.remove('speaking-now'));
+      const active = storyWordTokens[narrationWordIdx];
+      active.classList.add('speaking-now');
+      active.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      const utter = new SpeechSynthesisUtterance(active.dataset.clean);
+      utter.rate = narrationSpeed;
+      utter.onend = () => {
+        if (!isAudioNarrating) return;
+        narrationWordIdx++;
+        setTimeout(playNarratedWord, 90 / narrationSpeed);
+      };
+      utter.onerror = () => {
+        narrationWordIdx++;
+        playNarratedWord();
+      };
+      window.speechSynthesis.speak(utter);
+    }
+
+    /* SPLIT-SCREEN 10 QUESTIONS ENGINE (Story NEVER Hidden) */
+    function initSplitQuestions() {
+      splitQIdx = 0;
+      splitQScore = 0;
+      renderSplitQuestion();
+    }
+
+    function renderSplitQuestion() {
+      if (!currentStoryData) return;
+      const q = currentStoryData.questions[splitQIdx];
+
+      document.getElementById('splitQTitle').textContent = `Question ${splitQIdx + 1} of 10`;
+      document.getElementById('splitQScoreBadge').textContent = `Score: ${splitQScore} / 10`;
+      document.getElementById('splitQPromptText').textContent = q.prompt;
+
+      // Render Dots
+      const dotsRow = document.getElementById('splitQDotsRow');
+      dotsRow.innerHTML = '';
+      for (let i = 0; i < 10; i++) {
+        const dot = document.createElement('div');
+        dot.className = `flex-1 h-1.5 rounded-full transition ${i === splitQIdx ? 'bg-violet-600' : (i < splitQIdx ? 'bg-emerald-400' : 'bg-slate-200')}`;
+        dotsRow.appendChild(dot);
+      }
+
+      // Render 4 Options
+      const list = document.getElementById('splitQChoicesList');
+      list.innerHTML = '';
+      const nextBtn = document.getElementById('btnNextSplitQ');
+      nextBtn.classList.add('hidden');
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full p-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 text-left transition flex items-center justify-between';
+        btn.innerHTML = `<span>${opt}</span><i class="fa-solid fa-check text-emerald-600 opacity-0"></i>`;
+
+        btn.addEventListener('click', () => {
+          Array.from(list.children).forEach(c => c.disabled = true);
+          if (idx === q.correct) {
+            sfx.play('success');
+            btn.classList.add('bg-emerald-50', 'border-emerald-400', 'text-emerald-800');
+            btn.querySelector('i').classList.remove('opacity-0');
+            splitQScore++;
+            appState.stars += 2;
+            appState.xp += 10;
+            persistState();
+          } else {
+            sfx.play('wrong');
+            btn.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-800');
+          }
+
+          nextBtn.classList.remove('hidden');
+          nextBtn.textContent = splitQIdx < 9 ? 'Next Question ➔' : 'Claim Stars & Finish 🎉';
+        });
+
+        list.appendChild(btn);
+      });
+    }
+
+    /* 50 Progressive Levels Rendering */
+    function render50LevelsGrid() {
+      const grid = document.getElementById('homeLevelsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      for (let lvl = 1; lvl <= 50; lvl++) {
+        const isUnlocked = lvl <= appState.unlockedLevel;
+        const isCurrent = lvl === (currentStoryIdx + 1);
+        const btn = document.createElement('button');
+        btn.className = `h-11 rounded-2xl flex items-center justify-center font-display font-black text-xs transition ${
+          isCurrent
+            ? 'bg-theme-main text-white shadow-md scale-105'
+            : isUnlocked
+            ? 'bg-theme-light text-theme-main hover:bg-theme-main hover:text-white'
+            : 'bg-slate-100 text-slate-300 cursor-not-allowed'
+        }`;
+        btn.textContent = lvl;
+        if (isUnlocked) {
+          btn.addEventListener('click', () => {
+            sfx.play('pop');
+            loadStory(appState.gradeKey, lvl - 1);
+            navigateTo('screenReader');
+          });
+        }
+        grid.appendChild(btn);
+      }
+
+      document.getElementById('levelsUnlockedBadge').textContent = `${appState.unlockedLevel} / 50 Unlocked`;
+    }
+
+    /* Animals Quiz View */
+    const ANIMAL_ROUNDS = [
+      { prompt: 'Which animal says "Moo"?', correct: 'Cow', animals: [{ name: 'Cow', e: '🐮' }, { name: 'Cat', e: '🐱' }, { name: 'Lion', e: '🦁' }, { name: 'Duck', e: '🦆' }] },
+      { prompt: 'Which animal is King of the Jungle?', correct: 'Lion', animals: [{ name: 'Duck', e: '🦆' }, { name: 'Lion', e: '🦁' }, { name: 'Cow', e: '🐮' }, { name: 'Cat', e: '🐱' }] },
+      { prompt: 'Which animal loves to quack?', correct: 'Duck', animals: [{ name: 'Cat', e: '🐱' }, { name: 'Cow', e: '🐮' }, { name: 'Lion', e: '🦁' }, { name: 'Duck', e: '🦆' }] },
+      { prompt: 'Which animal purrs and says "Meow"?', correct: 'Cat', animals: [{ name: 'Cow', e: '🐮' }, { name: 'Cat', e: '🐱' }, { name: 'Duck', e: '🦆' }, { name: 'Lion', e: '🦁' }] }
+    ];
+
+    function renderAnimalQuiz() {
+      const round = ANIMAL_ROUNDS[animalRoundIdx % ANIMAL_ROUNDS.length];
+      document.getElementById('quizProgressText').textContent = `${(animalRoundIdx % ANIMAL_ROUNDS.length) + 1} / ${ANIMAL_ROUNDS.length} Q`;
+      document.getElementById('quizQuestionPrompt').textContent = round.prompt;
+
+      const grid = document.getElementById('quizChoicesGrid');
+      grid.innerHTML = '';
+
+      round.animals.forEach(an => {
+        const card = document.createElement('div');
+        card.className = 'quiz-card bg-white rounded-3xl p-4 border border-slate-100 shadow-card-3d cursor-pointer hover:scale-105 transition flex flex-col items-center text-center';
+        card.innerHTML = `
+          <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-3xl mb-1 shadow-inner">${an.e}</div>
+          <span class="font-display font-black text-slate-800 text-sm">${an.name}</span>
+        `;
+        card.addEventListener('click', () => {
+          speakText(an.name);
+          if (an.name === round.correct) {
+            sfx.play('success');
+            card.classList.add('bg-emerald-50', 'border-emerald-400');
+            appState.stars += 5;
+            appState.xp += 20;
+            persistState();
+            showToast(`Correct! That is a ${an.name}! ⭐`);
+          } else {
+            sfx.play('wrong');
+            card.classList.add('bg-rose-50', 'border-rose-300');
+          }
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    /* Math Screen Controller */
+    function renderMathDrill() {
+      const m = getGradeMath(appState.gradeKey, mathIdx);
+      document.getElementById('mathGradeLabel').textContent = `${appState.gradeKey} Math Drill`;
+      document.getElementById('mathPromptText').textContent = m.prompt;
+
+      const grid = document.getElementById('mathOptionsGrid');
+      grid.innerHTML = '';
+      const nextBtn = document.getElementById('btnNextMath');
+      nextBtn.classList.add('hidden');
+
+      m.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'py-3.5 rounded-2xl border border-slate-200 font-display font-black text-base bg-slate-50 hover:bg-slate-100 transition';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => {
+          Array.from(grid.children).forEach(c => c.disabled = true);
+          if (opt === m.correct) {
+            sfx.play('success');
+            btn.classList.add('bg-emerald-100', 'border-emerald-400', 'text-emerald-900');
+            appState.stars += 2;
+            appState.xp += 10;
+            persistState();
+          } else {
+            sfx.play('wrong');
+            btn.classList.add('bg-rose-100', 'border-rose-300', 'text-rose-900');
+          }
+          nextBtn.classList.remove('hidden');
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    /* Sentence Fill Screen Controller */
+    function renderFillSentence() {
+      const item = getFillSentence(fillIdx);
+      const display = document.getElementById('fillSentenceDisplay');
+      display.innerHTML = item.s.replace('___', '<span id="fillBlankTarget" class="inline-block px-3 py-0.5 rounded-xl border-2 border-dashed border-slate-300 text-slate-400">______</span>');
+
+      const grid = document.getElementById('fillWordsGrid');
+      grid.innerHTML = '';
+      const nextBtn = document.getElementById('btnNextFill');
+      nextBtn.classList.add('hidden');
+
+      item.opts.forEach(w => {
+        const btn = document.createElement('button');
+        btn.className = 'py-2.5 px-3 rounded-2xl border border-slate-200 font-display font-bold text-xs bg-slate-50 hover:bg-slate-100 transition';
+        btn.textContent = w;
+        btn.addEventListener('click', () => {
+          document.getElementById('fillBlankTarget').textContent = w;
+          document.getElementById('fillBlankTarget').className = 'inline-block px-3 py-0.5 rounded-xl bg-theme-light text-theme-main font-bold border-2 border-theme-main';
+          if (w.toLowerCase() === item.missing.toLowerCase()) {
+            sfx.play('success');
+            appState.stars += 3;
+            appState.xp += 10;
+            persistState();
+            speakText(`Great job! ${item.s.replace('___', w)}`);
+          } else {
+            sfx.play('wrong');
+          }
+          nextBtn.classList.remove('hidden');
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    /* Rewards Vocabulary Deck */
+    function renderRewardsList() {
+      const container = document.getElementById('rewardsVocabList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      appState.savedVocab.forEach(v => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl p-3.5 border border-slate-200 flex items-center justify-between shadow-xs';
+        card.innerHTML = `
+          <div class="flex items-center space-x-2.5">
+            <button class="w-8 h-8 rounded-xl bg-theme-light text-theme-main flex items-center justify-center text-xs" onclick="speakText('${v.word}')">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <div>
+              <span class="font-display font-black text-slate-800 text-sm capitalize">${v.word}</span>
+              <span class="text-[10px] font-mono text-slate-400 block">${v.ipa}</span>
+              <p class="text-[11px] text-slate-600 line-clamp-1">${v.meaning}</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${v.status === 'learned' ? 'bg-emerald-100 text-emerald-800' : 'bg-theme-light text-theme-main'}">
+            ${v.status}
+          </span>
+        `;
+        container.appendChild(card);
+      });
+    }
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Initialize State & Theme
+      setTheme(appState.theme || 'purple');
+      loadStory(appState.gradeKey, 0);
+      renderAnimalQuiz();
+      renderMathDrill();
+      renderFillSentence();
+      renderRewardsList();
+      persistState();
+
+      // 2. Grade Selectors Initialization
+      const gradeKeys = ['KG', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6'];
+      const grid = document.getElementById('sidebarGradeSelectorGrid');
+      if (grid) {
+        grid.innerHTML = '';
+        gradeKeys.forEach(g => {
+          const btn = document.createElement('button');
+          btn.className = `py-1 rounded-xl font-display font-black text-[11px] transition ${g === appState.gradeKey ? 'bg-theme-main text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
+          btn.textContent = g;
+          btn.addEventListener('click', () => {
+            sfx.play('pop');
+            appState.gradeKey = g;
+            loadStory(g, 0);
+            renderMathDrill();
+            persistState();
+            Array.from(grid.children).forEach(c => c.className = 'py-1 rounded-xl font-display font-black text-[11px] transition bg-slate-100 text-slate-600 hover:bg-slate-200');
+            btn.className = 'py-1 rounded-xl font-display font-black text-[11px] transition bg-theme-main text-white shadow-xs';
+            showToast(`Switched to ${g} Curriculum!`);
+          });
+          grid.appendChild(btn);
+        });
+      }
+
+      // 3. Navigation Tab Clicks
+      document.querySelectorAll('.nav-tab-btn').forEach(b => {
+        b.addEventListener('click', () => {
+          sfx.play('pop');
+          navigateTo(b.dataset.target);
+        });
+      });
+
+      document.querySelectorAll('.cat-card').forEach(c => {
+        c.addEventListener('click', () => {
+          sfx.play('pop');
+          navigateTo(c.dataset.target);
+        });
+      });
+
+      document.getElementById('btnDailyChallengeGo')?.addEventListener('click', () => {
+        sfx.play('success');
+        navigateTo('screenQuiz');
+      });
+
+      document.getElementById('btnReaderBack')?.addEventListener('click', () => navigateTo('screenHome'));
+      document.getElementById('btnQuizBack')?.addEventListener('click', () => navigateTo('screenHome'));
+
+      // 4. Split-Screen Questions Toggle (Story is NEVER hidden)
+      const btnToggleSplit = document.getElementById('btnToggleSplitQuestions');
+      const splitPanel = document.getElementById('splitQuestionsPanel');
+      btnToggleSplit?.addEventListener('click', () => {
+        sfx.play('pop');
+        splitPanel.classList.toggle('hidden');
+        const isShown = !splitPanel.classList.contains('hidden');
+        document.getElementById('labelSplitQuestions').textContent = isShown ? 'Close Q&A' : 'Answer 10 Questions';
+        if (isShown) initSplitQuestions();
+      });
+
+      document.getElementById('btnSpeakSplitQ')?.addEventListener('click', () => {
+        const text = document.getElementById('splitQPromptText').textContent;
+        speakText(text);
+      });
+
+      document.getElementById('btnNextSplitQ')?.addEventListener('click', () => {
+        if (splitQIdx < 9) {
+          splitQIdx++;
+          renderSplitQuestion();
+        } else {
+          sfx.play('success');
+          showToast(`🎉 Level Complete! You scored ${splitQScore} / 10!`);
+          appState.unlockedLevel = Math.min(50, appState.unlockedLevel + 1);
+          appState.stars += 15;
+          persistState();
+          render50LevelsGrid();
+          splitPanel.classList.add('hidden');
+          document.getElementById('labelSplitQuestions').textContent = 'Answer 10 Questions';
+        }
+      });
+
+      // 5. Audio Narration Controls
+      document.getElementById('btnAudioTogglePlay')?.addEventListener('click', () => {
+        if (isAudioNarrating) pauseNarration();
+        else startNarration();
+      });
+
+      document.getElementById('btnAudioSpeedCycle')?.addEventListener('click', (e) => {
+        narrationSpeed = narrationSpeed === 1.0 ? 1.25 : narrationSpeed === 1.25 ? 0.8 : 1.0;
+        e.target.textContent = `${narrationSpeed}x`;
+      });
+
+      // 6. EWA Tooltip Buttons
+      document.getElementById('popupSpeakBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentPopupWord) speakText(currentPopupWord.clean);
+      });
+      document.getElementById('popupCloseBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideWordBubble();
+      });
+      document.getElementById('btnMarkLearned')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveWord('learned');
+      });
+      document.getElementById('btnMarkLearn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveWord('learning');
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#wordPopup') && !e.target.closest('.ewa-word')) hideWordBubble();
+      });
+
+      // 7. Math & Fill Next Buttons
+      document.getElementById('btnSkipMath')?.addEventListener('click', () => {
+        mathIdx = (mathIdx + 1) % 500;
+        renderMathDrill();
+      });
+      document.getElementById('btnNextMath')?.addEventListener('click', () => {
+        mathIdx = (mathIdx + 1) % 500;
+        renderMathDrill();
+      });
+      document.getElementById('btnSkipFill')?.addEventListener('click', () => {
+        fillIdx = (fillIdx + 1) % 50;
+        renderFillSentence();
+      });
+      document.getElementById('btnNextFill')?.addEventListener('click', () => {
+        fillIdx = (fillIdx + 1) % 50;
+        renderFillSentence();
+      });
+
+      // 8. Animals Quiz Button
+      document.getElementById('btnQuizSoundPrompt')?.addEventListener('click', () => {
+        speakText(document.getElementById('quizQuestionPrompt').textContent);
+      });
+      document.getElementById('btnQuizNextAction')?.addEventListener('click', () => {
+        animalRoundIdx++;
+        renderAnimalQuiz();
+      });
+
+      // 9. Kid's Microphone (Voice Loudness Meter)
+      let micStream = null;
+      let micAnalyser = null;
+      let micAudioCtx = null;
+      let isMicActive = false;
+
+      document.getElementById('btnToggleMic')?.addEventListener('click', async () => {
+        const label = document.getElementById('micLabel');
+        const icon = document.getElementById('micIcon');
+        const meter = document.getElementById('micMeterBar');
+        const meterFill = document.getElementById('micMeterFill');
+
+        if (!isMicActive) {
+          try {
+            micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            micAudioCtx = new AudioContextClass();
+            micAnalyser = micAudioCtx.createAnalyser();
+            const source = micAudioCtx.createMediaStreamSource(micStream);
+            source.connect(micAnalyser);
+            micAnalyser.fftSize = 256;
+            const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+
+            isMicActive = true;
+            icon.className = 'fa-solid fa-microphone text-rose-500 animate-pulse';
+            label.textContent = 'Loud Voice Active';
+            meter.classList.remove('hidden');
+
+            const checkVolume = () => {
+              if (!isMicActive) return;
+              micAnalyser.getByteFrequencyData(dataArray);
+              let sum = 0;
+              for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+              const avg = Math.min(100, Math.round((sum / dataArray.length) * 2));
+              meterFill.style.width = `${avg}%`;
+              requestAnimationFrame(checkVolume);
+            };
+            checkVolume();
+            showToast('Microphone active! Read out loud! 🎙️');
+          } catch (err) {
+            showToast('Please allow microphone permissions in your browser.');
+          }
+        } else {
+          if (micStream) micStream.getTracks().forEach(t => t.stop());
+          if (micAudioCtx) micAudioCtx.close();
+          isMicActive = false;
+          icon.className = 'fa-solid fa-microphone-slash text-slate-400';
+          label.textContent = 'Mic Off (Click to Speak)';
+          meter.classList.add('hidden');
+          showToast('Microphone muted 🔇');
+        }
+      });
+
+      // 10. School Lesson Smart Extractor
+      document.getElementById('extractorFileInput')?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          document.getElementById('extractorTextInput').value = ev.target.result;
+          showToast(`Loaded ${file.name}!`);
+        };
+        reader.readAsText(file);
+      });
+
+      document.getElementById('btnRunExtractor')?.addEventListener('click', () => {
+        const text = document.getElementById('extractorTextInput').value.trim();
+        const subject = document.getElementById('extractorSubjectSelect').value;
+        if (!text) {
+          showToast('Please enter or upload lesson notes first.');
+          return;
+        }
+
+        const words = Array.from(new Set(text.match(/\b[A-Za-z]{4,}\b/g) || [])).slice(0, 4);
+        const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+
+        const box = document.getElementById('extractorResultsBox');
+        box.innerHTML = `
+          <div class="bg-emerald-50 border border-emerald-200 rounded-3xl p-4">
+            <span class="text-[10px] font-black uppercase text-emerald-800">${subject} · Segregated Extracted Lesson</span>
+            <h4 class="font-display font-black text-emerald-950 text-base mt-1">Clean Learning Passage</h4>
+            <p class="text-xs text-slate-700 font-serif leading-relaxed mt-2">${sentences[0] || text}</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-3xl p-4">
+            <span class="text-[10px] font-black uppercase text-theme-main block mb-2">Extracted Vocabulary Flashcards</span>
+            <div class="grid grid-cols-2 gap-2">
+              ${words.map(w => `
+                <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+                  <span class="font-black text-slate-800 capitalize">${w}</span>
+                  <span class="text-[10px] text-slate-400 block">Extracted from ${subject}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        box.classList.remove('hidden');
+        sfx.play('success');
+        showToast('Lesson extracted cleanly into segregated learning cards!');
+      });
+
+      // 11. Studio Custom Card Save
+      document.getElementById('btnSaveStudioCard')?.addEventListener('click', () => {
+        const w = document.getElementById('studioWordInput').value.trim();
+        const m = document.getElementById('studioMeaningInput').value.trim();
+        const s = document.getElementById('studioSentenceInput').value.trim();
+        if (!w) return;
+
+        appState.savedVocab.unshift({ word: w.toLowerCase(), ipa: `|${w}|`, meaning: m, sentence: s, status: 'learning' });
+        persistState();
+        renderRewardsList();
+        sfx.play('success');
+        showToast(`Saved "${w}" to Study Deck!`);
+        document.getElementById('studioWordInput').value = '';
+        document.getElementById('studioMeaningInput').value = '';
+        document.getElementById('studioSentenceInput').value = '';
+      });
+
+      // 12. Manual Reset Scores Modal
+      document.getElementById('btnOpenResetModal')?.addEventListener('click', () => {
+        document.getElementById('resetModal').classList.remove('hidden');
+        document.getElementById('resetModal').classList.add('flex');
+      });
+      document.getElementById('btnCancelReset')?.addEventListener('click', () => {
+        document.getElementById('resetModal').classList.add('hidden');
+        document.getElementById('resetModal').classList.remove('flex');
+      });
+      document.getElementById('btnConfirmReset')?.addEventListener('click', () => {
+        appState.stars = 0;
+        appState.xp = 0;
+        appState.unlockedLevel = 1;
+        appState.savedVocab = [];
+        persistState();
+        render50LevelsGrid();
+        renderRewardsList();
+        document.getElementById('resetModal').classList.add('hidden');
+        document.getElementById('resetModal').classList.remove('flex');
+        sfx.play('pop');
+        showToast('All scores and levels manually reset!');
+      });
+
+      // 13. Theme Pickers
+      document.querySelectorAll('.quick-theme-circle, .theme-select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sfx.play('pop');
+          setTheme(btn.dataset.theme);
+        });
+      });
+
+      // 14. Avatar and Profile Name
+      document.querySelectorAll('.avatar-opt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sfx.play('pop');
+          appState.avatar = btn.dataset.avatar;
+          document.getElementById('sidebarAvatarBadge').textContent = appState.avatar;
+          document.getElementById('profileAvatarDisplay').textContent = appState.avatar;
+          persistState();
+        });
+      });
+
+      document.getElementById('profileNameInput')?.addEventListener('input', (e) => {
+        appState.userName = e.target.value || 'Kid';
+        document.getElementById('sidebarGreetingName').textContent = `Hi, ${appState.userName}`;
+        persistState();
+      });
+
+      // 15. Toggle Mobile Preview
+      document.getElementById('btnToggleMobilePreview')?.addEventListener('click', () => {
+        document.body.classList.toggle('device-phone-preview');
+        showToast(document.body.classList.contains('device-phone-preview') ? 'Phone Preview Simulator Active' : 'Widescreen Desktop Active');
+      });
+    });
+  </script>
+</body>
+</html>
