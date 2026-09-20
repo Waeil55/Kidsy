@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { GRADES, gradeName, genStory, STORIES_PER_GRADE } from './data/grades.js';
+import { GRADES, gradeName, genStory, STORIES_PER_GRADE, ensure20Questions } from './data/grades.js';
 import { featuredStory } from './data/gradeStories.js';
 import { loadScores, saveScores, gradeScores, touchStreak } from './store/scores.js';
 import { loadCustom } from './lib/schoolParse.js';
@@ -101,7 +101,10 @@ export default function App() {
   const [screen, setScreen] = useState('home');
   const [scores, setScores] = useState(loadScores);
   const [saved, setSaved] = useState(loadSaved);
-  const [book, setBook] = useState(() => featuredStory(loadProfile().gradeKey));
+  const [book, setBook] = useState(() => {
+    const p = loadProfile();
+    return ensure20Questions({ ...featuredStory(p.gradeKey), gradeKey: p.gradeKey }, p.gradeKey);
+  });
   const [readerMode, setReaderMode] = useState('read');
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
@@ -156,7 +159,7 @@ export default function App() {
   const setGrade = (gk) => {
     playChime('pop');
     setProfile((p) => ({ ...p, gradeKey: gk }));
-    setBook(featuredStory(gk));
+    setBook(ensure20Questions({ ...featuredStory(gk), gradeKey: gk }, gk));
     setReaderMode('read');
     setLibCount(50);
     notify(`Switched to ${gradeName(gk)}!`);
@@ -195,7 +198,42 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gradeKey]);
 
-  const finishQuiz = useCallback(({ total, correct }) => {
+  // Exact design rule: +20 XP & +10 stars per CORRECT answer, immediately.
+  const answerQuiz = useCallback((ok, name) => {
+    if (ok) {
+      updateScores((s) => {
+        s.xp += 20;
+        s.stars += 10;
+        return s;
+      });
+      notify('★ Correct! +20 XP Earned!');
+    } else {
+      notify(`The correct answer was ${name}!`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const finishQuizRound = useCallback(({ total, correct }) => {
+    updateScores((s) => {
+      const g = gradeScores(s, gradeKey);
+      g.quizN += total;
+      g.quizCorrect += correct;
+      return s;
+    });
+    if (correct === total) {
+      notify('🎉 Quiz Finished! Super Job! +bonus 10 XP');
+      updateScores((s) => {
+        s.xp += 10;
+        return s;
+      });
+    } else {
+      notify(`Round done: ${correct}/${total} — keep going!`);
+    }
+    go('rewards');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gradeKey]);
+
+  const finishStoryQuiz = useCallback(({ total, correct }) => {
     updateScores((s) => {
       const g = gradeScores(s, gradeKey);
       g.quizN += total;
@@ -205,13 +243,8 @@ export default function App() {
       s.stars += correct * 2;
       return s;
     });
-    if (correct === total) {
-      playChime('success');
-      notify(`★ Perfect! +${correct * 10} XP Earned!`);
-    } else {
-      playChime('pop');
-      notify(`${correct}/${total} correct! +${correct * 10} XP`);
-    }
+    playChime('success');
+    notify(correct === total ? `🏆 Perfect story quiz! +${correct * 10} XP` : `Story quiz: ${correct}/${total} — +${correct * 10} XP`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gradeKey]);
 
@@ -230,11 +263,12 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gradeKey]);
 
-  // Grade story list: custom + featured + generated (paged)
+  // Grade story list: custom + featured + generated (paged).
+  // EVERY story is topped up to 20 questions — grade-locked, never mixed.
   const storyList = useMemo(() => {
     const c = loadCustom();
-    const custom = c.stories.filter((s) => s.grade === gradeKey);
-    const feat = { ...featuredStory(gradeKey), id: `${gradeKey}-featured` };
+    const custom = c.stories.filter((s) => s.grade === gradeKey).map((s) => ensure20Questions(s, gradeKey));
+    const feat = ensure20Questions({ ...featuredStory(gradeKey), id: `${gradeKey}-featured`, gradeKey }, gradeKey);
     const gen = [];
     for (let i = 0; i < Math.min(libCount, STORIES_PER_GRADE); i++) {
       const s = genStory(gradeKey, i);
@@ -243,6 +277,19 @@ export default function App() {
     return [...custom, feat, ...gen];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gradeKey, libCount, screen]);
+
+  const selectStory = (s) => {
+    if (s.library) {
+      setLibCount((cur) => Math.min(cur + 100, STORIES_PER_GRADE));
+      notify(`Library expanded — ${Math.min(libCount + 100, STORIES_PER_GRADE)} of ${STORIES_PER_GRADE} ${gradeName(gradeKey)} stories`);
+      return;
+    }
+    playChime('pop');
+    setBook(ensure20Questions(s, gradeKey));
+    setLibraryOpen(false);
+    setReaderMode('read');
+    go('reader');
+  };
 
   const themeLabel = (THEMES.find(([k]) => k === profile.theme) || THEMES[0])[1];
 
@@ -498,26 +545,15 @@ export default function App() {
                 fontSize={fontSize}
                 mode={readerMode}
                 setMode={setReaderMode}
-                libraryOpen={libraryOpen}
-                setLibraryOpen={setLibraryOpen}
-                storyList={storyList}
-                onSelectStory={(s) => {
-                  if (s.library) {
-                    setLibCount((c) => Math.min(c + 100, STORIES_PER_GRADE));
-                    notify(`Library expanded — ${Math.min(libCount + 100, STORIES_PER_GRADE)} of ${STORIES_PER_GRADE} ${gradeName(gradeKey)} stories`);
-                    return;
-                  }
-                  setBook(s);
-                  setLibraryOpen(false);
-                  setReaderMode('read');
-                }}
+                onStoryQuizFinish={finishStoryQuiz}
+                notify={notify}
               />
             </section>
           )}
 
           {screen === 'quiz' && (
             <section className="absolute inset-0 flex flex-col bg-[#fbfaff] p-4 md:p-8 overflow-y-auto">
-              <QuizPanel gradeKey={gradeKey} story={book} saved={saved} onFinish={finishQuiz} speak={(t) => { speakText(t); }} />
+              <QuizPanel gradeKey={gradeKey} story={book} saved={saved} notify={notify} onAnswer={answerQuiz} onRoundEnd={finishQuizRound} />
             </section>
           )}
 
@@ -622,6 +658,39 @@ export default function App() {
           onClose={() => setLevelN(null)}
           onComplete={(reward) => completeLevel(levelN, reward)}
         />
+      )}
+
+      {/* Grade library modal — exact design, works from Home AND Reader */}
+      {libraryOpen && (
+        <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex flex-col justify-end" style={{ position: 'fixed' }}>
+          <div className="bg-white rounded-t-3xl max-h-[85%] flex flex-col overflow-hidden shadow-2xl p-4 w-full sm:max-w-md mx-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-display font-black text-slate-800 text-lg">Grade Stories &amp; Books</h3>
+                <p className="text-xs text-slate-400">Choose a story for your grade</p>
+              </div>
+              <button onClick={() => setLibraryOpen(false)} className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div className="space-y-2.5 py-3 overflow-y-auto">
+              {storyList.map((s) => (
+                <div
+                  key={s.id}
+                  onClick={() => selectStory(s)}
+                  className={`p-3.5 rounded-2xl border transition cursor-pointer flex items-center justify-between ${s.id === book.id ? 'border-theme-main bg-theme-light' : 'border-slate-200 hover:border-slate-300 bg-white'}`}
+                >
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-theme-main">{s.level}</span>
+                    <h4 className="font-display font-black text-slate-800 text-sm">{s.title}</h4>
+                    <p className="text-xs text-slate-400 font-medium">{s.subtitle}</p>
+                  </div>
+                  <i className="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       <div className={'absolute top-9 inset-x-6 z-[70] bg-slate-900/90 text-white text-xs font-bold py-2.5 px-4 rounded-2xl shadow-xl text-center pointer-events-none transition-all duration-300 ' + (toast ? '' : 'opacity-0 -translate-y-2')}>

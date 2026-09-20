@@ -1,5 +1,5 @@
 // EWA Language Reader — Production Service Worker
-const CACHE_NAME = 'ewa-reader-v1';
+const CACHE_NAME = 'kidlingo-v2-contents';
 const PRECACHE_ASSETS = [
   './',
   './index.html',

@@ -201,22 +201,8 @@ export function genStory(gradeKey, idx) {
       : `This part moves the tale forward: ${para.split('.')[0]}.`
   );
 
-  // Smart questions drawn from THIS story's own entities (never mixed grades)
-  const questions = [
-    {
-      q: `Who is a main character here?`,
-      options: shuffleSeeded(rng, [p.name, p2.name, pick(rng, pool.places)]).slice(0, 3),
-      correct: 0,
-    },
-    {
-      q: `Where does part of this story happen?`,
-      options: shuffleSeeded(rng, [p.place, p2.place, pick(rng, pool.nouns)]).slice(0, 3),
-      correct: 0,
-    },
-  ];
-  // fix correct indexes after shuffle
-  questions[0].correct = questions[0].options.indexOf(p.name);
-  questions[1].correct = questions[1].options.indexOf(p.place);
+  // 20 smart questions drawn from THIS story's own words (never mixed grades)
+  const questions = makeStoryQuestions(gradeKey, paragraphs, p, p2, pool, rng);
 
   return {
     id: `${gradeKey}-story-${idx}`,
@@ -233,6 +219,84 @@ export function genStory(gradeKey, idx) {
 
 export function storyCount() {
   return STORIES_PER_GRADE;
+}
+
+/* 20 deterministic questions per story, grade-locked.
+   Mix: characters, places, word-in-story, true-sentence, sequence, title. */
+export function makeStoryQuestions(gradeKey, paragraphs, p, p2, pool, rng) {
+  const text = paragraphs.join(' ').toLowerCase();
+  const words = [...new Set(text.replace(/[^a-z' ]/g, '').split(/\s+/).filter((w) => w.length > 3))];
+  const absent = (list) => list.filter((w) => !text.includes(w.toLowerCase()));
+  const out = [];
+  const mc = (q, right, wrongs) => {
+    const options = shuffleSeeded(rng, [right, ...wrongs]).slice(0, 3);
+    out.push({ q, options, correct: options.indexOf(right) });
+  };
+
+  // 1-2 characters & places
+  mc('Who is a main character here?', p.name, [p2.name, pick(rng, pool.places)]);
+  mc('Where does part of this story happen?', p.place, [p2.place, pick(rng, pool.nouns)]);
+  // 3-4 more entities
+  mc(`Who else appears in the tale?`, p2.name, [p.name === p2.name ? pick(rng, pool.names) : p.name, pick(rng, pool.nouns)]);
+  mc('Which place is named in the story?', p2.place, [pick(rng, pool.nouns), pick(rng, pool.verbs)]);
+  // 5-8 word-in-story (present vs absent, same-grade pool only)
+  const ghostPool = absent([...pool.nouns, ...pool.verbs, ...pool.adjs]);
+  for (let i = 0; i < 4 && words.length > 0 && ghostPool.length >= 2; i++) {
+    const w = pick(rng, words);
+    mc(`Which word appears in the story?`, w, [pick(rng, ghostPool), pick(rng, ghostPool)]);
+  }
+  // 9-11 true sentence from THIS story
+  for (let i = 0; i < 3; i++) {
+    const real = paragraphs[Math.floor(rng() * paragraphs.length)].trim();
+    const fake1 = `The ${pick(rng, pool.adjs)} ${pick(rng, pool.nouns)} flew to the moon for lunch.`;
+    const fake2 = `Nobody moved or spoke for a hundred silent years.`;
+    mc('Which sentence is really from the story?', real.length > 110 ? real.slice(0, 107) + '...' : real, [fake1, fake2]);
+  }
+  // 12-13 sequence: what comes first / next
+  if (paragraphs.length >= 2) {
+    const firstStart = paragraphs[0].trim().split(' ').slice(0, 4).join(' ');
+    const lastStart = paragraphs[paragraphs.length - 1].trim().split(' ').slice(0, 4).join(' ');
+    mc('How does the story begin?', firstStart + '...', [lastStart + '...', `The end arrived first...`]);
+    mc('What happens near the end?', lastStart + '...', [firstStart + '...', `It starts raining frogs...`]);
+  } else {
+    mc('What is the story mostly about?', `${p.name} and the ${p.noun}`, [`Counting spoons`, `Sleeping all day`]);
+    mc('Who would enjoy this tale?', `A ${gradeKey === 'KG' ? 'little' : 'young'} reader like you`, [`A noisy robot`, `A grumpy cloud`]);
+  }
+  // 14-16 "which is TRUE"
+  const w1 = words.length > 0 ? pick(rng, words) : p.noun;
+  mc(`Which is TRUE about "${w1}"?`, `The word "${w1}" appears in the story`, [`The story never mentions it`, `The story is only numbers`]);
+  mc(`How would you describe this tale?`, `${p.adj} and fun to read`, [`Boring and empty`, `Full of blank pages`]);
+  mc(`Who is telling you to keep reading?`, `Your story friend ${p.name}`, [`A sleepy mailbox`, `Nobody at all`]);
+  // 17 title + action + feeling
+  mc('What could be another title?', `The ${p.adj} ${p.noun}`, [`The Lost Sock`, `Ten Sleepy Moons`]);
+  mc(`What does ${p.name} love to do?`, `To ${p.verb} and explore`, [`To nap for a year`, `To hide forever`]);
+  mc('How should you read this story?', `Slowly, out loud, with joy`, [`Upside down, super fast`, `Without looking`]);
+  // 20th: grade-colored kindness check
+  mc('What makes a great reader?', `Practice every single day`, [`Never opening books`, `Guessing wildly`]);
+
+  return out.slice(0, 20);
+}
+
+/* Top ANY story (featured, custom, school) up to 20 questions. */
+export function ensure20Questions(story, gradeKey) {
+  const have = story.sentenceQuestions || [];
+  if (have.length >= 20) return story;
+  const pool = POOLS[gradeKey] || POOLS.G1;
+  const rng = rngFor('topup', story.id || story.title, gradeKey);
+  const p = { name: pick(rng, pool.names), noun: pick(rng, pool.nouns), verb: pick(rng, pool.verbs), adj: pick(rng, pool.adjs), place: pick(rng, pool.places) };
+  const p2 = { name: pick(rng, pool.names), noun: pick(rng, pool.nouns), verb: pick(rng, pool.verbs), adj: pick(rng, pool.adjs), place: pick(rng, pool.places) };
+  const extra = makeStoryQuestions(gradeKey, story.paragraphs || [], p, p2, pool, rng);
+  return { ...story, sentenceQuestions: [...have, ...extra].slice(0, 20) };
+}
+
+/* Pick 10 rotating questions for one quiz sitting (stable per story+day). */
+export function storyQuizSet(story, count = 10) {
+  const base = story.sentenceQuestions || [];
+  if (base.length === 0) return [];
+  const daySeed = new Date().toISOString().slice(0, 10);
+  const rng = rngFor('quizset', story.id || story.title, daySeed);
+  const idx = shuffleSeeded(rng, base.map((_, i) => i)).slice(0, Math.min(count, base.length));
+  return idx.map((i) => base[i]);
 }
 
 /* ---------- math generator: 500 per grade, grade-locked ranges ---------- */

@@ -94,15 +94,15 @@ body.device-phone-preview #desktopTopHeader { display: none !important; }
 }
 
 .ewa-word:hover {
-  background-color: rgba(45, 181, 255, 0.15);
-  color: #0b80c2;
+  background-color: var(--theme-light);
+  color: var(--theme-primary);
 }
 
 .ewa-word.active-word {
-  background-color: #2db5ff !important;
+  background-color: var(--theme-primary) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 0 2px rgba(45, 181, 255, 0.35);
-  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
 }
 
 .ewa-word.speaking-now {
@@ -149,7 +149,7 @@ body.device-phone-preview #desktopTopHeader { display: none !important; }
   height: 0;
   border-left: 9px solid transparent;
   border-right: 9px solid transparent;
-  border-top: 9px solid #2db5ff;
+  border-top: 9px solid var(--theme-primary);
   pointer-events: none;
 }
 
@@ -157,7 +157,7 @@ body.device-phone-preview #desktopTopHeader { display: none !important; }
   bottom: auto;
   top: -9px;
   border-top: none;
-  border-bottom: 9px solid #2db5ff;
+  border-bottom: 9px solid var(--theme-primary);
 }
 
 /* Subtle book page texture */

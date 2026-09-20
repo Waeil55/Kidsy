@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { GRADES, gradeName } from '../data/grades.js';
 import { accuracy, overallAccuracy, resetAllScores } from '../store/scores.js';
-import VocabDeck from './VocabDeck.jsx';
+import { speakWord } from '../data/ewaData.js';
 
 export default function RewardsPanel({ scores, saved, notify, onScoresChange }) {
   const [deckOpen, setDeckOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const overall = overallAccuracy(scores);
 
+  // Exact trophy shelf from the design + live won-state (dimmed + locked until earned)
+  const storiesRead = Object.values(scores.grades).reduce((n, g) => n + g.storiesRead.length, 0);
+  const wordsLearned = (scores.vocabLearned || 0) + saved.filter((v) => v.status === 'learned').length;
+  const quizTotals = (() => {
+    let n = 0;
+    let c = 0;
+    Object.values(scores.grades).forEach((g) => { n += g.quizN; c += g.quizCorrect; });
+    return { n, c };
+  })();
   const trophies = [
-    { emoji: '🏆', name: 'Fast Reader', sub: 'Read 10 stories', won: Object.values(scores.grades).reduce((n, g) => n + g.storiesRead.length, 0) >= 10 },
-    { emoji: '⭐', name: 'Word Wizard', sub: '15 words learned', won: (scores.vocabLearned || 0) >= 15 || saved.filter((v) => v.status === 'learned').length >= 15 },
-    { emoji: '🎯', name: 'Quiz Champion', sub: '85%+ accuracy (5+)', won: (() => {
-      let n = 0;
-      let c = 0;
-      Object.values(scores.grades).forEach((g) => { n += g.quizN; c += g.quizCorrect; });
-      return n >= 5 && c / n >= 0.85;
-    })() },
-    { emoji: '🔢', name: 'Math Star', sub: '50 math solved', won: Object.values(scores.grades).reduce((n, g) => n + g.mathDone, 0) >= 50 },
-    { emoji: '🔥', name: 'Streak Blaze', sub: '7-day streak', won: (scores.streak.count || 0) >= 7 },
-    { emoji: '💎', name: 'XP Legend', sub: '1000 XP', won: scores.xp >= 1000 },
+    { emoji: '🏆', name: 'Fast Reader', sub: 'Level 1 Complete', bg: 'bg-amber-50 border-amber-200', subColor: 'text-amber-700', won: storiesRead >= 1 || Object.values(scores.grades).some((g) => g.levelsDone.length >= 1) },
+    { emoji: '⭐', name: 'Word Wizard', sub: '15 Words Learned', bg: 'bg-sky-50 border-sky-200', subColor: 'text-sky-700', won: wordsLearned >= 15 },
+    { emoji: '🎯', name: 'Quiz Champion', sub: '100% Score', bg: 'bg-emerald-50 border-emerald-200', subColor: 'text-emerald-700', won: quizTotals.n >= 5 && quizTotals.c === quizTotals.n },
   ];
 
   const doReset = () => {
@@ -90,10 +91,10 @@ export default function RewardsPanel({ scores, saved, notify, onScoresChange }) 
           <h3 className="font-display font-black text-sm text-slate-700 uppercase tracking-wider mb-4">Trophy Badges</h3>
           <div className="grid grid-cols-3 gap-3 text-center">
             {trophies.map((t) => (
-              <div key={t.name} className={`rounded-2xl p-4 flex flex-col items-center border ${t.won ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200 opacity-60'}`}>
+              <div key={t.name} className={`rounded-2xl p-4 flex flex-col items-center border ${t.won ? t.bg : 'bg-slate-50 border-slate-200 opacity-60'}`}>
                 <span className="text-3xl mb-1.5">{t.won ? t.emoji : '🔒'}</span>
                 <span className="font-display font-bold text-slate-800 text-xs">{t.name}</span>
-                <span className="text-[10px] text-slate-500 font-bold">{t.sub}</span>
+                <span className={`text-[10px] font-bold ${t.won ? t.subColor : 'text-slate-400'}`}>{t.sub}</span>
               </div>
             ))}
           </div>
@@ -117,11 +118,19 @@ export default function RewardsPanel({ scores, saved, notify, onScoresChange }) 
             )}
             {saved.slice(0, 12).map((item, idx) => (
               <div key={idx} className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex items-center justify-between">
-                <div>
-                  <span className="font-display font-black text-slate-800 text-sm">{item.word}</span>
-                  <p className="text-xs text-slate-600 line-clamp-1">{item.meaning}</p>
+                <div className="flex items-center space-x-2.5">
+                  <button onClick={() => speakWord(item.word)} className="w-8 h-8 rounded-xl bg-white text-theme-main shadow-sm flex items-center justify-center text-xs shrink-0">
+                    <i className="fa-solid fa-volume-high"></i>
+                  </button>
+                  <div>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="font-display font-black text-slate-800 text-sm">{item.word}</span>
+                      <span className="text-[10px] font-mono text-slate-400">{item.ipa}</span>
+                    </div>
+                    <p className="text-xs text-slate-600 line-clamp-1">{item.meaning}</p>
+                  </div>
                 </div>
-                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${item.status === 'learned' ? 'bg-emerald-100 text-emerald-800' : 'bg-theme-light text-theme-main'}`}>
+                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full shrink-0 ${item.status === 'learned' ? 'bg-emerald-100 text-emerald-800' : 'bg-theme-light text-theme-main'}`}>
                   {item.status}
                 </span>
               </div>

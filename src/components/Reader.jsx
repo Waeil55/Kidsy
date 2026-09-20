@@ -1,21 +1,10 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cleanWordToken, tokenizeParagraph, resolveWordData, speakWord, stripQuotes } from '../data/ewaData.js';
-import { genStory, gradeName } from '../data/grades.js';
-import { loadCustom } from '../lib/schoolParse.js';
-
-export function gradeBooks(gradeKey) {
-  const c = loadCustom();
-  const custom = c.stories.filter((s) => s.grade === gradeKey);
-  const out = [...custom];
-  // generated library: expose as browsable chunks (500 max)
-  out.push({ id: `${gradeKey}-genlib`, gradeKey, title: 'Story Library', subtitle: `${gradeName(gradeKey)} · 500 stories`, level: 'Browse all', paragraphs: [], library: true });
-  return out;
-}
+import StoryQuizDock from './StoryQuizDock.jsx';
 
 export default function Reader({
   book, gradeKey, saved, onSaveWord, fontSize,
-  onOpenLibrary, libraryOpen, setLibraryOpen, onSelectStory, storyList,
-  mode, setMode,
+  mode, setMode, onStoryQuizFinish, notify,
 }) {
   const [activeKey, setActiveKey] = useState(null);
   const [popup, setPopup] = useState(null);
@@ -24,6 +13,7 @@ export default function Reader({
   const [audioSpeed, setAudioSpeed] = useState(1.0);
   const [speakingKey, setSpeakingKey] = useState(null);
   const [sentence, setSentence] = useState(null);
+  const [storyQuizOpen, setStoryQuizOpen] = useState(false);
 
   const scrollRef = useRef(null);
   const popupRef = useRef(null);
@@ -240,14 +230,14 @@ export default function Reader({
             <div className="grid grid-cols-2 rounded-xl bg-theme-solid p-1 gap-1 text-white">
               <button
                 onClick={() => { setMode('read'); pauseAudio(); }}
-                className={'flex items-center justify-center space-x-2 py-2 px-4 rounded-lg font-display font-black text-xs uppercase tracking-wider transition ' + (mode === 'read' ? 'bg-white text-slate-900 shadow' : 'text-white hover:bg-white/10')}
+                className={'flex items-center justify-center space-x-1.5 py-2 px-3 rounded-lg font-display font-black text-xs uppercase tracking-wider transition ' + (mode === 'read' ? 'bg-white text-slate-900 shadow' : 'text-white hover:bg-white/10')}
               >
                 <i className="fa-solid fa-book-open"></i>
                 <span>Read Story</span>
               </button>
               <button
                 onClick={() => { setMode('audio'); closePopup(); startAudio(0); }}
-                className={'flex items-center justify-center space-x-2 py-2 px-4 rounded-lg font-display font-black text-xs uppercase tracking-wider transition ' + (mode === 'audio' ? 'bg-white text-slate-900 shadow' : 'text-white hover:bg-white/10')}
+                className={'flex items-center justify-center space-x-1.5 py-2 px-3 rounded-lg font-display font-black text-xs uppercase tracking-wider transition ' + (mode === 'audio' ? 'bg-white text-slate-900 shadow' : 'text-white hover:bg-white/10')}
               >
                 <i className="fa-solid fa-headphones"></i>
                 <span>Listen Along</span>
@@ -292,6 +282,18 @@ export default function Reader({
 
           <div className="text-slate-800 font-serif leading-loose text-lg md:text-xl select-text pb-6" style={{ fontSize }}>
             {renderParagraphs()}
+          </div>
+
+          {/* After-reading quiz entry — story stays on screen */}
+          <div className="max-w-2xl mx-auto mb-6">
+            <button
+              onClick={() => setStoryQuizOpen(true)}
+              className="w-full py-4 rounded-3xl bg-theme-main text-white shadow-xl flex items-center justify-center space-x-2 hover:opacity-95 transition active:scale-[0.99]"
+            >
+              <i className="fa-solid fa-circle-question"></i>
+              <span className="font-display font-black text-sm">Quiz Me: 10 Questions on This Story</span>
+              <span className="text-[10px] font-black bg-white/25 px-2 py-0.5 rounded-full">story stays visible</span>
+            </button>
           </div>
         </div>
 
@@ -497,40 +499,19 @@ export default function Reader({
         </div>
       )}
 
-      {/* Library modal (grade stories) */}
-
-      {libraryOpen && (
-        <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex flex-col justify-end">
-          <div className="bg-white rounded-t-3xl max-h-[85%] flex flex-col overflow-hidden shadow-2xl p-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="font-display font-black text-slate-800 text-lg">{gradeName(gradeKey)} Stories &amp; Books</h3>
-                <p className="text-xs text-slate-400">Choose a story for your grade</p>
-              </div>
-              <button onClick={() => setLibraryOpen(false)} className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
-                <i className="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-            <div className="space-y-2.5 py-3 overflow-y-auto">
-              {storyList.map((s) => (
-                <div
-                  key={s.id}
-                  onClick={() => onSelectStory(s)}
-                  className={'p-3.5 rounded-2xl border transition cursor-pointer flex items-center justify-between ' + (s.id === book.id ? 'border-theme-main bg-theme-light' : 'border-slate-200 hover:border-slate-300 bg-white')}
-                >
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-theme-main">{s.level}</span>
-                    <h4 className="font-display font-black text-slate-800 text-sm">{s.title}</h4>
-                    <p className="text-xs text-slate-400 font-medium">{s.subtitle}</p>
-                  </div>
-                  <i className="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* Story quiz dock — story stays visible above while answering one-by-one */}
+      {storyQuizOpen && (
+        <StoryQuizDock
+          story={book}
+          gradeKey={gradeKey}
+          notify={notify}
+          onClose={() => setStoryQuizOpen(false)}
+          onFinish={(correct, total) => {
+            setStoryQuizOpen(false);
+            onStoryQuizFinish({ total, correct });
+          }}
+        />
       )}
     </div>
   );
-
 }
