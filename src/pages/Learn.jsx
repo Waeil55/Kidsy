@@ -300,18 +300,22 @@ export function Learn({ initialSubject = 'all' }) {
         </div>
       </div>
 
-      {/* Main Mode Navigation Bar (8 Visual Modes with Strict Grade Isolation) */}
+      {/* Main Mode Navigation Bar — horizontal scroll so all tabs always visible */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(95px, 1fr))',
+          display: 'flex',
+          flexDirection: 'row',
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
           background: '#e2e8f0',
           padding: '4px',
           borderRadius: '16px',
           gap: '4px',
           marginBottom: '16px',
           width: '100%',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}
       >
         <button
@@ -320,7 +324,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('mathlab');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'mathlab' ? '#ffffff' : 'transparent',
@@ -345,7 +350,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('gradewords');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'gradewords' ? '#ffffff' : 'transparent',
@@ -370,7 +376,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('adventure');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'adventure' ? '#ffffff' : 'transparent',
@@ -395,7 +402,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('school');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'school' ? '#ffffff' : 'transparent',
@@ -420,7 +428,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('arena');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'arena' ? '#ffffff' : 'transparent',
@@ -445,7 +454,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('picturebook');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'picturebook' ? '#ffffff' : 'transparent',
@@ -470,7 +480,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('curriculum');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'curriculum' ? '#ffffff' : 'transparent',
@@ -495,7 +506,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('encyclopedia');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'encyclopedia' ? '#ffffff' : 'transparent',
@@ -521,7 +533,8 @@ export function Learn({ initialSubject = 'all' }) {
             setActiveTab('stories');
           }}
           style={{
-            padding: '9px 4px',
+            padding: '9px 8px',
+            flexShrink: 0,
             borderRadius: '12px',
             border: 0,
             background: activeTab === 'stories' ? '#ffffff' : 'transparent',
