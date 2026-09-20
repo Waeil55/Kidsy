@@ -7,10 +7,11 @@ import {
   Languages, Smartphone, Monitor, Heart, Calendar, Layers,
   GraduationCap, BarChart2, RefreshCw, ExternalLink, Sliders, Grid,
   Gamepad2, Smile, Compass, Zap, HelpCircle, Settings, Filter,
-  Bookmark, Share2, SlidersHorizontal, Lightbulb, Music, Info, Plus, Trash2
+  Bookmark, Share2, SlidersHorizontal, Lightbulb, Music, Info, Plus, Trash2, Gift, Users, Clapperboard
 } from 'lucide-react';
 import { GRADES, shuffleArray, getQuestionsForGrade, getSubjectsForGrade } from './content.js';
 import SayItScreen from './SayItScreen.jsx';
+import GiftScreen from './GiftScreen.jsx';
 
 let _sctx = null;
 const _gac = () => {
@@ -793,6 +794,7 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
     { id: 'drawing', icon: '🎨', label: 'Draw', color: '#EC4899' },
     { id: 'stories', icon: '📖', label: 'Stories', color: '#F59E0B' },
     { id: 'sayit', icon: '🎤', label: 'Say-It', color: '#10B981' },
+    { id: 'gift', icon: '🎁', label: 'Gift', color: '#F59E0B' },
   ];
 
   return (
@@ -948,10 +950,15 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
         <div className="max-w-md mx-auto flex justify-around">
           {[
             { id: 'home', icon: Home, label: 'Home', active: true },
-            { id: 'quiz', icon: Gamepad2, label: 'Play' },
-            { id: 'profile', icon: User, label: 'Profile' },
+            { id: 'hub', icon: GraduationCap, label: 'Learn' },
+            { id: 'stories', icon: BookOpen, label: 'Stories' },
+            { id: 'sayit', icon: Clapperboard, label: 'Reels' },
+            { id: 'gift', icon: Gift, label: 'Gift' },
+            { id: 'progress', icon: BarChart2, label: 'Progress', go: 'profile' },
+            { id: 'family', icon: Users, label: 'Family', go: 'profile' },
+            { id: 'more', icon: Settings, label: 'More', go: 'profile' },
           ].map(tab => (
-            <button key={tab.id} onClick={() => { playSfx('click'); onNavigate(tab.id); }}
+              <button key={tab.id} onClick={() => { playSfx('click'); onNavigate(tab.go || tab.id); }}
               className={'kid-3d-btn flex flex-col items-center px-4 py-2 rounded-2xl ' + (tab.active ? 'bg-purple-100 text-purple-600' : 'text-gray-400')}>
               <tab.icon size={22} strokeWidth={tab.active ? 2.5 : 2} />
               <span className="text-xs font-bold mt-1">{tab.label}</span>
@@ -1030,6 +1037,8 @@ function AppRouter() {
   if (screen === 'profile') return <ProfileScreen profile={profile} onBack={() => navigate('home')} onUpdate={updateProfile} />;
 
   if (screen === 'sayit') return <SayItScreen profile={profile} onFinish={handleQuizFinish} onBack={() => navigate('home')} />;
+
+  if (screen === 'gift') return <GiftScreen profile={profile} onBack={() => navigate('home')} onNavigate={navigate} onFinish={(r) => { fireConfetti(r && r.type === 'gift'); }} />;
 
   if (screen === 'hub') return <EduPlayHubScreen profile={profile} onBack={() => navigate('home')} />;
 
