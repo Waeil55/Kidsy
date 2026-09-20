@@ -1,18 +1,24 @@
 import React from 'react';
-import { BookOpen, ChartNoAxesColumn, House, Settings, ShieldCheck, Users, WifiOff, ArrowLeft } from 'lucide-react';
+import {
+  House, BookOpen, ChartNoAxesColumn, Users,
+  Settings, WifiOff, ArrowLeft, Gift
+} from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { playPop } from '../utils/audio';
 
-export function Layout({ page, setPage, children }) {
-  const { child, children: kids, setChild, online, role, setRole } = useApp();
+const NAV = [
+  { id: 'home',     label: 'Home',    icon: House,             emoji: '🏠', color: '#6366f1' },
+  { id: 'learn',    label: 'Learn',   icon: BookOpen,          emoji: '🧠', color: '#0ea5e9' },
+  { id: 'stories',  label: 'Stories', icon: null,              emoji: '📖', color: '#db2777' },
+  { id: 'reels',    label: 'Reels',   icon: null,              emoji: '🎬', color: '#f59e0b' },
+  { id: 'gift',     label: 'Gift',    icon: Gift,              emoji: '🎁', color: '#22c55e' },
+  { id: 'progress', label: 'Progress',icon: ChartNoAxesColumn, emoji: '📊', color: '#8b5cf6' },
+  { id: 'parent',   label: 'Family',  icon: Users,             emoji: '👨‍👩‍👧', color: '#ec4899' },
+  { id: 'settings', label: 'More',    icon: Settings,          emoji: '⚙️', color: '#64748b' },
+];
 
-  const nav = [
-    ['home', 'Home', House],
-    ['learn', 'Learn', BookOpen],
-    ['progress', 'Progress', ChartNoAxesColumn],
-    ['parent', 'Family', Users],
-    ['settings', 'Settings', Settings]
-  ];
+export function Layout({ page, setPage, children }) {
+  const { child, children: kids, setChild, online } = useApp();
 
   return (
     <div
@@ -27,46 +33,36 @@ export function Layout({ page, setPage, children }) {
         height: '100%',
         overflow: 'hidden',
         background: '#f7fafe',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
       }}
     >
-      {/* Slim Header Bar for non-Home pages with Dedicated Back Button */}
+      {/* Top header bar (non-home pages) */}
       {page !== 'home' && (
         <header
           className="topbar"
           style={{
             height: '52px',
             padding: '0 14px',
-            position: 'relative',
             borderBottom: '1px solid #eef3f8',
             background: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             width: '100%',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            flexShrink: 0,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
-              onClick={() => {
-                playPop();
-                setPage('home');
-              }}
+              onClick={() => { playPop(); setPage('home'); }}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                background: '#eff6ff',
-                color: '#1d4ed8',
-                border: '1.5px solid #bfdbfe',
-                borderRadius: '12px',
-                padding: '5px 11px',
-                fontSize: '12.5px',
-                fontWeight: 800,
-                cursor: 'pointer'
+                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                background: '#eff6ff', color: '#1d4ed8',
+                border: '1.5px solid #bfdbfe', borderRadius: '12px',
+                padding: '5px 11px', fontSize: '12.5px', fontWeight: 800,
+                cursor: 'pointer',
               }}
-              title="Back to Home Dashboard"
             >
               <ArrowLeft size={15} strokeWidth={2.5} />
               <span>Back</span>
@@ -74,16 +70,11 @@ export function Layout({ page, setPage, children }) {
 
             <button
               className="brand"
-              onClick={() => {
-                playPop();
-                setPage('home');
-              }}
+              onClick={() => { playPop(); setPage('home'); }}
               style={{ fontSize: '17px', gap: '6px' }}
             >
-              <span className="brandMark" style={{ width: '26px', height: '26px', fontSize: '12px' }}>
-                ★
-              </span>
-              <span>MerolaApp</span>
+              <span className="brandMark" style={{ width: '26px', height: '26px', fontSize: '12px' }}>★</span>
+              <span>Kidsy</span>
             </button>
           </div>
 
@@ -97,10 +88,8 @@ export function Layout({ page, setPage, children }) {
               value={child.id}
               onChange={(e) => setChild(e.target.value)}
               style={{
-                padding: '6px 10px',
-                fontSize: '12px',
-                borderRadius: '10px',
-                border: '1px solid #d9e5f1'
+                padding: '6px 10px', fontSize: '12px',
+                borderRadius: '10px', border: '1px solid #d9e5f1',
               }}
             >
               {kids.map((k) => (
@@ -113,7 +102,7 @@ export function Layout({ page, setPage, children }) {
         </header>
       )}
 
-      {/* Main Viewport */}
+      {/* Main content */}
       <main
         className="main"
         style={{
@@ -125,48 +114,76 @@ export function Layout({ page, setPage, children }) {
           overflowX: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
         }}
       >
         {children}
       </main>
 
-      {/* Clean Bottom Navigation Dock - Full Mobile Width */}
+      {/* Bottom Navigation — horizontal scroll, emoji + label, beautiful */}
       <nav
         className="bottomnav"
         style={{
-          position: 'relative',
           width: '100%',
-          height: '54px',
-          minHeight: '54px',
+          flexShrink: 0,
           borderTop: '1px solid #f1f5f9',
           background: '#ffffff',
           display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          backdropFilter: 'none',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          height: '62px',
+          minHeight: '62px',
+          alignItems: 'stretch',
         }}
       >
-        {nav.map(([id, label, IconComponent]) => (
-          <button
-            key={id}
-            className={page === id ? 'active' : ''}
-            onClick={() => {
-              playPop();
-              setPage(id);
-            }}
-            style={{
-              padding: '2px 0',
-              minWidth: '46px',
-              color: page === id ? '#157aff' : '#94a3b8'
-            }}
-          >
-            <IconComponent size={19} />
-            <span style={{ fontSize: '10px', marginTop: '1px' }}>{label}</span>
-          </button>
-        ))}
+        {NAV.map(({ id, label, emoji, color }) => {
+          const active = page === id;
+          return (
+            <button
+              key={id}
+              onClick={() => { playPop(); setPage(id); }}
+              style={{
+                flexShrink: 0,
+                minWidth: '72px',
+                padding: '4px 6px 2px',
+                border: 'none',
+                background: active ? `${color}14` : 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '1px',
+                position: 'relative',
+                transition: 'background 0.15s',
+                borderTop: active ? `3px solid ${color}` : '3px solid transparent',
+              }}
+            >
+              {/* Active dot */}
+              <span style={{
+                fontSize: active ? '22px' : '20px',
+                lineHeight: 1,
+                transition: 'font-size 0.15s',
+                filter: active ? 'none' : 'grayscale(30%) opacity(0.7)',
+              }}>
+                {emoji}
+              </span>
+              <span style={{
+                fontSize: '9.5px',
+                fontWeight: active ? 900 : 600,
+                color: active ? color : '#94a3b8',
+                letterSpacing: '0.01em',
+                lineHeight: 1,
+                marginTop: '1px',
+              }}>
+                {label}
+              </span>
+            </button>
+          );
+        })}
       </nav>
     </div>
   );

@@ -7,6 +7,9 @@ import { Learn } from './pages/Learn';
 import { Progress } from './pages/Progress';
 import { Parent } from './pages/Parent';
 import { Settings } from './pages/Settings';
+import { StoriesPage } from './pages/StoriesPage';
+import { KidsReels } from './pages/KidsReels';
+import { GiftPage } from './pages/GiftPage';
 import { getState } from './lib/db';
 import { AppProvider, useApp } from './store/AppContext';
 import { Layout } from './components/Layout';
@@ -23,10 +26,13 @@ function MainAppShell() {
 
   return (
     <Layout page={page} setPage={setPage}>
-      {page === 'home' && <Home go={setPage} openSubject={handleOpenSubject} />}
-      {page === 'learn' && <Learn initialSubject={initialSubject} />}
+      {page === 'home'     && <Home go={setPage} openSubject={handleOpenSubject} />}
+      {page === 'learn'    && <Learn initialSubject={initialSubject} />}
+      {page === 'stories'  && <StoriesPage go={setPage} />}
+      {page === 'reels'    && <KidsReels onBack={() => setPage('home')} />}
+      {page === 'gift'     && <GiftPage go={setPage} />}
       {page === 'progress' && <Progress />}
-      {page === 'parent' && <Parent />}
+      {page === 'parent'   && <Parent />}
       {page === 'settings' && <Settings onShowTour={() => window.location.reload()} />}
     </Layout>
   );
