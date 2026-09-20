@@ -106,10 +106,10 @@ function generateGrade3Levels() {
             explanation: `Great job! "${targetWord.word}" means ${targetWord.meaning}.`
           },
           {
-            prompt: `Look at the sentence: "${targetWord.sentence}"\nWhat is the target word here?`,
+            prompt: `Fill in the blank:\n"${targetWord.sentence.replace(new RegExp(targetWord.word, 'gi'), '_______')}"`,
             choices: [targetWord.word, 'happy', 'pencil', 'school'],
             answer: 0,
-            explanation: `Spot on! The sentence uses "${targetWord.word}".`
+            explanation: `"${targetWord.word}" fits perfectly! ${targetWord.meaning}.`
           }
         ];
       } else if (i <= 10) {
@@ -447,10 +447,15 @@ function generateGradeLevels(grade) {
     let description = `${stage.name} practice in ${spec.theme}.`;
     let questions = [
       {
-        prompt: `Vocabulary Practice: Listen, then pick the word you heard.`,
-        choices: [vocabWord, 'pencil', 'chair', 'house'],
+        prompt: `What does the word "${vocabWord}" mean?`,
+        choices: [
+          `A key vocabulary word for Grade ${grade} students`,
+          'A type of colored pencil',
+          'A heavy piece of furniture',
+          'Something you eat for breakfast'
+        ],
         answer: 0,
-        explanation: `Great job! "${vocabWord}" is the special word for this level.`
+        explanation: `"${vocabWord}" is an important word to know in Grade ${grade}!`
       },
       {
         prompt: math.prompt,

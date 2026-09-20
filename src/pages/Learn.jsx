@@ -46,6 +46,7 @@ import { getGradeLevels } from '../data/levelProgressionEngine';
 import JourneyMap from '../components/JourneyMap';
 import { useApp } from '../store/AppContext';
 import { playCorrect, playIncorrect, playPop, fireConfetti, speakText, stopAudio } from '../utils/audio';
+import { StoryReader } from '../components/StoryReader';
 
 export function Learn({ initialSubject = 'all' }) {
   const { child, complete } = useApp();
@@ -91,7 +92,7 @@ export function Learn({ initialSubject = 'all' }) {
 
   useEffect(() => {
     if (initialSubject && initialSubject !== 'all') {
-      if (['mathlab', 'gradewords', 'adventure', 'school', 'arena', 'picturebook', 'curriculum', 'encyclopedia'].includes(initialSubject)) {
+      if (['mathlab', 'gradewords', 'adventure', 'school', 'arena', 'picturebook', 'curriculum', 'encyclopedia', 'stories'].includes(initialSubject)) {
         setActiveTab(initialSubject);
       } else {
         setSubject(initialSubject);
@@ -509,6 +510,32 @@ export function Learn({ initialSubject = 'all' }) {
         >
           <Sparkles size={16} color={activeTab === 'encyclopedia' ? '#0284c7' : '#64748b'} />
           <span>Word Index</span>
+        </button>
+
+        {/* Stories Tab — EWA-style reader with 1,400 grade-calibrated stories */}
+        <button
+          onClick={() => {
+            playPop();
+            setActiveTab('stories');
+          }}
+          style={{
+            padding: '9px 4px',
+            borderRadius: '12px',
+            border: 0,
+            background: activeTab === 'stories' ? '#ffffff' : 'transparent',
+            color: activeTab === 'stories' ? '#0f172a' : '#64748b',
+            boxShadow: activeTab === 'stories' ? '0 3px 8px rgba(0,0,0,0.06)' : 'none',
+            fontSize: '11.5px',
+            fontWeight: 850,
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '3px'
+          }}
+        >
+          <BookOpen size={16} color={activeTab === 'stories' ? '#db2777' : '#64748b'} />
+          <span>Stories</span>
         </button>
       </div>
 
@@ -1518,6 +1545,20 @@ export function Learn({ initialSubject = 'all' }) {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* STORIES TAB — EWA-style interactive story reader (1,400 stories K–6) */}
+      {/* ==================================================================== */}
+      {activeTab === 'stories' && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          zIndex: 200,
+          background: '#fcfbf7',
+        }}>
+          <StoryReader onBack={() => setActiveTab('gradewords')} />
         </div>
       )}
 
