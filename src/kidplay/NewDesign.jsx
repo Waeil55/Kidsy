@@ -10,6 +10,7 @@ import {
   Bookmark, Share2, SlidersHorizontal, Lightbulb, Music, Info, Plus, Trash2
 } from 'lucide-react';
 import { GRADES, shuffleArray, getQuestionsForGrade, getSubjectsForGrade } from './content.js';
+import SayItScreen from './SayItScreen.jsx';
 
 let _sctx = null;
 const _gac = () => {
@@ -791,6 +792,7 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
     { id: 'memory', icon: '🃏', label: 'Memory', color: '#8B5CF6' },
     { id: 'drawing', icon: '🎨', label: 'Draw', color: '#EC4899' },
     { id: 'stories', icon: '📖', label: 'Stories', color: '#F59E0B' },
+    { id: 'sayit', icon: '🎤', label: 'Say-It', color: '#10B981' },
   ];
 
   return (
@@ -1026,6 +1028,8 @@ function AppRouter() {
   if (screen === 'stories') return <StoryReaderScreen onBack={() => navigate('home')} />;
 
   if (screen === 'profile') return <ProfileScreen profile={profile} onBack={() => navigate('home')} onUpdate={updateProfile} />;
+
+  if (screen === 'sayit') return <SayItScreen profile={profile} onFinish={handleQuizFinish} onBack={() => navigate('home')} />;
 
   if (screen === 'hub') return <EduPlayHubScreen profile={profile} onBack={() => navigate('home')} />;
 
