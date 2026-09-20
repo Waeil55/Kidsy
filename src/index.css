@@ -215,3 +215,49 @@
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ============================================================
+   Kidsy single kid-design system (ONE source — was duplicated
+   inline in NewDesign KidStyles + styles/app.css + kids-theme)
+   ============================================================ */
+@keyframes kid-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px) scale(1.02); } }
+@keyframes kid-wiggle { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes kid-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px) rotate(2deg); } }
+.animate-kid-bounce { animation: kid-bounce 2.5s ease-in-out infinite; }
+.animate-kid-wiggle { animation: kid-wiggle 1.8s ease-in-out infinite; }
+.animate-kid-float { animation: kid-float 3s ease-in-out infinite; }
+
+.kid-3d-btn {
+  transition: all .12s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 5px 0 rgba(0,0,0,.16), 0 8px 16px rgba(0,0,0,.1);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.kid-3d-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 7px 0 rgba(0,0,0,.2), 0 12px 20px rgba(0,0,0,.14); }
+.kid-3d-btn:active { transform: translateY(4px) scale(.98); box-shadow: 0 1px 0 rgba(0,0,0,.2), 0 3px 6px rgba(0,0,0,.1); }
+
+/* ONE kid bottom nav — 8 tabs fit phones without crowding */
+.kid-bottomnav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: rgba(255,255,255,.95);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid #f3f4f6;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+}
+.kid-bottomnav-inner {
+  max-width: 28rem; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px;
+}
+.kid-tab {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 6px 0; border-radius: 1rem;
+  font-size: 10px; font-weight: 800; line-height: 1.1;
+}
+.kid-tab-active { background: #f3e8ff; color: #7c3aed; }
+.kid-tab-idle { color: #9ca3af; }
+
+/* ONE screen background set — replaces 15 copy-pasted gradients */
+.kid-bg-home { background: linear-gradient(180deg, #eef2ff 0%, #e0e7ff 30%, #f0f4ff 100%); }
+.kid-bg-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.kid-bg-gift { background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 50%, #fff7ed 100%); }

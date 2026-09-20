@@ -61,21 +61,9 @@ export const speak = (text, lang = 'en-US') => {
   }
 };
 
-const KidStyles = () => (
-  <style>{`
-    @keyframes kid-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px) scale(1.02)}}
-    @keyframes kid-wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
-    @keyframes kid-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px) rotate(2deg)}}
-    .animate-kid-bounce{animation:kid-bounce 2.5s ease-in-out infinite}
-    .animate-kid-wiggle{animation:kid-wiggle 1.8s ease-in-out infinite}
-    .animate-kid-float{animation:kid-float 3s ease-in-out infinite}
-    .kid-3d-btn{transition:all .12s cubic-bezier(.34,1.56,.64,1);box-shadow:0 5px 0 rgba(0,0,0,.16),0 8px 16px rgba(0,0,0,.1);cursor:pointer;user-select:none}
-    .kid-3d-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 7px 0 rgba(0,0,0,.2),0 12px 20px rgba(0,0,0,.14)}
-    .kid-3d-btn:active{transform:translateY(4px) scale(.98);box-shadow:0 1px 0 rgba(0,0,0,.2),0 3px 6px rgba(0,0,0,.1)}
-    .no-scrollbar::-webkit-scrollbar{display:none}
-    .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
-  `}</style>
-);
+// Kid kid-design CSS lives in ONE place now: src/index.css (kid-3d-btn,
+// animate-kid-*, kid-bottomnav, kid-bg-*). This stub keeps call sites working.
+const KidStyles = () => null;
 
 const BlueBirdIcon = memo(() => (
   <svg viewBox="0 0 120 120" className="w-24 h-24 select-none drop-shadow-md animate-[bounce_3s_ease-in-out_infinite]">
@@ -744,18 +732,21 @@ const EduPlayHubScreen = memo(({ profile, onBack }) => {
   );
 });
 
-const ProfileScreen = memo(({ profile, onBack, onUpdate }) => {
+const ProfileScreen = memo(({ profile, onBack, onUpdate, section }) => {
   const [editName, setEditName] = useState(false);
   const [name, setName] = useState(profile ? profile.name : '');
   const gradeObj = GRADES.find(g => g.id === (profile && profile.grade)) || GRADES[2];
   const handleSave = () => { if (!name.trim()) return; const p = { ...profile, name: name.trim() }; onUpdate(p); setEditName(false); playSfx('coin'); speak('Name changed to ' + name.trim() + '!'); };
+  const sectionTitle = section === 'progress' ? 'My Progress' : section === 'family' ? 'My Family' : section === 'more' ? 'More & Settings' : 'My Profile';
+  const sectionSub = section === 'progress' ? 'Coins, stars and streak — keep going!' : section === 'family' ? 'Everyone learning together' : section === 'more' ? 'Name, grade and app settings' : 'Everything about me';
   return (
-    <div className="min-h-screen px-4 py-8" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+    <div className="min-h-screen px-4 py-8 pb-28 kid-bg-purple">
       <div className="max-w-md mx-auto">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-2">
           <button onClick={() => { playSfx('whoosh'); onBack(); }} className="kid-3d-btn w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-600"><ArrowLeft size={20} /></button>
-          <h1 className="text-xl font-black text-white">My Profile</h1>
+          <h1 className="text-xl font-black text-white">{sectionTitle}</h1>
         </div>
+        <p className="text-white/70 text-xs font-bold mb-6 ml-12 pl-1">{sectionSub}</p>
         <div className="bg-white/95 backdrop-blur rounded-3xl p-6 shadow-2xl text-center mb-4">
           <div className="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center text-4xl" style={{ background: ((profile && profile.avatar && profile.avatar.color) || '#3B82F6') + '20' }}>
             {profile && profile.avatar && profile.avatar.emoji ? profile.avatar.emoji : '🦊'}
@@ -946,22 +937,22 @@ const HomeScreen = memo(({ profile, onNavigate }) => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-4 py-2 z-50">
-        <div className="max-w-md mx-auto flex justify-around">
+      <div className="kid-bottomnav">
+        <div className="kid-bottomnav-inner">
           {[
             { id: 'home', icon: Home, label: 'Home', active: true },
             { id: 'hub', icon: GraduationCap, label: 'Learn' },
             { id: 'stories', icon: BookOpen, label: 'Stories' },
             { id: 'sayit', icon: Clapperboard, label: 'Reels' },
             { id: 'gift', icon: Gift, label: 'Gift' },
-            { id: 'progress', icon: BarChart2, label: 'Progress', go: 'profile' },
-            { id: 'family', icon: Users, label: 'Family', go: 'profile' },
-            { id: 'more', icon: Settings, label: 'More', go: 'profile' },
+            { id: 'progress', icon: BarChart2, label: 'Progress', go: 'profile', tab: 'progress' },
+            { id: 'family', icon: Users, label: 'Family', go: 'profile', tab: 'family' },
+            { id: 'more', icon: Settings, label: 'More', go: 'profile', tab: 'more' },
           ].map(tab => (
-              <button key={tab.id} onClick={() => { playSfx('click'); onNavigate(tab.go || tab.id); }}
-              className={'kid-3d-btn flex flex-col items-center px-4 py-2 rounded-2xl ' + (tab.active ? 'bg-purple-100 text-purple-600' : 'text-gray-400')}>
-              <tab.icon size={22} strokeWidth={tab.active ? 2.5 : 2} />
-              <span className="text-xs font-bold mt-1">{tab.label}</span>
+              <button key={tab.id} onClick={() => { playSfx('click'); onNavigate(tab.go || tab.id, tab.tab ? { tab: tab.tab } : undefined); }}
+              className={'kid-tab ' + (tab.active ? 'kid-tab-active' : 'kid-tab-idle')}>
+              <tab.icon size={20} strokeWidth={tab.active ? 2.5 : 2} />
+              <span className="mt-1">{tab.label}</span>
             </button>
           ))}
         </div>
@@ -1034,7 +1025,7 @@ function AppRouter() {
 
   if (screen === 'stories') return <StoryReaderScreen onBack={() => navigate('home')} />;
 
-  if (screen === 'profile') return <ProfileScreen profile={profile} onBack={() => navigate('home')} onUpdate={updateProfile} />;
+  if (screen === 'profile') return <ProfileScreen profile={profile} onBack={() => navigate('home')} onUpdate={updateProfile} section={screenData && screenData.tab} />;
 
   if (screen === 'sayit') return <SayItScreen profile={profile} onFinish={handleQuizFinish} onBack={() => navigate('home')} />;
 
