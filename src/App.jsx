@@ -313,8 +313,8 @@ export default function App() {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-2xl bg-theme-main text-white flex items-center justify-center font-display font-black text-xl shadow-md">K</div>
               <div>
-                <h1 className="font-display font-black text-lg text-slate-800 leading-tight">KidLingo</h1>
-                <span className="text-[11px] font-bold text-slate-400">EWA Kids Reader</span>
+                <h1 className="font-display font-black text-lg text-slate-800 leading-tight">Kidsy</h1>
+                <span className="text-[11px] font-bold text-slate-400">Kids Reader</span>
               </div>
             </div>
             <button onClick={() => setPhonePreview(!phonePreview)} className="text-[11px] p-2 rounded-xl bg-slate-100 hover:bg-theme-light text-slate-600 hover:text-theme-main transition" title="Toggle Phone Frame Simulator">
@@ -388,7 +388,7 @@ export default function App() {
         <header id="desktopTopHeader" className="hidden md:flex h-16 bg-white border-b border-slate-200 px-6 items-center justify-between shrink-0 z-20">
           <div className="flex items-center space-x-3">
             <span className="text-xs font-bold text-slate-400">Current Section:</span>
-            <span className="font-display font-black text-sm text-slate-800">{BREADCRUMB[screen] || 'KidLingo'}</span>
+            <span className="font-display font-black text-sm text-slate-800">{BREADCRUMB[screen] || 'Kidsy'}</span>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1.5 bg-theme-light text-theme-main px-3 py-1.5 rounded-full font-display font-black text-xs border border-theme-light">

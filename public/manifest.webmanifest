@@ -1,6 +1,6 @@
 {
-  "name": "EWA Language Reader: Read & Understand",
-  "short_name": "EWA Reader",
+  "name": "Kidsy: Learn With Fun",
+  "short_name": "Kidsy",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
