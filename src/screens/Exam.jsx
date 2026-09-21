@@ -6,6 +6,7 @@ import { buildExam, EXAM_SUBJECTS, customToItems, g3PdfAll } from '../engine/qui
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Bar, Seg, Notice } from '../ui/ui.jsx';
 import { Link } from '../ui/router.js';
+import { examLibrary, LIB_TABS } from '../engine/examlib.js';
 
 export default function Exam() {
   const { state, dispatch } = useStore();
@@ -14,9 +15,13 @@ export default function Exam() {
   const [subs, setSubs] = useState(['reading', 'math', 'vocab', 'grammar', 'fill']);
   const [maxLevel, setMaxLevel] = useState(Math.max(5, currentLevel(state, g.key)));
   const [run, setRun] = useState(null);
+  const [libTab, setLibTab] = useState('level');
   const custom = customToItems([...state.custom.qa, ...state.custom.math, ...state.custom.fill].filter((x) => x.grade === g.key));
   const toggle = (k) => setSubs(subs.includes(k) ? subs.filter((x) => x !== k) : [...subs, k]);
 
+  const lib = React.useMemo(() => examLibrary(g.key), [g.key]);
+  const bestOf = (name) => state.exams.filter((x) => x.grade === g.key && x.name === name).reduce((m, x) => Math.max(m, x.pct), -1);
+  const startLib = (ex) => setRun({ items: ex.build(), kind: 'lib', name: ex.name, at: Date.now() });
   const start = (kind) => {
     const words = state.custom.words.filter((w) => w.grade === g.key).map((w) => ({ w: w.w, pos: w.pos || 'noun', def: w.def, syn: w.syn || [], ant: w.ant || [], ex: w.ex || '' }));
     const items = kind === 'g3pdf' ? g3PdfAll() : buildExam({ grade: g.key, size, subjects: subs, maxLevel, custom, extraWords: words });
@@ -26,12 +31,12 @@ export default function Exam() {
   if (run) {
     return (
       <>
-        <div className="row"><h1 className="grow">🎓 {run.kind === 'g3pdf' ? 'Grade 3 PDF practice exam' : `${g.label} exam`}</h1><button className="btn ghost sm" onClick={() => setRun(null)}>Quit exam</button></div>
+        <div className="row"><h1 className="grow">🎓 {run.kind === 'g3pdf' ? 'Grade 3 PDF practice exam' : run.name || `${g.label} exam`}</h1><button className="btn ghost sm" onClick={() => setRun(null)}>Quit exam</button></div>
         <QuizRunner key={run.at} items={run.items} grade={g.key} subject="exam" title="Exam"
           onFinish={(res) => {
             const by = {};
             res.log.forEach((l) => { const s = l.item.subject || 'other'; by[s] = by[s] || { c: 0, t: 0 }; by[s].t++; if (l.ok) by[s].c++; });
-            dispatch({ type: 'exam', exam: { id: uid(), date: new Date().toISOString().slice(0, 10), grade: g.key, total: res.total, correct: res.correct, pct: res.pct, bySubject: by } });
+            dispatch({ type: 'exam', exam: { name: run.name, id: uid(), date: new Date().toISOString().slice(0, 10), grade: g.key, total: res.total, correct: res.correct, pct: res.pct, bySubject: by } });
           }}
           renderFinish={(res) => {
             const by = {};
@@ -56,6 +61,17 @@ export default function Exam() {
         <label className="f" style={{ maxWidth: 260 }}>Use levels 1 to {maxLevel}<input type="range" min="1" max="50" value={maxLevel} onChange={(e) => setMaxLevel(+e.target.value)} /></label>
         <div className="row wrap"><button className="btn" disabled={!subs.length} onClick={() => start('mixed')}><LuPlay /> Start exam</button>
           {g.key === 'G3' && <button className="btn soft" onClick={() => start('g3pdf')}>📘 Grade 3 PDF practice exam (20)</button>}</div>
+      </div>
+      <div className="card col">
+        <div className="row wrap"><h2 className="grow">📚 Exam library · {lib.length} ready-made exams</h2></div>
+        <Seg value={libTab} onChange={setLibTab} options={LIB_TABS.map(([k, l]) => ({ key: k, label: `${l} (${lib.filter((x) => x.tab === k).length})` }))} />
+        <div className="examgrid">
+          {lib.filter((x) => x.tab === libTab).map((ex, i) => { const b = bestOf(ex.name); return (
+            <button key={ex.name} className={`examcard c${i % 5}`} onClick={() => startLib(ex)}>
+              <span className="em">{ex.emoji}</span><b>{ex.name}</b><small>{ex.size} questions · {ex.blurb}</small>
+              {b >= 0 ? <span className="pill ok">Best {b}%</span> : <span className="pill">New</span>}
+            </button>); })}
+        </div>
       </div>
       {!custom.length && <Notice>Want your own questions in the exam? Add some in the <Link to="/studio">Studio</Link> or <Link to="/upload">upload a lesson</Link>.</Notice>}
     </>

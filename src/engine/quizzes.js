@@ -220,7 +220,7 @@ export const EXAM_SUBJECTS = [
   { key: 'reading', label: 'Reading' }, { key: 'math', label: 'Math' }, { key: 'vocab', label: 'Vocabulary' }, { key: 'grammar', label: 'Grammar' }, { key: 'fill', label: 'Fill in the blank' }, { key: 'custom', label: 'My own questions' },
 ];
 
-export function buildExam({ grade, size = 20, subjects = ['reading', 'math', 'vocab', 'grammar', 'fill'], maxLevel = 50, custom = [], extraWords = [], seed }) {
+export function buildExam({ grade, size = 20, subjects = ['reading', 'math', 'vocab', 'grammar', 'fill'], maxLevel = 50, minLevel = 1, custom = [], extraWords = [], seed }) {
   const r = makeRng(`${grade}|exam|${seed ?? Date.now()}`);
   const subs = subjects.filter((s) => s !== 'custom' || custom.length);
   const per = Math.max(1, Math.floor(size / subs.length));
@@ -228,13 +228,13 @@ export function buildExam({ grade, size = 20, subjects = ['reading', 'math', 'vo
   for (const sub of subs) {
     let list = [];
     if (sub === 'reading') {
-      const ns = r.sample(Array.from({ length: maxLevel * 10 }, (_, i) => i + 1), 6);
+      const ns = r.sample(Array.from({ length: (maxLevel - minLevel + 1) * 10 }, (_, i) => (minLevel - 1) * 10 + i + 1), 6);
       list = ns.flatMap((n) => generateStory(grade, n).questions.filter((q) => q.set === 1 || r.chance(0.6)).map((q) => ({ id: `${grade}-S${n}-${q.id}`, q: q.q, options: q.options, answer: q.answer, subject: 'reading', source: generateStory(grade, n).title })));
     } else if (sub === 'math') {
-      list = r.sample(Array.from({ length: maxLevel * 10 }, (_, i) => i + 1), per + 2).map((n) => generateMath(grade, n)).filter(Boolean).map((m) => ({ id: m.id, q: m.q, options: m.options, answer: m.answer, subject: 'math', explain: m.explain }));
+      list = r.sample(Array.from({ length: (maxLevel - minLevel + 1) * 10 }, (_, i) => (minLevel - 1) * 10 + i + 1), per + 2).map((n) => generateMath(grade, n)).filter(Boolean).map((m) => ({ id: m.id, q: m.q, options: m.options, answer: m.answer, subject: 'math', explain: m.explain }));
     } else if (sub === 'vocab') list = vocabQuiz(grade, per + 4, `exam${seed ?? Date.now()}`, extraWords);
     else if (sub === 'grammar') list = grammarQuiz(grade, per + 4, `exam${seed ?? Date.now()}`);
-    else if (sub === 'fill') list = r.sample(Array.from({ length: maxLevel * 10 }, (_, i) => i + 1), per + 4).map((n) => fillItem(grade, n)).filter(Boolean);
+    else if (sub === 'fill') list = r.sample(Array.from({ length: (maxLevel - minLevel + 1) * 10 }, (_, i) => (minLevel - 1) * 10 + i + 1), per + 4).map((n) => fillItem(grade, n)).filter(Boolean);
     else if (sub === 'custom') list = r.shuffle(custom);
     items.push(...r.shuffle(list).slice(0, per));
   }

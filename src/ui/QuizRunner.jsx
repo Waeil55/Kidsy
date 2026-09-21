@@ -5,6 +5,7 @@ import { normText } from '../lib/rng.js';
 import { matchOption, matchTyped, wordsToNumbers, speak, stopSpeaking } from '../lib/speech.js';
 import { SpeakBtn, MicBtn, useMic, Stars, confetti } from './ui.jsx';
 import { sfx } from './sfx.js';
+import { sayPraise } from '../lib/speech.js';
 
 const LET = 'ABCDEF';
 const PRAISE = ['Great job!', 'Yes! Nice one!', 'Correct!', 'You got it!', 'Brilliant!', 'Super!', 'Well done!'];
@@ -55,6 +56,7 @@ export default function QuizRunner({ items, grade, subject = 'quiz', title, onFi
     setLog((l) => [...l, { item, ok, picked: isMC ? item.options[sel] : txt }]);
     dispatch({ type: 'answer', grade, subject: item.subject || subject, correct: ok });
     state.settings.sounds && (ok ? sfx.ok() : sfx.bad());
+    if (state.settings.sounds && state.settings.praise !== false) setTimeout(() => sayPraise(ok), 250);
   };
   const choose = (k) => { if (checked) return; setPicked(k); check(k); };
   const next = () => {

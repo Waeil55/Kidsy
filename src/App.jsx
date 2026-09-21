@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { LuHouse, LuMap, LuPuzzle, LuLanguages, LuGraduationCap, LuLibrary, LuUpload, LuPenLine, LuTrophy, LuUser, LuMenu, LuVolume2, LuVolumeX, LuBookMarked, LuStar, LuFlame, LuListChecks, LuBell, LuBellOff, LuSparkles, LuMic, LuChartNoAxesCombined } from 'react-icons/lu';
+import { LuHouse, LuMap, LuPuzzle, LuLanguages, LuGraduationCap, LuLibrary, LuUpload, LuPenLine, LuTrophy, LuUser, LuMenu, LuVolume2, LuVolumeX, LuBookMarked, LuStar, LuFlame, LuListChecks, LuBell, LuBellOff, LuSparkles, LuMic, LuChartNoAxesCombined, LuNotebookPen } from 'react-icons/lu';
 import { useStore, THEMES, STICKERS } from './store/store.js';
 import { GRADES, GRADE_BY_KEY } from './data/grades.js';
 import { useHash, parse, Link, go } from './ui/router.js';
 import { Overlays, toast, confetti } from './ui/ui.jsx';
+import { setVoiceConfig } from './lib/speech.js';
 import Home from './screens/Home.jsx';
 import { MapScreen, LevelScreen } from './screens/Levels.jsx';
 import Reader from './screens/Reader.jsx';
@@ -20,10 +21,11 @@ import MerolaPack from './screens/MerolaPack.jsx';
 import StudyBreak from './screens/StudyBreak.jsx';
 import SpeakingLab from './screens/SpeakingLab.jsx';
 import Insights from './screens/Insights.jsx';
+import Study from './screens/Study.jsx';
 
 const NAV = [
   ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
-  ['/g3pack', 'Grade 3 ELA pack', LuBookMarked, 'G3'], ['/exam', 'Exams', LuGraduationCap], ['/index', 'Big index', LuLibrary],
+  ['/g3pack', 'Grade 3 ELA pack', LuBookMarked, 'G3'], ['/study', 'Study guides', LuNotebookPen], ['/exam', 'Exams', LuGraduationCap], ['/index', 'Big index', LuLibrary],
   ['/merola', 'Merola library', LuBookMarked],
   ['/reels', 'Study break', LuSparkles],
   ['/speaking', 'Speaking Lab', LuMic],
@@ -41,6 +43,7 @@ export default function App() {
   const g = GRADE_BY_KEY[state.gradeKey];
 
   useEffect(() => { document.documentElement.dataset.theme = state.theme; document.body.classList.toggle('big', state.settings.bigText); }, [state.theme, state.settings.bigText]);
+  useEffect(() => { setVoiceConfig(state.settings); }, [state.settings.voiceMode, state.settings.accent]);
   useEffect(() => { setOpen(false); }, [hash]);
   useEffect(() => { setPop((p) => p + 1); }, [state.score]);
   useEffect(() => {
@@ -52,7 +55,7 @@ export default function App() {
   }, [state.newStickers, dispatch]);
 
   const key = seg[0] || '';
-  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', index: 'Big index', merola: 'Merola library', reels: 'Study break', speaking: 'Speaking Lab', insights: 'Learning insights', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Studio', rewards: 'Scores & stickers', me: 'Me & settings' };
+  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', study: 'Study guides', index: 'Big index', merola: 'Merola library', reels: 'Study break', speaking: 'Speaking Lab', insights: 'Learning insights', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Studio', rewards: 'Scores & stickers', me: 'Me & settings' };
   const isOn = (p) => (p === '/' ? key === '' : ('/' + key).startsWith(p) || (p === '/practice' && key === 'play') || (p === '/map' && (key === 'level' || key === 'read')));
 
   let page;
@@ -66,6 +69,7 @@ export default function App() {
     case 'words': page = <Words />; break;
     case 'g3pack': page = state.gradeKey === 'G3' ? <G3Pack tab={seg[1]} /> : <Home />; break;
     case 'exam': page = <Exam />; break;
+    case 'study': page = <Study />; break;
     case 'index': page = <IndexScreen />; break;
     case 'merola': page = <MerolaPack section={seg[1]} index={seg[2] === undefined ? null : (+seg[2] || 0)} />; break;
     case 'reels': page = <StudyBreak />; break;

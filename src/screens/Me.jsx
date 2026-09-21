@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { LuDownload, LuLockKeyhole, LuUpload } from 'react-icons/lu';
 import { useStore, THEMES, AVATARS, exportBackup, parseBackup } from '../store/store.js';
 import { GRADES } from '../data/grades.js';
-import { micSupported, ttsSupported } from '../lib/speech.js';
+import { micSupported, ttsSupported, speak } from '../lib/speech.js';
 import { Modal, Notice, toast } from '../ui/ui.jsx';
 
 const Toggle = ({ on, onChange, label, hint }) => (
@@ -42,10 +42,14 @@ export default function Me() {
         </div>
         <div className="card col">
           <h3>Reading, sound &amp; microphone</h3>
-          <Toggle on={state.settings.autoRead} onChange={(v) => set({ autoRead: v })} label="Read every question to me" hint={ttsSupported() ? 'Uses your device voice' : 'This browser has no read-aloud voice'} />
+          <Toggle on={state.settings.autoRead} onChange={(v) => set({ autoRead: v })} label="Read every question to me" hint="Human-sounding voice" />
+          <Toggle on={state.settings.praise !== false} onChange={(v) => set({ praise: v })} label="Cheer me on with a voice" hint="Says Great job! after answers" />
           <Toggle on={state.settings.sounds} onChange={(v) => set({ sounds: v })} label="Sound effects" />
           <Toggle on={state.settings.bigText} onChange={(v) => set({ bigText: v })} label="Bigger story text" />
           <Toggle on={state.settings.openLevels} onChange={(v) => set({ openLevels: v })} label="Open all 50 levels" hint="For grown-ups: skip the unlock steps" />
+          <label className="f">Reading voice<select value={state.settings.voiceMode || 'auto'} onChange={(e) => set({ voiceMode: e.target.value })}><option value="auto">Auto: most human voice available</option><option value="online">Free online human voice</option><option value="device">This device's own voice</option></select></label>
+          <label className="f">Accent<select value={state.settings.accent || 'en'} onChange={(e) => set({ accent: e.target.value })}>{[['en', 'American'], ['en-GB', 'British'], ['en-AU', 'Australian'], ['en-IN', 'Indian']].map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
+          <button className="btn sm soft" onClick={() => speak('Hello my friend! I will read your stories to you. Let us have fun and learn together.', { rate: state.settings.rate })}>🔊 Test the voice</button>
           <label className="f">Reading speed: {state.settings.rate.toFixed(1)}x<input type="range" min="0.6" max="1.3" step="0.1" value={state.settings.rate} onChange={(e) => set({ rate: +e.target.value })} /></label>
           <label className="f">Microphone language<select value={state.settings.micLang} onChange={(e) => set({ micLang: e.target.value })}>{[['en-US', 'English (US)'], ['en-GB', 'English (UK)'], ['en-AU', 'English (Australia)'], ['en-IN', 'English (India)'], ['en-CA', 'English (Canada)']].map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
           {!micSupported() && <Notice kind="warn">This browser cannot listen. Chrome, Edge and Safari can. Everything else still works with taps.</Notice>}

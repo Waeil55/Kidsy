@@ -19,3 +19,17 @@ export function storyWords(grade) {
   cache[grade] = [...freq.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([w, n]) => ({ w, n }));
   return cache[grade];
 }
+
+// the most useful words from the 10 stories of one level
+export function levelWords(grade, level, max = 18) {
+  const freq = new Map();
+  for (let i = 0; i < 10; i++) {
+    const s = generateStory(grade, (level - 1) * 10 + i + 1);
+    if (!s) continue;
+    for (const raw of s.paragraphs.join(' ').toLowerCase().match(/[a-z]+/g) || []) {
+      if (raw.length < 4 || STOP.has(raw)) continue;
+      freq.set(raw, (freq.get(raw) || 0) + 1);
+    }
+  }
+  return [...freq.entries()].sort((a, b) => b[1] - a[1] || b[0].length - a[0].length).slice(0, max).map(([w]) => w);
+}

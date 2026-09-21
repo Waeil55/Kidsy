@@ -3,36 +3,139 @@
 import { normText } from './rng.js';
 
 const W = typeof window !== 'undefined' ? window : {};
-export const ttsSupported = () => !!W.speechSynthesis;
+export const ttsSupported = () => !!W.speechSynthesis || typeof Audio !== 'undefined';
 export const micSupported = () => !!(W.SpeechRecognition || W.webkitSpeechRecognition);
 
+// ---- voices ---------------------------------------------------------------------------------
+// Three engines, best first: (1) a natural neural voice already on the device (Edge "Natural",
+// Chrome "Google", Apple "Enhanced/Siri"), (2) a free online human-sounding voice (no login, no key),
+// (3) any plain device voice. "auto" picks the best one that works.
+const cfg = { mode: 'auto', accent: 'en' };
+export const setVoiceConfig = (c = {}) => { cfg.mode = c.voiceMode || 'auto'; cfg.accent = c.accent || 'en'; };
+const NATURAL = /natural|neural|online|premium|enhanced|siri|google (us|uk|australian|indian)|samantha|jenny|aria|ava|emma/i;
+
 let voiceCache = null;
-function pickVoice(lang = 'en') {
+function pickVoice(natural = false) {
   if (!W.speechSynthesis) return null;
   const vs = W.speechSynthesis.getVoices() || [];
   if (!vs.length) return null;
+  const en = vs.filter((v) => v.lang && v.lang.toLowerCase().startsWith('en'));
+  const nat = en.filter((v) => NATURAL.test(v.name));
+  if (natural) return nat.find((v) => /natural|neural|online/i.test(v.name)) || nat[0] || null;
   if (voiceCache && vs.includes(voiceCache)) return voiceCache;
-  const en = vs.filter((v) => v.lang && v.lang.toLowerCase().startsWith(lang));
-  voiceCache = en.find((v) => /female|samantha|google us|zira|aria|jenny|natural/i.test(v.name)) || en.find((v) => v.default) || en[0] || vs[0];
+  voiceCache = nat[0] || en.find((v) => /female|zira/i.test(v.name)) || en.find((v) => v.default) || en[0] || vs[0];
   return voiceCache;
 }
+const online = () => (typeof navigator === 'undefined' ? true : navigator.onLine !== false);
 
-// speak(text, { rate, onBoundary(charIndex), onEnd }) -> stop()
-export function speak(text, o = {}) {
-  if (!ttsSupported() || !text) { o.onEnd && o.onEnd(); return () => {}; }
+// split into short sentences the free voice service accepts (about 180 characters)
+function chunks(text) {
+  const out = [];
+  let pos = 0;
+  const parts = text.match(/[^.!?\n]+[.!?]*\s*/g) || [text];
+  let cur = '';
+  let curStart = 0;
+  const flush = () => { if (cur.trim()) out.push({ t: cur, at: curStart }); cur = ''; };
+  for (const part of parts) {
+    if (cur && (cur + part).length > 170) flush();
+    if (!cur) curStart = pos;
+    if (part.length > 170) {
+      for (let i = 0; i < part.length; i += 160) { cur = part.slice(i, i + 160); curStart = pos + i; flush(); }
+    } else cur += part;
+    pos += part.length;
+  }
+  flush();
+  return out;
+}
+const ttsUrl = (t) => `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${encodeURIComponent(cfg.accent)}&q=${encodeURIComponent(t.replace(/_{2,}/g, ' blank ').trim())}`;
+
+let token = 0;
+let current = null; // the audio element that is playing
+
+function speakDevice(text, o, natural) {
+  if (!W.speechSynthesis) { o.onEnd && o.onEnd(); return () => {}; }
   W.speechSynthesis.cancel();
   const u = new W.SpeechSynthesisUtterance(String(text).replace(/_{2,}/g, 'blank'));
   u.rate = o.rate || 0.9;
-  u.pitch = 1.05;
-  const v = pickVoice();
-  if (v) u.voice = v;
+  u.pitch = 1.03;
+  const v = pickVoice(natural);
+  if (v) { u.voice = v; u.lang = v.lang; }
   u.onboundary = (e) => { if (e.name === 'word' || e.charIndex >= 0) o.onBoundary && o.onBoundary(e.charIndex); };
   u.onend = () => o.onEnd && o.onEnd();
   u.onerror = () => o.onEnd && o.onEnd();
   W.speechSynthesis.speak(u);
   return () => { try { W.speechSynthesis.cancel(); } catch (e) { /* ignore */ } };
 }
-export const stopSpeaking = () => { try { W.speechSynthesis && W.speechSynthesis.cancel(); } catch (e) { /* ignore */ } };
+
+function speakOnline(text, o) {
+  const my = ++token;
+  const full = String(text);
+  const list = chunks(full);
+  if (!list.length) { o.onEnd && o.onEnd(); return () => {}; }
+  const make = (c) => { const a = new Audio(ttsUrl(c.t)); a.preload = 'auto'; a.playbackRate = Math.min(1.5, Math.max(0.6, o.rate || 0.9)); return a; };
+  let failed = false;
+  const fallback = (i) => {
+    if (failed || my !== token) return;
+    failed = true;
+    const from = list[i] ? list[i].at : 0;
+    speakDevice(full.slice(from), { ...o, onBoundary: (ci) => o.onBoundary && o.onBoundary(ci + from) }, false);
+  };
+  let next = make(list[0]);
+  const play = (i) => {
+    if (my !== token) return;
+    if (i >= list.length) { current = null; o.onEnd && o.onEnd(); return; }
+    const a = next;
+    current = a;
+    if (i + 1 < list.length) next = make(list[i + 1]);
+    let lastWord = -1;
+    a.ontimeupdate = () => {
+      if (!o.onBoundary || !a.duration) return;
+      const c = list[i];
+      const abs = c.at + Math.floor((a.currentTime / a.duration) * c.t.length);
+      if (abs !== lastWord) { lastWord = abs; o.onBoundary(abs); }
+    };
+    a.onended = () => play(i + 1);
+    a.onerror = () => fallback(i);
+    const pr = a.play();
+    if (pr && pr.catch) pr.catch(() => fallback(i));
+  };
+  play(0);
+  return () => { if (my === token) token++; try { current && current.pause(); } catch (e) { /* ignore */ } };
+}
+
+// speak(text, { rate, onBoundary(charIndex), onEnd }) -> stop()
+export function speak(text, o = {}) {
+  if (!text) { o.onEnd && o.onEnd(); return () => {}; }
+  stopSpeaking();
+  const natural = W.speechSynthesis && pickVoice(true);
+  if (cfg.mode === 'device') return speakDevice(text, o, false);
+  if (cfg.mode === 'auto' && natural) return speakDevice(text, o, true);
+  if (typeof Audio !== 'undefined' && online()) return speakOnline(text, o);
+  return speakDevice(text, o, false);
+}
+export const stopSpeaking = () => {
+  token++;
+  try { if (current) current.pause(); current = null; } catch (e) { /* ignore */ }
+  try { W.speechSynthesis && W.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+};
+
+// short cheerful human voice lines for right and wrong answers (online voice only, never a robot)
+const CHEER = ['Great job!', 'You got it!', 'Awesome!', 'Fantastic!', 'Well done!', 'Super!', 'Yes, that is right!', 'Brilliant!'];
+const TRY = ['Nice try!', 'Almost! Try the next one.', 'Good try, keep going!', 'Not quite, you can do it!'];
+const clips = {};
+export function sayPraise(ok) {
+  if (typeof Audio === 'undefined' || !online() || cfg.mode === 'device') return;
+  try {
+    const list = ok ? CHEER : TRY;
+    const t = list[Math.floor(Math.random() * list.length)];
+    const key = cfg.accent + t;
+    const a = clips[key] || (clips[key] = new Audio(ttsUrl(t)));
+    a.currentTime = 0;
+    a.volume = 0.9;
+    const pr = a.play();
+    if (pr && pr.catch) pr.catch(() => {});
+  } catch (e) { /* ignore */ }
+}
 
 // ---- listening ---------------------------------------------------------------------------
 // listen({ lang, continuous, onText(final, interim), onEnd(err) }) -> { stop }

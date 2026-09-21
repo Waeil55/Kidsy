@@ -188,7 +188,7 @@ function reducer(s, a) {
       return withStickers({ ...s, flags, progress: { ...s.progress, [a.grade]: { ...p, [a.area]: { ...p[a.area], [a.level]: { best: Math.max(cur ? cur.best : 0, pc), tries: (cur ? cur.tries : 0) + 1 } } } } });
     }
     case 'flag': return withStickers({ ...s, flags: { ...(s.flags || {}), [a.key]: true } });
-    case 'exam': return withStickers({ ...s, exams: [a.exam, ...s.exams].slice(0, 60) });
+    case 'exam': return withStickers({ ...s, exams: [a.exam, ...s.exams].slice(0, 400) });
     case 'mystery-open': {
       const locked = STICKERS.filter((x) => !s.stickers.includes(x.id));
       const pick = locked.length ? locked[Math.floor(Math.random() * locked.length)].id : null;

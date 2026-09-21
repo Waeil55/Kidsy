@@ -91,3 +91,14 @@ body{background:
 body{background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1200 220%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M0 120 Q150 40 320 110 T640 90 T960 100 T1200 70 V220 H0Z%27 fill=%27%2394d96b%27/%3E%3Cpath d=%27M0 160 Q200 100 400 150 T800 140 T1200 130 V220 H0Z%27 fill=%27%2364c04b%27/%3E%3Cpath d=%27M0 200 Q300 160 600 190 T1200 180 V220 H0Z%27 fill=%27%2345a83a%27/%3E%3C/svg%3E") bottom/100% 26vh no-repeat,linear-gradient(180deg,#8ad4ff 0%,#c4ecff 55%,#e9f9ff 100%)!important}
 @media (max-width:600px){.g2:not(:has(>.tile)){grid-template-columns:1fr!important}}
 .page .card>.row:first-child{flex-wrap:wrap}.page .card>.row>h3{min-width:0;overflow-wrap:anywhere}
+
+/* exam library */
+.examgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:10px}
+.examcard{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;border:3px solid #fff;border-radius:22px;padding:12px;box-shadow:0 5px 0 rgba(31,90,160,.15);transition:transform .12s}
+.examcard:hover{transform:translateY(-3px)}.examcard .em{font-size:1.7rem;line-height:1}.examcard b{font-family:var(--display);font-size:1.05rem;color:var(--ink)}.examcard small{color:var(--ink2);font-size:.78rem}
+.examcard.c0{background:linear-gradient(160deg,#dcf8d0,#b4ec9f)}.examcard.c1{background:linear-gradient(160deg,#ffe3e0,#ffb9bf)}.examcard.c2{background:linear-gradient(160deg,#dbeaff,#b3c9ff)}.examcard.c3{background:linear-gradient(160deg,#fff1bf,#ffd76a)}.examcard.c4{background:linear-gradient(160deg,#f1e2ff,#d6b8ff)}
+
+/* study guides */
+.lvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px}.lvgrid button{height:38px;border:0;border-radius:12px;background:#fff;font-weight:900;color:var(--ink2);box-shadow:0 3px 0 var(--line)}.lvgrid button:nth-child(10n+1),.lvgrid button:nth-child(10n+2),.lvgrid button:nth-child(10n+3),.lvgrid button:nth-child(10n+4),.lvgrid button:nth-child(10n+5){background:#f4fff0}.lvgrid button.on{background:var(--a);color:#fff;box-shadow:0 3px 0 var(--dark)}
+.reveal{background:#f7f4ff;border-radius:16px;padding:10px 14px}.reveal summary{cursor:pointer;font-weight:800;color:var(--ink)}.reveal p{margin-top:6px;color:var(--ink2)}
+.page{animation:none!important}
