@@ -39,7 +39,7 @@ function ReelCard({ card, index }) {
     <div className="reel-art" aria-hidden="true">{card.emoji}</div>
     <div className="reel-content">
       <span className="reel-kicker">{card.kicker}</span>
-      <h2>{card.title}</h2>
+      <h2>{card.prompt || card.title}</h2>
       <p>{card.text}</p>
       {card.options && <div className="reel-options">{card.options.map((option, optionIndex) => <button key={option} className={answered ? optionIndex === card.answer ? 'right' : optionIndex === choice ? 'wrong' : 'quiet' : ''} onClick={() => answer(optionIndex)} disabled={answered}>{option}</button>)}</div>}
       {answered && <div className={`reel-feedback ${correct ? 'good' : 'try'}`}><span>{correct ? <LuCheck /> : <LuRotateCcw />}</span>{correct ? 'Brilliant! +1 point' : `Good try! The answer is ${card.options[card.answer]}.`}</div>}
@@ -56,7 +56,7 @@ export default function StudyBreak() {
     const words = vocabFor(state.gradeKey).slice(0, 4);
     const stories = [1, 2, 3, 4].map((n) => generateStory(state.gradeKey, n));
     return [
-      ...words.map((word, index) => { const q = shuffledQuestion([word.w, ...words.filter((x) => x.w !== word.w).slice(0, 3).map((x) => x.w)], 0); return { topic: 'Word spark', kicker: 'Quick challenge', emoji: ['🦋', '🌈', '🚀', '🦊'][index], title: `Meet “${word.w}”`, text: word.def, ...q, speech: `${word.w}. ${word.def}` }; }),
+      ...words.map((word, index) => { const q = shuffledQuestion([word.w, ...words.filter((x) => x.w !== word.w).slice(0, 3).map((x) => x.w)], 0); return { topic: 'Word spark', kicker: 'Quick challenge', emoji: ['🦋', '🌈', '🚀', '🦊'][index], prompt: 'Which word matches this meaning?', text: word.def, ...q, speech: `${word.w}. ${word.def}` }; }),
       ...stories.map((story, index) => { const source = story.questions.slice(0, 1)[0]; const q = shuffledQuestion(source?.options || [], source?.answer ?? 0); return { topic: 'Story spark', kicker: 'Tiny story break', emoji: ['🐳', '🧭', '🌱', '✨'][index], title: story.title, text: story.paragraphs[0], ...q, storyNumber: index + 1, speech: `${story.title}. ${story.paragraphs.join(' ')}` }; }),
     ];
   }, [state.gradeKey]);
