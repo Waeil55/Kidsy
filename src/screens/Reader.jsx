@@ -63,7 +63,7 @@ export default function Reader({ grade, n }) {
         ti++;
         const t = ti;
         const cls = t === cur ? 'cur' : mic.live && t === pos ? 'cur' : hits[t] === 'ok' ? 'ok' : hits[t] === 'skip' ? 'skip' : '';
-        return <React.Fragment key={wi}><button className={`reader-word w ${cls}`} onClick={() => showWord(w)}>{w}</button>{' '}</React.Fragment>;
+        return <React.Fragment key={wi}><button className={`reader-word w ${cls}`} aria-label={`Hear ${w}`} onClick={() => { showWord(w); speak(w.replace(/[^a-z']/gi, ''), { rate }); }}>{w}</button>{' '}</React.Fragment>;
       })}
     </p>
   );

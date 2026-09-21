@@ -5,6 +5,7 @@ import { GRADE_BY_KEY } from '../data/grades.js';
 import { vocabFor } from '../data/vocab.js';
 import { generateStory } from '../engine/stories.js';
 import { speak } from '../lib/speech.js';
+import { Link } from '../ui/router.js';
 
 const colors = ['coral', 'violet', 'sun', 'mint'];
 
@@ -30,6 +31,7 @@ function ReelCard({ card, index }) {
       <p>{card.text}</p>
       {card.options && <div className="reel-options">{card.options.map((option, optionIndex) => <button key={option} className={answered ? optionIndex === card.answer ? 'right' : optionIndex === choice ? 'wrong' : 'quiet' : ''} onClick={() => answer(optionIndex)} disabled={answered}>{option}</button>)}</div>}
       {answered && <div className={`reel-feedback ${correct ? 'good' : 'try'}`}><span>{correct ? <LuCheck /> : <LuRotateCcw />}</span>{correct ? 'Brilliant! +1 point' : `Good try! The answer is ${card.options[card.answer]}.`}</div>}
+      {card.storyNumber && <Link to={`/read/${state.gradeKey}/${card.storyNumber}`} className="reel-story-link"><LuPlay /> Read the full story</Link>}
     </div>
     <div className="reel-actions"><button className={liked ? 'active' : ''} onClick={() => setLiked(!liked)} aria-label="Like this study card"><LuHeart /> <small>{liked ? 'Liked' : 'Like'}</small></button><button className={saved ? 'active' : ''} onClick={() => setSaved(!saved)} aria-label="Save this study card"><LuBookmark /> <small>{saved ? 'Saved' : 'Save'}</small></button><button onClick={() => speak(card.speech || card.text)} aria-label="Read this card aloud"><LuVolume2 /><small>Listen</small></button><button onClick={() => navigator.share?.({ title: card.title, text: card.text })} aria-label="Share this study card"><LuShare2 /><small>Share</small></button></div>
   </article>;
@@ -43,7 +45,7 @@ export default function StudyBreak() {
     const stories = [1, 2, 3, 4].map((n) => generateStory(state.gradeKey, n));
     return [
       ...words.map((word, index) => ({ topic: 'Word spark', kicker: 'Quick challenge', emoji: ['🦋', '🌈', '🚀', '🦊'][index], title: `Meet “${word.w}”`, text: word.def, options: [word.w, ...(words.filter((x) => x.w !== word.w).slice(0, 3).map((x) => x.w))], answer: 0, speech: `${word.w}. ${word.def}` })),
-      ...stories.map((story, index) => ({ topic: 'Story spark', kicker: 'Tiny story break', emoji: ['🐳', '🧭', '🌱', '✨'][index], title: story.title, text: story.paragraphs[0], options: story.questions.slice(0, 1)[0]?.options, answer: story.questions.slice(0, 1)[0]?.answer ?? 0, speech: `${story.title}. ${story.paragraphs.join(' ')}` })),
+      ...stories.map((story, index) => ({ topic: 'Story spark', kicker: 'Tiny story break', emoji: ['🐳', '🧭', '🌱', '✨'][index], title: story.title, text: story.paragraphs[0], options: story.questions.slice(0, 1)[0]?.options, answer: story.questions.slice(0, 1)[0]?.answer ?? 0, storyNumber: index + 1, speech: `${story.title}. ${story.paragraphs.join(' ')}` })),
     ];
   }, [state.gradeKey]);
   return <div className="study-break-page">
