@@ -6,12 +6,12 @@ export const STORAGE_KEY = 'kidsy_state_v1';
 const OLD_KEYS = ['kidsy_saved_state_v5'];
 
 export const THEMES = [
-  { key: 'grape', label: 'Grape', a: '#7c3aed', b: '#ec4899', c: '#6366f1' },
-  { key: 'ocean', label: 'Ocean', a: '#0284c7', b: '#06b6d4', c: '#2563eb' },
-  { key: 'mint', label: 'Mint', a: '#059669', b: '#84cc16', c: '#0d9488' },
-  { key: 'sunny', label: 'Sunny', a: '#ea580c', b: '#f59e0b', c: '#dc2626' },
-  { key: 'berry', label: 'Berry', a: '#be185d', b: '#f43f5e', c: '#9333ea' },
-  { key: 'night', label: 'Night', a: '#4338ca', b: '#0ea5e9', c: '#7c3aed' },
+  { key: 'sky', label: 'Sky', a: '#16a8d8', b: '#5bd5c8', c: '#2389d7' },
+  { key: 'coral', label: 'Coral', a: '#f47778', b: '#ffb14e', c: '#ec5e99' },
+  { key: 'mint', label: 'Mint', a: '#18a985', b: '#a8d95b', c: '#21b9b0' },
+  { key: 'sunny', label: 'Sunny', a: '#f28b24', b: '#ffd34e', c: '#e85f5b' },
+  { key: 'berry', label: 'Berry', a: '#db4d7d', b: '#f48a96', c: '#a94d9e' },
+  { key: 'night', label: 'Night', a: '#23668a', b: '#2aa9b9', c: '#355c9a' },
 ];
 export const AVATARS = ['🦊', '🐼', '🦁', '🐸', '🐙', '🦄', '🐯', '🐨', '🐧', '🦉', '🐢', '🐬'];
 
