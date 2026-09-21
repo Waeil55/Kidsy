@@ -1,9 +1,9 @@
 import React from 'react';
-import { LuPlay, LuFlame, LuTarget, LuMap } from 'react-icons/lu';
-import { useStore, currentLevel, gradeSummary, levelStats, STICKERS } from '../store/store.js';
+import { LuArrowRight, LuBookOpen, LuCheck, LuFlame, LuGift, LuLock, LuMap, LuPalette, LuPlay, LuSparkles, LuStar } from 'react-icons/lu';
+import { useStore, currentLevel, gradeSummary, STICKERS } from '../store/store.js';
 import { GRADE_BY_KEY, chapterOf } from '../data/grades.js';
 import { Link } from '../ui/router.js';
-import { Bar, Stars, Ring } from '../ui/ui.jsx';
+import { Bar } from '../ui/ui.jsx';
 
 const TILES = [
   ['/map', '📖', 'Stories', '500 stories, 20 questions each', 't1'],
@@ -22,59 +22,47 @@ export default function Home() {
   const g = GRADE_BY_KEY[state.gradeKey];
   const lv = currentLevel(state, g.key);
   const sum = gradeSummary(state, g.key);
-  const ls = levelStats(state, g.key, lv);
-  const hour = new Date().getHours();
-  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   const d = state.daily.date === new Date().toISOString().slice(0, 10) ? state.daily : { correct: 0, wrong: 0 };
   const chapter = chapterOf(g.key, lv);
-  const tiles = state.gradeKey === 'G3' ? [['/g3pack', '📘', 'Grade 3 ELA pack', 'Your PDF study guide, in full', 't1'], ...TILES] : TILES;
+  const mapNodes = [
+    ['/map', <LuBookOpen />, 'Stories', 'done'],
+    ['/practice', <LuSparkles />, 'Word garden', 'done'],
+    ['/words', <LuPalette />, 'Word art', 'current'],
+    ['/practice', <LuMap />, 'Number cove', 'new'],
+    ['/exam', <LuLock />, 'Mystery island', 'locked'],
+  ];
+  const quickActions = [
+    ['/practice', <LuSparkles />, 'Practice', 'pink'],
+    ['/rewards', <LuGift />, 'Stickers', 'orange'],
+    ['/words', <LuBookOpen />, 'Words', 'blue'],
+  ];
 
   return (
-    <>
-      <section className="hero">
-        <span className="emoji" aria-hidden="true">{g.emoji}</span>
-        <span className="pill w">{g.label} · age {g.age}</span>
-        <h1 style={{ margin: '10px 0 6px' }}>{greet}, {state.profile.name}!</h1>
-        <p style={{ maxWidth: 560, opacity: .95, fontSize: '1.1rem' }}>Ready to keep going in <b>{chapter}</b>? You are on level <b>{lv}</b> of 50.</p>
-        <div className="row wrap" style={{ marginTop: 20 }}>
-          <Link to={`/level/${lv}`} className="btn white"><LuPlay /> Continue level {lv}</Link>
-          <Link to="/map" className="btn ghost" style={{ color: '#fff', borderColor: 'rgba(255,255,255,.5)' }}><LuMap /> Adventure map</Link>
-        </div>
-        <div className="row wrap" style={{ marginTop: 22, gap: 10 }}>
-          <span className="pill w"><LuFlame size={15} /> Streak {state.stats.streak}</span>
-          <span className="pill w"><LuTarget size={15} /> Today: {d.correct} right, {d.wrong} missed</span>
-          <span className="pill w">🎒 {sum.cleared}/50 levels cleared</span>
-        </div>
+    <div className="home-screen">
+      <section className="home-welcome">
+        <div className="home-avatar">{state.profile.avatar || 'L'}</div>
+        <div className="home-hello"><span>Hi adventurer,</span><b>{state.profile.name}!</b></div>
+        <div className="home-stats"><span><LuFlame /> {state.stats.streak}</span><span><LuStar /> {state.score.toLocaleString()}</span></div>
       </section>
 
-      <section className="grid g4" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(210px,1fr))' }}>
-        {tiles.map(([to, e, t, s, cls]) => (
-          <Link key={t} to={to} className={`tile ${cls}`}><span className="ico">{e}</span><b>{t}</b><span>{s}</span></Link>
-        ))}
+      <section className="mission-card">
+        <div className="mission-copy"><span>Chapter {lv} · {chapter}</span><h1>Rescue the<br />star whale</h1><Link to={`/level/${lv}`} className="mission-button"><LuPlay size={15} /> Continue</Link></div>
+        <div className="whale-art" aria-hidden="true">🐳<i>✦</i><em>✦</em></div>
       </section>
 
-      <section className="grid g2">
-        <div className="card">
-          <div className="row"><h3 className="grow">Your {g.short} adventure</h3><Stars n={Math.min(3, Math.round(sum.stars / 50))} /></div>
-          <p className="muted" style={{ margin: '6px 0 14px' }}>{g.reading}</p>
-          <div className="row gap20">
-            <Ring pct={Math.round((sum.cleared / 50) * 100)} />
-            <div className="grow col gap8">
-              <div className="tiny muted">Level {lv} progress: {ls.stories}/10 stories done</div>
-              <Bar pct={ls.stories * 10} />
-              <div className="tiny muted">⭐ {sum.stars} of {sum.maxStars} level stars · 📖 {sum.storiesDone} stories finished</div>
-            </div>
-          </div>
-        </div>
-        <div className="card">
-          <h3>Sticker stash</h3>
-          <p className="muted tiny" style={{ marginBottom: 10 }}>{state.stickers.length} of {STICKERS.length} collected</p>
-          <div className="row wrap" style={{ gap: 8 }}>
-            {STICKERS.slice(0, 12).map((s) => <span key={s.id} title={s.name} style={{ fontSize: 30, filter: state.stickers.includes(s.id) ? 'none' : 'grayscale(1) opacity(.25)' }}>{s.e}</span>)}
-          </div>
-          <Link to="/rewards" className="btn soft sm" style={{ marginTop: 14 }}>Open my stash</Link>
-        </div>
+      <section className="home-section-head"><div><span className="eyebrow">{g.label} adventure</span><h2>Adventure map</h2><small>{Math.min(5, Math.max(3, Math.ceil(sum.cleared / 10)))} of 6 islands explored</small></div><Link to="/map" className="see-all">See all <LuArrowRight /></Link></section>
+      <section className="adventure-map" aria-label="Adventure map">
+        <div className="map-path" aria-hidden="true" />
+        {mapNodes.map(([to, icon, label, kind], index) => <Link key={label} to={to} className={`map-node ${kind}`}><span className="map-disc">{kind === 'locked' ? <LuLock /> : icon}{kind === 'done' && <b><LuCheck /></b>}{kind === 'new' && <small>NEW!</small>}</span><strong>{label}</strong></Link>)}
       </section>
-    </>
+
+      <section className="quick-actions">{quickActions.map(([to, icon, label, kind]) => <Link key={label} to={to} className={`quick-action ${kind}`}><span>{icon}</span><b>{label}</b></Link>)}</section>
+
+      <section className="mystery-card"><span className="mystery-icon"><LuGift /></span><div><b>Daily mystery box</b><small>{d.correct + d.wrong} of 3 challenges done · Opens tomorrow</small><div className="mystery-progress"><i style={{ width: `${Math.min(100, ((d.correct + d.wrong) / 3) * 100)}%` }} /></div></div><LuArrowRight className="mystery-arrow" /></section>
+
+      <section className="collection-strip"><div className="home-section-head"><div><span className="eyebrow">Your collection</span><h2>Sticker stash</h2></div><Link to="/rewards" className="see-all">View all <LuArrowRight /></Link></div><div className="sticker-row">{STICKERS.slice(0, 4).map((s) => <div key={s.id} className={`sticker-mini ${state.stickers.includes(s.id) ? '' : 'locked'}`}><span>{s.e}</span><b>{state.stickers.includes(s.id) ? s.name : '???'}</b></div>)}</div></section>
+
+      <div className="home-progress"><span>{sum.cleared}/50 levels cleared</span><Bar pct={(sum.cleared / 50) * 100} /><small>{g.reading}</small></div>
+    </div>
   );
 }
