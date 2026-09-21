@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { LuBookmark, LuCheck, LuHeart, LuLightbulb, LuPlay, LuRotateCcw, LuShare2, LuSparkles, LuVolume2 } from 'react-icons/lu';
+import React, { useMemo, useRef, useState } from 'react';
+import { LuChevronLeft, LuChevronRight, LuBookmark, LuCheck, LuHeart, LuLightbulb, LuPlay, LuRotateCcw, LuShare2, LuSparkles, LuVolume2 } from 'react-icons/lu';
 import { useStore } from '../store/store.js';
 import { GRADE_BY_KEY } from '../data/grades.js';
 import { vocabFor } from '../data/vocab.js';
@@ -60,9 +60,18 @@ export default function StudyBreak() {
       ...stories.map((story, index) => { const source = story.questions.slice(0, 1)[0]; const q = shuffledQuestion(source?.options || [], source?.answer ?? 0); return { topic: 'Story spark', kicker: 'Tiny story break', emoji: ['🐳', '🧭', '🌱', '✨'][index], title: story.title, text: story.paragraphs[0], ...q, storyNumber: index + 1, speech: `${story.title}. ${story.paragraphs.join(' ')}` }; }),
     ];
   }, [state.gradeKey]);
-  return <div className="study-break-page">
+  const [idx, setIdx] = useState(0);
+  const [drag, setDrag] = useState(0);
+  const start = useRef(null);
+  const go = (n) => setIdx((i) => Math.max(0, Math.min(cards.length - 1, i + n)));
+  const down = (e) => { start.current = e.clientX; };
+  const move = (e) => { if (start.current != null) setDrag(e.clientX - start.current); };
+  const up = () => { if (start.current == null) return; if (drag < -50) go(1); else if (drag > 50) go(-1); start.current = null; setDrag(0); };
+  return <div className="study-break-page" tabIndex={0} onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1); }}>
     <section className="break-intro"><div><span className="eyebrow">A tiny learning adventure</span><h1>Study break ✨</h1><p>Swipe, tap, learn. Every card is made for {grade.label}.</p></div><div className="break-badge"><LuLightbulb /><b>{state.score}</b><small>points</small></div></section>
-    <div className="reel-feed" aria-label="Study break cards">{cards.map((card, index) => <ReelCard key={`${card.title}-${index}`} card={card} index={index} />)}</div>
-    <div className="reel-hint"><LuPlay /> Keep exploring your {grade.short} learning trail</div>
+    <div className="reel-feed" aria-label="Study break cards" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onPointerLeave={up}>
+      <div className={`reel-track ${drag ? 'dragging' : ''}`} style={{ transform: `translateX(calc(${-idx * 100}% + ${drag}px))` }}>{cards.map((card, index) => <ReelCard key={`${card.title}-${index}`} card={card} index={index} />)}</div>
+    </div>
+    <div className="reel-nav"><button className="iconbtn" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous card"><LuChevronLeft /></button><div className="reel-dots">{cards.map((_, i) => <i key={i} className={i === idx ? 'on' : ''} onClick={() => setIdx(i)} />)}</div><button className="iconbtn" onClick={() => go(1)} disabled={idx === cards.length - 1} aria-label="Next card"><LuChevronRight /></button></div>
   </div>;
 }
