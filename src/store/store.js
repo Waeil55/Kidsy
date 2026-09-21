@@ -21,7 +21,7 @@ export const defaultState = () => ({
   v: 1,
   profile: { name: 'Explorer', avatar: '🦊', gradeKey: 'G3' },
   gradeKey: 'G3',
-  theme: 'grape',
+  theme: 'sky',
   settings: { autoRead: false, rate: 0.9, sounds: true, openLevels: false, micLang: 'en-US', bigText: false },
   score: 0,
   best: 0,
