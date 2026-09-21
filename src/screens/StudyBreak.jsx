@@ -8,6 +8,18 @@ import { speak } from '../lib/speech.js';
 import { Link } from '../ui/router.js';
 
 const colors = ['coral', 'violet', 'sun', 'mint'];
+const shuffle = (items) => {
+  const out = items.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+};
+const shuffledQuestion = (options, answer) => {
+  const out = shuffle(options.map((text, index) => ({ text, correct: index === answer })));
+  return { options: out.map((x) => x.text), answer: out.findIndex((x) => x.correct) };
+};
 
 function ReelCard({ card, index }) {
   const { state, dispatch } = useStore();
@@ -44,8 +56,8 @@ export default function StudyBreak() {
     const words = vocabFor(state.gradeKey).slice(0, 4);
     const stories = [1, 2, 3, 4].map((n) => generateStory(state.gradeKey, n));
     return [
-      ...words.map((word, index) => ({ topic: 'Word spark', kicker: 'Quick challenge', emoji: ['🦋', '🌈', '🚀', '🦊'][index], title: `Meet “${word.w}”`, text: word.def, options: [word.w, ...(words.filter((x) => x.w !== word.w).slice(0, 3).map((x) => x.w))], answer: 0, speech: `${word.w}. ${word.def}` })),
-      ...stories.map((story, index) => ({ topic: 'Story spark', kicker: 'Tiny story break', emoji: ['🐳', '🧭', '🌱', '✨'][index], title: story.title, text: story.paragraphs[0], options: story.questions.slice(0, 1)[0]?.options, answer: story.questions.slice(0, 1)[0]?.answer ?? 0, storyNumber: index + 1, speech: `${story.title}. ${story.paragraphs.join(' ')}` })),
+      ...words.map((word, index) => { const q = shuffledQuestion([word.w, ...words.filter((x) => x.w !== word.w).slice(0, 3).map((x) => x.w)], 0); return { topic: 'Word spark', kicker: 'Quick challenge', emoji: ['🦋', '🌈', '🚀', '🦊'][index], title: `Meet “${word.w}”`, text: word.def, ...q, speech: `${word.w}. ${word.def}` }; }),
+      ...stories.map((story, index) => { const source = story.questions.slice(0, 1)[0]; const q = shuffledQuestion(source?.options || [], source?.answer ?? 0); return { topic: 'Story spark', kicker: 'Tiny story break', emoji: ['🐳', '🧭', '🌱', '✨'][index], title: story.title, text: story.paragraphs[0], ...q, storyNumber: index + 1, speech: `${story.title}. ${story.paragraphs.join(' ')}` }; }),
     ];
   }, [state.gradeKey]);
   return <div className="study-break-page">

@@ -10,11 +10,26 @@ const LET = 'ABCDEF';
 const PRAISE = ['Great job!', 'Yes! Nice one!', 'Correct!', 'You got it!', 'Brilliant!', 'Super!', 'Well done!'];
 const OOPS = ['Not quite.', 'Oops, close!', 'Good try!', 'Almost!'];
 
+const shuffle = (items) => {
+  const out = items.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+};
+
+const freshQuiz = (items) => shuffle(items.filter((x) => (x.options && x.options.length >= 2) || (x.accept && x.accept.length))).map((item) => {
+  if (!item.options || item.options.length < 2) return item;
+  const shuffled = shuffle(item.options.map((text, index) => ({ text, correct: index === item.answer })));
+  return { ...item, options: shuffled.map((x) => x.text), answer: shuffled.findIndex((x) => x.correct) };
+});
+
 export const isAccepted = (typed, accept) => accept.some((a) => normText(a) === normText(typed) || wordsToNumbers(a) === wordsToNumbers(typed));
 
 export default function QuizRunner({ items, grade, subject = 'quiz', title, onFinish, renderFinish, compact }) {
   const { state, dispatch } = useStore();
-  const list = useMemo(() => items.filter((x) => (x.options && x.options.length >= 2) || (x.accept && x.accept.length)), [items]);
+  const list = useMemo(() => freshQuiz(items), [items]);
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState(null);
   const [typed, setTyped] = useState('');
