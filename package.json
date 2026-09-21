@@ -1,0 +1,22 @@
+{
+  "name": "kidsy",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kidsy - learn with fun (KG to Grade 6)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "serve": "node scripts/serve.mjs",
+    "test": "node scripts/selftest.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-icons": "^5.6.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.0",
+    "pdfjs-dist": "^5.6.0"
+  }
+}
