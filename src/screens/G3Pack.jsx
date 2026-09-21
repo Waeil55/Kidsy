@@ -1,15 +1,59 @@
-import React, { useState } from 'react';
-import { LuCheck, LuX } from 'react-icons/lu';
+import React, { useMemo, useState } from 'react';
+import { LuBrain, LuCheck, LuChevronRight, LuFlipHorizontal, LuLightbulb, LuRotateCcw, LuSparkles, LuX } from 'react-icons/lu';
 import { useStore } from '../store/store.js';
 import { G3_PDF_META, G3_PDF_WORD_ROWS, G3_NOUNS, G3_PLURALS, G3_RULES, G3_DAILY, G3_QUIZ, G3_KEY, G3_QUIZ_KEY } from '../data/g3ela.js';
 import { g3PdfQuiz } from '../engine/quizzes.js';
 import { normText } from '../lib/rng.js';
+import { speak } from '../lib/speech.js';
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Seg, SpeakBtn, Notice, Crumb, toast } from '../ui/ui.jsx';
 import { go } from '../ui/router.js';
 
-const TABS = [['overview', 'Overview'], ['vocab', 'Vocabulary'], ['nouns', 'Nouns & plurals'], ['rules', 'Rules'], ['daily', 'Daily review'], ['quiz', 'Practice quiz'], ['key', 'Answer key']];
+const TABS = [['overview', 'Overview'], ['flashcards', 'Flashcards'], ['smart', 'Smart review'], ['vocab', 'Vocabulary'], ['nouns', 'Nouns & plurals'], ['rules', 'Rules'], ['daily', 'Daily review'], ['quiz', 'Practice quiz'], ['key', 'Answer key']];
 const sameAns = (a, list) => list.some((x) => normText(x).replace(/[^a-z0-9 ]/g, '') === normText(a).replace(/[^a-z0-9 ]/g, ''));
+
+function Flashcards() {
+  const { state, dispatch } = useStore();
+  const [index, setIndex] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [known, setKnown] = useState([]);
+  const card = G3_PDF_WORD_ROWS[index % G3_PDF_WORD_ROWS.length];
+  const mark = (value) => {
+    setKnown((old) => old.includes(card[0]) ? old : [...old, card[0]]);
+    dispatch({ type: 'answer', grade: 'G3', subject: 'flashcards', correct: value });
+    setFlipped(false); setIndex((n) => n + 1);
+  };
+  return <div className="g3-study-mode">
+    <div className="study-mode-head"><div><span className="eyebrow">Active recall</span><h2>Flashcard flight</h2><p>Think first, flip second. Move through the whole word bank at your own pace.</p></div><span className="study-counter"><b>{known.length}</b> / {G3_PDF_WORD_ROWS.length}<small>mastered</small></span></div>
+    <button className={`g3-flashcard ${flipped ? 'flipped' : ''}`} onClick={() => setFlipped(!flipped)} aria-label={flipped ? 'Show word' : 'Show meaning'}>
+      <span className="flashcard-face front"><small>What word matches this meaning?</small><b>{flipped ? card[0] : card[2]}</b><em><LuFlipHorizontal /> Tap to flip</em></span>
+      <span className="flashcard-face back"><small>{card[1]}</small><b>{card[0]}</b><span>{card[2]}</span><em>Example: {card[5]}</em></span>
+    </button>
+    <div className="flashcard-actions"><button className="btn soft" onClick={() => mark(false)}><LuRotateCcw /> Practice again</button><button className="btn" onClick={() => mark(true)}><LuCheck /> I know it</button></div>
+    <div className="study-progress"><i style={{ width: `${(known.length / G3_PDF_WORD_ROWS.length) * 100}%` }} /></div>
+    <p className="tiny muted center">Card {index % G3_PDF_WORD_ROWS.length + 1} of {G3_PDF_WORD_ROWS.length} · Your progress is saved with your score.</p>
+  </div>;
+}
+
+function SmartReview() {
+  const { dispatch } = useStore();
+  const [index, setIndex] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const cards = useMemo(() => G3_PDF_WORD_ROWS.slice(0, 12), []);
+  const card = cards[index % cards.length];
+  const options = useMemo(() => {
+    const others = cards.filter((x) => x[0] !== card[0]).slice((index * 2) % 7, (index * 2) % 7 + 3);
+    return [card, ...others].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [card, cards, index]);
+  const choose = (word) => {
+    if (picked) return;
+    const ok = word === card[0]; setPicked(word); setScore((n) => n + (ok ? 1 : 0));
+    dispatch({ type: 'answer', grade: 'G3', subject: 'smart-review', correct: ok });
+  };
+  const next = () => { setPicked(null); setIndex((n) => n + 1); };
+  return <div className="g3-study-mode smart-review"><div className="study-mode-head"><div><span className="eyebrow">Adaptive practice</span><h2>Smart review</h2><p>Quick questions mix meaning, word type, synonyms, and examples.</p></div><span className="study-counter"><b>{score}</b> / {index + (picked ? 1 : 0)}<small>correct</small></span></div><div className="smart-question"><span className="pill"><LuBrain /> Question {index + 1}</span><h3>Which word means:</h3><p>“{card[2]}”</p><button className="smart-listen" onClick={() => speak(card[2])}>🔊 Hear the clue</button></div><div className="smart-options">{options.map((option) => <button key={option[0]} className={picked ? option[0] === card[0] ? 'right' : option[0] === picked ? 'wrong' : 'quiet' : ''} onClick={() => choose(option[0])} disabled={!!picked}><b>{option[0]}</b><small>{option[1]}</small></button>)}</div>{picked && <div className={`notice ${picked === card[0] ? 'info' : 'warn'}`}><span>{picked === card[0] ? '🎉' : '💡'}</span><div><b>{picked === card[0] ? 'Great thinking!' : `The answer is ${card[0]}.`}</b><div className="tiny">{card[5]}</div></div></div>}<button className="btn" disabled={!picked} onClick={next}><LuChevronRight /> Next smart question</button></div>;
+}
 
 function Daily({ d, key_ }) {
   const { state, dispatch } = useStore();
@@ -79,9 +123,12 @@ export default function G3Pack({ tab }) {
             <ul><li>{G3_PDF_WORD_ROWS.length} vocabulary words with meanings, synonyms, antonyms and examples</li><li>Concrete and abstract nouns, plural spelling rules</li><li>4 days of daily spiral review worksheets</li><li>A practice quiz (A–D) and the full answer key</li></ul>
             <p className="muted tiny">The words also appear in Grade 3 vocabulary practice, exams and the big index.</p></div>
           <div className="card col"><h3>Start here</h3>
-            {[['vocab', '🔤 Learn the words'], ['daily', '📝 Do a daily review'], ['quiz', '🎯 Take the practice quiz']].map(([k, l]) => <button key={k} className="btn soft" onClick={() => go('/g3pack/' + k)}>{l}</button>)}</div>
+            {[['flashcards', '🃏 Warm up with flashcards'], ['smart', '🧠 Try smart review'], ['daily', '📝 Do a daily review'], ['quiz', '🎯 Take the practice quiz']].map(([k, l]) => <button key={k} className="btn soft" onClick={() => go('/g3pack/' + k)}>{l}</button>)}</div>
         </div>
       )}
+
+      {t === 'flashcards' && <Flashcards />}
+      {t === 'smart' && <SmartReview />}
 
       {t === 'vocab' && (
         <div className="card scrollx"><table className="tbl"><thead><tr><th>Word</th><th>Type</th><th>Meaning</th><th>Synonyms</th><th>Antonyms</th><th>Example</th></tr></thead>
