@@ -3,7 +3,7 @@ import { LuCheck, LuArrowRight, LuRotateCcw } from 'react-icons/lu';
 import { useStore, pct as pctOf, starsFor } from '../store/store.js';
 import { normText } from '../lib/rng.js';
 import { matchOption, matchTyped, wordsToNumbers, speak, stopSpeaking } from '../lib/speech.js';
-import { SpeakBtn, MicBtn, useMic, Stars, confetti } from './ui.jsx';
+import { SpeakBtn, MicBtn, useMic, Stars, confetti, Rich } from './ui.jsx';
 import { sfx } from './sfx.js';
 import { sayPraise } from '../lib/speech.js';
 
@@ -111,9 +111,9 @@ export default function QuizRunner({ items, grade, subject = 'quiz', title, onFi
             <div className="col" style={{ marginTop: 10 }}>
               {missed.map((m, k) => (
                 <div className="card soft flat" key={k}>
-                  <div style={{ fontWeight: 800 }}>{m.item.q}</div>
+                  <div style={{ fontWeight: 800 }}><Rich text={m.item.q} /></div>
                   <div className="tiny">You said: <b>{m.picked || '—'}</b> · Answer: <b style={{ color: 'var(--ok)' }}>{m.item.options ? m.item.options[m.item.answer] : m.item.accept[0]}</b></div>
-                  {m.item.explain && <div className="tiny muted">{m.item.explain}</div>}
+                  {m.item.explain && <div className="tiny muted"><Rich text={m.item.explain} /></div>}
                 </div>
               ))}
             </div>
@@ -135,12 +135,12 @@ export default function QuizRunner({ items, grade, subject = 'quiz', title, onFi
         <SpeakBtn small text={speechText} label="Read the question" />
         <MicBtn small mic={mic} label="Say my answer" />
       </div>
-      <div className="qtext">{item.q}</div>
+      <div className="qtext"><Rich text={item.q} /></div>
       {isMC ? (
         <div className="opts" role="group" aria-label="Answer choices">
           {item.options.map((o, k) => (
             <button key={k} disabled={checked} onClick={() => choose(k)} className={`opt ${checked ? (k === item.answer ? 'ok' : k === picked ? 'bad' : 'dim') : ''}`}>
-              <span className="k">{LET[k]}</span><span>{o}</span>
+              <span className="k">{LET[k]}</span><span><Rich text={o} /></span>
               {checked && k === item.answer && <LuCheck style={{ marginLeft: 'auto' }} />}
             </button>
           ))}
@@ -159,7 +159,7 @@ export default function QuizRunner({ items, grade, subject = 'quiz', title, onFi
             <div>
               <b>{ok ? PRAISE[(i * 3) % PRAISE.length] : OOPS[i % OOPS.length]}</b>
               {!ok && <div>The answer is <b>{correctText}</b>.</div>}
-              {item.explain && <div className="tiny" style={{ fontWeight: 600, marginTop: 2 }}>{item.explain}</div>}
+              {item.explain && <div className="tiny" style={{ fontWeight: 600, marginTop: 2 }}><Rich text={item.explain} /></div>}
               {!ok && state.score === 0 && <div className="tiny" style={{ fontWeight: 600 }}>Your score stays at 0 — it never goes below zero.</div>}
             </div>
           </div>

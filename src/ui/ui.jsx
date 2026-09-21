@@ -108,3 +108,24 @@ export function MicBtn({ mic, label = 'Say it', small }) {
     ? <button className={`iconbtn micbtn ${mic.live ? 'live' : ''}`} onClick={on} aria-label={mic.live ? 'Stop listening' : label} title={label}>{mic.live ? <LuMicOff /> : <LuMic />}</button>
     : <button className={`btn soft sm micbtn ${mic.live ? 'live' : ''}`} onClick={on}>{mic.live ? <LuMicOff /> : <LuMic />}{mic.live ? 'Listening… tap to stop' : label}</button>;
 }
+
+// Renders the few HTML tags found in lesson data (<u>, <b>, <i>, <br>) as real formatting and drops any others.
+export function Rich({ text }) {
+  const s = String(text ?? '');
+  if (!s.includes('<')) return s;
+  const out = [];
+  const re = /<(\/?)(u|b|i|em|strong|br)\s*\/?>|<[^>]+>/gi;
+  const stack = [];
+  let last = 0; let key = 0; let m;
+  const push = (t) => { if (t) { let node = t; for (let i = stack.length - 1; i >= 0; i--) { const Tag = stack[i]; node = React.createElement(Tag, { key: key++ }, node); } out.push(stack.length ? node : t); } };
+  while ((m = re.exec(s))) {
+    push(s.slice(last, m.index)); last = re.lastIndex;
+    const tag = (m[2] || '').toLowerCase();
+    if (!tag) continue;
+    if (tag === 'br') { out.push(React.createElement('br', { key: key++ })); continue; }
+    const t = tag === 'strong' ? 'b' : tag === 'em' ? 'i' : tag;
+    if (m[1]) { const at = stack.lastIndexOf(t); if (at >= 0) stack.splice(at, 1); } else stack.push(t);
+  }
+  push(s.slice(last));
+  return React.createElement(React.Fragment, null, ...out);
+}

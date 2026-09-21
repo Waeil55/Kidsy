@@ -153,7 +153,8 @@ function speakOnline(text, o) {
 
 // speak(text, { rate, onBoundary(charIndex), onEnd }) -> stop()
 export function speak(text, o = {}) {
-  if (!text) { o.onEnd && o.onEnd(); return () => {}; }
+  text = String(text || '').replace(/<[^>]*>/g, '');
+  if (!text.trim()) { o.onEnd && o.onEnd(); return () => {}; }
   stopSpeaking();
   if (cfg.mode === 'device') return speakDevice(text, o, false);
   if (typeof Audio !== 'undefined' && online()) return speakOnline(text, o);
