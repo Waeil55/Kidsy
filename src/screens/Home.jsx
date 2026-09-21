@@ -34,7 +34,7 @@ export default function Home() {
   const quickActions = [
     ['/practice', <LuSparkles />, 'Practice', 'pink'],
     ['/rewards', <LuGift />, 'Stickers', 'orange'],
-    ['/words', <LuBookOpen />, 'Words', 'blue'],
+    ['/reels', <LuPlay />, 'Study break', 'blue'],
   ];
 
   return (

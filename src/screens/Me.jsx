@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { LuDownload, LuUpload } from 'react-icons/lu';
+import { LuDownload, LuLockKeyhole, LuUpload } from 'react-icons/lu';
 import { useStore, THEMES, AVATARS, exportBackup, parseBackup } from '../store/store.js';
+import { GRADES } from '../data/grades.js';
 import { micSupported, ttsSupported } from '../lib/speech.js';
 import { Modal, Notice, toast } from '../ui/ui.jsx';
 
@@ -32,6 +33,8 @@ export default function Me() {
         <div className="card col">
           <h3>My profile</h3>
           <label className="f">My name<input value={state.profile.name} maxLength={18} onChange={(e) => dispatch({ type: 'profile', patch: { name: e.target.value } })} /></label>
+          <label className="f">My grade<select value={state.profile.gradeKey || state.gradeKey} onChange={(e) => dispatch({ type: 'profile', patch: { gradeKey: e.target.value } })}>{GRADES.map((g) => <option key={g.key} value={g.key}>{g.label}</option>)}</select></label>
+          <div className="grade-lock-note"><LuLockKeyhole /><span><b>This profile is locked to {GRADES.find((g) => g.key === (state.profile.gradeKey || state.gradeKey))?.label}.</b><small>Only this grade's lessons, stories, practice and study breaks appear for this child.</small></span></div>
           <div><div className="tiny muted" style={{ fontWeight: 800, marginBottom: 6 }}>My buddy</div>
             <div className="row wrap gap8">{AVATARS.map((a) => <button key={a} className={`iconbtn ${state.profile.avatar === a ? 'on' : ''}`} style={{ fontSize: 24, width: 52, height: 52 }} onClick={() => dispatch({ type: 'profile', patch: { avatar: a } })} aria-label={`Buddy ${a}`}>{a}</button>)}</div></div>
           <div><div className="tiny muted" style={{ fontWeight: 800, marginBottom: 6 }}>Colours</div>

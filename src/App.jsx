@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LuHouse, LuMap, LuPuzzle, LuLanguages, LuGraduationCap, LuLibrary, LuUpload, LuPenLine, LuTrophy, LuUser, LuMenu, LuVolume2, LuVolumeX, LuBookMarked, LuStar, LuFlame, LuListChecks, LuBell, LuBellOff } from 'react-icons/lu';
+import { LuHouse, LuMap, LuPuzzle, LuLanguages, LuGraduationCap, LuLibrary, LuUpload, LuPenLine, LuTrophy, LuUser, LuMenu, LuVolume2, LuVolumeX, LuBookMarked, LuStar, LuFlame, LuListChecks, LuBell, LuBellOff, LuSparkles } from 'react-icons/lu';
 import { useStore, THEMES, STICKERS } from './store/store.js';
 import { GRADES, GRADE_BY_KEY } from './data/grades.js';
 import { useHash, parse, Link, go } from './ui/router.js';
@@ -17,14 +17,16 @@ import Studio, { MyStory } from './screens/Studio.jsx';
 import Rewards from './screens/Rewards.jsx';
 import Me from './screens/Me.jsx';
 import MerolaPack from './screens/MerolaPack.jsx';
+import StudyBreak from './screens/StudyBreak.jsx';
 
 const NAV = [
   ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
   ['/g3pack', 'Grade 3 ELA pack', LuBookMarked, 'G3'], ['/exam', 'Exams', LuGraduationCap], ['/index', 'Big index', LuLibrary],
   ['/merola', 'Merola library', LuBookMarked],
+  ['/reels', 'Study break', LuSparkles],
   ['/upload', 'Upload a lesson', LuUpload], ['/studio', 'Studio (make your own)', LuPenLine], ['/rewards', 'Scores & stickers', LuTrophy], ['/me', 'Me & settings', LuUser],
 ];
-const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/exam', 'Exams', LuGraduationCap], ['/rewards', 'Rewards', LuTrophy]];
+const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/reels', 'Break', LuSparkles], ['/practice', 'Practice', LuPuzzle], ['/rewards', 'Rewards', LuTrophy]];
 
 export default function App() {
   const { state, dispatch } = useStore();
@@ -46,7 +48,7 @@ export default function App() {
   }, [state.newStickers, dispatch]);
 
   const key = seg[0] || '';
-  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', index: 'Big index', merola: 'Merola library', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Studio', rewards: 'Scores & stickers', me: 'Me & settings' };
+  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', index: 'Big index', merola: 'Merola library', reels: 'Study break', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Studio', rewards: 'Scores & stickers', me: 'Me & settings' };
   const isOn = (p) => (p === '/' ? key === '' : ('/' + key).startsWith(p) || (p === '/practice' && key === 'play') || (p === '/map' && (key === 'level' || key === 'read')));
 
   let page;
@@ -62,6 +64,7 @@ export default function App() {
     case 'exam': page = <Exam />; break;
     case 'index': page = <IndexScreen />; break;
     case 'merola': page = <MerolaPack section={seg[1]} index={seg[2] === undefined ? null : (+seg[2] || 0)} />; break;
+    case 'reels': page = <StudyBreak />; break;
     case 'upload': page = <Upload />; break;
     case 'studio': page = <Studio />; break;
     case 'rewards': page = <Rewards />; break;
@@ -79,8 +82,8 @@ export default function App() {
           <div className="brand-logo">🦊</div>
           <div><b>Kidsy</b><small>Learn with fun</small></div>
         </Link>
-        <div className="gradepick" role="group" aria-label="Choose grade">
-          {GRADES.map((x) => <button key={x.key} className={x.key === state.gradeKey ? 'on' : ''} onClick={() => dispatch({ type: 'set', patch: { gradeKey: x.key } })} title={x.label}>{x.short}</button>)}
+        <div className="gradepick locked-grade" role="status" aria-label="Child grade">
+          <span>{g.short}</span><b>{g.label}</b><small>Profile grade</small>
         </div>
         <nav className="nav">
           {NAV.filter((n) => !n[3] || n[3] === state.gradeKey).map(([p, label, Ic]) => (

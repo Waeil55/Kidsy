@@ -19,7 +19,7 @@ export const emptyCustom = () => ({ packs: [], flashcards: [], stories: [], qa: 
 
 export const defaultState = () => ({
   v: 1,
-  profile: { name: 'Explorer', avatar: '🦊' },
+  profile: { name: 'Explorer', avatar: '🦊', gradeKey: 'G3' },
   gradeKey: 'G3',
   theme: 'grape',
   settings: { autoRead: false, rate: 0.9, sounds: true, openLevels: false, micLang: 'en-US', bigText: false },
@@ -43,7 +43,9 @@ export function loadState() {
     if (raw) {
       const s = JSON.parse(raw);
       const d = defaultState();
-      return { ...d, ...s, settings: { ...d.settings, ...(s.settings || {}) }, profile: { ...d.profile, ...(s.profile || {}) }, stats: { ...d.stats, ...(s.stats || {}) }, custom: { ...emptyCustom(), ...(s.custom || {}) } };
+      const profile = { ...d.profile, ...(s.profile || {}) };
+      const gradeKey = profile.gradeKey || s.gradeKey || d.gradeKey;
+      return { ...d, ...s, gradeKey, settings: { ...d.settings, ...(s.settings || {}) }, profile: { ...profile, gradeKey }, stats: { ...d.stats, ...(s.stats || {}) }, custom: { ...emptyCustom(), ...(s.custom || {}) } };
     }
   } catch (e) { /* fall through to defaults */ }
   return defaultState();
@@ -130,9 +132,13 @@ export { uid };
 
 function reducer(s, a) {
   switch (a.type) {
-    case 'set': return { ...s, ...a.patch };
+    case 'set': return { ...s, ...a.patch, gradeKey: a.patch.gradeKey || s.gradeKey };
     case 'settings': return { ...s, settings: { ...s.settings, ...a.patch } };
-    case 'profile': return { ...s, profile: { ...s.profile, ...a.patch } };
+    case 'profile': {
+      const profile = { ...s.profile, ...a.patch };
+      const gradeKey = profile.gradeKey || s.gradeKey;
+      return { ...s, profile: { ...profile, gradeKey }, gradeKey };
+    }
     case 'answer': {
       const { grade, subject, correct } = a;
       const t = today();
@@ -204,7 +210,11 @@ function reducer(s, a) {
     case 'reset-stickers': return { ...s, stickers: [], flags: {}, mystery: { last: '' } };
     case 'reset-all': return { ...defaultState(), profile: s.profile, theme: s.theme, settings: s.settings, custom: s.custom };
     case 'wipe-custom': return { ...s, custom: emptyCustom() };
-    case 'import': return { ...defaultState(), ...a.state };
+    case 'import': {
+      const next = { ...defaultState(), ...a.state };
+      const gradeKey = next.profile?.gradeKey || next.gradeKey || 'G3';
+      return { ...next, gradeKey, profile: { ...next.profile, gradeKey } };
+    }
     default: return s;
   }
 }
