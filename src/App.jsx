@@ -16,10 +16,12 @@ import Upload, { PackPlay } from './screens/Upload.jsx';
 import Studio, { MyStory } from './screens/Studio.jsx';
 import Rewards from './screens/Rewards.jsx';
 import Me from './screens/Me.jsx';
+import MerolaPack from './screens/MerolaPack.jsx';
 
 const NAV = [
   ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
   ['/g3pack', 'Grade 3 ELA pack', LuBookMarked, 'G3'], ['/exam', 'Exams', LuGraduationCap], ['/index', 'Big index', LuLibrary],
+  ['/merola', 'Merola library', LuBookMarked],
   ['/upload', 'Upload a lesson', LuUpload], ['/studio', 'Studio (make your own)', LuPenLine], ['/rewards', 'Scores & stickers', LuTrophy], ['/me', 'Me & settings', LuUser],
 ];
 const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/exam', 'Exams', LuGraduationCap], ['/rewards', 'Rewards', LuTrophy]];
@@ -44,7 +46,7 @@ export default function App() {
   }, [state.newStickers, dispatch]);
 
   const key = seg[0] || '';
-  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', index: 'Big index', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Studio', rewards: 'Scores & stickers', me: 'Me & settings' };
+  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', index: 'Big index', merola: 'Merola library', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Studio', rewards: 'Scores & stickers', me: 'Me & settings' };
   const isOn = (p) => (p === '/' ? key === '' : ('/' + key).startsWith(p) || (p === '/practice' && key === 'play') || (p === '/map' && (key === 'level' || key === 'read')));
 
   let page;
@@ -59,6 +61,7 @@ export default function App() {
     case 'g3pack': page = <G3Pack tab={seg[1]} />; break;
     case 'exam': page = <Exam />; break;
     case 'index': page = <IndexScreen />; break;
+    case 'merola': page = <MerolaPack section={seg[1]} index={seg[2] === undefined ? null : (+seg[2] || 0)} />; break;
     case 'upload': page = <Upload />; break;
     case 'studio': page = <Studio />; break;
     case 'rewards': page = <Rewards />; break;

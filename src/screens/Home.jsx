@@ -12,6 +12,7 @@ const TILES = [
   ['/practice', '✏️', 'Grammar & fill-in', 'Sentences and blanks', 't4'],
   ['/exam', '🎓', 'Exams', 'Mixed tests with results', 't1'],
   ['/index', '📚', 'Big index', 'Search everything', 't2'],
+  ['/merola', '🧠', 'Merola library', 'Extra lessons and reading', 't1'],
   ['/upload', '📤', 'Upload a lesson', 'PDF, Word or text from school', 't3'],
   ['/studio', '✏️', 'Studio', 'Make cards, stories, quizzes', 't4'],
 ];
