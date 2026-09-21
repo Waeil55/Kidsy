@@ -31,7 +31,7 @@ async function buildAll() {
     loader: { '.js': 'jsx' }, logLevel: 'warning', legalComments: 'none',
     external: ['module', 'fs', 'path', 'canvas', 'node:*'],
   });
-  const css = await esbuild.transform(fs.readFileSync(path.join(root, 'src/styles.css'), 'utf8'), { loader: 'css', minify: !watch });
+  const css = await esbuild.transform(fs.readFileSync(path.join(root, 'src/styles.css'), 'utf8') + fs.readFileSync(path.join(root, 'src/v2.css'), 'utf8'), { loader: 'css', minify: !watch });
   fs.writeFileSync(path.join(dist, 'app.css'), css.code);
   const wt = workerText();
   fs.writeFileSync(path.join(dist, 'pdf-worker.js'), `window.__KIDSY_PDF_WORKER__=${JSON.stringify(wt)};`);

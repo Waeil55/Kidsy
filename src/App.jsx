@@ -111,7 +111,8 @@ export default function App() {
       <div className="main">
         <header className="top">
           <button className="iconbtn burger" onClick={() => setOpen(true)} aria-label="Open menu"><LuMenu /></button>
-          <h2 className="grow">{titles[key] || 'Kidsy'} <span className="pill" style={{ marginLeft: 8, verticalAlign: 'middle' }}>{g.emoji} {g.short}</span></h2>
+          <h2 className="grow">{key === '' ? `Hi, ${state.profile.name}!` : (titles[key] || 'Kidsy')} <span className="pill" style={{ marginLeft: 8, verticalAlign: 'middle' }}>{g.emoji} {g.short}</span></h2>
+          <span className="streakpill" title="Day streak"><LuFlame />{state.stats.streak}</span>
           <button className={`iconbtn ${state.settings.autoRead ? 'on' : ''}`} title="Read questions to me automatically" aria-label="Toggle automatic read-aloud" onClick={() => dispatch({ type: 'settings', patch: { autoRead: !state.settings.autoRead } })}><LuVolume2 /></button>
           <button className={`iconbtn ${state.settings.sounds ? 'on' : ''}`} title={state.settings.sounds ? 'Mute sounds' : 'Sounds are off'} aria-label="Toggle sound effects" onClick={() => dispatch({ type: 'settings', patch: { sounds: !state.settings.sounds } })}>{state.settings.sounds ? <LuBell /> : <LuBellOff />}</button>
           <Link to="/rewards" className={`scorepill ${pop ? 'pop' : ''}`} key={pop} style={{ textDecoration: 'none', color: 'inherit' }} aria-label={`Score ${state.score}`}><i>⭐</i>{state.score}<span className="lbl tiny muted">pts</span></Link>
