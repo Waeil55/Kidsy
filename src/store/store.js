@@ -117,6 +117,16 @@ export const STICKERS = [
 ];
 const countDone = (s) => Object.values(s.progress).reduce((n, p) => n + Object.values(p.stories).filter((r) => r.done).length, 0);
 const clearedTotal = (s) => Object.keys(s.progress).reduce((n, g) => n + gradeSummary(s, g).cleared, 0);
+
+// 102 more collectible stickers: three families that unlock as the child keeps learning
+const ANIMALS = '🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐨 🐯 🦁 🐮 🐷 🐸 🐵 🐔 🐧 🐦 🦆 🦉 🦇 🐺 🐗 🐴 🦄 🐝 🐛 🦋 🐌 🐞 🐜 🐢 🐍 🦎 🐙 🦑 🦐 🦀 🐡 🐠 🐟 🐬 🐳 🐋 🦈 🐊 🐅 🐆 🦓 🦍 🐘 🦛 🦏 🐪 🦒 🦘 🐃 🐎 🐑 🦙 🐐 🦌 🐕 🐩 🐈 🐓 🦃 🦚 🦜 🦢 🦩 🕊️ 🐇 🦝 🦨 🦡 🦦 🦥 🐿️ 🦔 🌵 🌲 🌴 🍄 🌻 🌷 🌹 🍎 🍌 🍇 🍓 🍉 🍕 🍩 🍪 🧁 🚗 🚀 🛸 ⛵ 🎈 🎸'.split(' ').filter(Boolean);
+const NAMES = 'Puppy Kitty Mousey Hammy Bunny Foxy Bear Panda Koala Tiger Lion Moo Piggy Froggy Monkey Chick Penguin Birdie Ducky Hoot Batty Wolfie Boar Pony Unicorn Buzzy Wormy Flutter Snail Ladybug Antsy Turtle Slither Gecko Octo Squid Shrimpy Crabby Puffer Goldie Fishy Dolphin Whale Whaley Shark Croc Tigra Leopard Zebra Gorilla Ellie Hippo Rhino Camel Giraffe Roo Buffalo Horsey Lamb Llama Goat Deer Doggo Poodle Tabby Rooster Turkey Peacock Parrot Swan Flamingo Dove Hopper Raccoon Skunk Badger Otter Sloth Squirrel Hedgehog Cactus Pine Palm Mushroom Sunny Tulip Rose Apple Banana Grape Berry Melon Pizza Donut Cookie Cupcake Car Rocket UFO Boat Balloon Guitar'.split(' ');
+ANIMALS.slice(0, 102).forEach((e, i) => {
+  const k = Math.floor(i / 3) + 1, fam = i % 3, name = NAMES[i] || 'Buddy';
+  if (fam === 0) STICKERS.push({ id: 'pt' + k, e, name: name + ' Pal', hint: `Reach ${k * 20} points`, test: (s) => s.best >= k * 20 });
+  else if (fam === 1) STICKERS.push({ id: 'st' + k, e, name: name + ' Reader', hint: `Finish ${k * 3} stories`, test: (s) => countDone(s) >= k * 3 });
+  else STICKERS.push({ id: 'ans' + k, e, name: name + ' Ace', hint: `Answer ${k * 15} questions right`, test: (s) => s.stats.correct >= k * 15 });
+});
 export const stickerCount = () => STICKERS.length;
 
 function withStickers(s) {

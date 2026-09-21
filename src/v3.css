@@ -77,3 +77,16 @@ body{background:
 .reel-nav .iconbtn:disabled{opacity:.4}
 .page .reel-card h2,.page .voice-card h2,.page .hero h2{color:#fff!important}
 .reel-card{box-shadow:0 8px 0 rgba(64,42,124,.2)!important}
+
+/* word bank */
+.alpha{display:flex;flex-wrap:wrap;gap:5px}.alpha button{min-width:32px;height:32px;border-radius:10px;border:0;background:#fff;font-weight:800;color:var(--ink2);box-shadow:0 3px 0 var(--line);padding:0 6px}.alpha button.on{background:var(--a);color:#fff;box-shadow:0 3px 0 var(--dark)}
+.wordcloud{display:flex;flex-wrap:wrap;gap:8px}
+.wchip{border:0;border-radius:99px;padding:7px 15px;font-weight:800;font-size:1rem;background:#fff;color:var(--ink);box-shadow:0 4px 0 rgba(31,90,160,.16);transition:transform .1s}
+.wchip:hover{transform:translateY(-2px)}.wchip:nth-child(5n+1){background:#e8fae1}.wchip:nth-child(5n+2){background:#ffe9f2}.wchip:nth-child(5n+3){background:#fff1dc}.wchip:nth-child(5n+4){background:#eeeaff}.wchip:nth-child(5n){background:#e0faf8}
+.wchip.learned{background:#3fb0f5;color:#fff}.wchip.learning{background:#ffc933;color:#6b4300}
+.reel-count{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--ink);background:#fff;border-radius:99px;padding:6px 14px;box-shadow:0 3px 0 rgba(0,0,0,.1);min-width:0}
+.reel-prog{display:block;width:clamp(60px,22vw,160px);height:8px;background:#dcefff;border-radius:9px;overflow:hidden}.reel-prog i{display:block;height:100%;background:linear-gradient(90deg,#5fd04d,#ffc933);border-radius:9px;transition:width .3s}
+
+/* fixes */
+body{background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1200 220%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M0 120 Q150 40 320 110 T640 90 T960 100 T1200 70 V220 H0Z%27 fill=%27%2394d96b%27/%3E%3Cpath d=%27M0 160 Q200 100 400 150 T800 140 T1200 130 V220 H0Z%27 fill=%27%2364c04b%27/%3E%3Cpath d=%27M0 200 Q300 160 600 190 T1200 180 V220 H0Z%27 fill=%27%2345a83a%27/%3E%3C/svg%3E") bottom/100% 26vh no-repeat,linear-gradient(180deg,#8ad4ff 0%,#c4ecff 55%,#e9f9ff 100%)!important}
+@media (max-width:600px){.g2:not(:has(>.tile)){grid-template-columns:1fr!important}}

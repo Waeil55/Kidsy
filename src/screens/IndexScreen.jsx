@@ -5,6 +5,7 @@ import { GRADES, GRADE_BY_KEY } from '../data/grades.js';
 import { allStoryHeaders } from '../engine/stories.js';
 import { generateMath } from '../engine/math.js';
 import { vocabFor } from '../data/vocab.js';
+import { storyWords } from '../engine/wordbank.js';
 import { G3_PDF_WORD_ROWS } from '../data/g3ela.js';
 import { Seg, Empty } from '../ui/ui.jsx';
 import { Link } from '../ui/router.js';
@@ -28,6 +29,7 @@ export default function IndexScreen() {
         d.stories.push(...allStoryHeaders(k).map((s) => ({ ...s, grade: k })));
         d.math.push(...Array.from({ length: 500 }, (_, i) => generateMath(k, i + 1)).filter(Boolean));
         d.words.push(...vocabFor(k).map((w) => ({ ...w, grade: k })));
+        { const have = new Set(d.words.map((x) => x.w.toLowerCase())); d.words.push(...storyWords(k).filter((x) => !have.has(x.w)).map((x) => ({ w: x.w, def: 'Word from the grade stories. Tap it in a story to explore.', pos: 'story', grade: k }))); }
       }
       setData(d); setBusy(false);
     }, 20);
@@ -66,7 +68,7 @@ export default function IndexScreen() {
       )}
       {!busy && type === 'math' && (
         <div className="card scrollx"><table className="tbl"><thead><tr><th>Grade</th><th>#</th><th>Level</th><th>Problem</th><th>Answer</th></tr></thead>
-          <tbody>{math.slice(0, 250).map((m) => <tr key={m.id}><td>{m.grade}</td><td>{m.n}</td><td><Link to={`/play/math/${m.level}`}>{m.level}</Link></td><td>{m.q}</td><td><b>{m.options[m.answer]}</b></td></tr>)}</tbody></table>{math.length > 250 && <p className="tiny muted">Showing the first 250 of {math.length}. Search to narrow down.</p>}</div>
+          <tbody>{math.slice(0, 500).map((m) => <tr key={m.id}><td>{m.grade}</td><td>{m.n}</td><td><Link to={`/play/math/${m.level}`}>{m.level}</Link></td><td>{m.q}</td><td><b>{m.options[m.answer]}</b></td></tr>)}</tbody></table>{math.length > 250 && <p className="tiny muted">Showing the first 250 of {math.length}. Search to narrow down.</p>}</div>
       )}
       {!busy && type === 'words' && (
         <div className="grid gauto" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(270px,1fr))' }}>{words.map((w, i) => <div key={i} className="card" style={{ padding: 14 }}><div className="row"><b className="grow">{w.w}</b><span className="pill">{w.grade}</span></div><div className="tiny muted">{w.pos}</div><div>{w.def}</div></div>)}</div>

@@ -5,6 +5,8 @@ import { GRADE_BY_KEY } from '../data/grades.js';
 import { vocabFor } from '../data/vocab.js';
 import { generateStory } from '../engine/stories.js';
 import { speak } from '../lib/speech.js';
+import { generateMath } from '../engine/math.js';
+import { grammarQuiz, fillItem } from '../engine/quizzes.js';
 import { Link } from '../ui/router.js';
 
 const colors = ['coral', 'violet', 'sun', 'mint'];
@@ -21,7 +23,7 @@ const shuffledQuestion = (options, answer) => {
   return { options: out.map((x) => x.text), answer: out.findIndex((x) => x.correct) };
 };
 
-function ReelCard({ card, index }) {
+function ReelCard({ card, index, total }) {
   const { state, dispatch } = useStore();
   const [choice, setChoice] = useState(null);
   const [liked, setLiked] = useState(false);
@@ -35,7 +37,7 @@ function ReelCard({ card, index }) {
   };
   return <article className={`reel-card ${colors[index % colors.length]}`}>
     <div className="reel-glow" />
-    <div className="reel-top"><span className="reel-topic"><LuSparkles /> {card.topic}</span><span className="reel-count">{index + 1} / 8</span></div>
+    <div className="reel-top"><span className="reel-topic"><LuSparkles /> {card.topic}</span><span className="reel-count">{index + 1} / {total}</span></div>
     <div className="reel-art" aria-hidden="true">{card.emoji}</div>
     <div className="reel-content">
       <span className="reel-kicker">{card.kicker}</span>
@@ -45,7 +47,7 @@ function ReelCard({ card, index }) {
       {answered && <div className={`reel-feedback ${correct ? 'good' : 'try'}`}><span>{correct ? <LuCheck /> : <LuRotateCcw />}</span>{correct ? 'Brilliant! +1 point' : `Good try! The answer is ${card.options[card.answer]}.`}</div>}
       {card.storyNumber && <Link to={`/read/${state.gradeKey}/${card.storyNumber}`} className="reel-story-link"><LuPlay /> Read the full story</Link>}
     </div>
-    <div className="reel-actions"><button className={liked ? 'active' : ''} onClick={() => setLiked(!liked)} aria-label="Like this study card"><LuHeart /> <small>{liked ? 'Liked' : 'Like'}</small></button><button className={saved ? 'active' : ''} onClick={() => setSaved(!saved)} aria-label="Save this study card"><LuBookmark /> <small>{saved ? 'Saved' : 'Save'}</small></button><button onClick={() => speak(card.speech || card.text)} aria-label="Read this card aloud"><LuVolume2 /><small>Listen</small></button><button onClick={() => navigator.share?.({ title: card.title, text: card.text })} aria-label="Share this study card"><LuShare2 /><small>Share</small></button></div>
+    <div className="reel-actions"><button className={liked ? 'active' : ''} onClick={() => setLiked(!liked)} aria-label="Like this study card"><LuHeart /> <small>{liked ? 'Liked' : 'Like'}</small></button><button className={saved ? 'active' : ''} onClick={() => setSaved(!saved)} aria-label="Save this study card"><LuBookmark /> <small>{saved ? 'Saved' : 'Save'}</small></button><button onClick={() => speak(card.speech || card.text)} aria-label="Read this card aloud"><LuVolume2 /><small>Listen</small></button><button onClick={() => Promise.resolve(navigator.share?.({ title: card.title, text: card.text })).catch(() => {})} aria-label="Share this study card"><LuShare2 /><small>Share</small></button></div>
   </article>;
 }
 
@@ -53,12 +55,17 @@ export default function StudyBreak() {
   const { state } = useStore();
   const grade = GRADE_BY_KEY[state.gradeKey];
   const cards = useMemo(() => {
-    const words = vocabFor(state.gradeKey).slice(0, 4);
-    const stories = [1, 2, 3, 4].map((n) => generateStory(state.gradeKey, n));
-    return [
-      ...words.map((word, index) => { const q = shuffledQuestion([word.w, ...words.filter((x) => x.w !== word.w).slice(0, 3).map((x) => x.w)], 0); return { topic: 'Word spark', kicker: 'Quick challenge', emoji: ['🦋', '🌈', '🚀', '🦊'][index], prompt: 'Which word matches this meaning?', text: word.def, ...q, speech: `${word.w}. ${word.def}` }; }),
-      ...stories.map((story, index) => { const source = story.questions.slice(0, 1)[0]; const q = shuffledQuestion(source?.options || [], source?.answer ?? 0); return { topic: 'Story spark', kicker: 'Tiny story break', emoji: ['🐳', '🧭', '🌱', '✨'][index], title: story.title, text: story.paragraphs[0], ...q, storyNumber: index + 1, speech: `${story.title}. ${story.paragraphs.join(' ')}` }; }),
-    ];
+    const gk = state.gradeKey;
+    const words = vocabFor(gk);
+    const emo = ['🦋', '🌈', '🚀', '🦊', '🐳', '🧭', '🌱', '✨', '🦄', '🐢', '🌻', '🎈', '🪁', '🐬', '🍎', '🌙'];
+    const fromItem = (it, i, topic, kicker, prompt) => { const q = shuffledQuestion(it.options, it.answer); return { topic, kicker, emoji: emo[i % emo.length], prompt, text: it.q, ...q, speech: it.q }; };
+    const out = [];
+    words.forEach((word, i) => { const others = shuffle(words.filter((x) => x.w !== word.w)).slice(0, 3).map((x) => x.w); out.push({ topic: 'Word spark', kicker: 'Quick challenge', emoji: emo[i % emo.length], prompt: 'Which word matches this meaning?', text: word.def, ...shuffledQuestion([word.w, ...others], 0), speech: `${word.w}. ${word.def}` }); });
+    for (let n = 1; n <= 500; n += 5) { const story = generateStory(gk, n); const src = story && story.questions[0]; if (src) out.push({ topic: 'Story spark', kicker: 'Tiny story break', emoji: emo[n % emo.length], title: story.title, text: story.paragraphs[0], ...shuffledQuestion(src.options, src.answer), storyNumber: n, speech: `${story.title}. ${story.paragraphs[0]}` }); }
+    for (let n = 3; n <= 500; n += 7) { const m = generateMath(gk, n); if (m) out.push(fromItem(m, n, 'Math magic', 'Number puzzle', 'Can you solve it?')); }
+    grammarQuiz(gk, 40, 'break').forEach((it, i) => it && it.options && out.push(fromItem(it, i, 'Grammar garden', 'Sentence power', 'Pick the best answer')));
+    for (let n = 2; n <= 500; n += 10) { const f = fillItem(gk, n); if (f && f.options) out.push(fromItem(f, n, 'Fill the gap', 'Missing word', 'Which word fits?')); }
+    return shuffle(out);
   }, [state.gradeKey]);
   const [idx, setIdx] = useState(0);
   const [drag, setDrag] = useState(0);
@@ -70,8 +77,8 @@ export default function StudyBreak() {
   return <div className="study-break-page" tabIndex={0} onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1); }}>
     <section className="break-intro"><div><span className="eyebrow">A tiny learning adventure</span><h1>Study break ✨</h1><p>Swipe, tap, learn. Every card is made for {grade.label}.</p></div><div className="break-badge"><LuLightbulb /><b>{state.score}</b><small>points</small></div></section>
     <div className="reel-feed" aria-label="Study break cards" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onPointerLeave={up}>
-      <div className={`reel-track ${drag ? 'dragging' : ''}`} style={{ transform: `translateX(calc(${-idx * 100}% + ${drag}px))` }}>{cards.map((card, index) => <ReelCard key={`${card.title}-${index}`} card={card} index={index} />)}</div>
+      <div className={`reel-track ${drag ? 'dragging' : ''}`} style={{ transform: `translateX(calc(${-idx * 100}% + ${drag}px))` }}>{cards.map((card, index) => <ReelCard key={`${card.title}-${index}`} card={card} index={index} total={cards.length} />)}</div>
     </div>
-    <div className="reel-nav"><button className="iconbtn" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous card"><LuChevronLeft /></button><div className="reel-dots">{cards.map((_, i) => <i key={i} className={i === idx ? 'on' : ''} onClick={() => setIdx(i)} />)}</div><button className="iconbtn" onClick={() => go(1)} disabled={idx === cards.length - 1} aria-label="Next card"><LuChevronRight /></button></div>
+    <div className="reel-nav"><button className="iconbtn" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous card"><LuChevronLeft /></button><div className="reel-count"><b>{idx + 1}</b> / {cards.length}<span className="reel-prog"><i style={{ width: `${((idx + 1) / cards.length) * 100}%` }} /></span></div><button className="iconbtn" onClick={() => go(1)} disabled={idx === cards.length - 1} aria-label="Next card"><LuChevronRight /></button></div>
   </div>;
 }

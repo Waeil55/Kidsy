@@ -3,6 +3,7 @@ import { LuCheck, LuChevronRight, LuFlame, LuGauge, LuHeadphones, LuMic, LuRotat
 import { useStore } from '../store/store.js';
 import { GRADE_BY_KEY } from '../data/grades.js';
 import { vocabFor } from '../data/vocab.js';
+import { storyWords } from '../engine/wordbank.js';
 import { maikelFamilyFor, maikelWordsFor } from '../data/maikel.js';
 import { matchTyped, speak } from '../lib/speech.js';
 import { MicBtn, Notice, useMic } from '../ui/ui.jsx';
@@ -20,9 +21,9 @@ export default function SpeakingLab() {
   const [correct, setCorrect] = useState(0);
   const [streak, setStreak] = useState(0);
   const phonics = useMemo(() => maikelWordsFor(state.gradeKey), [state.gradeKey]);
-  const vocabulary = useMemo(() => vocabFor(state.gradeKey).slice(0, 30), [state.gradeKey]);
+  const vocabulary = useMemo(() => [...vocabFor(state.gradeKey), ...storyWords(state.gradeKey).map((x) => ({ w: x.w, def: '' }))], [state.gradeKey]);
   const target = mode === 'phonics' ? phonics[position % phonics.length] : vocabulary[position % vocabulary.length];
-  const phrase = mode === 'phonics' ? `Say the sound in ${target.word}` : `The word ${target.w} means ${target.def}.`;
+  const phrase = mode === 'phonics' ? `Say the sound in ${target.word}` : (target.def ? `The word ${target.w} means ${target.def}.` : `Say the word ${target.w}.`);
   const expected = mode === 'phonics' ? target.word : phrase;
 
   const onFinal = (text) => {

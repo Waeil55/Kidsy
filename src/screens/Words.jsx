@@ -6,6 +6,8 @@ import { GRADE_BY_KEY } from '../data/grades.js';
 import { makeRng } from '../lib/rng.js';
 import { Seg, SpeakBtn, Empty } from '../ui/ui.jsx';
 import { Link } from '../ui/router.js';
+import { storyWords } from '../engine/wordbank.js';
+import WordSheet from '../ui/WordSheet.jsx';
 
 function Deck({ cards, speakBack }) {
   const [i, setI] = useState(0);
@@ -36,6 +38,12 @@ export default function Words() {
   const [tab, setTab] = useState('bank');
   const [q, setQ] = useState('');
   const [pos, setPos] = useState('all');
+  const [open, setOpen] = useState(null);
+  const [letter, setLetter] = useState('');
+  const [more, setMore] = useState(1);
+  const bank = useMemo(() => storyWords(g.key), [g.key]);
+  const book = state.wordbook || { learned: [], learning: [] };
+  const bankShown = bank.filter((x) => (!letter || x.w[0] === letter) && (!q || x.w.includes(q.toLowerCase())));
   const mine = state.custom.words.filter((w) => w.grade === g.key).map((w) => ({ ...w, syn: w.syn || [], ant: w.ant || [], mine: true }));
   const words = useMemo(() => [...vocabFor(g.key), ...mine], [g.key, state.custom.words]);
   const shown = words.filter((w) => (pos === 'all' || w.pos === pos) && (!q || (w.w + ' ' + w.def).toLowerCase().includes(q.toLowerCase())));
@@ -45,7 +53,8 @@ export default function Words() {
     <>
       <div className="row wrap"><div className="grow col"><h1>Words · {g.label}</h1><p className="muted">{words.length} words in this grade{mine.length ? ` (${mine.length} are mine)` : ''}. Tap 🔊 to hear a word.</p></div>
         <Link to={`/play/vocab/1`} className="btn">Quiz me</Link></div>
-      <Seg value={tab} onChange={setTab} options={[{ key: 'bank', label: 'Word bank' }, { key: 'flip', label: 'Flashcards' }, { key: 'mine', label: `My cards (${myCards.length})` }]} />
+      {open && <WordSheet word={open} grade={g.key} rate={state.settings.rate} onClose={() => setOpen(null)} />}
+      <Seg value={tab} onChange={setTab} options={[{ key: 'bank', label: 'Word bank' }, { key: 'story', label: `Story words (${bank.length})` }, { key: 'mywords', label: `My words (${book.learning.length + book.learned.length})` }, { key: 'flip', label: 'Flashcards' }, { key: 'mine', label: `My cards (${myCards.length})` }]} />
       {tab === 'bank' && (
         <>
           <div className="row wrap">
@@ -55,7 +64,7 @@ export default function Words() {
           <div className="grid gauto" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(290px,1fr))' }}>
             {shown.map((w) => (
               <div key={w.w} className="card col gap8">
-                <div className="row"><h3 className="grow" style={{ fontSize: '1.4rem' }}>{w.w}</h3><span className="pill">{w.pos}</span>{w.mine && <span className="pill gold">mine</span>}<SpeakBtn small text={`${w.w}. ${w.def}`} label="Hear it" /></div>
+                <div className="row"><h3 className="grow" style={{ fontSize: '1.4rem' }}>{w.w}</h3><span className="pill">{w.pos}</span>{w.mine && <span className="pill gold">mine</span>}<SpeakBtn small text={`${w.w}. ${w.def}`} label="Hear it" /><button className="btn sm soft" onClick={() => setOpen(w.w.toLowerCase())}>Explore</button></div>
                 <p>{w.def}</p>
                 {w.ex && <p className="muted tiny"><i>“{w.ex}”</i></p>}
                 <div className="row wrap gap8">{w.syn.slice(0, 3).map((s) => <span key={s} className="pill ok">= {s}</span>)}{w.ant.slice(0, 3).map((s) => <span key={s} className="pill bad">≠ {s}</span>)}</div>
@@ -64,6 +73,25 @@ export default function Words() {
           </div>
           {!shown.length && <Empty e="🔎" title="No words found">Try a different search.</Empty>}
         </>
+      )}
+      {tab === 'story' && (
+        <>
+          <div className="row wrap">
+            <div className="grow" style={{ position: 'relative', minWidth: 200 }}><LuSearch style={{ position: 'absolute', left: 14, top: 14 }} /><input style={{ paddingLeft: 42 }} placeholder="Search story words" value={q} onChange={(e) => { setQ(e.target.value); setMore(1); }} aria-label="Search story words" /></div>
+            <span className="pill gold">{bankShown.length} words · tap one to explore</span>
+          </div>
+          <div className="alpha">{['', ...'abcdefghijklmnopqrstuvwxyz'].map((l) => <button key={l || 'all'} className={letter === l ? 'on' : ''} onClick={() => { setLetter(l); setMore(1); }}>{l || 'All'}</button>)}</div>
+          <div className="wordcloud">{bankShown.slice(0, more * 120).map((x) => <button key={x.w} className={`wchip ${book.learned.includes(x.w) ? 'learned' : book.learning.includes(x.w) ? 'learning' : ''}`} onClick={() => setOpen(x.w)}>{x.w}</button>)}</div>
+          {bankShown.length > more * 120 && <button className="btn soft" onClick={() => setMore(more + 1)}>Show more words</button>}
+          {!bankShown.length && <Empty e="🔎" title="No words found">Try a different letter or search.</Empty>}
+        </>
+      )}
+      {tab === 'mywords' && (
+        <div className="col">
+          {[['learning', 'Still learning', 'wchip learning'], ['learned', 'I know these', 'wchip learned']].map(([k, label, cls]) => (
+            <div key={k} className="card"><h3>{label} ({book[k].length})</h3>{book[k].length ? <div className="wordcloud" style={{ marginTop: 10 }}>{book[k].map((w) => <button key={w} className={cls} onClick={() => setOpen(w)}>{w}</button>)}</div> : <p className="muted">Tap a word in any story or in the Story words tab, then choose “Still learning” or “I know it”.</p>}</div>
+          ))}
+        </div>
       )}
       {tab === 'flip' && <Deck key="all" cards={cards} />}
       {tab === 'mine' && <Deck key="mine" cards={myCards.map((f) => ({ front: f.front, back: f.back }))} />}
