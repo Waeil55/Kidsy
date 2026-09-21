@@ -37,6 +37,8 @@ async function buildAll() {
   fs.writeFileSync(path.join(dist, 'pdf-worker.js'), `window.__KIDSY_PDF_WORKER__=${JSON.stringify(wt)};`);
   const tpl = fs.readFileSync(path.join(root, 'src/index.html'), 'utf8');
   fs.writeFileSync(path.join(dist, 'index.html'), tpl.replace('<!--CSS-->', () => '<link rel="stylesheet" href="app.css">').replace('<!--JS-->', () => '<script src="pdf-worker.js"></script><script src="app.js"></script>'));
+  // Keep the repository root deployable for GitHub Pages configured from main/.
+  for (const file of ['index.html', 'app.js', 'app.css', 'pdf-worker.js']) fs.copyFileSync(path.join(dist, file), path.join(root, file));
   const js = fs.readFileSync(path.join(dist, 'app.js'), 'utf8').replace(/<\/script/g, '<\\/script');
   fs.writeFileSync(path.join(dist, 'kidsy-standalone.html'), tpl.replace('<!--CSS-->', () => `<style>${css.code}</style>`).replace('<!--JS-->', () => `<script>window.__KIDSY_PDF_WORKER__=${JSON.stringify(wt).replace(/<\/script/g, '<\\/script')};</script><script>${js}</script>`));
   const kb = (f) => (fs.statSync(path.join(dist, f)).size / 1024).toFixed(0) + ' KB';
