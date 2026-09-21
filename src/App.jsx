@@ -117,7 +117,7 @@ export default function App() {
           <button className={`iconbtn ${state.settings.sounds ? 'on' : ''}`} title={state.settings.sounds ? 'Mute sounds' : 'Sounds are off'} aria-label="Toggle sound effects" onClick={() => dispatch({ type: 'settings', patch: { sounds: !state.settings.sounds } })}>{state.settings.sounds ? <LuBell /> : <LuBellOff />}</button>
           <Link to="/rewards" className={`scorepill ${pop ? 'pop' : ''}`} key={pop} style={{ textDecoration: 'none', color: 'inherit' }} aria-label={`Score ${state.score}`}><i>⭐</i>{state.score}<span className="lbl tiny muted">pts</span></Link>
         </header>
-        <main className="page" key={hash}>{page}</main>
+        <main className="page" key={hash} data-route={key || "home"}>{page}</main>
       </div>
       <nav className="bottom" aria-label="Main">
         {BOTTOM.map(([p, label, Ic]) => <Link key={p} to={p} className={isOn(p) ? 'on' : ''}><Ic />{label}</Link>)}

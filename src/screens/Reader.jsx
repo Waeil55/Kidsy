@@ -6,7 +6,7 @@ import { speak, stopSpeaking, ttsSupported, alignRead, readingScore, tokenize } 
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Crumb, Notice, useMic, MicBtn, toast, confetti } from '../ui/ui.jsx';
 import { Link, go } from '../ui/router.js';
-import { vocabFor } from '../data/vocab.js';
+import WordSheet from '../ui/WordSheet.jsx';
 
 export default function Reader({ grade, n }) {
   const { state, dispatch } = useStore();
@@ -51,22 +51,27 @@ export default function Reader({ grade, n }) {
   const startMic = () => { setReadRes(null); setHits([]); setPos(0); stopSpeaking(); setSpeaking(false); mic.start(); };
 
   let ti = -1;
-  const showWord = (raw) => {
+  const book = state.wordbook || { learned: [], learning: [] };
+  const showWord = (raw, sentence) => {
     const clean = raw.toLowerCase().replace(/[^a-z']/g, '');
-    if (!clean || clean.length < 3) return;
-    const match = vocabFor(grade).find((w) => w.w.toLowerCase() === clean);
-    setWordCard(match ? { word: match.w, def: match.def, example: match.ex } : { word: clean, def: 'A story word to explore.', example: `We found “${clean}” in this story.` });
+    if (!clean || clean.length < 2) return;
+    setWordCard({ raw: clean, sentence });
   };
-  const para = (p, pi) => (
+  const para = (p, pi) => {
+    const sents = p.split(/(?<=[.!?])s+/);
+    return (
     <p key={pi}>
       {p.split(' ').map((w, wi) => {
         ti++;
         const t = ti;
+        const wc = w.toLowerCase().replace(/[^a-z']/g, '');
+        const st = book.learned.includes(wc) ? ' learned' : book.learning.includes(wc) ? ' learning' : '';
         const cls = t === cur ? 'cur' : mic.live && t === pos ? 'cur' : hits[t] === 'ok' ? 'ok' : hits[t] === 'skip' ? 'skip' : '';
-        return <React.Fragment key={wi}><button className={`reader-word w ${cls}`} aria-label={`Hear ${w}`} onClick={() => { showWord(w); speak(w.replace(/[^a-z']/gi, ''), { rate }); }}>{w}</button>{' '}</React.Fragment>;
+        return <React.Fragment key={wi}><button className={`reader-word w ${cls}${st}`} aria-label={`Hear ${w}`} onClick={() => showWord(w, sents.find((x) => x.includes(w)) || p)}>{w}</button>{' '}</React.Fragment>;
       })}
     </p>
-  );
+    );
+  };
 
   const finishNode = (res) => (
     <div className="row wrap" style={{ justifyContent: 'center' }}>
@@ -80,6 +85,7 @@ export default function Reader({ grade, n }) {
   return (
     <>
       <Crumb to={`/level/${level}`}>Level {level}</Crumb>
+      {wordCard && <WordSheet word={wordCard.raw} sentence={wordCard.sentence} grade={grade} rate={rate} onClose={() => setWordCard(null)} />}
       <div className="reader">
         <article className="card story reader-story" aria-label="Story">
           <div className="reader-cover"><span>{story.emoji}</span><div><small>{story.kindLabel} · Grade {grade.replace('G', '')}</small><b>{story.title}</b><em>Tap any word to discover it</em></div></div>
@@ -102,7 +108,6 @@ export default function Reader({ grade, n }) {
             </div>
           )}
           <div className={big ? 'big' : ''}>{story.paragraphs.map(para)}</div>
-          {wordCard && <div className="word-card"><button onClick={() => setWordCard(null)} aria-label="Close word card">×</button><span>{wordCard.word}</span><small>{wordCard.def}</small><em>{wordCard.example}</em><button className="btn soft sm" onClick={() => speak(`${wordCard.word}. ${wordCard.def}`)}><LuVolume2 /> Hear word</button></div>}
           {rec && <div className="tiny muted">Best so far: set 1 {rec.sets[0] ?? '–'}% · set 2 {rec.sets[1] ?? '–'}%</div>}
         </article>
 
