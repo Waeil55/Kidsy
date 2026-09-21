@@ -1,5 +1,5 @@
 import React from 'react';
-import { LuArrowRight, LuBookOpen, LuCheck, LuFlame, LuGift, LuLock, LuMap, LuPalette, LuPlay, LuSparkles, LuStar } from 'react-icons/lu';
+import { LuArrowRight, LuBookOpen, LuCheck, LuFlame, LuGift, LuLock, LuMap, LuMic, LuPalette, LuPlay, LuSparkles, LuStar } from 'react-icons/lu';
 import { useStore, currentLevel, gradeSummary, STICKERS } from '../store/store.js';
 import { GRADE_BY_KEY, chapterOf } from '../data/grades.js';
 import { Link } from '../ui/router.js';
@@ -35,6 +35,7 @@ export default function Home() {
     ['/practice', <LuSparkles />, 'Practice', 'pink'],
     ['/rewards', <LuGift />, 'Stickers', 'orange'],
     ['/reels', <LuPlay />, 'Study break', 'blue'],
+    ['/speaking', <LuMic />, 'Speak aloud', 'mint'],
   ];
 
   return (
