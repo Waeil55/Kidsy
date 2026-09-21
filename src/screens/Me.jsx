@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { LuDownload, LuLockKeyhole, LuUpload } from 'react-icons/lu';
 import { useStore, THEMES, AVATARS, exportBackup, parseBackup } from '../store/store.js';
 import { GRADES } from '../data/grades.js';
-import { micSupported, ttsSupported, speak } from '../lib/speech.js';
+import { micSupported, ttsSupported, speak, ONLINE_VOICES } from '../lib/speech.js';
 import { Modal, Notice, toast } from '../ui/ui.jsx';
 
 const Toggle = ({ on, onChange, label, hint }) => (
@@ -47,7 +47,8 @@ export default function Me() {
           <Toggle on={state.settings.sounds} onChange={(v) => set({ sounds: v })} label="Sound effects" />
           <Toggle on={state.settings.bigText} onChange={(v) => set({ bigText: v })} label="Bigger story text" />
           <Toggle on={state.settings.openLevels} onChange={(v) => set({ openLevels: v })} label="Open all 50 levels" hint="For grown-ups: skip the unlock steps" />
-          <label className="f">Reading voice<select value={state.settings.voiceMode || 'auto'} onChange={(e) => set({ voiceMode: e.target.value })}><option value="auto">Auto: most human voice available</option><option value="online">Free online human voice</option><option value="device">This device's own voice</option></select></label>
+          <label className="f">Reading voice<select value={state.settings.voiceMode || 'auto'} onChange={(e) => set({ voiceMode: e.target.value })}><option value="auto">AI voice (online, free)</option><option value="device">This device's own voice</option></select></label>
+          <label className="f">AI voice<select value={state.settings.onlineVoice || 'auto'} onChange={(e) => set({ onlineVoice: e.target.value })}>{ONLINE_VOICES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
           <label className="f">Accent<select value={state.settings.accent || 'en'} onChange={(e) => set({ accent: e.target.value })}>{[['en', 'American'], ['en-GB', 'British'], ['en-AU', 'Australian'], ['en-IN', 'Indian']].map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
           <button className="btn sm soft" onClick={() => speak('Hello my friend! I will read your stories to you. Let us have fun and learn together.', { rate: state.settings.rate })}>🔊 Test the voice</button>
           <label className="f">Reading speed: {state.settings.rate.toFixed(1)}x<input type="range" min="0.6" max="1.3" step="0.1" value={state.settings.rate} onChange={(e) => set({ rate: +e.target.value })} /></label>

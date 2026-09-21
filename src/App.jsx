@@ -43,7 +43,7 @@ export default function App() {
   const g = GRADE_BY_KEY[state.gradeKey];
 
   useEffect(() => { document.documentElement.dataset.theme = state.theme; document.body.classList.toggle('big', state.settings.bigText); }, [state.theme, state.settings.bigText]);
-  useEffect(() => { setVoiceConfig(state.settings); }, [state.settings.voiceMode, state.settings.accent]);
+  useEffect(() => { setVoiceConfig(state.settings); }, [state.settings.voiceMode, state.settings.accent, state.settings.onlineVoice]);
   useEffect(() => { setOpen(false); }, [hash]);
   useEffect(() => { setPop((p) => p + 1); }, [state.score]);
   useEffect(() => {

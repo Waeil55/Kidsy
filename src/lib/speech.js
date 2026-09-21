@@ -7,12 +7,23 @@ export const ttsSupported = () => !!W.speechSynthesis || typeof Audio !== 'undef
 export const micSupported = () => !!(W.SpeechRecognition || W.webkitSpeechRecognition);
 
 // ---- voices ---------------------------------------------------------------------------------
-// Three engines, best first: (1) a natural neural voice already on the device (Edge "Natural",
-// Chrome "Google", Apple "Enhanced/Siri"), (2) a free online human-sounding voice (no login, no key),
-// (3) any plain device voice. "auto" picks the best one that works.
-const cfg = { mode: 'auto', accent: 'en' };
-export const setVoiceConfig = (c = {}) => { cfg.mode = c.voiceMode || 'auto'; cfg.accent = c.accent || 'en'; };
-const NATURAL = /natural|neural|online|premium|enhanced|siri|google (us|uk|australian|indian)|samantha|jenny|aria|ava|emma/i;
+// Free AI voices, no login and no key. Best first:
+//   1. online AI voices (a natural "story teller" voice, with Google's voice as backup),
+//   2. a natural neural voice already on the device (Edge "Natural", Apple "Enhanced/Siri"),
+//   3. any plain device voice.
+export const ONLINE_VOICES = [
+  ['auto', 'Auto (best AI voice)'],
+  ['tt:en_us_002', 'Jessie: warm and friendly'],
+  ['tt:en_female_emotional', 'Grace: gentle storyteller'],
+  ['tt:en_us_006', 'Joey: cheerful boy'],
+  ['tt:en_male_narration', 'Story teller: deep narrator'],
+  ['tt:en_uk_001', 'Oliver: British narrator'],
+  ['tt:en_au_001', 'Matilda: Australian'],
+  ['google', 'Clear voice (Google)'],
+];
+const cfg = { mode: 'auto', accent: 'en', online: 'auto' };
+export const setVoiceConfig = (c = {}) => { cfg.mode = c.voiceMode || 'auto'; cfg.accent = c.accent || 'en'; cfg.online = c.onlineVoice || 'auto'; };
+const NATURAL = /natural|neural|online|premium|enhanced|siri|jenny|aria|ava|emma/i;
 
 let voiceCache = null;
 function pickVoice(natural = false) {
@@ -23,12 +34,12 @@ function pickVoice(natural = false) {
   const nat = en.filter((v) => NATURAL.test(v.name));
   if (natural) return nat.find((v) => /natural|neural|online/i.test(v.name)) || nat[0] || null;
   if (voiceCache && vs.includes(voiceCache)) return voiceCache;
-  voiceCache = nat[0] || en.find((v) => /female|zira/i.test(v.name)) || en.find((v) => v.default) || en[0] || vs[0];
+  voiceCache = nat[0] || en.find((v) => /female|zira|google us/i.test(v.name)) || en.find((v) => v.default) || en[0] || vs[0];
   return voiceCache;
 }
 const online = () => (typeof navigator === 'undefined' ? true : navigator.onLine !== false);
 
-// split into short sentences the free voice service accepts (about 180 characters)
+// split into short sentences the free voice services accept (about 170 characters)
 function chunks(text) {
   const out = [];
   let pos = 0;
@@ -47,7 +58,40 @@ function chunks(text) {
   flush();
   return out;
 }
-const ttsUrl = (t) => `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${encodeURIComponent(cfg.accent)}&q=${encodeURIComponent(t.replace(/_{2,}/g, ' blank ').trim())}`;
+const clean = (t) => t.replace(/_{2,}/g, ' blank ').replace(/\s+/g, ' ').trim();
+
+// one playable, fully loaded clip from one provider; rejects when the provider fails
+const b64ToUrl = (b64) => { const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return URL.createObjectURL(new Blob([u], { type: 'audio/mpeg' })); };
+const ready = (a) => new Promise((res, rej) => {
+  const t = setTimeout(() => rej(new Error('timeout')), 9000);
+  a.oncanplay = () => { clearTimeout(t); res(a); };
+  a.onerror = () => { clearTimeout(t); rej(new Error('audio')); };
+  a.load();
+});
+const clipCache = new Map();
+function getClip(id, text) {
+  const key = `${id}|${cfg.accent}|${text}`;
+  if (clipCache.has(key)) return clipCache.get(key).then((u) => ready(new Audio(u)));
+  const p = (async () => {
+    if (id === 'google') return `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${encodeURIComponent(cfg.accent)}&q=${encodeURIComponent(clean(text))}`;
+    const r = await fetch('https://ottsy.weilbyte.dev/api/generation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: clean(text), voice: id.slice(3) }), referrerPolicy: 'no-referrer' });
+    const j = await r.json();
+    if (!j || !j.success || !j.data) throw new Error('tts');
+    return b64ToUrl(j.data);
+  })();
+  clipCache.set(key, p);
+  if (clipCache.size > 80) clipCache.delete(clipCache.keys().next().value);
+  p.catch(() => clipCache.delete(key));
+  return p.then((u) => ready(new Audio(u)));
+}
+const chain = () => {
+  const first = cfg.online === 'auto' ? 'tt:en_us_002' : cfg.online;
+  return [...new Set([first, 'google', 'tt:en_us_002'])];
+};
+async function clipFor(text) {
+  for (const id of chain()) { try { return await getClip(id, text); } catch (e) { /* try the next voice */ } }
+  throw new Error('no online voice');
+}
 
 let token = 0;
 let current = null; // the audio element that is playing
@@ -72,21 +116,26 @@ function speakOnline(text, o) {
   const full = String(text);
   const list = chunks(full);
   if (!list.length) { o.onEnd && o.onEnd(); return () => {}; }
-  const make = (c) => { const a = new Audio(ttsUrl(c.t)); a.preload = 'auto'; a.playbackRate = Math.min(1.5, Math.max(0.6, o.rate || 0.9)); return a; };
+  const rate = Math.min(1.5, Math.max(0.6, o.rate || 0.9));
   let failed = false;
   const fallback = (i) => {
     if (failed || my !== token) return;
     failed = true;
     const from = list[i] ? list[i].at : 0;
-    speakDevice(full.slice(from), { ...o, onBoundary: (ci) => o.onBoundary && o.onBoundary(ci + from) }, false);
+    speakDevice(full.slice(from), { ...o, onBoundary: (ci) => o.onBoundary && o.onBoundary(ci + from) }, true);
   };
-  let next = make(list[0]);
-  const play = (i) => {
+  const clips = [];
+  const fetchClip = (i) => { if (i < list.length && !clips[i]) { clips[i] = clipFor(list[i].t); clips[i].catch(() => {}); } };
+  fetchClip(0); fetchClip(1);
+  const play = async (i) => {
     if (my !== token) return;
     if (i >= list.length) { current = null; o.onEnd && o.onEnd(); return; }
-    const a = next;
+    let a;
+    try { a = await clips[i]; } catch (e) { fallback(i); return; }
+    if (my !== token) return;
+    fetchClip(i + 1); fetchClip(i + 2);
     current = a;
-    if (i + 1 < list.length) next = make(list[i + 1]);
+    a.playbackRate = rate;
     let lastWord = -1;
     a.ontimeupdate = () => {
       if (!o.onBoundary || !a.duration) return;
@@ -96,8 +145,7 @@ function speakOnline(text, o) {
     };
     a.onended = () => play(i + 1);
     a.onerror = () => fallback(i);
-    const pr = a.play();
-    if (pr && pr.catch) pr.catch(() => fallback(i));
+    try { await a.play(); } catch (e) { fallback(i); }
   };
   play(0);
   return () => { if (my === token) token++; try { current && current.pause(); } catch (e) { /* ignore */ } };
@@ -107,11 +155,9 @@ function speakOnline(text, o) {
 export function speak(text, o = {}) {
   if (!text) { o.onEnd && o.onEnd(); return () => {}; }
   stopSpeaking();
-  const natural = W.speechSynthesis && pickVoice(true);
   if (cfg.mode === 'device') return speakDevice(text, o, false);
-  if (cfg.mode === 'auto' && natural) return speakDevice(text, o, true);
   if (typeof Audio !== 'undefined' && online()) return speakOnline(text, o);
-  return speakDevice(text, o, false);
+  return speakDevice(text, o, true);
 }
 export const stopSpeaking = () => {
   token++;
@@ -122,19 +168,10 @@ export const stopSpeaking = () => {
 // short cheerful human voice lines for right and wrong answers (online voice only, never a robot)
 const CHEER = ['Great job!', 'You got it!', 'Awesome!', 'Fantastic!', 'Well done!', 'Super!', 'Yes, that is right!', 'Brilliant!'];
 const TRY = ['Nice try!', 'Almost! Try the next one.', 'Good try, keep going!', 'Not quite, you can do it!'];
-const clips = {};
 export function sayPraise(ok) {
   if (typeof Audio === 'undefined' || !online() || cfg.mode === 'device') return;
-  try {
-    const list = ok ? CHEER : TRY;
-    const t = list[Math.floor(Math.random() * list.length)];
-    const key = cfg.accent + t;
-    const a = clips[key] || (clips[key] = new Audio(ttsUrl(t)));
-    a.currentTime = 0;
-    a.volume = 0.9;
-    const pr = a.play();
-    if (pr && pr.catch) pr.catch(() => {});
-  } catch (e) { /* ignore */ }
+  const list = ok ? CHEER : TRY;
+  clipFor(list[Math.floor(Math.random() * list.length)]).then((a) => { a.volume = 0.9; return a.play(); }).catch(() => {});
 }
 
 // ---- listening ---------------------------------------------------------------------------
