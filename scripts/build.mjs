@@ -37,8 +37,24 @@ async function buildAll() {
   fs.writeFileSync(path.join(dist, 'pdf-worker.js'), `window.__KIDSY_PDF_WORKER__=${JSON.stringify(wt)};`);
   const tpl = fs.readFileSync(path.join(root, 'src/index.html'), 'utf8');
   fs.writeFileSync(path.join(dist, 'index.html'), tpl.replace('<!--CSS-->', () => '<link rel="stylesheet" href="app.css">').replace('<!--JS-->', () => '<script src="pdf-worker.js"></script><script src="app.js"></script>'));
+
+  // PWA: icons, manifest, and a service worker stamped with a fresh version each build so
+  // every deploy updates the cache instead of a visitor being stuck on an old copy.
+  const iconsSrc = path.join(root, 'public/icons');
+  if (fs.existsSync(iconsSrc)) {
+    fs.mkdirSync(path.join(dist, 'icons'), { recursive: true });
+    for (const f of fs.readdirSync(iconsSrc)) fs.copyFileSync(path.join(iconsSrc, f), path.join(dist, 'icons', f));
+  }
+  fs.copyFileSync(path.join(root, 'public/manifest.webmanifest'), path.join(dist, 'manifest.webmanifest'));
+  const swSrc = fs.readFileSync(path.join(root, 'src/sw.js'), 'utf8').replace('__BUILD__', String(Date.now()));
+  fs.writeFileSync(path.join(dist, 'sw.js'), swSrc);
+
   // Keep the repository root deployable for GitHub Pages configured from main/.
-  for (const file of ['index.html', 'app.js', 'app.css', 'pdf-worker.js']) fs.copyFileSync(path.join(dist, file), path.join(root, file));
+  for (const file of ['index.html', 'app.js', 'app.css', 'pdf-worker.js', 'manifest.webmanifest', 'sw.js']) fs.copyFileSync(path.join(dist, file), path.join(root, file));
+  if (fs.existsSync(path.join(dist, 'icons'))) {
+    fs.mkdirSync(path.join(root, 'icons'), { recursive: true });
+    for (const f of fs.readdirSync(path.join(dist, 'icons'))) fs.copyFileSync(path.join(dist, 'icons', f), path.join(root, 'icons', f));
+  }
   const js = fs.readFileSync(path.join(dist, 'app.js'), 'utf8').replace(/<\/script/g, '<\\/script');
   fs.writeFileSync(path.join(dist, 'kidsy-standalone.html'), tpl.replace('<!--CSS-->', () => `<style>${css.code}</style>`).replace('<!--JS-->', () => `<script>window.__KIDSY_PDF_WORKER__=${JSON.stringify(wt).replace(/<\/script/g, '<\\/script')};</script><script>${js}</script>`));
   const kb = (f) => (fs.statSync(path.join(dist, f)).size / 1024).toFixed(0) + ' KB';
@@ -52,7 +68,7 @@ if (watch) {
   const rebuild = async () => { if (building) return; building = true; try { await buildAll(); } catch (e) { console.error(e.message); } building = false; };
   await rebuild();
   fs.watch(path.join(root, 'src'), { recursive: true }, () => setTimeout(rebuild, 150));
-  const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
+  const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.svg': 'image/svg+xml' };
   http.createServer((req, rsp) => {
     const p = path.join(dist, req.url === '/' ? 'index.html' : req.url.split('?')[0]);
     if (!fs.existsSync(p)) { rsp.writeHead(404); return rsp.end('Not found'); }

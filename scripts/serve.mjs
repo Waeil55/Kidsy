@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const dist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.svg': 'image/svg+xml' };
 http.createServer((req, rsp) => {
   const p = path.join(dist, req.url === '/' ? 'index.html' : req.url.split('?')[0]);
   if (!fs.existsSync(p)) { rsp.writeHead(404); return rsp.end('Not found'); }
