@@ -89,7 +89,7 @@ body{background:
 
 /* fixes */
 body{background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1200 220%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M0 120 Q150 40 320 110 T640 90 T960 100 T1200 70 V220 H0Z%27 fill=%27%2394d96b%27/%3E%3Cpath d=%27M0 160 Q200 100 400 150 T800 140 T1200 130 V220 H0Z%27 fill=%27%2364c04b%27/%3E%3Cpath d=%27M0 200 Q300 160 600 190 T1200 180 V220 H0Z%27 fill=%27%2345a83a%27/%3E%3C/svg%3E") bottom/100% 26vh no-repeat,linear-gradient(180deg,#8ad4ff 0%,#c4ecff 55%,#e9f9ff 100%)!important}
-@media (max-width:600px){.g2:not(:has(>.tile)){grid-template-columns:1fr!important}}
+@media (max-width:600px){.g2:not(:has(>.tile)):not(:has(>.tile-explain)){grid-template-columns:1fr!important}}
 .page .card>.row:first-child{flex-wrap:wrap}.page .card>.row>h3{min-width:0;overflow-wrap:anywhere}
 
 /* exam library */
@@ -102,3 +102,26 @@ body{background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/s
 .lvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px}.lvgrid button{height:38px;border:0;border-radius:12px;background:#fff;font-weight:900;color:var(--ink2);box-shadow:0 3px 0 var(--line)}.lvgrid button:nth-child(10n+1),.lvgrid button:nth-child(10n+2),.lvgrid button:nth-child(10n+3),.lvgrid button:nth-child(10n+4),.lvgrid button:nth-child(10n+5){background:#f4fff0}.lvgrid button.on{background:var(--a);color:#fff;box-shadow:0 3px 0 var(--dark)}
 .reveal{background:#f7f4ff;border-radius:16px;padding:10px 14px}.reveal summary{cursor:pointer;font-weight:800;color:var(--ink)}.reveal p{margin-top:6px;color:var(--ink2)}
 .page{animation:none!important}
+
+/* ---- explainer: tiny code-made "watch & learn" scenes (CSS-only animation, very light) ---- */
+.explainbtn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;padding:7px 14px;font-weight:800;font-size:.82rem;font-family:var(--display);color:#7a4b00;background:linear-gradient(180deg,#ffe07a,#ffc933);box-shadow:0 3px 0 #d99f10;cursor:pointer}
+.explainbtn.sm{padding:5px 10px;font-size:.74rem}
+.explainbtn-ico{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#fff;color:#d99f10;font-size:9px}
+.tile-explain{position:relative}.tile-explain .tile{width:100%}.tile-explain .explainbtn{position:absolute;right:10px;top:10px;z-index:2}
+.explain-bg{position:fixed;inset:0;z-index:88;background:rgba(20,30,80,.4);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+.explain{position:relative;width:min(100%,460px);max-height:88dvh;overflow:auto;background:#fff;border-radius:30px 30px 0 0;box-shadow:0 -10px 40px rgba(20,30,80,.35);display:flex;flex-direction:column;animation:rise .22s both;padding-bottom:env(safe-area-inset-bottom)}
+@media (min-width:700px){.explain-bg{align-items:center}.explain{border-radius:30px;border:4px solid #fff}}
+.explain-x{position:absolute;right:10px;top:10px;z-index:3;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.35);color:#fff;display:grid;place-items:center}
+.explain-head{display:flex;align-items:center;gap:12px;padding:18px 54px 16px 20px;color:#fff;background:linear-gradient(135deg,#ff9642,#ff6fa7 55%,#7a63ea)}
+.explain-emoji{font-size:2.4rem;line-height:1}
+.explain-head b{font-family:var(--display);font-size:1.2rem;display:block}.explain-head small{opacity:.9;font-size:.78rem}
+.explain-stage{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:30px 22px 8px;min-height:160px}
+.explain-art{font-size:clamp(2.2rem,9vw,3.4rem);line-height:1.15;animation:explain-pop .45s cubic-bezier(.2,.9,.3,1.3) both}
+.explain-cap{font-family:var(--display);font-weight:700;font-size:1.1rem;color:var(--ink);max-width:340px;animation:explain-rise .4s .05s both}
+.explain-dots{display:flex;justify-content:center;gap:6px;padding:6px 0}
+.explain-dots i{width:8px;height:8px;border-radius:50%;background:#eee0c9;cursor:pointer}.explain-dots i.on{width:22px;border-radius:9px;background:#ff9642}
+.explain-controls{display:flex;justify-content:center;gap:10px;padding:14px 16px 18px}
+.explain-controls .iconbtn.on{background:linear-gradient(180deg,#ff9642,#e6720c);border-color:transparent;color:#fff}
+@keyframes explain-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes explain-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.explain-art,.explain-cap{animation:none!important}}

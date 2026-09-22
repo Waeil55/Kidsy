@@ -3,6 +3,7 @@ import { LuDownload, LuGift } from 'react-icons/lu';
 import { useStore, STICKERS, gradeSummary, exportBackup } from '../store/store.js';
 import { GRADES, SUBJECT_BY_KEY } from '../data/grades.js';
 import { Bar, Stars, Modal, Notice, toast, confetti, Ring } from '../ui/ui.jsx';
+import { ExplainBtn } from '../ui/Explainer.jsx';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const RESETS = [
@@ -29,7 +30,7 @@ export default function Rewards() {
   return (
     <>
       <section className="hero">
-        <span className="pill w">Scoring: right = +1 · wrong = −1 · never below 0</span>
+        <div className="row wrap" style={{ justifyContent: 'space-between' }}><span className="pill w">Scoring: right = +1 · wrong = −1 · never below 0</span><ExplainBtn topic="points" small /></div>
         <div className="row wrap gap20" style={{ marginTop: 10 }}>
           <div><div style={{ fontFamily: 'var(--display)', fontSize: '4.5rem', fontWeight: 800, lineHeight: 1 }}>{state.score}</div><div>points now</div></div>
           <div><div style={{ fontFamily: 'var(--display)', fontSize: '2.4rem', fontWeight: 800 }}>{state.best}</div><div>best score</div></div>

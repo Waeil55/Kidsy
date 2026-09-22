@@ -6,6 +6,7 @@ import { mathInLevel, mathNo } from '../engine/math.js';
 import { fillLevel, vocabQuiz, grammarQuiz, customToItems } from '../engine/quizzes.js';
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Crumb, Seg, Notice } from '../ui/ui.jsx';
+import { ExplainBtn } from '../ui/Explainer.jsx';
 import { Link, go } from '../ui/router.js';
 
 export const KINDS = [
@@ -28,9 +29,9 @@ export function PracticeHub() {
         <span className="muted tiny">Grade: {g.label}</span>
       </div>
       <div className="grid g2">
-        {KINDS.map((k) => <Link key={k.key} to={`/play/${k.key}/${lv}`} className="tile t2"><span className="ico">{k.emoji}</span><b>{k.label}</b><span>{k.blurb}</span></Link>)}
+        {KINDS.map((k) => <div key={k.key} className="tile-explain"><Link to={`/play/${k.key}/${lv}`} className="tile t2"><span className="ico">{k.emoji}</span><b>{k.label}</b><span>{k.blurb}</span></Link><ExplainBtn topic={k.key} small /></div>)}
       </div>
-      <Notice>Looking for stories? Open the <Link to="/map">Adventure map</Link>. Want a test? Try <Link to="/exam">Exams</Link>. Want a level-by-level review sheet? Open <Link to="/study">Study guides</Link>, or search everything in the <Link to="/index">Big index</Link>.</Notice>
+      <Notice>Looking for stories? Open the <Link to="/map">Adventure map</Link>. Want a <Link to="/study">Study guide</Link>, an <Link to="/exam">Exam</Link>, or the <Link to="/index">Big index</Link>?</Notice>
     </>
   );
 }

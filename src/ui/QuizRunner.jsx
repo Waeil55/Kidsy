@@ -6,6 +6,7 @@ import { matchOption, matchTyped, wordsToNumbers, speak, stopSpeaking } from '..
 import { SpeakBtn, MicBtn, useMic, Stars, confetti, Rich } from './ui.jsx';
 import { sfx } from './sfx.js';
 import { sayPraise } from '../lib/speech.js';
+import { ExplainBtn } from './Explainer.jsx';
 
 const LET = 'ABCDEF';
 const PRAISE = ['Great job!', 'Yes! Nice one!', 'Correct!', 'You got it!', 'Brilliant!', 'Super!', 'Well done!'];
@@ -134,6 +135,7 @@ export default function QuizRunner({ items, grade, subject = 'quiz', title, onFi
         <div className="dots" aria-hidden="true">{list.map((_, k) => <i key={k} className={k === i ? 'cur' : log[k] ? (log[k].ok ? 'ok' : 'bad') : ''} />)}</div>
         <SpeakBtn small text={speechText} label="Read the question" />
         <MicBtn small mic={mic} label="Say my answer" />
+        <ExplainBtn topic={subject} small />
       </div>
       <div className="qtext"><Rich text={item.q} /></div>
       {isMC ? (

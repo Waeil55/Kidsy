@@ -7,6 +7,7 @@ import { storyWords } from '../engine/wordbank.js';
 import { maikelFamilyFor, maikelWordsFor } from '../data/maikel.js';
 import { matchTyped, speak } from '../lib/speech.js';
 import { MicBtn, Notice, useMic } from '../ui/ui.jsx';
+import { ExplainBtn } from '../ui/Explainer.jsx';
 
 const normalize = (value) => String(value || '').toLowerCase().replace(/[^a-z\s']/g, '').trim();
 
@@ -39,7 +40,7 @@ export default function SpeakingLab() {
   const listenTarget = () => speak(mode === 'phonics' ? target.word : phrase, { rate: state.settings.rate });
 
   return <div className="speaking-lab">
-    <section className="lab-hero"><div><span className="eyebrow">Grade-locked voice coaching</span><h1>Speaking Lab <LuSparkles /></h1><p>Listen, speak, and get instant feedback for {grade.label}.</p></div><div className="lab-score"><LuFlame /><b>{streak}</b><small>streak</small></div></section>
+    <section className="lab-hero"><div><span className="eyebrow">Grade-locked voice coaching</span><h1>Speaking Lab <LuSparkles /></h1><p>Listen, speak, and get instant feedback for {grade.label}.</p><ExplainBtn topic="speaking" small /></div><div className="lab-score"><LuFlame /><b>{streak}</b><small>streak</small></div></section>
     <section className="lab-toolbar"><div className="seg" role="tablist"><button className={mode === 'phonics' ? 'on' : ''} onClick={() => { setMode('phonics'); reset(); }}>Sound words</button><button className={mode === 'vocabulary' ? 'on' : ''} onClick={() => { setMode('vocabulary'); reset(); }}>Speak a sentence</button></div><span className="lab-grade">🔒 {grade.short} · {maikelFamilyFor(state.gradeKey).join(' · ')}</span></section>
     <section className={`voice-card ${result || ''}`}>
       <div className="voice-card-top"><span className="pill w">{mode === 'phonics' ? `${position + 1} of ${phonics.length}` : `${position + 1} of ${vocabulary.length}`}</span><span className="voice-family">{mode === 'phonics' ? `${target.sound} sound family` : target.pos}</span></div>

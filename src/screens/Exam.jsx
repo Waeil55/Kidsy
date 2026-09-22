@@ -5,6 +5,7 @@ import { GRADE_BY_KEY, SUBJECT_BY_KEY } from '../data/grades.js';
 import { buildExam, EXAM_SUBJECTS, customToItems, g3PdfAll } from '../engine/quizzes.js';
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Bar, Seg, Notice } from '../ui/ui.jsx';
+import { ExplainBtn } from '../ui/Explainer.jsx';
 import { Link } from '../ui/router.js';
 import { examLibrary, LIB_TABS } from '../engine/examlib.js';
 
@@ -53,7 +54,7 @@ export default function Exam() {
   }
   return (
     <>
-      <div className="col"><h1>🎓 Exams</h1><p className="muted">Ready to show what you know? Build your own test, or pick one from the library below.</p></div>
+      <div className="row wrap" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}><div className="col"><h1>🎓 Exams</h1><p className="muted">Ready to show what you know? Build your own test, or pick one from the library below.</p></div><ExplainBtn topic="exam" /></div>
       <div className="card col gap20">
         <div><h3>How many questions?</h3><Seg value={size} onChange={setSize} options={[10, 20, 30, 50].map((n) => ({ key: n, label: n }))} /></div>
         <div><h3>What is on the test?</h3>

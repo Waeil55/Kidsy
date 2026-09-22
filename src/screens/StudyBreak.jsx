@@ -8,6 +8,7 @@ import { speak } from '../lib/speech.js';
 import { generateMath } from '../engine/math.js';
 import { grammarQuiz, fillItem } from '../engine/quizzes.js';
 import { Link } from '../ui/router.js';
+import { ExplainBtn } from '../ui/Explainer.jsx';
 
 const colors = ['coral', 'violet', 'sun', 'mint'];
 const shuffle = (items) => {
@@ -75,7 +76,7 @@ export default function StudyBreak() {
   const move = (e) => { if (start.current != null) setDrag(e.clientX - start.current); };
   const up = () => { if (start.current == null) return; if (drag < -50) go(1); else if (drag > 50) go(-1); start.current = null; setDrag(0); };
   return <div className="study-break-page" tabIndex={0} onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1); }}>
-    <section className="break-intro"><div><span className="eyebrow">A tiny learning adventure</span><h1>Study break ✨</h1><p>Swipe, tap, learn. Every card is made for {grade.label}.</p></div><div className="break-badge"><LuLightbulb /><b>{state.score}</b><small>points</small></div></section>
+    <section className="break-intro"><div><span className="eyebrow">A tiny learning adventure</span><h1>Study break ✨</h1><p>Swipe, tap, learn. Every card is made for {grade.label}.</p><ExplainBtn topic="break" small /></div><div className="break-badge"><LuLightbulb /><b>{state.score}</b><small>points</small></div></section>
     <div className="reel-feed" aria-label="Study break cards" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onPointerLeave={up}>
       <div className={`reel-track ${drag ? 'dragging' : ''}`} style={{ transform: `translateX(calc(${-idx * 100}% + ${drag}px))` }}>{cards.map((card, index) => <ReelCard key={`${card.title}-${index}`} card={card} index={index} total={cards.length} />)}</div>
     </div>

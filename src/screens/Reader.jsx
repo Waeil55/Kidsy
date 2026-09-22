@@ -5,6 +5,7 @@ import { generateStory, levelOf } from '../engine/stories.js';
 import { speak, stopSpeaking, ttsSupported, alignRead, readingScore, tokenize } from '../lib/speech.js';
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Crumb, Notice, useMic, MicBtn, toast, confetti } from '../ui/ui.jsx';
+import { ExplainBtn } from '../ui/Explainer.jsx';
 import { Link, go } from '../ui/router.js';
 import WordSheet from '../ui/WordSheet.jsx';
 
@@ -97,6 +98,7 @@ export default function Reader({ grade, n }) {
             <div className="reader-mode"><button className={mode === 'read' ? 'on' : ''} onClick={() => setMode('read')}><LuBookOpen /> Read</button><button className={mode === 'listen' ? 'on' : ''} onClick={() => { setMode('listen'); readAloud(); }}><LuHeadphones /> Listen</button></div>
             {ttsSupported() && <button className="btn soft sm" onClick={readAloud}>{speaking ? <LuPause /> : <LuVolume2 />}{speaking ? 'Pause' : 'Read aloud'}</button>}
             <MicBtn mic={mic} label="I will read aloud" />
+            <ExplainBtn topic="reading" label="How to read" small />
             <button className={`btn sm ${big ? '' : 'soft'}`} onClick={() => setBig(!big)} aria-pressed={big}><LuType /> Bigger text</button>
             <button className="btn soft sm" onClick={() => setRate((r) => r >= 1.2 ? .7 : +(r + .2).toFixed(1))}><LuLanguages /> {rate.toFixed(1)}x</button>
           </div>

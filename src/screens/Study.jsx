@@ -8,6 +8,7 @@ import { grammarQuiz } from '../engine/quizzes.js';
 import { levelWords } from '../engine/wordbank.js';
 import { vocabFor } from '../data/vocab.js';
 import { SpeakBtn } from '../ui/ui.jsx';
+import { ExplainBtn } from '../ui/Explainer.jsx';
 import WordSheet from '../ui/WordSheet.jsx';
 import { Link } from '../ui/router.js';
 
@@ -35,10 +36,10 @@ export default function Study() {
       <div className="card"><h2>📖 Story recaps</h2>
         <div className="examgrid" style={{ marginTop: 10 }}>{stories.map((s, i) => <Link key={s.id} to={`/read/${g.key}/${s.n}`} className={`examcard c${i % 5}`} style={{ textDecoration: 'none' }}><span className="em">{s.emoji}</span><b>{s.title}</b><small>{s.kindLabel} · {s.wordCount} words</small></Link>)}</div>
       </div>
-      <div className="card"><h2>🔢 Math corner</h2><p className="muted tiny">Tap a problem to see how to solve it.</p>
+      <div className="card"><div className="row wrap" style={{ justifyContent: 'space-between' }}><h2>🔢 Math corner</h2><ExplainBtn topic="math" small /></div><p className="muted tiny">Tap a problem to see how to solve it.</p>
         <div className="col" style={{ marginTop: 10 }}>{math.map((m) => <details key={m.id} className="reveal"><summary>{m.q}</summary><p><b>Answer: {m.options[m.answer]}</b>{m.explain ? ` — ${m.explain}` : ''}</p></details>)}</div>
       </div>
-      <div className="card"><h2>✏️ Grammar power</h2>
+      <div className="card"><div className="row wrap" style={{ justifyContent: 'space-between' }}><h2>✏️ Grammar power</h2><ExplainBtn topic="grammar" small /></div>
         <div className="col" style={{ marginTop: 10 }}>{grammar.map((q) => <details key={q.id} className="reveal"><summary>{q.q}</summary><p><b>Answer: {q.options[q.answer]}</b>{q.explain ? ` — ${q.explain}` : ''}</p></details>)}</div>
       </div>
     </>
