@@ -230,5 +230,12 @@ const G6 = R([
 ]);
 
 export const VOCAB = { KG, G1, G2, G3, G4, G5, G6 };
-export const vocabFor = (grade) => VOCAB[grade] || VOCAB.G3;
+// Kindergarten and Grade 1 vocabulary stays word-length appropriate for that age — never a longer
+// word borrowed from an older grade's list.
+const VOCAB_MAX_LEN = { KG: 5, G1: 6 };
+export const vocabFor = (grade) => {
+  const list = VOCAB[grade] || VOCAB.G3;
+  const cap = VOCAB_MAX_LEN[grade];
+  return cap ? list.filter((w) => w.w.length <= cap) : list;
+};
 export const findWord = (grade, w) => (VOCAB[grade] || []).find((x) => x.w.toLowerCase() === String(w).toLowerCase());

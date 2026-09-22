@@ -20,17 +20,23 @@ export function vocabQuiz(grade, count = 20, seed = 'v', extraWords = []) {
   const words = [...vocabFor(grade), ...extraWords];
   const r = makeRng(`${grade}|vocab|${seed}`);
   const n4 = grade === 'KG' || grade === 'G1' ? 3 : 4;
+  // Kindergarten and Grade 1 are not old enough for the words "synonym", "antonym" or "part of
+  // speech" — they only get the two simplest question types. Grade 2 gets the same idea, worded
+  // in plain English. The technical terms start at Grade 3, where the curriculum teaches them.
+  const kinds = gradeIdx(grade) <= 1 ? ['def', 'word'] : gradeIdx(grade) === 2 ? ['def', 'word', 'sameAs', 'oppositeOf', 'fill'] : ['def', 'word', 'syn', 'ant', 'fill', 'pos'];
   const out = [];
   const order = r.shuffle(words);
   let i = 0;
   while (out.length < count && i < count * 6) {
     const w = order[i % order.length];
-    const kind = ['def', 'word', 'syn', 'ant', 'fill', 'pos'][(i + Math.floor(i / order.length)) % 6];
+    const kind = kinds[(i + Math.floor(i / order.length)) % kinds.length];
     const others = words.filter((x) => x.w !== w.w);
     let item = null;
     const id = `${grade}-V${pad(i)}`;
     if (kind === 'def') item = mc(r, id, `What does "${w.w}" mean?`, cap(w.def), others.map((x) => cap(x.def)), 'vocab', `${w.w}: ${w.def}`, n4);
     else if (kind === 'word') item = mc(r, id, `Which word means "${w.def}"?`, w.w, others.map((x) => x.w), 'vocab', `${w.w}: ${w.def}`, n4);
+    else if (kind === 'sameAs' && w.syn.length) item = mc(r, id, `Which word means about the same as "${w.w}"?`, w.syn[0], [...others.flatMap((x) => x.ant), ...others.map((x) => x.w)].filter((x) => !w.syn.includes(x) && !w.ant.includes(x)), 'vocab', `${w.syn[0]} means about the same as ${w.w}.`, n4);
+    else if (kind === 'oppositeOf' && w.ant.length) item = mc(r, id, `Which word means the opposite of "${w.w}"?`, w.ant[0], [...others.flatMap((x) => x.syn), ...others.map((x) => x.w)].filter((x) => !w.syn.includes(x) && !w.ant.includes(x)), 'vocab', `${w.ant[0]} is the opposite of ${w.w}.`, n4);
     else if (kind === 'syn' && w.syn.length) item = mc(r, id, `Which word is a synonym of "${w.w}"?`, w.syn[0], [...others.flatMap((x) => x.ant), ...others.map((x) => x.w)].filter((x) => !w.syn.includes(x) && !w.ant.includes(x)), 'vocab', `Synonyms of ${w.w}: ${w.syn.join(', ')}`, n4);
     else if (kind === 'ant' && w.ant.length) item = mc(r, id, `Which word is an antonym of "${w.w}"?`, w.ant[0], [...others.flatMap((x) => x.syn), ...others.map((x) => x.w)].filter((x) => !w.syn.includes(x) && !w.ant.includes(x)), 'vocab', `Antonyms of ${w.w}: ${w.ant.join(', ')}`, n4);
     else if (kind === 'fill' && w.ex && new RegExp(`\\b${w.w}\\b`, 'i').test(w.ex)) item = mc(r, id, w.ex.replace(new RegExp(`\\b${w.w}\\b`, 'i'), '_____'), w.w, others.filter((x) => x.pos === w.pos).map((x) => x.w).concat(others.map((x) => x.w)), 'vocab', w.ex, n4);
