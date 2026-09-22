@@ -117,7 +117,7 @@ export default function Upload() {
   const savedCount = Object.keys(saved).length;
   return (
     <>
-      <div className="col"><h1>📤 Upload a lesson</h1><p className="muted">Add a PDF, Word file or text from school. Kidsy splits it by grade and subject, shows you what it found, and only saves what you approve. Each saved lesson stays in its own grade and subject, so nothing gets mixed up.</p></div>
+      <div className="col"><h1>📤 Upload a lesson</h1><Crumb to="/studio">Back to Create &amp; upload</Crumb><p className="muted">Add a PDF, Word file or text from school. Kidsy splits it by grade and subject, shows you what it found, and only saves what you approve. Each saved lesson stays in its own grade and subject, so nothing gets mixed up.</p></div>
       {!secs && (
         <>
           <div className={`drop ${over ? 'over' : ''}`} onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={(e) => { e.preventDefault(); setOver(false); e.dataTransfer.files[0] && onFile(e.dataTransfer.files[0]); }}>

@@ -53,7 +53,7 @@ export default function Exam() {
   }
   return (
     <>
-      <div className="col"><h1>🎓 Exams</h1><p className="muted">A mixed test for {g.label}. Every answer still counts +1 or −1 toward your score, and each exam is saved in your history.</p></div>
+      <div className="col"><h1>🎓 Exams</h1><p className="muted">Ready to show what you know? Build your own test, or pick one from the library below.</p></div>
       <div className="card col gap20">
         <div><h3>How many questions?</h3><Seg value={size} onChange={setSize} options={[10, 20, 30, 50].map((n) => ({ key: n, label: n }))} /></div>
         <div><h3>What is on the test?</h3>

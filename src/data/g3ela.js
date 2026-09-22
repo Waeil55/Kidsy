@@ -28,6 +28,12 @@ export const G3_PDF_WORD_ROWS = [
   ['defend', 'verb', 'To prove by giving evidence', 'justify, protect', 'oppose, surrender', 'Use quotes from the book to defend your answer.'],
   ['specific', 'adjective', 'To be particular or precise', 'exact, definite', 'vague, general', 'Give a specific time when the bus arrives.'],
   ['pledge', 'noun', 'A promise or agreement to do or not do something', 'vow, promise', 'break, violate', 'We made a pledge to keep our playground clean.'],
+  // Week Six Teacher Guide
+  ['redundant', 'adjective', 'More than what is needed', 'repetitive, wordy', 'limited, incomplete', 'Her speech was redundant since she kept repeating herself.'],
+  ['gesture', 'noun', 'A movement of the body that shows an idea or feeling', 'movement, sign', 'motionless, stationary', 'The common gesture for "hello" is a wave of the hand.'],
+  ['acknowledge', 'verb', 'To recognize', 'recognize, respond', 'ignore, overlook', 'The teacher will acknowledge you when you raise your hand.'],
+  ['clutch', 'verb', 'To tightly hold something', 'hold, grasp', 'drop, throw', 'The woman had a firm clutch on her purse.'],
+  ['persevere', 'verb', 'To keep working on something even though it is difficult', 'persist, endure', 'quit, stop', 'The math homework is difficult, but I will persevere and finish the assignment.'],
 ];
 
 // Section 1-B

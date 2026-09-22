@@ -138,7 +138,7 @@ export default function Studio() {
 
   return (
     <>
-      <div className="col"><h1>✏️ Studio</h1><p className="muted">Make your own flashcards, words, questions, math problems, fill-in sentences and stories. Each thing you make belongs to one grade, so grades never get mixed up.</p></div>
+      <div className="col"><h1>✏️ Create &amp; upload</h1><p className="muted">Make your own flashcards, words, questions, math problems, fill-in sentences and stories, or upload a lesson from school. Each thing you make belongs to one grade, so grades never get mixed up.</p></div>
       <div className="row wrap">
         <label className="f" style={{ minWidth: 200 }}>Make it for<select value={grade} onChange={(e) => { setGrade(e.target.value); setEdit(null); }}>{GRADES.map((g) => <option key={g.key} value={g.key}>{g.emoji} {g.label}</option>)}</select></label>
         <Seg value={kind} onChange={(k) => { setKind(k); setEdit(null); }} options={Object.entries(KINDS).map(([key, v]) => ({ key, label: `${v.emoji} ${v.label}` }))} />

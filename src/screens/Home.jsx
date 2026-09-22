@@ -5,18 +5,6 @@ import { GRADE_BY_KEY, chapterOf } from '../data/grades.js';
 import { Link } from '../ui/router.js';
 import { Bar } from '../ui/ui.jsx';
 
-const TILES = [
-  ['/map', '📖', 'Stories', '500 stories, 20 questions each', 't1'],
-  ['/practice', '🔢', 'Math', '500 problems, 50 levels', 't2'],
-  ['/words', '🔤', 'Vocabulary', 'Word bank and flashcards', 't3'],
-  ['/practice', '✏️', 'Grammar & fill-in', 'Sentences and blanks', 't4'],
-  ['/exam', '🎓', 'Exams', 'Mixed tests with results', 't1'],
-  ['/index', '📚', 'Big index', 'Search everything', 't2'],
-  ['/merola', '🧠', 'Merola library', 'Extra lessons and reading', 't1'],
-  ['/upload', '📤', 'Upload a lesson', 'PDF, Word or text from school', 't3'],
-  ['/studio', '✏️', 'Studio', 'Make cards, stories, quizzes', 't4'],
-];
-
 export default function Home() {
   const { state } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];

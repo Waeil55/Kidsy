@@ -25,12 +25,12 @@ import Study from './screens/Study.jsx';
 
 const NAV = [
   ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
-  ['/g3pack', 'Grade 3 ELA pack', LuBookMarked, 'G3'], ['/study', 'Study guides', LuNotebookPen], ['/exam', 'Exams', LuGraduationCap], ['/index', 'Big index', LuLibrary],
+  ['/g3pack', 'Grade 3 ELA pack', LuBookMarked, 'G3'], ['/exam', 'Exams', LuGraduationCap],
   ['/merola', 'Merola library', LuBookMarked],
   ['/reels', 'Study break', LuSparkles],
   ['/speaking', 'Speaking Lab', LuMic],
-  ['/insights', 'Learning insights', LuChartNoAxesCombined],
-  ['/upload', 'Upload a lesson', LuUpload], ['/studio', 'Studio (make your own)', LuPenLine], ['/rewards', 'Scores & stickers', LuTrophy], ['/me', 'Me & settings', LuUser],
+  ['/insights', 'My progress', LuChartNoAxesCombined],
+  ['/studio', 'Create & upload', LuPenLine], ['/rewards', 'Scores & stickers', LuTrophy], ['/me', 'Me & settings', LuUser],
 ];
 const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/reels', 'Break', LuSparkles], ['/practice', 'Practice', LuPuzzle], ['/rewards', 'Rewards', LuTrophy]];
 
@@ -55,7 +55,7 @@ export default function App() {
   }, [state.newStickers, dispatch]);
 
   const key = seg[0] || '';
-  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', study: 'Study guides', index: 'Big index', merola: 'Merola library', reels: 'Study break', speaking: 'Speaking Lab', insights: 'Learning insights', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Studio', rewards: 'Scores & stickers', me: 'Me & settings' };
+  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', study: 'Study guides', index: 'Big index', merola: 'Merola library', reels: 'Study break', speaking: 'Speaking Lab', insights: 'My progress', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Create & upload', rewards: 'Scores & stickers', me: 'Me & settings' };
   const isOn = (p) => (p === '/' ? key === '' : ('/' + key).startsWith(p) || (p === '/practice' && key === 'play') || (p === '/map' && (key === 'level' || key === 'read')));
 
   let page;

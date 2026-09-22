@@ -22,7 +22,7 @@ export function PracticeHub() {
   const levels = Array.from({ length: 50 }, (_, i) => i + 1).filter((l) => levelUnlocked(state, g.key, l));
   return (
     <>
-      <div className="col"><h1>Practice</h1><p className="muted">Pick a level, then pick what to practice. Every right answer is +1 point and every wrong answer is −1 (your score never goes below 0).</p></div>
+      <div className="col"><h1>🎯 Practice</h1><p className="muted">Pick a level, then pick a game to play. Every right answer wins you a point!</p></div>
       <div className="card row wrap">
         <label className="f" style={{ minWidth: 200 }}>Level<select value={lv} onChange={(e) => setLv(+e.target.value)}>{levels.map((l) => <option key={l} value={l}>Level {l}</option>)}</select></label>
         <span className="muted tiny">Grade: {g.label}</span>
@@ -30,7 +30,7 @@ export function PracticeHub() {
       <div className="grid g2">
         {KINDS.map((k) => <Link key={k.key} to={`/play/${k.key}/${lv}`} className="tile t2"><span className="ico">{k.emoji}</span><b>{k.label}</b><span>{k.blurb}</span></Link>)}
       </div>
-      <Notice>Looking for stories? Open the <Link to="/map">Adventure map</Link>. Want a test? Try <Link to="/exam">Exams</Link>.</Notice>
+      <Notice>Looking for stories? Open the <Link to="/map">Adventure map</Link>. Want a test? Try <Link to="/exam">Exams</Link>. Want a level-by-level review sheet? Open <Link to="/study">Study guides</Link>, or search everything in the <Link to="/index">Big index</Link>.</Notice>
     </>
   );
 }
