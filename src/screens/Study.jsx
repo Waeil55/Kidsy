@@ -27,6 +27,11 @@ export default function Study() {
     <>
       {open && <WordSheet word={open} grade={g.key} rate={state.settings.rate} onClose={() => setOpen(null)} />}
       <div className="col"><h1>📓 Study guides</h1><p className="muted">A study guide for every level: words to learn, story recaps, math tips and grammar rules. 50 guides for {g.label}.</p></div>
+      <div className="card row wrap gap8" aria-label={`About ${g.label}`}>
+        <span className="pill">Ages {g.age}</span>
+        <span className="pill">{g.session}</span>
+        <span className="pill">{g.numbers}</span>
+      </div>
       <div className="lvgrid" role="tablist" aria-label="Choose a level">{Array.from({ length: 50 }, (_, i) => i + 1).map((n) => <button key={n} role="tab" aria-selected={n === lv} className={n === lv ? 'on' : ''} onClick={() => setLv(n)}>{n}</button>)}</div>
       <section className="hero"><span className="pill w">{chapterOf(g.key, lv)}</span><h1>Level {lv} guide</h1><div className="row wrap"><Link to={`/level/${lv}`} className="btn white sm"><LuPlay /> Play the level</Link><Link to="/exam" className="btn white sm"><LuGraduationCap /> Take the level {lv} test</Link></div></section>
       <div className="card"><h2>🔤 Words to learn</h2><p className="muted tiny">Tap a word to hear it, see meanings and examples, and practise it.</p>
