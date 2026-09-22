@@ -218,7 +218,7 @@ export const mystery = {
 
 // ---------------------------------------------------------------- ANIMAL FACT FILE (informational text)
 const ATTRS = [
-  ['kind', (a) => `What kind of animal is the ${a.n}?`, (a) => cap(a.kind), 5, 0],
+  ['kind', (a) => `What kind of animal is the ${a.n}?`, (a) => cap(a.kind), 5, 2],
   ['cover', (a) => `What covers the ${a.n}’s body?`, (a) => cap(a.cover), 6, 0],
   ['home', (a) => `Where does the ${a.n} live?`, (a) => cap(a.home), 7, 0],
   ['food', (a) => `What does the ${a.n} eat?`, (a) => cap(a.food), 8, 0],
@@ -226,6 +226,10 @@ const ATTRS = [
   ['baby', (a) => `What is a baby ${a.n} called?`, (a) => cap(a.baby), 10, 1],
   ['fun', (a) => `Which fact is true about the ${a.n}?`, (a) => `It ${a.fun}`, 11, 2],
 ];
+// Kindergarten and Grade 1 are not taught science-class taxonomy words yet, so the youngest
+// readers hear a plain, concrete word here instead of "amphibian" or "reptile". Grade 2 and up
+// get the real word, since that is when this vocabulary is actually taught.
+const SIMPLE_KIND = { amphibian: 'a pond animal', reptile: 'an animal with scales', insect: 'a small bug' };
 export const fact = {
   id: 'fact',
   build(c) {
@@ -233,10 +237,11 @@ export const fact = {
     const a = pool[(c.k * 5 + c.g * 7 + Math.floor(c.k / pool.length)) % pool.length];
     const n = a.n;
     const others = pool.filter((x) => x.n !== n);
+    const kindWord = c.tier === 0 && SIMPLE_KIND[a.kind] ? SIMPLE_KIND[a.kind] : withA(a.kind);
     const titleFn = (_, an) => c.v(`The ${T(c, an)}`, `All About the ${T(c, an)}`, `Meet the ${T(c, an)}`, `Amazing Facts About the ${T(c, an)}`, `The ${T(c, an)}: A Closer Look`);
     const p1 = c.v(
-      J(`The ${n} is ${withA(a.kind)}.`, `It has ${a.cover}.`, `It lives ${a.home}.`, `It eats ${a.food}.`),
-      J(`The ${n} is ${withA(a.kind)}.`, `It has ${a.cover}.`, `It lives ${a.home}.`, `It eats ${a.food}.`),
+      J(`The ${n} is ${kindWord}.`, `It has ${a.cover}.`, `It lives ${a.home}.`, `It eats ${a.food}.`),
+      J(`The ${n} is ${kindWord}.`, `It has ${a.cover}.`, `It lives ${a.home}.`, `It eats ${a.food}.`),
       J(`The ${n} is ${withA(a.kind)}.`, `It has ${a.cover}.`, `It lives ${a.home}, and it eats ${a.food}.`),
       J(`The ${n} belongs to a group of animals called ${plural(a.kind)}.`, `Its body is covered with ${a.cover}.`, `It lives ${a.home} and eats ${a.food}.`),
       J(`The ${n} belongs to a group of animals called ${plural(a.kind)}, which share certain features.`, `Its body is protected by ${a.cover}.`, `It makes its home ${a.home} and feeds on ${a.food}.`),
@@ -262,7 +267,7 @@ export const fact = {
     qs.push(Q('What is this text mostly about?', `The ${n} and how it lives`, ['How to bake a cake', 'A trip to the moon', 'How to build a house'], 3));
     qs.push(Q(`Which sentence is true?`, `The ${n} eats ${a.food}.`, others.map((o) => `The ${n} eats ${o.food}.`), 12));
     qs.push(Q(`Which sentence is true?`, `The ${n} lives ${a.home}.`, others.map((o) => `The ${n} lives ${o.home}.`), 13));
-    qs.push(Q(`Which sentence is NOT true?`, `The ${n} is a ${others.find((o) => o.kind !== a.kind).kind}.`, [`The ${n} has ${a.cover}.`, `The ${n} eats ${a.food}.`, `The ${n} lives ${a.home}.`], 14, 1));
+    qs.push(Q(`Which sentence is NOT true?`, `The ${n} is a ${others.find((o) => o.kind !== a.kind).kind}.`, [`The ${n} has ${a.cover}.`, `The ${n} eats ${a.food}.`, `The ${n} lives ${a.home}.`], 14, 2));
     return {
       title: titleFn('', n), titleFn, emoji: '📗', genre: 'Informational text',
       wrongTitles: others.slice(0, 6).map((o) => titleFn('', o.n)),
