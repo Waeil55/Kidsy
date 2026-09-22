@@ -53,6 +53,10 @@ const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--
 export default function WordSheet({ word, sentence, grade, rate = 0.9, onClose }) {
   const { state, dispatch } = useStore();
   const clean = word.toLowerCase().replace(/[^a-z']/g, '');
+  // Kindergarten and Grade 1 are not ready for a general-purpose adult dictionary (its definitions
+  // often explain a word using other hard words) or for the words "synonym"/"antonym" — they get
+  // their own curated definition and the story's own sentence, nothing more advanced.
+  const young = grade === 'KG' || grade === 'G1';
   const local = useMemo(() => localFind(grade, clean), [grade, clean]);
   const [online, setOnline] = useState(undefined);
   const [tr, setTr] = useState('');
@@ -67,10 +71,11 @@ export default function WordSheet({ word, sentence, grade, rate = 0.9, onClose }
 
   const defs = [];
   if (local) defs.push({ pos: local.pos, def: local.def, ex: local.ex });
-  (online ? online.defs : []).forEach((d) => { if (!local || d.def !== local.def) defs.push(d); });
+  if (!young) (online ? online.defs : []).forEach((d) => { if (!local || d.def !== local.def) defs.push(d); });
   const examples = [...new Set([sentence, local && local.ex, ...defs.map((d) => d.ex)].filter(Boolean))];
-  const syn = [...new Set([...(local ? local.syn || [] : []), ...(online ? online.syn : [])])].slice(0, 8);
-  const ant = [...new Set([...(local ? local.ant || [] : []), ...(online ? online.ant : [])])].slice(0, 6);
+  const syn = young ? [] : [...new Set([...(local ? local.syn || [] : []), ...(online ? online.syn : [])])].slice(0, 8);
+  const ant = young ? [] : [...new Set([...(local ? local.ant || [] : []), ...(online ? online.ant : [])])].slice(0, 6);
+  const tabs = young ? [['meaning', 'Meaning'], ['examples', 'Examples'], ['practice', 'Practice']] : [['meaning', 'Meaning'], ['examples', 'Examples'], ['words', 'Word pals'], ['practice', 'Practice']];
   const parts = syllables(clean);
 
   const mark = (kind) => {
@@ -100,7 +105,7 @@ export default function WordSheet({ word, sentence, grade, rate = 0.9, onClose }
           <div className="wsheet-word">
             <h3>{clean}</h3>
             <div className="wsheet-syl">{parts.map((p, i) => <i key={i}>{p}</i>)}</div>
-            {online && online.ipa && <span className="wsheet-ipa">{online.ipa}</span>}
+            {!young && online && online.ipa && <span className="wsheet-ipa">{online.ipa}</span>}
           </div>
           <div className="wsheet-hear">
             <button className="btn sm" onClick={() => speak(clean, { rate })}><LuVolume2 /> Hear</button>
@@ -114,12 +119,12 @@ export default function WordSheet({ word, sentence, grade, rate = 0.9, onClose }
           {lang !== 'off' && <b dir="auto">{tr || '…'}</b>}
         </div>
         <nav className="wsheet-tabs" role="tablist">
-          {[['meaning', 'Meaning'], ['examples', 'Examples'], ['words', 'Word pals'], ['practice', 'Practice']].map(([k, l]) => <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
+          {tabs.map(([k, l]) => <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
         </nav>
         <div className="wsheet-body">
           {tab === 'meaning' && (defs.length ? defs.slice(0, 3).map((d, i) => (
             <p key={i} className="wsheet-def">{d.pos && <span className="pill">{d.pos}</span>} {d.def}<button className="wsheet-say" onClick={() => speak(d.def, { rate })} aria-label="Read meaning"><LuVolume2 /></button></p>
-          )) : <p className="muted">{online === undefined ? 'Looking it up…' : 'No dictionary entry found. Hear the word and see how it is used in the story.'}</p>)}
+          )) : <p className="muted">{young || online !== undefined ? 'Hear the word and see how it is used in the story.' : 'Looking it up…'}</p>)}
           {tab === 'examples' && (examples.length ? examples.map((s, i) => (
             <p key={i} className="wsheet-ex"><span className="pill gold">{i === 0 && s === sentence ? 'In your story' : 'Example'}</span> {s.split(new RegExp(`(\\b${clean}\\w*)`, 'i')).map((x, j) => (j % 2 ? <mark key={j}>{x}</mark> : x))}<button className="wsheet-say" onClick={() => speak(s, { rate })} aria-label="Read sentence"><LuVolume2 /></button></p>
           )) : <p className="muted">No examples yet.</p>)}

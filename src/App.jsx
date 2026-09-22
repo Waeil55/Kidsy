@@ -26,7 +26,7 @@ import Study from './screens/Study.jsx';
 const NAV = [
   ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
   ['/g3pack', 'Grade 3 ELA pack', LuBookMarked, 'G3'], ['/exam', 'Exams', LuGraduationCap],
-  ['/merola', 'Merola library', LuBookMarked],
+  ['/merola', 'Merola library', LuBookMarked, 'G3'],
   ['/reels', 'Study break', LuSparkles],
   ['/speaking', 'Speaking Lab', LuMic],
   ['/insights', 'My progress', LuChartNoAxesCombined],
@@ -54,7 +54,11 @@ export default function App() {
     }
   }, [state.newStickers, dispatch]);
 
-  const key = seg[0] || '';
+  const rawKey = seg[0] || '';
+  // A few pages are locked to one grade and quietly fall back to Home for every other grade —
+  // the header should say "Home" then too, not the name of a page the child cannot actually see.
+  const gradeLocked = { g3pack: 'G3', merola: 'G3' };
+  const key = gradeLocked[rawKey] && state.gradeKey !== gradeLocked[rawKey] ? '' : rawKey;
   const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Grade 3 ELA pack', exam: 'Exams', study: 'Study guides', index: 'Big index', merola: 'Merola library', reels: 'Study break', speaking: 'Speaking Lab', insights: 'My progress', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Create & upload', rewards: 'Scores & stickers', me: 'Me & settings' };
   const isOn = (p) => (p === '/' ? key === '' : ('/' + key).startsWith(p) || (p === '/practice' && key === 'play') || (p === '/map' && (key === 'level' || key === 'read')));
 
@@ -71,7 +75,7 @@ export default function App() {
     case 'exam': page = <Exam />; break;
     case 'study': page = <Study />; break;
     case 'index': page = <IndexScreen />; break;
-    case 'merola': page = <MerolaPack section={seg[1]} index={seg[2] === undefined ? null : (+seg[2] || 0)} />; break;
+    case 'merola': page = state.gradeKey === 'G3' ? <MerolaPack section={seg[1]} index={seg[2] === undefined ? null : (+seg[2] || 0)} /> : <Home />; break;
     case 'reels': page = <StudyBreak />; break;
     case 'speaking': page = <SpeakingLab />; break;
     case 'insights': page = <Insights />; break;
