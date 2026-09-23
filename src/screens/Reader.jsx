@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { LuBookOpen, LuHeadphones, LuMic, LuVolume2, LuSquare, LuType, LuArrowRight, LuRotateCcw, LuMap, LuPause, LuLanguages } from 'react-icons/lu';
 import { useStore, storyRec } from '../store/store.js';
 import { generateStory, levelOf } from '../engine/stories.js';
-import { speak, stopSpeaking, ttsSupported, alignRead, readingScore, tokenize } from '../lib/speech.js';
+import { speak, speakKaraoke, stopSpeaking, ttsSupported, alignRead, readingScore, tokenize } from '../lib/speech.js';
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Crumb, Notice, useMic, MicBtn, toast, confetti } from '../ui/ui.jsx';
 import { ExplainBtn } from '../ui/Explainer.jsx';
@@ -25,7 +25,7 @@ export default function Reader({ grade, n }) {
   const [wordCard, setWordCard] = useState(null);
 
   const full = story ? story.paragraphs.join(' ') : '';
-  const offsets = useMemo(() => { const o = []; full.replace(/\S+/g, (m, i) => { o.push(i); return m; }); return o; }, [full]);
+  const words = useMemo(() => full.split(' '), [full]);
   const tokens = useMemo(() => tokenize(full), [full]);
 
   const mic = useMic({
@@ -47,7 +47,9 @@ export default function Reader({ grade, n }) {
   const readAloud = () => {
     if (speaking) { stopSpeaking(); setSpeaking(false); setCur(-1); return; }
     setSpeaking(true);
-    speak(full, { rate, onBoundary: (ci) => { let k = 0; while (k + 1 < offsets.length && offsets[k + 1] <= ci) k++; setCur(k); }, onEnd: () => { setSpeaking(false); setCur(-1); } });
+    // Reads one word at a time in the AI voice, so the yellow highlight lands on the exact word being
+    // spoken — never a timing guess from where we are inside one long recording.
+    speakKaraoke(words, { rate, onWord: setCur, onEnd: () => { setSpeaking(false); setCur(-1); } });
   };
   const startMic = () => { setReadRes(null); setHits([]); setPos(0); stopSpeaking(); setSpeaking(false); mic.start(); };
 

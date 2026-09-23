@@ -151,6 +151,57 @@ function speakOnline(text, o) {
   return () => { if (my === token) token++; try { current && current.pause(); } catch (e) { /* ignore */ } };
 }
 
+// speakKaraoke(words, { rate, onWord(index), onEnd }) -> stop()
+// Reads a story one word at a time so the highlight is never a guess: each word is its own
+// clip, so "the current word" is simply "the clip playing right now", not an estimate from
+// character position inside one long recording. Falls back to the device voice per word if the
+// AI voice is unavailable, and prefetches a couple of words ahead so playback stays smooth.
+export function speakKaraoke(words, o = {}) {
+  const my = ++token;
+  const rate = Math.min(1.6, Math.max(0.6, o.rate || 0.9));
+  const cleanWord = (w) => String(w || '').replace(/<[^>]*>/g, '').toLowerCase().replace(/[^a-z0-9']/g, '');
+  const useOnline = cfg.mode !== 'device' && typeof Audio !== 'undefined' && online();
+  const clips = [];
+  const fetchClip = (i) => {
+    if (!useOnline || i >= words.length || clips[i]) return;
+    const w = cleanWord(words[i]);
+    clips[i] = w ? clipFor(w) : Promise.resolve(null);
+    clips[i].catch(() => {});
+  };
+  fetchClip(0); fetchClip(1); fetchClip(2);
+  const nextIndex = (i) => { let k = i + 1; while (k < words.length && !cleanWord(words[k])) k++; return k; };
+  const playDeviceWord = (i, w) => {
+    if (!W.speechSynthesis) { advance(i); return; }
+    const u = new W.SpeechSynthesisUtterance(w);
+    u.rate = rate; u.pitch = 1.03;
+    const v = pickVoice(true);
+    if (v) { u.voice = v; u.lang = v.lang; }
+    u.onend = () => advance(i);
+    u.onerror = () => advance(i);
+    W.speechSynthesis.speak(u);
+  };
+  const advance = (i) => { if (my !== token) return; setTimeout(() => step(nextIndex(i)), 70); };
+  const step = async (i) => {
+    if (my !== token) return;
+    if (i >= words.length) { current = null; o.onEnd && o.onEnd(); return; }
+    const w = cleanWord(words[i]);
+    if (!w) { step(nextIndex(i)); return; }
+    o.onWord && o.onWord(i);
+    if (!useOnline) { playDeviceWord(i, w); return; }
+    fetchClip(i + 1); fetchClip(i + 2);
+    let a;
+    try { a = await clips[i]; if (!a) throw new Error('empty'); } catch (e) { playDeviceWord(i, w); return; }
+    if (my !== token) return;
+    current = a;
+    a.playbackRate = rate;
+    a.onended = () => advance(i);
+    a.onerror = () => playDeviceWord(i, w);
+    try { await a.play(); } catch (e) { playDeviceWord(i, w); }
+  };
+  step(cleanWord(words[0]) ? 0 : nextIndex(0));
+  return () => { if (my === token) token++; try { W.speechSynthesis && W.speechSynthesis.cancel(); } catch (e) { /* ignore */ } try { current && current.pause(); } catch (e) { /* ignore */ } };
+}
+
 // speak(text, { rate, onBoundary(charIndex), onEnd }) -> stop()
 export function speak(text, o = {}) {
   text = String(text || '').replace(/<[^>]*>/g, '');
