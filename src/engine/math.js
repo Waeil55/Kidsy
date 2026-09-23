@@ -1,7 +1,7 @@
 // Math question generator. generateMath(grade, 1..500) is deterministic. Each level has 10 questions;
 // numbers grow with the level inside the grade, and topics unlock with the level.
 // Wrong choices are built from common mistakes (wrong operation, off by one, forgot to carry...).
-import { makeRng, buildOptions, uniq } from '../lib/rng.js';
+import { makeRng, buildOptions, uniq, cap } from '../lib/rng.js';
 import { gradeIdx, MATH_PER_LEVEL, STORIES_PER_GRADE } from '../data/grades.js';
 
 const NAMES = ['Mia', 'Leo', 'Ava', 'Sam', 'Zoe', 'Ben', 'Nora', 'Omar', 'Ella', 'Theo', 'Ruby', 'Kai', 'Lina', 'Owen', 'Maya', 'Finn'];
@@ -23,8 +23,13 @@ function num(r, a, extra = [], o = {}) {
 const txt = (a, wrong) => ({ a, wrong });
 
 // ---------------------------------------------------------------- KINDERGARTEN
-const SHAPES = [['circle', 0, 'round'], ['triangle', 3, 'sides'], ['square', 4, 'equal sides'], ['rectangle', 4, 'sides']];
+const SHAPES = [['circle', 0, 'round'], ['triangle', 3, 'sides'], ['square', 4, 'equal sides'], ['rectangle', 4, 'sides'], ['hexagon', 6, 'sides']];
 const NUMWORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
+const COLORS = [['red', '🔴'], ['orange', '🟠'], ['yellow', '🟡'], ['green', '🟢'], ['blue', '🔵'], ['purple', '🟣'], ['brown', '🟤'], ['black', '⚫'], ['white', '⚪']];
+const SHAPE_PICS = [['circle', '⚪'], ['square', '⬜'], ['triangle', '🔺'], ['star', '⭐'], ['heart', '❤️'], ['diamond', '🔷']];
+const COINS = [['penny', '1 cent'], ['nickel', '5 cents'], ['dime', '10 cents'], ['quarter', '25 cents']];
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const KG = [
   [1, (r, d) => { const n = rg(r, d, 1, 5, 12), e = r.pick(FRUITS); return { q: `How many? ${e.repeat(n)}`, ...num(r, n), ex: `Count each one: ${n}.` }; }],
   [1, (r, d) => { const a = rg(r, d, 1, 3, 6), b = rg(r, d, 1, 2, 4), e = r.pick(FRUITS); return { q: `${e.repeat(a)} + ${e.repeat(b)} = ?`, ...num(r, a + b, [Math.abs(a - b)]), ex: `${a} + ${b} = ${a + b}.` }; }],
@@ -50,6 +55,16 @@ const KG = [
   [3, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 2, 5, 9), b = rg(r, d, 1, 3, 6); return { q: `${nm} has ${e.repeat(a)}. ${nm} gets ${b} more. How many now?`, ...num(r, a + b, [a, a - b > 0 ? a - b : a + b + 1, b]), ex: `${a} + ${b} = ${a + b}.` }; }],
   [4, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 4, 7, 12), b = r.int(1, a - 1); return { q: `${nm} has ${e.repeat(a)}. ${nm} gives away ${b}. How many are left?`, ...num(r, a - b, [a + b, a, b]), ex: `${a} − ${b} = ${a - b}.` }; }],
   [5, (r) => { const [e1, e2] = r.shuffle(FRUITS).slice(0, 2), a = r.int(1, 6), b = r.int(1, 6); return { q: `${e1.repeat(a)} and ${e2.repeat(b)}. How many in all?`, ...num(r, a + b, [Math.abs(a - b), a, b]), ex: `${a} + ${b} = ${a + b}.` }; }],
+  // Kindergarten curriculum: colors, more shapes, money, patterns, days & months
+  [2, (r) => { const [name, pic] = r.pick(COLORS); return { q: `What color is this? ${pic}`, ...txt(cap(name), r.shuffle(COLORS.map((c) => c[0])).filter((c) => c !== name).map(cap)), ex: `${pic} is ${name}.` }; }],
+  [2, (r) => { const [name, pic] = r.pick(SHAPE_PICS); return { q: `Which shape is this? ${pic}`, ...txt(cap(name), r.shuffle(SHAPE_PICS.map((s) => s[0])).filter((s) => s !== name)), ex: `${pic} is a ${name}.` }; }],
+  [4, (r) => { const [name, val] = r.pick(COINS); return { q: `How much is a ${name} worth?`, ...txt(val, COINS.map((c) => c[1]).filter((v) => v !== val)), ex: `A ${name} is worth ${val}.` }; }],
+  [3, (r) => { const i = r.int(0, 5); return { q: `What day comes after ${DAYS[i]}?`, ...txt(DAYS[(i + 1) % 7], r.shuffle(DAYS.filter((d) => d !== DAYS[(i + 1) % 7])).slice(0, 3)), ex: `After ${DAYS[i]} comes ${DAYS[(i + 1) % 7]}.` }; }],
+  [4, (r) => { const i = r.int(0, 10); return { q: `What month comes after ${MONTHS[i]}?`, ...txt(MONTHS[(i + 1) % 12], r.shuffle(MONTHS.filter((m) => m !== MONTHS[(i + 1) % 12])).slice(0, 3)), ex: `After ${MONTHS[i]} comes ${MONTHS[(i + 1) % 12]}.` }; }],
+  [3, (r) => { const [a, b] = r.shuffle(FRUITS).slice(0, 2), kind = r.pick(['ABB', 'AAB', 'ABC']); const c = kind === 'ABC' ? r.shuffle(FRUITS.filter((x) => x !== a && x !== b))[0] : null;
+    const unit = kind === 'ABB' ? [a, b, b] : kind === 'AAB' ? [a, a, b] : [a, b, c];
+    const seq = [...unit, ...unit, ...unit.slice(0, unit.length - 1)];
+    return { q: `What comes next? ${seq.join(' ')} ?`, ...txt(unit[unit.length - 1], FRUITS.filter((x) => x !== unit[unit.length - 1]).slice(0, 3)), ex: `The pattern is ${unit.join(' ')}, repeating.` }; }],
 ];
 
 // ---------------------------------------------------------------- GRADE 1

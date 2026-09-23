@@ -37,6 +37,13 @@ const KG = R([
   ['log', 'noun', 'A thick piece of a tree', 'timber', '', 'The frog sits on a log.'],
   ['sun', 'noun', 'The star that gives us light and heat', 'star', 'moon', 'The sun is up.'],
   ['bed', 'noun', 'Where you sleep', 'cot', '', 'The pup is on the bed.'],
+  ['over', 'adverb', 'Above something, or across it', 'above', 'under', 'The bird flew over the tree.'],
+  ['under', 'adverb', 'Below something', 'below', 'over', 'The cat hid under the bed.'],
+  ['above', 'adverb', 'Higher than something', 'over', 'below', 'The sun is above the hill.'],
+  ['below', 'adverb', 'Lower than something', 'under', 'above', 'The fish swims below the boat.'],
+  ['beside', 'adverb', 'Next to something', 'next to', 'far from', 'Sit beside me.'],
+  ['behind', 'adverb', 'At the back of something', 'in back of', 'in front', 'The cat hid behind the box.'],
+  ['between', 'adverb', 'In the space in the middle of two things', 'in the middle', '', 'The ball rolled between the chairs.'],
 ]);
 
 const G1 = R([
@@ -232,7 +239,7 @@ const G6 = R([
 export const VOCAB = { KG, G1, G2, G3, G4, G5, G6 };
 // Kindergarten and Grade 1 vocabulary stays word-length appropriate for that age — never a longer
 // word borrowed from an older grade's list.
-const VOCAB_MAX_LEN = { KG: 5, G1: 6 };
+const VOCAB_MAX_LEN = { KG: 7, G1: 6 };
 export const vocabFor = (grade) => {
   const list = VOCAB[grade] || VOCAB.G3;
   const cap = VOCAB_MAX_LEN[grade];
