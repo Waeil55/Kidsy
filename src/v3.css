@@ -78,6 +78,42 @@ body{background:
 .page .reel-card h2,.page .voice-card h2,.page .hero h2{color:#fff!important}
 .reel-card{box-shadow:0 8px 0 rgba(64,42,124,.2)!important}
 
+/* study-break: vertical, full-bleed, one-card-at-a-time — the same feel as any short-video feed */
+.study-break-page{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px}
+.reel-feed.vert{position:relative;flex:1;min-height:0;border-radius:28px}
+.reel-track.vert{flex-direction:column;width:100%}
+.reel-track.vert>.reel-card{flex:0 0 100%;min-height:100%;width:100%}
+.reel-card{position:relative;padding-right:78px}
+.reel-card.active .reel-art{animation:reel-pop .5s cubic-bezier(.2,.9,.3,1.2) both}
+.reel-card.active .reel-content>*{animation:reel-rise .45s both}
+.reel-card.active .reel-content>h2{animation-delay:.05s}.reel-card.active .reel-content>p{animation-delay:.1s}.reel-card.active .reel-content>.reel-options{animation-delay:.15s}
+@keyframes reel-pop{from{opacity:0;transform:scale(.6) rotate(-6deg)}to{opacity:1;transform:none}}
+@keyframes reel-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.reel-side{position:absolute;right:10px;bottom:70px;display:flex;flex-direction:column;gap:16px;align-items:center;z-index:3}
+.reel-side button{background:rgba(255,255,255,.22);border:0;color:#fff;width:46px;height:46px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;backdrop-filter:blur(6px)}
+.reel-side button svg{width:20px;height:20px}.reel-side button small{font-size:.56rem;font-weight:800}
+.reel-side button.active{background:#fff;color:#e2475c}
+.reel-vnav{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:3}
+.reel-vnav .iconbtn{width:34px;height:34px;background:rgba(255,255,255,.28);border:0;color:#fff;backdrop-filter:blur(6px)}
+.reel-vnav .iconbtn:disabled{opacity:.35}
+.reel-vbar{width:4px;height:60px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden;display:flex;align-items:flex-end}
+.reel-vbar i{display:block;width:100%;background:#fff;border-radius:99px;transition:height .3s}
+@media (max-width:900px){.reel-side{right:6px;bottom:60px;gap:12px}.reel-side button{width:40px;height:40px}.reel-vnav{display:none}}
+
+/* celebration overlay: floats up ~14 emoji, bounces a badge, auto-dismisses or tap to skip */
+.cele-card{position:absolute;inset:0;z-index:6;border-radius:28px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;cursor:pointer;animation:cele-in .3s both}
+@keyframes cele-in{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.cele-bits{position:absolute;inset:0;pointer-events:none}
+.cele-bits span{position:absolute;bottom:-40px;font-size:1.8rem;animation:cele-float 3.6s ease-in both infinite;opacity:.9}
+@keyframes cele-float{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:1}100%{transform:translateY(-115vh) rotate(50deg);opacity:0}}
+.cele-mid{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px}
+.cele-emoji{font-size:clamp(3.5rem,14vh,6rem);animation:cele-bounce 1s ease-in-out infinite}
+@keyframes cele-bounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.08)}}
+.cele-streak{background:rgba(255,255,255,.25);border-radius:99px;padding:5px 14px;font-weight:900;font-size:.85rem;backdrop-filter:blur(4px)}
+.cele-mid h2{color:#fff;font-size:clamp(1.6rem,4.5vh,2.4rem);margin:4px 0;text-shadow:0 3px 0 rgba(0,0,0,.15)}
+.cele-mid p{font-size:1.05rem;opacity:.95;max-width:280px}
+.cele-tap{position:absolute;bottom:18px;z-index:1;font-size:.78rem;font-weight:800;opacity:.85;background:rgba(255,255,255,.2);padding:6px 14px;border-radius:99px}
+
 /* word bank */
 .alpha{display:flex;flex-wrap:wrap;gap:5px}.alpha button{min-width:32px;height:32px;border-radius:10px;border:0;background:#fff;font-weight:800;color:var(--ink2);box-shadow:0 3px 0 var(--line);padding:0 6px}.alpha button.on{background:var(--a);color:#fff;box-shadow:0 3px 0 var(--dark)}
 .wordcloud{display:flex;flex-wrap:wrap;gap:8px}

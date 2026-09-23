@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { LuChevronLeft, LuChevronRight, LuBookmark, LuCheck, LuHeart, LuLightbulb, LuPlay, LuRotateCcw, LuShare2, LuSparkles, LuVolume2 } from 'react-icons/lu';
+import { LuChevronUp, LuChevronDown, LuBookmark, LuCheck, LuHeart, LuLightbulb, LuPlay, LuRotateCcw, LuShare2, LuSparkles, LuVolume2 } from 'react-icons/lu';
 import { useStore } from '../store/store.js';
 import { GRADE_BY_KEY } from '../data/grades.js';
 import { vocabFor } from '../data/vocab.js';
@@ -9,6 +9,7 @@ import { generateMath } from '../engine/math.js';
 import { grammarQuiz, fillItem } from '../engine/quizzes.js';
 import { Link } from '../ui/router.js';
 import { ExplainBtn } from '../ui/Explainer.jsx';
+import Celebration from '../ui/Celebration.jsx';
 
 const colors = ['coral', 'violet', 'sun', 'mint'];
 const shuffle = (items) => {
@@ -24,7 +25,7 @@ const shuffledQuestion = (options, answer) => {
   return { options: out.map((x) => x.text), answer: out.findIndex((x) => x.correct) };
 };
 
-function ReelCard({ card, index, total }) {
+function ReelCard({ card, index, total, active, onAnswered }) {
   const { state, dispatch } = useStore();
   const [choice, setChoice] = useState(null);
   const [liked, setLiked] = useState(false);
@@ -34,9 +35,11 @@ function ReelCard({ card, index, total }) {
   const answer = (option) => {
     if (answered) return;
     setChoice(option);
-    dispatch({ type: 'answer', grade: state.gradeKey, subject: 'study-break', correct: option === card.answer });
+    const ok = option === card.answer;
+    dispatch({ type: 'answer', grade: state.gradeKey, subject: 'study-break', correct: ok });
+    onAnswered(ok);
   };
-  return <article className={`reel-card ${colors[index % colors.length]}`}>
+  return <article className={`reel-card ${colors[index % colors.length]} ${active ? 'active' : ''}`}>
     <div className="reel-glow" />
     <div className="reel-top"><span className="reel-topic"><LuSparkles /> {card.topic}</span><span className="reel-count">{index + 1} / {total}</span></div>
     <div className="reel-art" aria-hidden="true">{card.emoji}</div>
@@ -45,10 +48,15 @@ function ReelCard({ card, index, total }) {
       <h2>{card.prompt || card.title}</h2>
       <p>{card.text}</p>
       {card.options && <div className="reel-options">{card.options.map((option, optionIndex) => <button key={option} className={answered ? optionIndex === card.answer ? 'right' : optionIndex === choice ? 'wrong' : 'quiet' : ''} onClick={() => answer(optionIndex)} disabled={answered}>{option}</button>)}</div>}
-      {answered && <div className={`reel-feedback ${correct ? 'good' : 'try'}`}><span>{correct ? <LuCheck /> : <LuRotateCcw />}</span>{correct ? 'Brilliant! +1 point' : `Good try! The answer is ${card.options[card.answer]}.`}</div>}
+      {answered && <div className={`reel-feedback ${correct ? 'good' : 'try'}`}><span>{correct ? <LuCheck /> : <LuRotateCcw />}</span>{correct ? 'Brilliant! +1 point' : `Good try! The answer is ${card.options[card.answer]}. −1 point.`}</div>}
       {card.storyNumber && <Link to={`/read/${state.gradeKey}/${card.storyNumber}`} className="reel-story-link"><LuPlay /> Read the full story</Link>}
     </div>
-    <div className="reel-actions"><button className={liked ? 'active' : ''} onClick={() => setLiked(!liked)} aria-label="Like this study card"><LuHeart /> <small>{liked ? 'Liked' : 'Like'}</small></button><button className={saved ? 'active' : ''} onClick={() => setSaved(!saved)} aria-label="Save this study card"><LuBookmark /> <small>{saved ? 'Saved' : 'Save'}</small></button><button onClick={() => speak(card.speech || card.text)} aria-label="Read this card aloud"><LuVolume2 /><small>Listen</small></button><button onClick={() => Promise.resolve(navigator.share?.({ title: card.title, text: card.text })).catch(() => {})} aria-label="Share this study card"><LuShare2 /><small>Share</small></button></div>
+    <div className="reel-side">
+      <button className={liked ? 'active' : ''} onClick={() => setLiked(!liked)} aria-label="Like this study card"><LuHeart /><small>{liked ? 'Liked' : 'Like'}</small></button>
+      <button className={saved ? 'active' : ''} onClick={() => setSaved(!saved)} aria-label="Save this study card"><LuBookmark /><small>{saved ? 'Saved' : 'Save'}</small></button>
+      <button onClick={() => speak(card.speech || card.text)} aria-label="Read this card aloud"><LuVolume2 /><small>Listen</small></button>
+      <button onClick={() => Promise.resolve(navigator.share?.({ title: card.title, text: card.text })).catch(() => {})} aria-label="Share this study card"><LuShare2 /><small>Share</small></button>
+    </div>
   </article>;
 }
 
@@ -77,15 +85,31 @@ export default function StudyBreak() {
   const [idx, setIdx] = useState(0);
   const [drag, setDrag] = useState(0);
   const start = useRef(null);
+  const [streak, setStreak] = useState(0);
+  const [celeb, setCeleb] = useState(null); // { round } while a celebration is showing
   const go = (n) => setIdx((i) => Math.max(0, Math.min(cards.length - 1, i + n)));
-  const down = (e) => { start.current = e.clientX; };
-  const move = (e) => { if (start.current != null) setDrag(e.clientX - start.current); };
+  // vertical swipe: up = next card, down = previous card — the same gesture as any short-video feed
+  const down = (e) => { if (celeb) return; start.current = e.clientY; };
+  const move = (e) => { if (celeb || start.current == null) return; setDrag(e.clientY - start.current); };
   const up = () => { if (start.current == null) return; if (drag < -50) go(1); else if (drag > 50) go(-1); start.current = null; setDrag(0); };
-  return <div className="study-break-page" tabIndex={0} onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1); }}>
-    <section className="break-intro"><div><span className="eyebrow">A tiny learning adventure</span><h1>Study break ✨</h1><p>Swipe, tap, learn. Every card is made for {grade.label}.</p><ExplainBtn topic="break" small /></div><div className="break-badge"><LuLightbulb /><b>{state.score}</b><small>points</small></div></section>
-    <div className="reel-feed" aria-label="Study break cards" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onPointerLeave={up}>
-      <div className={`reel-track ${drag ? 'dragging' : ''}`} style={{ transform: `translateX(calc(${-idx * 100}% + ${drag}px))` }}>{cards.map((card, index) => <ReelCard key={`${card.title}-${index}`} card={card} index={index} total={cards.length} />)}</div>
+  const onAnswered = (ok) => {
+    if (!ok) { setStreak(0); return; }
+    const next = streak + 1;
+    setStreak(next);
+    if (next % 4 === 0) setCeleb({ round: Math.floor(next / 4) - 1 });
+  };
+  return <div className="study-break-page" tabIndex={0} onKeyDown={(e) => { if (e.key === 'ArrowDown') go(1); if (e.key === 'ArrowUp') go(-1); }}>
+    <section className="break-intro"><div><span className="eyebrow">A tiny learning adventure</span><h1>Study break ✨</h1><p>Swipe up for more, made for {grade.label}.</p><ExplainBtn topic="break" small /></div><div className="break-badge"><LuLightbulb /><b>{state.score}</b><small>points</small></div></section>
+    <div className="reel-feed vert" aria-label="Study break cards" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onPointerLeave={up}>
+      <div className={`reel-track vert ${drag ? 'dragging' : ''}`} style={{ transform: `translateY(calc(${-idx * 100}% + ${drag}px))` }}>
+        {cards.map((card, index) => <ReelCard key={`${card.title}-${index}`} card={card} index={index} total={cards.length} active={index === idx} onAnswered={onAnswered} />)}
+      </div>
+      {celeb && <Celebration theme={celeb.round} streak={streak} onDone={() => setCeleb(null)} />}
+      <div className="reel-vnav">
+        <button className="iconbtn" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous card"><LuChevronUp /></button>
+        <span className="reel-vbar"><i style={{ height: `${((idx + 1) / cards.length) * 100}%` }} /></span>
+        <button className="iconbtn" onClick={() => go(1)} disabled={idx === cards.length - 1} aria-label="Next card"><LuChevronDown /></button>
+      </div>
     </div>
-    <div className="reel-nav"><button className="iconbtn" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous card"><LuChevronLeft /></button><div className="reel-count"><b>{idx + 1}</b> / {cards.length}<span className="reel-prog"><i style={{ width: `${((idx + 1) / cards.length) * 100}%` }} /></span></div><button className="iconbtn" onClick={() => go(1)} disabled={idx === cards.length - 1} aria-label="Next card"><LuChevronRight /></button></div>
   </div>;
 }
