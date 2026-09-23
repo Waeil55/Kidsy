@@ -4,6 +4,14 @@ import React, { createContext, useContext, useEffect, useReducer, useRef } from 
 
 export const STORAGE_KEY = 'kidsy_state_v1';
 const OLD_KEYS = ['kidsy_saved_state_v5'];
+// ---- family profiles ------------------------------------------------------------------------
+// Each child gets their own save (score, progress, stickers, custom content) in its own
+// localStorage slot. A small registry (name/avatar/grade only) lists every profile so the
+// switcher can show them without loading each child's full save. The very first profile keeps
+// the original storage key, so nobody's existing progress moves or is lost.
+const PROFILES_KEY = 'kidsy_profiles_v1';
+const keyFor = (id) => (!id || id === 'p1' ? STORAGE_KEY : `${STORAGE_KEY}__${id}`);
+const newProfileId = () => 'p' + Math.random().toString(36).slice(2, 9);
 
 export const THEMES = [
   { key: 'sky', label: 'Sky', a: '#2f9bec', b: '#5bd5c8', c: '#2389d7' },
@@ -17,10 +25,10 @@ export const AVATARS = ['🦊', '🐼', '🦁', '🐸', '🐙', '🦄', '🐯', 
 
 export const emptyCustom = () => ({ packs: [], flashcards: [], stories: [], qa: [], math: [], fill: [], words: [] });
 
-export const defaultState = () => ({
+export const defaultState = (id = 'p1', name = 'Explorer', avatar = '🦊', gradeKey = 'G3') => ({
   v: 1,
-  profile: { name: 'Explorer', avatar: '🦊', gradeKey: 'G3' },
-  gradeKey: 'G3',
+  profile: { id, name, avatar, gradeKey },
+  gradeKey,
   theme: 'sky',
   settings: { autoRead: false, rate: 0.9, sounds: true, openLevels: false, micLang: 'en-US', bigText: false },
   score: 0,
@@ -37,18 +45,40 @@ export const defaultState = () => ({
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-export function loadState() {
+function loadRawState(id) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(keyFor(id));
     if (raw) {
       const s = JSON.parse(raw);
-      const d = defaultState();
-      const profile = { ...d.profile, ...(s.profile || {}) };
+      const d = defaultState(id);
+      const profile = { ...d.profile, ...(s.profile || {}), id };
       const gradeKey = profile.gradeKey || s.gradeKey || d.gradeKey;
       return { ...d, ...s, gradeKey, settings: { ...d.settings, ...(s.settings || {}) }, profile: { ...profile, gradeKey }, stats: { ...d.stats, ...(s.stats || {}) }, custom: { ...emptyCustom(), ...(s.custom || {}) } };
     }
   } catch (e) { /* fall through to defaults */ }
-  return defaultState();
+  return defaultState(id);
+}
+function saveRawState(id, s) { try { const { newStickers, ...persist } = s; localStorage.setItem(keyFor(id), JSON.stringify(persist)); } catch (e) { /* storage full or blocked */ } }
+
+function loadRegistry() {
+  try {
+    const raw = localStorage.getItem(PROFILES_KEY);
+    if (raw) { const r = JSON.parse(raw); if (r && r.list && r.list.length) return r; }
+  } catch (e) { /* fall through */ }
+  // First run, or upgrading from before multi-profile support: build the registry from
+  // whatever single save already exists (or a fresh default), as profile "p1".
+  const s = loadRawState('p1');
+  const reg = { activeId: 'p1', list: [{ id: 'p1', name: s.profile.name, avatar: s.profile.avatar, gradeKey: s.profile.gradeKey }] };
+  saveRegistry(reg);
+  return reg;
+}
+function saveRegistry(reg) { try { localStorage.setItem(PROFILES_KEY, JSON.stringify(reg)); } catch (e) { /* ignore */ } }
+export const listProfiles = () => loadRegistry().list;
+export const activeProfileId = () => loadRegistry().activeId;
+
+export function loadState() {
+  const reg = loadRegistry();
+  return loadRawState(reg.activeId);
 }
 
 // ---- progress helpers ----------------------------------------------------------------------
@@ -147,7 +177,57 @@ function reducer(s, a) {
     case 'profile': {
       const profile = { ...s.profile, ...a.patch };
       const gradeKey = profile.gradeKey || s.gradeKey;
+      const reg = loadRegistry();
+      reg.list = reg.list.map((p) => (p.id === profile.id ? { ...p, name: profile.name, avatar: profile.avatar, gradeKey } : p));
+      saveRegistry(reg);
       return { ...s, profile: { ...profile, gradeKey }, gradeKey };
+    }
+    // ---- family profiles: add a new child, switch, edit any child's details, or delete one ----
+    case 'profile-add': {
+      const id = newProfileId();
+      const name = (a.name || 'Explorer').trim() || 'Explorer';
+      const avatar = a.avatar || AVATARS[Math.floor(Math.random() * AVATARS.length)];
+      const gradeKey = a.gradeKey || 'G3';
+      const fresh = defaultState(id, name, avatar, gradeKey);
+      saveRawState(id, fresh);
+      const reg = loadRegistry();
+      reg.list = [...reg.list, { id, name, avatar, gradeKey }];
+      reg.activeId = id;
+      saveRegistry(reg);
+      return fresh;
+    }
+    case 'profile-switch': {
+      if (a.id === s.profile.id) return s;
+      saveRawState(s.profile.id, s);
+      const reg = loadRegistry();
+      if (!reg.list.some((p) => p.id === a.id)) return s;
+      reg.activeId = a.id;
+      saveRegistry(reg);
+      return loadRawState(a.id);
+    }
+    case 'profile-edit': { // { id, patch: { name?, avatar?, gradeKey? } }
+      const reg = loadRegistry();
+      reg.list = reg.list.map((p) => (p.id === a.id ? { ...p, ...a.patch } : p));
+      saveRegistry(reg);
+      if (a.id === s.profile.id) {
+        const profile = { ...s.profile, ...a.patch };
+        const gradeKey = profile.gradeKey || s.gradeKey;
+        return { ...s, profile: { ...profile, gradeKey }, gradeKey };
+      }
+      const other = loadRawState(a.id);
+      const profile = { ...other.profile, ...a.patch };
+      const gradeKey = profile.gradeKey || other.gradeKey;
+      saveRawState(a.id, { ...other, profile: { ...profile, gradeKey }, gradeKey });
+      return s;
+    }
+    case 'profile-delete': {
+      const reg = loadRegistry();
+      if (reg.list.length <= 1) return s; // always keep at least one profile
+      reg.list = reg.list.filter((p) => p.id !== a.id);
+      try { localStorage.removeItem(keyFor(a.id)); } catch (e) { /* ignore */ }
+      if (reg.activeId === a.id) reg.activeId = reg.list[0].id;
+      saveRegistry(reg);
+      return a.id === s.profile.id ? loadRawState(reg.activeId) : s;
     }
     case 'answer': {
       const { grade, subject, correct } = a;
@@ -235,7 +315,7 @@ export function StoreProvider({ children }) {
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; }
-    try { const { newStickers, ...persist } = state; localStorage.setItem(STORAGE_KEY, JSON.stringify(persist)); } catch (e) { /* storage full or blocked */ }
+    saveRawState(state.profile.id, state);
   }, [state]);
   return React.createElement(Ctx.Provider, { value: { state, dispatch } }, children);
 }

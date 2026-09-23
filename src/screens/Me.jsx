@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { LuDownload, LuLockKeyhole, LuUpload } from 'react-icons/lu';
-import { useStore, THEMES, AVATARS, exportBackup, parseBackup } from '../store/store.js';
+import { LuDownload, LuLockKeyhole, LuUpload, LuPlus, LuPencil, LuTrash2 } from 'react-icons/lu';
+import { useStore, THEMES, AVATARS, exportBackup, parseBackup, listProfiles } from '../store/store.js';
 import { GRADES } from '../data/grades.js';
 import { micSupported, ttsSupported, speak, ONLINE_VOICES } from '../lib/speech.js';
 import { Modal, Notice, toast } from '../ui/ui.jsx';
@@ -17,8 +17,11 @@ export default function Me() {
   const fileRef = useRef(null);
   const [err, setErr] = useState('');
   const [wipe, setWipe] = useState(false);
+  const [editProfile, setEditProfile] = useState(null); // null | 'new' | {id,name,avatar,gradeKey}
+  const [delProfile, setDelProfile] = useState(null);
   const set = (patch) => dispatch({ type: 'settings', patch });
   const c = state.custom;
+  const profiles = listProfiles();
   const download = () => {
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([exportBackup(state)], { type: 'application/json' })); a.download = `kidsy-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click();
   };
@@ -29,6 +32,22 @@ export default function Me() {
   return (
     <>
       <h1>Me &amp; settings</h1>
+      <section className="card col">
+        <h3>Family profiles</h3>
+        <p className="muted tiny">Each child gets their own scores, progress and stickers. Tap a buddy to switch.</p>
+        <div className="row wrap gap8">
+          {profiles.map((p) => (
+            <div key={p.id} className={`profile-chip ${p.id === state.profile.id ? 'on' : ''}`}>
+              <button className="profile-chip-hit" onClick={() => p.id !== state.profile.id && dispatch({ type: 'profile-switch', id: p.id })}>
+                <span className="profile-chip-av">{p.avatar}</span><b>{p.name}</b><small>{p.gradeKey}</small>
+              </button>
+              <button className="profile-chip-edit" onClick={() => setEditProfile(p)} aria-label={`Edit ${p.name}`}><LuPencil /></button>
+              {profiles.length > 1 && <button className="profile-chip-edit" onClick={() => setDelProfile(p)} aria-label={`Remove ${p.name}`}><LuTrash2 /></button>}
+            </div>
+          ))}
+          <button className="profile-chip add" onClick={() => setEditProfile('new')}><LuPlus /> Add child</button>
+        </div>
+      </section>
       <section className="grid g2">
         <div className="card col">
           <h3>My profile</h3>
@@ -67,7 +86,25 @@ export default function Me() {
         <div className="row wrap"><button className="btn" onClick={download}><LuDownload /> Save backup</button><button className="btn soft" onClick={() => fileRef.current.click()}><LuUpload /> Restore backup</button><input ref={fileRef} type="file" accept=".json" className="hide" onChange={(e) => e.target.files[0] && restore(e.target.files[0])} /></div>
         {err && <Notice kind="err">{err}</Notice>}
       </section>
+      {editProfile && <ProfileEditor value={editProfile} onClose={() => setEditProfile(null)} onSave={(patch) => { if (editProfile === 'new') dispatch({ type: 'profile-add', ...patch }); else dispatch({ type: 'profile-edit', id: editProfile.id, patch }); setEditProfile(null); }} />}
+      {delProfile && <Modal title={`Remove ${delProfile.name}?`} onClose={() => setDelProfile(null)} actions={<><button className="btn ghost" onClick={() => setDelProfile(null)}>No</button><button className="btn danger" onClick={() => { dispatch({ type: 'profile-delete', id: delProfile.id }); setDelProfile(null); toast('Profile removed', '🗑️'); }}>Yes, remove</button></>}><p>{delProfile.name}'s scores, progress and stickers will be deleted from this device. This cannot be undone.</p></Modal>}
       {wipe && <Modal title="Delete my content?" onClose={() => setWipe(false)} actions={<><button className="btn ghost" onClick={() => setWipe(false)}>No</button><button className="btn danger" onClick={() => { dispatch({ type: 'wipe-custom' }); setWipe(false); toast('Content deleted', '🗑️'); }}>Yes, delete</button></>}><p>All lessons you uploaded and everything you made in the Studio will be removed. Scores and stickers are not touched.</p></Modal>}
     </>
+  );
+}
+
+function ProfileEditor({ value, onClose, onSave }) {
+  const isNew = value === 'new';
+  const [name, setName] = useState(isNew ? '' : value.name);
+  const [avatar, setAvatar] = useState(isNew ? AVATARS[Math.floor(Math.random() * AVATARS.length)] : value.avatar);
+  const [gradeKey, setGradeKey] = useState(isNew ? 'G3' : value.gradeKey);
+  const save = () => onSave({ name: name.trim() || 'Explorer', avatar, gradeKey });
+  return (
+    <Modal title={isNew ? 'Add a child' : `Edit ${value.name}`} onClose={onClose} actions={<><button className="btn ghost" onClick={onClose}>Cancel</button><button className="btn" onClick={save}>{isNew ? 'Add' : 'Save'}</button></>}>
+      <label className="f">Name<input value={name} maxLength={18} autoFocus onChange={(e) => setName(e.target.value)} /></label>
+      <label className="f">Grade<select value={gradeKey} onChange={(e) => setGradeKey(e.target.value)}>{GRADES.map((g) => <option key={g.key} value={g.key}>{g.label}</option>)}</select></label>
+      <div><div className="tiny muted" style={{ fontWeight: 800, marginBottom: 6 }}>Buddy</div>
+        <div className="row wrap gap8">{AVATARS.map((a) => <button key={a} className={`iconbtn ${avatar === a ? 'on' : ''}`} style={{ fontSize: 24, width: 52, height: 52 }} onClick={() => setAvatar(a)} aria-label={`Buddy ${a}`}>{a}</button>)}</div></div>
+    </Modal>
   );
 }

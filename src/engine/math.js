@@ -28,6 +28,24 @@ const NUMWORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
 const COLORS = [['red', '🔴'], ['orange', '🟠'], ['yellow', '🟡'], ['green', '🟢'], ['blue', '🔵'], ['purple', '🟣'], ['brown', '🟤'], ['black', '⚫'], ['white', '⚪']];
 const SHAPE_PICS = [['circle', '⚪'], ['square', '⬜'], ['triangle', '🔺'], ['star', '⭐'], ['heart', '❤️'], ['diamond', '🔷']];
 const COINS = [['penny', '1 cent'], ['nickel', '5 cents'], ['dime', '10 cents'], ['quarter', '25 cents']];
+// Grade 1's highest-frequency sight words, each in a short original sentence a beginning
+// reader can decode: the, and, is, you, said, like, see, we, go, my, a, to, was, are.
+const SIGHT_SENT = [
+  ['I ___ to the park.', 'go', ['see', 'is', 'the']],
+  ['___ dog is big.', 'The', ['And', 'You', 'We']],
+  ['I ___ a red ball.', 'see', ['go', 'is', 'my']],
+  ['We ___ happy today.', 'are', ['go', 'see', 'my']],
+  ['This is ___ cat.', 'my', ['the', 'and', 'you']],
+  ['Sam ___ Ann can play.', 'and', ['is', 'my', 'go']],
+  ['___ can run fast.', 'You', ['The', 'We', 'My']],
+  ['It ___ a sunny day.', 'is', ['go', 'see', 'are']],
+  ['I want ___ read my book.', 'to', ['is', 'my', 'the']],
+  ['This ___ my dog.', 'is', ['are', 'to', 'the']],
+  ['"I like it," she ___.', 'said', ['see', 'go', 'my']],
+  ['We ___ playing in the sun.', 'like', ['said', 'go', 'the']],
+];
+const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const LETTER_WORDS = { A: 'apple', B: 'ball', C: 'cat', D: 'dog', E: 'egg', F: 'fish', G: 'goat', H: 'hat', I: 'ice', J: 'jam', K: 'kite', L: 'lion', M: 'moon', N: 'nest', O: 'owl', P: 'pig', Q: 'queen', R: 'rain', S: 'sun', T: 'top', U: 'up', V: 'van', W: 'web', X: 'x-ray', Y: 'yarn', Z: 'zoo' };
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const KG = [
@@ -55,6 +73,12 @@ const KG = [
   [3, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 2, 5, 9), b = rg(r, d, 1, 3, 6); return { q: `${nm} has ${e.repeat(a)}. ${nm} gets ${b} more. How many now?`, ...num(r, a + b, [a, a - b > 0 ? a - b : a + b + 1, b]), ex: `${a} + ${b} = ${a + b}.` }; }],
   [4, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 4, 7, 12), b = r.int(1, a - 1); return { q: `${nm} has ${e.repeat(a)}. ${nm} gives away ${b}. How many are left?`, ...num(r, a - b, [a + b, a, b]), ex: `${a} − ${b} = ${a - b}.` }; }],
   [5, (r) => { const [e1, e2] = r.shuffle(FRUITS).slice(0, 2), a = r.int(1, 6), b = r.int(1, 6); return { q: `${e1.repeat(a)} and ${e2.repeat(b)}. How many in all?`, ...num(r, a + b, [Math.abs(a - b), a, b]), ex: `${a} + ${b} = ${a + b}.` }; }],
+  // Kindergarten curriculum: the alphabet (letter names, upper/lowercase, letter sounds)
+  [1, (r) => { const L = r.pick(ALPHA.split('')); return { q: `Which lowercase letter matches "${L}"?`, ...txt(L.toLowerCase(), r.shuffle(ALPHA.toLowerCase().split('').filter((x) => x !== L.toLowerCase())).slice(0, 3)), ex: `${L} matches ${L.toLowerCase()}.` }; }],
+  [1, (r) => { const l = r.pick(ALPHA.toLowerCase().split('')); return { q: `Which UPPERCASE letter matches "${l}"?`, ...txt(l.toUpperCase(), r.shuffle(ALPHA.split('').filter((x) => x !== l.toUpperCase())).slice(0, 3)), ex: `${l} matches ${l.toUpperCase()}.` }; }],
+  [1, (r) => { const L = r.pick(ALPHA.split('')), w = LETTER_WORDS[L]; const others = Object.entries(LETTER_WORDS).filter(([k]) => k !== L).map(([, v]) => v); return { q: `Which word starts with the letter ${L}?`, ...txt(w, r.shuffle(others).slice(0, 3)), ex: `${w} starts with ${L}.` }; }],
+  [2, (r) => { const i = r.int(0, 24), L = ALPHA[i]; return { q: `What letter comes after ${L}?`, ...txt(ALPHA[i + 1], r.shuffle(ALPHA.split('').filter((x) => x !== ALPHA[i + 1])).slice(0, 3)), ex: `After ${L} comes ${ALPHA[i + 1]}.` }; }],
+  [2, (r) => { const i = r.int(1, 25), L = ALPHA[i]; return { q: `What letter comes before ${L}?`, ...txt(ALPHA[i - 1], r.shuffle(ALPHA.split('').filter((x) => x !== ALPHA[i - 1])).slice(0, 3)), ex: `Before ${L} comes ${ALPHA[i - 1]}.` }; }],
   // Kindergarten curriculum: colors, more shapes, money, patterns, days & months
   [2, (r) => { const [name, pic] = r.pick(COLORS); return { q: `What color is this? ${pic}`, ...txt(cap(name), r.shuffle(COLORS.map((c) => c[0])).filter((c) => c !== name).map(cap)), ex: `${pic} is ${name}.` }; }],
   [2, (r) => { const [name, pic] = r.pick(SHAPE_PICS); return { q: `Which shape is this? ${pic}`, ...txt(cap(name), r.shuffle(SHAPE_PICS.map((s) => s[0])).filter((s) => s !== name)), ex: `${pic} is a ${name}.` }; }],
@@ -84,6 +108,9 @@ const G1 = [
   [6, (r) => { const s = r.pick([2, 5, 10]), st = r.int(1, 3), seq = [0, 1, 2, 3].map((i) => s * (st + i)); return { q: `Count by ${s}s: ${seq[0]}, ${seq[1]}, ${seq[2]}, ?`, ...num(r, seq[3], [seq[2] + 1, seq[2] + 2, seq[2] + 10]), ex: `Add ${s} each time.` }; }],
   [7, (r) => { const a = r.int(2, 6), b = r.int(3, 8); return { q: `${a} + ${b} = ${a + b}. So ${a + b} − ${a} = ?`, ...num(r, b, [a, a + b + a]), ex: `Fact families: ${a + b} − ${a} = ${b}.` }; }],
   [8, (r) => { const s = r.pick([['square', 4], ['triangle', 3], ['rectangle', 4], ['hexagon', 6]]); return { q: `How many corners does a ${s[0]} have?`, ...num(r, s[1], [3, 4, 5, 6, 8]), ex: `A ${s[0]} has ${s[1]} corners.` }; }],
+  // Grade 1 curriculum: reading the highest-frequency sight words in a short, simple sentence
+  [1, (r) => { const [s, a, w] = r.pick(SIGHT_SENT); return { q: s, ...txt(a, w), ex: s.replace('___', a) }; }],
+  [1, (r) => { const [s, a, w] = r.pick(SIGHT_SENT); return { q: s, ...txt(a, w), ex: s.replace('___', a) }; }],
   // Grade 1 curriculum: 10 more/less, wider 2-digit work, mixed coins, equal parts, 3D shapes
   [3, (r) => { const n = r.int(11, 89), more = r.chance(0.5); return { q: `What is 10 ${more ? 'more' : 'less'} than ${n}?`, ...num(r, more ? n + 10 : n - 10, [n, more ? n - 10 : n + 10, more ? n + 1 : n - 1]), ex: `${more ? '10 more than' : '10 less than'} ${n} is ${more ? n + 10 : n - 10}.` }; }],
   [3, (r) => { const a = r.int(10, 89), b = r.int(2, 9); return { q: `${a} + ${b} = ?`, ...num(r, a + b, [a + b + 10, a + 10, a - b]), ex: `${a} + ${b} = ${a + b}.` }; }],

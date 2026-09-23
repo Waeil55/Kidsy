@@ -142,3 +142,15 @@ body{background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/s
 .modalbg{padding-top:calc(18px + var(--safe-t))!important}
 .toasts{bottom:calc(90px + var(--safe-b))!important}
 @media (max-width:900px){.toasts{bottom:calc(var(--nav) + 18px + var(--safe-b))!important}}
+
+/* family profile switcher */
+.profile-chip{display:flex;align-items:stretch;border-radius:18px;overflow:hidden;box-shadow:0 4px 0 rgba(31,90,160,.14);border:3px solid #fff}
+.profile-chip-hit{display:flex;align-items:center;gap:8px;padding:8px 12px;border:0;background:#fff;color:var(--ink);font:inherit;cursor:pointer}
+.profile-chip-av{font-size:1.4rem}
+.profile-chip-hit small{color:var(--ink2);font-weight:800;margin-left:2px}
+.profile-chip.on .profile-chip-hit{background:var(--grad);color:#fff}
+.profile-chip.on .profile-chip-hit small{color:rgba(255,255,255,.85)}
+.profile-chip-edit{display:grid;place-items:center;width:34px;border:0;border-left:2px solid var(--line);background:#fff;color:var(--ink2)}
+.profile-chip-edit:hover{background:var(--soft);color:var(--a)}
+.profile-chip.on .profile-chip-edit{border-left-color:rgba(255,255,255,.3)}
+.profile-chip.add{display:flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;color:var(--dark);font-weight:800;cursor:pointer;border:3px dashed var(--line)}

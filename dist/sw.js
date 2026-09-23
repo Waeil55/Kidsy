@@ -3,7 +3,7 @@
 // (this page, its script and stylesheet, the icons) is enough for the whole app to work offline.
 // Anything else — the AI voice, dictionary lookups, translations — is fetched fresh and simply
 // falls back to a quieter mode when there is no connection, the same way it already does today.
-const VERSION = 'kidsy-1790126398361';
+const VERSION = 'kidsy-1790127634218';
 const SHELL = ['./', './index.html', './app.css', './app.js', './pdf-worker.js', './manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
