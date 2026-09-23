@@ -76,13 +76,18 @@ const HOMO = [
   ['I ate the ____ pizza.', 'whole', ['hole']], ['The mole dug a ____.', 'hole', ['whole']], ['We ____ for the bus.', 'wait', ['weight']], ['We found ____ at last.', 'peace', ['piece']], ['I ate one ____ of pie.', 'piece', ['peace']],
 ];
 const CONTR = [['do not', "don't"], ['can not', "can't"], ['is not', "isn't"], ['I am', "I'm"], ['she is', "she's"], ['we are', "we're"], ['they are', "they're"], ['will not', "won't"], ['did not', "didn't"], ['it is', "it's"], ['you have', "you've"], ['I will', "I'll"], ['would not', "wouldn't"], ['should have', "should've"]];
-const CONJ = [
+// Grade 1 only learns and/but/or/so/because — until/if/although/neither-nor are taught later.
+const CONJ_SIMPLE = [
   ['I was tired, ____ I went to bed early.', 'so', ['but', 'or', 'because']], ['I wanted to play, ____ it was raining.', 'but', ['so', 'and', 'because']],
   ['We can walk ____ we can ride the bus.', 'or', ['so', 'but', 'because']], ['She smiled ____ she won the prize.', 'because', ['but', 'or', 'so']],
-  ['Ben likes apples ____ pears.', 'and', ['but', 'because', 'or']], ['I will stay inside ____ the rain stops.', 'until', ['and', 'but', 'so']],
-  ['The soup was hot, ____ I waited before eating it.', 'so', ['but', 'or', 'unless']], ['You may go to the park ____ you finish your homework first.', 'if', ['but', 'or', 'because']],
+  ['Ben likes apples ____ pears.', 'and', ['but', 'because', 'or']], ['The soup was hot, ____ I waited before eating it.', 'so', ['but', 'or', 'because']],
+];
+const CONJ_ADV = [
+  ['I will stay inside ____ the rain stops.', 'until', ['and', 'but', 'so']],
+  ['You may go to the park ____ you finish your homework first.', 'if', ['but', 'or', 'because']],
   ['____ it was cold, we went for a walk.', 'Although', ['Because', 'So', 'Or']], ['Neither the coach ____ the players saw it.', 'nor', ['or', 'and', 'but']],
 ];
+const CONJ = [...CONJ_SIMPLE, ...CONJ_ADV];
 const FRAG = [
   ['The big dog barked loudly.', ['Barked loudly at the mailman.', 'The big brown.', 'Running down the street fast.']],
   ['My sister reads every night.', ['Every night before bed.', 'Reads a big book.', 'And then went upstairs.']],
@@ -139,7 +144,7 @@ function gen(r, kind, tier, id) {
     case 'adv': { const w = r.pick(ADVS); return mc(r, id, 'Which word is an adverb (tells how)?', w, [r.pick(NOUNS[1]), r.pick(VERBS[1]), r.pick(ADJS[1])], sub, `${w} tells how something is done.`); }
     case 'homo': { const [s, a, w] = r.pick(HOMO); return mc(r, id, `Choose the right word: ${s}`, a, w, sub, s.replace('____', a), 3 + (w.length > 2 ? 1 : 0)); }
     case 'contr': { const [a, b] = r.pick(CONTR); return mc(r, id, `What is the contraction for "${a}"?`, b, CONTR.map((x) => x[1]), sub, `${a} → ${b}`); }
-    case 'conj': { const [s, a, w] = r.pick(CONJ); return mc(r, id, `Choose the best word: ${s}`, a, w, sub, s.replace('____', a)); }
+    case 'conj': { const [s, a, w] = r.pick(tier === 0 ? CONJ_SIMPLE : CONJ); return mc(r, id, `Choose the best word: ${s}`, a, w, sub, s.replace('____', a)); }
     case 'frag': { const [ok, bad] = r.pick(FRAG); return mc(r, id, 'Which one is a complete sentence?', ok, bad, sub, 'A complete sentence has a subject and a verb and tells a whole idea.'); }
     case 'runon': { const [ok, bad] = r.pick(RUNON); return mc(r, id, 'Which sentence is correct (not a run-on)?', ok, [bad, bad.replace(/ /, ' and ')], sub, 'Join two sentences with a comma and a joining word.', 3); }
     case 'fig': { const [s, a, w] = r.pick(FIG); return mc(r, id, `What kind of language is this? "${s}"`, a, w, sub, `${cap(a)}: ${s}`); }
@@ -161,7 +166,7 @@ function gen(r, kind, tier, id) {
 
 const GRAMMAR_KINDS = {
   KG: ['aAn', 'plS', 'isAre', 'capital', 'punct', 'noun', 'verb', 'aAn', 'plS', 'punct'],
-  G1: ['aAn', 'plS', 'plEs', 'isAre', 'capital', 'punct', 'noun', 'verb', 'adj', 'pastReg', 'contr', 'homo'],
+  G1: ['aAn', 'plS', 'plEs', 'isAre', 'capital', 'punct', 'noun', 'verb', 'adj', 'pastReg', 'contr', 'homo', 'conj'],
   G2: ['plEs', 'plIes', 'plIrr', 'pastReg', 'pastIrr', 'contr', 'homo', 'noun', 'verb', 'adj', 'capital', 'comma', 'comp', 'affix', 'conj'],
   G3: ['g3-pl', 'g3-abs', 'g3-title', 'g3-pron-ant', 'plEs', 'plIes', 'pron', 'sva', 'homo', 'comp', 'affix', 'conj', 'adv', 'capital', 'plIrr'],
   G4: ['prep', 'adv', 'poss', 'homo', 'comma', 'frag', 'runon', 'sva', 'conj', 'fig', 'plVes', 'pastIrr', 'pron'],
