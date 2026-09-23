@@ -12,8 +12,9 @@ import { examLibrary, LIB_TABS } from '../engine/examlib.js';
 export default function Exam() {
   const { state, dispatch } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
+  const examSubjects = g.key === 'KG' ? EXAM_SUBJECTS.filter((s) => s.key === 'math') : EXAM_SUBJECTS;
   const [size, setSize] = useState(20);
-  const [subs, setSubs] = useState(['reading', 'math', 'vocab', 'grammar', 'fill']);
+  const [subs, setSubs] = useState(g.key === 'KG' ? ['math'] : ['reading', 'math', 'vocab', 'grammar', 'fill']);
   const [maxLevel, setMaxLevel] = useState(Math.max(5, currentLevel(state, g.key)));
   const [run, setRun] = useState(null);
   const [libTab, setLibTab] = useState('level');
@@ -58,7 +59,7 @@ export default function Exam() {
       <div className="card col gap20">
         <div><h3>How many questions?</h3><Seg value={size} onChange={setSize} options={[10, 20, 30, 50].map((n) => ({ key: n, label: n }))} /></div>
         <div><h3>What is on the test?</h3>
-          <div className="row wrap" style={{ marginTop: 8 }}>{EXAM_SUBJECTS.map((s) => <label key={s.key} className={`check ${subs.includes(s.key) ? '' : 'off'}`} style={{ padding: '8px 14px', cursor: 'pointer' }}><input type="checkbox" checked={subs.includes(s.key)} onChange={() => toggle(s.key)} disabled={s.key === 'custom' && !custom.length} /> {s.label}{s.key === 'custom' ? ` (${custom.length})` : ''}</label>)}</div></div>
+          <div className="row wrap" style={{ marginTop: 8 }}>{examSubjects.map((s) => <label key={s.key} className={`check ${subs.includes(s.key) ? '' : 'off'}`} style={{ padding: '8px 14px', cursor: 'pointer' }}><input type="checkbox" checked={subs.includes(s.key)} onChange={() => toggle(s.key)} disabled={s.key === 'custom' && !custom.length} /> {s.label}{s.key === 'custom' ? ` (${custom.length})` : ''}</label>)}</div></div>
         <label className="f" style={{ maxWidth: 260 }}>Use levels 1 to {maxLevel}<input type="range" min="1" max="50" value={maxLevel} onChange={(e) => setMaxLevel(+e.target.value)} /></label>
         <div className="row wrap"><button className="btn" disabled={!subs.length} onClick={() => start('mixed')}><LuPlay /> Start exam</button>
           {g.key === 'G3' && <button className="btn soft" onClick={() => start('g3pdf')}>📘 Grade 3 PDF practice exam (20)</button>}</div>

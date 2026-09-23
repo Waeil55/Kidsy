@@ -110,7 +110,7 @@ export default function G3Pack({ tab }) {
   const { state } = useStore();
   const t = TABS.find((x) => x[0] === tab) ? tab : 'overview';
   const [sec, setSec] = useState('A');
-  if (state.gradeKey !== 'G3') return <Notice kind="warn">The Grade 3 ELA pack belongs to Grade 3. Switch to <b>G3</b> in the menu to open it.</Notice>;
+  if (state.gradeKey !== 'G3') return <Notice kind="warn">Merola weekly words belongs to Grade 3. Switch to <b>G3</b> in the menu to open it.</Notice>;
   return (
     <>
       <div className="col"><h1>📘 {G3_PDF_META.title}</h1><p className="muted">{G3_PDF_META.subtitle}</p></div>

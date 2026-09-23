@@ -74,7 +74,7 @@ export default function IndexScreen() {
         <div className="grid gauto" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(270px,1fr))' }}>{words.map((w, i) => <div key={i} className="card" style={{ padding: 14 }}><div className="row"><b className="grow">{w.w}</b><span className="pill">{w.grade}</span></div><div className="tiny muted">{w.pos}</div><div>{w.def}</div></div>)}</div>
       )}
       {!busy && type === 'mine' && (mineQ.length ? <div className="col">{mineQ.map((x) => <div key={x.id} className="card" style={{ padding: 14 }}><span className="pill">{x.grade}</span> {x.q || x.sentence || x.front || x.title}</div>)}</div> : <Empty e="✏️" title="Nothing here yet">Add your own things in the <Link to="/studio">Studio</Link>.</Empty>)}
-      {state.gradeKey === 'G3' && <div className="card soft flat"><b>📘 Grade 3 ELA pack</b> — {G3_PDF_WORD_ROWS.length} PDF vocabulary words, 4 daily reviews and a practice quiz. <Link to="/g3pack">Open the pack</Link></div>}
+      {state.gradeKey === 'G3' && <div className="card soft flat"><b>📘 Merola weekly words</b> — {G3_PDF_WORD_ROWS.length} PDF vocabulary words, 4 daily reviews and a practice quiz. <Link to="/g3pack">Open the pack</Link></div>}
     </>
   );
 }

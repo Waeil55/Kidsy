@@ -15,12 +15,16 @@ export const KINDS = [
   { key: 'vocab', label: 'Vocabulary', emoji: '🔤', blurb: 'Meanings, synonyms and antonyms' },
   { key: 'grammar', label: 'Grammar', emoji: '✏️', blurb: 'Plurals, tenses, punctuation and more' },
 ];
+// Kindergarten only ever gets letters and numbers — fill-in-the-blank, vocabulary and grammar
+// all lean on reading a full sentence, which is a Grade 1+ skill.
+export const kindsFor = (gradeKey) => (gradeKey === 'KG' ? KINDS.filter((k) => k.key === 'math') : KINDS);
 
 export function PracticeHub() {
   const { state } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
   const [lv, setLv] = useState(currentLevel(state, g.key));
   const levels = Array.from({ length: 50 }, (_, i) => i + 1).filter((l) => levelUnlocked(state, g.key, l));
+  const kinds = kindsFor(g.key);
   return (
     <>
       <div className="col"><h1>🎯 Practice</h1><p className="muted">Pick a level, then pick a game to play. Every right answer wins you a point!</p></div>
@@ -29,7 +33,7 @@ export function PracticeHub() {
         <span className="muted tiny">Grade: {g.label}</span>
       </div>
       <div className="grid g2">
-        {KINDS.map((k) => <div key={k.key} className="tile-explain"><Link to={`/play/${k.key}/${lv}`} className="tile t2"><span className="ico">{k.emoji}</span><b>{k.label}</b><span>{k.blurb}</span></Link><ExplainBtn topic={k.key} small /></div>)}
+        {kinds.map((k) => <div key={k.key} className="tile-explain"><Link to={`/play/${k.key}/${lv}`} className="tile t2"><span className="ico">{k.key === 'math' && g.key === 'KG' ? '🔤' : k.emoji}</span><b>{k.key === 'math' && g.key === 'KG' ? 'Letters & Numbers' : k.label}</b><span>{k.key === 'math' && g.key === 'KG' ? 'The alphabet, counting, and adding to 10' : k.blurb}</span></Link><ExplainBtn topic={k.key} small /></div>)}
       </div>
       <Notice>Looking for stories? Open the <Link to="/map">Adventure map</Link>. Want a <Link to="/study">Study guide</Link>, an <Link to="/exam">Exam</Link>, or the <Link to="/index">Big index</Link>?</Notice>
     </>

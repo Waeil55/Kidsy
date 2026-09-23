@@ -1,6 +1,7 @@
 import React from 'react';
 import { LuArrowLeft, LuBookOpen, LuPenLine, LuPuzzle, LuSpellCheck } from 'react-icons/lu';
 import { Link } from '../ui/router.js';
+import { G3_PDF_WORD_ROWS } from '../data/g3ela.js';
 import QuizRunner from '../ui/QuizRunner.jsx';
 import { Rich } from '../ui/ui.jsx';
 import { merolaCounts, merolaLessons, merolaStories, merolaWordParts, readingSentences, spellingWords } from '../data/merola.js';
@@ -40,5 +41,5 @@ export default function MerolaPack({ section, index = 0 }) {
     return <><Back /><div className="col"><span className="pill">Merola library</span><h1>{section === 'lessons' ? 'Lesson quizzes' : section === 'parts' ? 'Word parts' : 'Reading stories'}</h1><p className="muted">Choose a group to start.</p></div><GroupList groups={groups} kind={kind} label={section} /></>;
   }
 
-  return <><section className="hero"><span className="emoji">📚</span><span className="pill w">Imported content collection</span><h1>Merola library</h1><p>More lessons, stories, word parts, reading sentences and spelling practice inside Kidsy.</p></section><div className="grid g4">{tabs.map(([key, label, Icon]) => <Link key={key} to={`/merola/${key}`} className="tile t2"><Icon className="ico" /><b>{label}</b><span>{key === 'lessons' ? `${merolaCounts.lessons} groups · ${merolaCounts.lessonQuestions} questions` : key === 'stories' ? `${merolaCounts.stories} stories` : key === 'parts' ? `${merolaCounts.wordParts} word-part groups` : `${merolaCounts.readingSentences} sentences · ${merolaCounts.spellingWords} words`}</span></Link>)}</div>{!section && <><h2>Lesson quizzes</h2><GroupList groups={merolaLessons.slice(0, 4)} kind="lessons" label="Lesson quizzes" /><h2>Reading stories</h2><GroupList groups={merolaStories} kind="stories" label="Reading stories" /></>}</>;
+  return <><section className="hero"><span className="emoji">📚</span><span className="pill w">Imported content collection</span><h1>Merola library</h1><p>More lessons, stories, word parts, reading sentences and spelling practice inside Kidsy.</p></section><div className="grid g4">{tabs.map(([key, label, Icon]) => <Link key={key} to={`/merola/${key}`} className="tile t2"><Icon className="ico" /><b>{label}</b><span>{key === 'lessons' ? `${merolaCounts.lessons} groups · ${merolaCounts.lessonQuestions} questions` : key === 'stories' ? `${merolaCounts.stories} stories` : key === 'parts' ? `${merolaCounts.wordParts} word-part groups` : `${merolaCounts.readingSentences} sentences · ${merolaCounts.spellingWords} words`}</span></Link>)}<Link to="/g3pack" className="tile t2"><LuBookOpen className="ico" /><b>Weekly words</b><span>{G3_PDF_WORD_ROWS.length} vocabulary words, daily review and a practice quiz</span></Link></div>{!section && <><h2>Lesson quizzes</h2><GroupList groups={merolaLessons.slice(0, 4)} kind="lessons" label="Lesson quizzes" /><h2>Reading stories</h2><GroupList groups={merolaStories} kind="stories" label="Reading stories" /></>}</>;
 }

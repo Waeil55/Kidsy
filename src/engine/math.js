@@ -48,47 +48,28 @@ const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const LETTER_WORDS = { A: 'apple', B: 'ball', C: 'cat', D: 'dog', E: 'egg', F: 'fish', G: 'goat', H: 'hat', I: 'ice', J: 'jam', K: 'kite', L: 'lion', M: 'moon', N: 'nest', O: 'owl', P: 'pig', Q: 'queen', R: 'rain', S: 'sun', T: 'top', U: 'up', V: 'van', W: 'web', X: 'x-ray', Y: 'yarn', Z: 'zoo' };
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+// Kindergarten stays to exactly two things, so nothing here is ever above what a 5-year-old is
+// taught: the alphabet, and addition/subtraction within 10. No shapes, colors, money, days,
+// months or patterns — those move to Grade 1 and up. No word past 6 letters appears in a
+// question either, so a pre-reader is never asked something they cannot sound out.
 const KG = [
-  [1, (r, d) => { const n = rg(r, d, 1, 5, 12), e = r.pick(FRUITS); return { q: `How many? ${e.repeat(n)}`, ...num(r, n), ex: `Count each one: ${n}.` }; }],
-  [1, (r, d) => { const a = rg(r, d, 1, 3, 6), b = rg(r, d, 1, 2, 4), e = r.pick(FRUITS); return { q: `${e.repeat(a)} + ${e.repeat(b)} = ?`, ...num(r, a + b, [Math.abs(a - b)]), ex: `${a} + ${b} = ${a + b}.` }; }],
-  [1, (r, d) => { const a = rg(r, d, 2, 5, 10), b = r.int(1, a - 1); return { q: `${a} − ${b} = ?`, ...num(r, a - b, [a + b]), ex: `${a} take away ${b} leaves ${a - b}.` }; }],
-  [1, (r, d) => { const a = rg(r, d, 1, 6, 15); let b = r.int(1, Math.max(a + 3, 5)); if (b === a) b++; return { q: `Which number is bigger? ${a} or ${b}`, ...num(r, Math.max(a, b), [Math.min(a, b)]), ex: `${Math.max(a, b)} is bigger.` }; }],
-  [1, (r) => { const s = r.pick(SHAPES.slice(1)); return { q: `How many sides does a ${s[0]} have?`, ...num(r, s[1], [3, 4, 5, 2]), ex: `A ${s[0]} has ${s[1]} sides.` }; }],
-  [2, (r, d) => { const n = rg(r, d, 1, 8, 18); return { q: `What number comes after ${n}?`, ...num(r, n + 1, [n - 1, n]), ex: `After ${n} comes ${n + 1}.` }; }],
-  [2, (r, d) => { const n = rg(r, d, 2, 8, 19); return { q: `What number comes before ${n}?`, ...num(r, n - 1, [n + 1, n]), ex: `Before ${n} comes ${n - 1}.` }; }],
-  [3, (r, d) => { const n = r.int(1, 10); return { q: `Which number is the word "${NUMWORDS[n]}"?`, ...num(r, n, [n + 1, n - 1, n + 10].filter((x) => x <= 20)), ex: `${NUMWORDS[n]} is ${n}.` }; }],
-  [3, (r, d) => { const n = r.int(0, 10); return { q: `How do you write ${n} in words?`, ...txt(NUMWORDS[n], uniq([NUMWORDS[n + 1], NUMWORDS[Math.max(0, n - 1)], NUMWORDS[Math.min(10, n + 2)], NUMWORDS[Math.max(0, n - 2)]].filter(Boolean))), ex: `${n} is ${NUMWORDS[n]}.` }; }],
-  [4, (r) => { const a = r.int(1, 9); return { q: `${a} + ? = 10`, ...num(r, 10 - a, [a, 10 - a + 1]), ex: `${a} and ${10 - a} make 10.` }; }],
-  [5, (r) => { const s = r.pick([2, 5, 10]), st = r.int(1, 4), seq = [0, 1, 2, 3].map((i) => s * (st + i)); return { q: `Count by ${s}s: ${seq[0]}, ${seq[1]}, ${seq[2]}, ?`, ...num(r, seq[3], [seq[2] + 1, seq[2] + s + 1]), ex: `Add ${s} each time: ${seq[3]}.` }; }],
-  [6, (r, d) => { const a = r.int(10, 19); return { q: `10 + ${a - 10} = ?`, ...num(r, a, [a - 1, a + 1, 10]), ex: `10 and ${a - 10} more is ${a}.` }; }],
-  [7, (r) => { const a = r.int(2, 8), b = r.int(1, 5); return { q: `Which has MORE? ${r.pick(FRUITS).repeat(a)} or ${r.pick(FRUITS).repeat(b + (a === b ? 1 : 0))}`, ...txt(a > b + (a === b ? 1 : 0) ? 'The first group' : 'The second group', ['The first group', 'The second group', 'They are the same'].filter((x) => x !== (a > b + (a === b ? 1 : 0) ? 'The first group' : 'The second group'))), ex: 'Count both groups and compare.' }; }],
-  [2, (r) => { const es = r.shuffle(FRUITS).slice(0, 4), k = r.int(1, 4), ord = ['1st', '2nd', '3rd', '4th'][k - 1]; return { q: `Look at the line: ${es.join(' ')}  Which one is ${ord}?`, ...txt(es[k - 1], es.filter((_, i) => i !== k - 1).concat(FRUITS.filter((x) => !es.includes(x)))), ex: `Count from the left: ${ord} is ${es[k - 1]}.` }; }],
-  [2, (r) => { const n = r.int(1, 9), more = r.chance(0.5); return { q: `What is one ${more ? 'more' : 'less'} than ${n + (more ? 0 : 1)}?`, ...num(r, more ? n + 1 : n, [n + 2, n - 1, n + (more ? 0 : 2)]), ex: `${more ? 'One more' : 'One less'}.` }; }],
-  [3, (r) => { const [a, b] = r.shuffle(FRUITS).slice(0, 2), rep = r.int(2, 3); const seq = Array.from({ length: rep * 2 }, (_, i) => (i % 2 ? b : a)).join(' '); return { q: `What comes next? ${seq} ?`, ...txt(a, [b, ...FRUITS.filter((x) => x !== a && x !== b)]), ex: `The pattern repeats ${a} ${b}.` }; }],
-  [4, (r) => { const n = r.int(2, 9); return { q: `A ten frame has ${n} dots. How many empty spaces are left?`, ...num(r, 10 - n, [n, 10 - n + 1, 10]), ex: `10 − ${n} = ${10 - n}.` }; }],
-  [4, (r) => { const a = r.int(3, 8), b = r.int(1, a - 1), e = r.pick(FRUITS); return { q: `${e.repeat(a)} and ${e.repeat(b)}. How many MORE are in the first group?`, ...num(r, a - b, [b, a, a + b]), ex: `${a} − ${b} = ${a - b}.` }; }],
-  [5, (r) => { const a = r.int(2, 9), seq = [a, a + 1, a + 2]; return { q: `Count on: ${seq.join(', ')}, ?`, ...num(r, a + 3, [a + 4, a + 2, a]), ex: `${a + 3} comes next.` }; }],
-  [5, (r) => { const a = r.int(1, 7); return { q: `What number is missing? ${a}, ?, ${a + 2}`, ...num(r, a + 1, [a, a + 2, a + 3]), ex: `${a + 1} goes in the middle.` }; }],
-  [3, (r) => { const s = r.pick([['circle', 'round like a ball'], ['square', 'has 4 equal sides'], ['triangle', 'has 3 corners'], ['rectangle', 'has 2 long and 2 short sides']]); return { q: `Which shape ${s[1]}?`.replace('Which shape has', 'Which shape has').replace('Which shape round', 'Which shape is round'), ...txt(s[0], SHAPES.map((x) => x[0]).filter((x) => x !== s[0])), ex: `A ${s[0]} ${s[1]}.` }; }],
-  [3, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 2, 5, 9), b = rg(r, d, 1, 3, 6); return { q: `${nm} has ${e.repeat(a)}. ${nm} gets ${b} more. How many now?`, ...num(r, a + b, [a, a - b > 0 ? a - b : a + b + 1, b]), ex: `${a} + ${b} = ${a + b}.` }; }],
-  [4, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 4, 7, 12), b = r.int(1, a - 1); return { q: `${nm} has ${e.repeat(a)}. ${nm} gives away ${b}. How many are left?`, ...num(r, a - b, [a + b, a, b]), ex: `${a} − ${b} = ${a - b}.` }; }],
-  [5, (r) => { const [e1, e2] = r.shuffle(FRUITS).slice(0, 2), a = r.int(1, 6), b = r.int(1, 6); return { q: `${e1.repeat(a)} and ${e2.repeat(b)}. How many in all?`, ...num(r, a + b, [Math.abs(a - b), a, b]), ex: `${a} + ${b} = ${a + b}.` }; }],
-  // Kindergarten curriculum: the alphabet (letter names, upper/lowercase, letter sounds)
+  // counting 1-10
+  [1, (r) => { const n = r.int(1, 10), e = r.pick(FRUITS); return { q: `How many? ${e.repeat(n)}`, ...num(r, n), ex: `Count each one: ${n}.` }; }],
+  // addition within 10
+  [1, (r, d) => { const a = rg(r, d, 1, 2, 5), b = rg(r, d, 1, 2, 5); const sum = Math.min(10, a + b); return { q: `${r.pick(FRUITS).repeat(a)} + ${r.pick(FRUITS).repeat(b)} = ?`, ...num(r, sum, [Math.abs(a - b)]), ex: `${a} + ${b} = ${sum}.` }; }],
+  [1, (r, d) => { const a = rg(r, d, 1, 3, 8), b = r.int(1, Math.max(1, 10 - a)); return { q: `${a} + ${b} = ?`, ...num(r, a + b, [a + b + 1, a + b - 1, a]), ex: `${a} + ${b} = ${a + b}.` }; }],
+  [2, (r) => { const a = r.int(1, 9); return { q: `${a} + ? = 10`, ...num(r, 10 - a, [a, 10 - a + 1]), ex: `${a} and ${10 - a} make 10.` }; }],
+  [2, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 1, 2, 6), b = r.int(1, Math.max(1, 9 - a)); return { q: `${nm} has ${e.repeat(a)}. ${nm} gets ${b} more. How many now?`, ...num(r, a + b, [a, b, a + b + 1]), ex: `${a} + ${b} = ${a + b}.` }; }],
+  // subtraction within 10
+  [1, (r, d) => { const a = rg(r, d, 2, 3, 10), b = r.int(1, a - 1); return { q: `${a} − ${b} = ?`, ...num(r, a - b, [a + b, a]), ex: `${a} take away ${b} leaves ${a - b}.` }; }],
+  [2, (r) => { const n = r.int(2, 10); return { q: `${n} − 1 = ?`, ...num(r, n - 1, [n, n + 1]), ex: `One less than ${n} is ${n - 1}.` }; }],
+  [2, (r, d) => { const nm = r.pick(NAMES), e = r.pick(FRUITS), a = rg(r, d, 3, 4, 10), b = r.int(1, a - 1); return { q: `${nm} has ${e.repeat(a)}. ${nm} gives away ${b}. How many are left?`, ...num(r, a - b, [a + b, a, b]), ex: `${a} − ${b} = ${a - b}.` }; }],
+  // the alphabet: letter names, upper/lowercase, letter sounds
   [1, (r) => { const L = r.pick(ALPHA.split('')); return { q: `Which lowercase letter matches "${L}"?`, ...txt(L.toLowerCase(), r.shuffle(ALPHA.toLowerCase().split('').filter((x) => x !== L.toLowerCase())).slice(0, 3)), ex: `${L} matches ${L.toLowerCase()}.` }; }],
   [1, (r) => { const l = r.pick(ALPHA.toLowerCase().split('')); return { q: `Which UPPERCASE letter matches "${l}"?`, ...txt(l.toUpperCase(), r.shuffle(ALPHA.split('').filter((x) => x !== l.toUpperCase())).slice(0, 3)), ex: `${l} matches ${l.toUpperCase()}.` }; }],
   [1, (r) => { const L = r.pick(ALPHA.split('')), w = LETTER_WORDS[L]; const others = Object.entries(LETTER_WORDS).filter(([k]) => k !== L).map(([, v]) => v); return { q: `Which word starts with the letter ${L}?`, ...txt(w, r.shuffle(others).slice(0, 3)), ex: `${w} starts with ${L}.` }; }],
   [2, (r) => { const i = r.int(0, 24), L = ALPHA[i]; return { q: `What letter comes after ${L}?`, ...txt(ALPHA[i + 1], r.shuffle(ALPHA.split('').filter((x) => x !== ALPHA[i + 1])).slice(0, 3)), ex: `After ${L} comes ${ALPHA[i + 1]}.` }; }],
   [2, (r) => { const i = r.int(1, 25), L = ALPHA[i]; return { q: `What letter comes before ${L}?`, ...txt(ALPHA[i - 1], r.shuffle(ALPHA.split('').filter((x) => x !== ALPHA[i - 1])).slice(0, 3)), ex: `Before ${L} comes ${ALPHA[i - 1]}.` }; }],
-  // Kindergarten curriculum: colors, more shapes, money, patterns, days & months
-  [2, (r) => { const [name, pic] = r.pick(COLORS); return { q: `What color is this? ${pic}`, ...txt(cap(name), r.shuffle(COLORS.map((c) => c[0])).filter((c) => c !== name).map(cap)), ex: `${pic} is ${name}.` }; }],
-  [2, (r) => { const [name, pic] = r.pick(SHAPE_PICS); return { q: `Which shape is this? ${pic}`, ...txt(cap(name), r.shuffle(SHAPE_PICS.map((s) => s[0])).filter((s) => s !== name)), ex: `${pic} is a ${name}.` }; }],
-  [4, (r) => { const [name, val] = r.pick(COINS); return { q: `How much is a ${name} worth?`, ...txt(val, COINS.map((c) => c[1]).filter((v) => v !== val)), ex: `A ${name} is worth ${val}.` }; }],
-  [3, (r) => { const i = r.int(0, 5); return { q: `What day comes after ${DAYS[i]}?`, ...txt(DAYS[(i + 1) % 7], r.shuffle(DAYS.filter((d) => d !== DAYS[(i + 1) % 7])).slice(0, 3)), ex: `After ${DAYS[i]} comes ${DAYS[(i + 1) % 7]}.` }; }],
-  [4, (r) => { const i = r.int(0, 10); return { q: `What month comes after ${MONTHS[i]}?`, ...txt(MONTHS[(i + 1) % 12], r.shuffle(MONTHS.filter((m) => m !== MONTHS[(i + 1) % 12])).slice(0, 3)), ex: `After ${MONTHS[i]} comes ${MONTHS[(i + 1) % 12]}.` }; }],
-  [3, (r) => { const [a, b] = r.shuffle(FRUITS).slice(0, 2), kind = r.pick(['ABB', 'AAB', 'ABC']); const c = kind === 'ABC' ? r.shuffle(FRUITS.filter((x) => x !== a && x !== b))[0] : null;
-    const unit = kind === 'ABB' ? [a, b, b] : kind === 'AAB' ? [a, a, b] : [a, b, c];
-    const seq = [...unit, ...unit, ...unit.slice(0, unit.length - 1)];
-    return { q: `What comes next? ${seq.join(' ')} ?`, ...txt(unit[unit.length - 1], FRUITS.filter((x) => x !== unit[unit.length - 1]).slice(0, 3)), ex: `The pattern is ${unit.join(' ')}, repeating.` }; }],
 ];
 
 // ---------------------------------------------------------------- GRADE 1

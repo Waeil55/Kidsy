@@ -80,7 +80,10 @@ export function LevelScreen({ level }) {
         </div>
       </section>
       <section className="grid g3">
-        {[['math', '🔢', 'Math set', '10 problems', ls.math], ['fill', '🧩', 'Fill in the blank', '10 sentences', ls.fill], ['vocab', '🔤', 'Word check', '10 vocabulary questions', null], ['grammar', '✏️', 'Grammar check', '10 questions', null]].map(([k, e, t, s, best]) => (
+        {(g.key === 'KG'
+          ? [['math', '🔤', 'Letters & Numbers', 'Alphabet, counting and adding to 10', ls.math]]
+          : [['math', '🔢', 'Math set', '10 problems', ls.math], ['fill', '🧩', 'Fill in the blank', '10 sentences', ls.fill], ['vocab', '🔤', 'Word check', '10 vocabulary questions', null], ['grammar', '✏️', 'Grammar check', '10 questions', null]]
+        ).map(([k, e, t, s, best]) => (
           <Link key={k} to={`/play/${k}/${lv}`} className="tile t2"><span className="ico">{e}</span><b>{t}</b><span>{s}{best != null ? ` · best ${best}%` : ''}</span></Link>
         ))}
       </section>

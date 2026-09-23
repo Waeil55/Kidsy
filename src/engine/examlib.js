@@ -8,17 +8,23 @@ const SUB = { reading: ['📖', 'Reading'], math: ['🔢', 'Math'], vocab: ['�
 const CHAPTER = ['Chapter 1', 'Chapter 2', 'Chapter 3', 'Chapter 4', 'Chapter 5'];
 
 export function examLibrary(grade) {
+  // Kindergarten only ever gets letters and numbers, so its whole exam library is math (which
+  // now also covers the alphabet) — no reading, vocabulary, grammar or fill-in-the-blank exams.
+  const subjects = grade === 'KG' ? ['math'] : ALL;
   const out = [];
   const add = (tab, name, emoji, blurb, size, opts) => out.push({ tab, name, emoji, blurb, size, build: () => buildExam({ grade, size, ...opts }) });
-  for (let n = 1; n <= 50; n++) add('level', `Level ${n} test`, ['🌱', '🌿', '🌳', '🌟', '🏆'][Math.floor((n - 1) / 10)], `all subjects, level ${n}`, 20, { subjects: ALL, minLevel: n, maxLevel: n, seed: `L${n}` });
-  CHAPTER.forEach((c, i) => add('chapter', `${c} final`, ['🏝️', '🌋', '🏰', '🚀', '👑'][i], `levels ${i * 10 + 1}–${i * 10 + 10}`, 30, { subjects: ALL, minLevel: i * 10 + 1, maxLevel: i * 10 + 10, seed: `C${i}` }));
-  for (const [k, [emoji, label]] of Object.entries(SUB)) {
+  for (let n = 1; n <= 50; n++) add('level', `Level ${n} test`, ['🌱', '🌿', '🌳', '🌟', '🏆'][Math.floor((n - 1) / 10)], `all subjects, level ${n}`, 20, { subjects, minLevel: n, maxLevel: n, seed: `L${n}` });
+  CHAPTER.forEach((c, i) => add('chapter', `${c} final`, ['🏝️', '🌋', '🏰', '🚀', '👑'][i], `levels ${i * 10 + 1}–${i * 10 + 10}`, 30, { subjects, minLevel: i * 10 + 1, maxLevel: i * 10 + 10, seed: `C${i}` }));
+  for (const k of subjects) {
+    const [emoji, label] = SUB[k];
     CHAPTER.forEach((c, i) => add('subject', `${label} · ${c}`, emoji, `levels ${i * 10 + 1}–${i * 10 + 10}`, 20, { subjects: [k], minLevel: i * 10 + 1, maxLevel: i * 10 + 10, seed: `S${k}${i}` }));
   }
-  for (let n = 1; n <= 12; n++) add('speed', `Speed round ${n}`, '⚡', 'quick mixed quiz', 10, { subjects: ALL, minLevel: 1, maxLevel: Math.min(50, n * 4), seed: `R${n}` });
-  add('champ', 'Grade champion exam', '🏆', 'everything, all 50 levels', 50, { subjects: ALL, seed: 'champ' });
-  add('champ', 'Reading champion', '📚', 'stories only', 40, { subjects: ['reading'], seed: 'champR' });
+  for (let n = 1; n <= 12; n++) add('speed', `Speed round ${n}`, '⚡', 'quick mixed quiz', 10, { subjects, minLevel: 1, maxLevel: Math.min(50, n * 4), seed: `R${n}` });
+  add('champ', 'Grade champion exam', '🏆', 'everything, all 50 levels', 50, { subjects, seed: 'champ' });
   add('champ', 'Math champion', '🧮', 'math only', 40, { subjects: ['math'], seed: 'champM' });
-  add('champ', 'Word champion', '🔠', 'vocabulary and grammar', 40, { subjects: ['vocab', 'grammar'], seed: 'champW' });
+  if (grade !== 'KG') {
+    add('champ', 'Reading champion', '📚', 'stories only', 40, { subjects: ['reading'], seed: 'champR' });
+    add('champ', 'Word champion', '🔠', 'vocabulary and grammar', 40, { subjects: ['vocab', 'grammar'], seed: 'champW' });
+  }
   return out;
 }

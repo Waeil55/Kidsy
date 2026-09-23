@@ -57,10 +57,16 @@ export default function StudyBreak() {
   const grade = GRADE_BY_KEY[state.gradeKey];
   const cards = useMemo(() => {
     const gk = state.gradeKey;
-    const words = vocabFor(gk);
     const emo = ['🦋', '🌈', '🚀', '🦊', '🐳', '🧭', '🌱', '✨', '🦄', '🐢', '🌻', '🎈', '🪁', '🐬', '🍎', '🌙'];
     const fromItem = (it, i, topic, kicker, prompt) => { const q = shuffledQuestion(it.options, it.answer); return { topic, kicker, emoji: emo[i % emo.length], prompt, text: it.q, ...q, speech: it.q }; };
     const out = [];
+    // Kindergarten only ever sees letters and numbers here too — no story, grammar, vocabulary
+    // definition or fill-in-the-blank cards, since those all lean on reading full sentences.
+    if (gk === 'KG') {
+      for (let n = 1; n <= 500; n += 2) { const m = generateMath(gk, n); if (m) out.push(fromItem(m, n, 'Letters & numbers', 'Quick challenge', 'Can you solve it?')); }
+      return shuffle(out);
+    }
+    const words = vocabFor(gk);
     words.forEach((word, i) => { const others = shuffle(words.filter((x) => x.w !== word.w)).slice(0, 3).map((x) => x.w); out.push({ topic: 'Word spark', kicker: 'Quick challenge', emoji: emo[i % emo.length], prompt: 'Which word matches this meaning?', text: word.def, ...shuffledQuestion([word.w, ...others], 0), speech: `${word.w}. ${word.def}` }); });
     for (let n = 1; n <= 500; n += 5) { const story = generateStory(gk, n); const src = story && story.questions[0]; if (src) out.push({ topic: 'Story spark', kicker: 'Tiny story break', emoji: emo[n % emo.length], title: story.title, text: story.paragraphs[0], ...shuffledQuestion(src.options, src.answer), storyNumber: n, speech: `${story.title}. ${story.paragraphs[0]}` }); }
     for (let n = 3; n <= 500; n += 7) { const m = generateMath(gk, n); if (m) out.push(fromItem(m, n, 'Math magic', 'Number puzzle', 'Can you solve it?')); }

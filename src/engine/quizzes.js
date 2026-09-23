@@ -165,7 +165,8 @@ function gen(r, kind, tier, id) {
 }
 
 const GRAMMAR_KINDS = {
-  KG: ['aAn', 'plS', 'isAre', 'capital', 'punct', 'noun', 'verb', 'aAn', 'plS', 'punct'],
+  // Kindergarten has no grammar at all — noun/verb/adjective and sentence rules start at Grade 1+.
+  KG: [],
   G1: ['aAn', 'plS', 'plEs', 'isAre', 'capital', 'punct', 'noun', 'verb', 'adj', 'pastReg', 'contr', 'homo', 'conj'],
   G2: ['plEs', 'plIes', 'plIrr', 'pastReg', 'pastIrr', 'contr', 'homo', 'noun', 'verb', 'adj', 'capital', 'comma', 'comp', 'affix', 'conj'],
   G3: ['g3-pl', 'g3-abs', 'g3-title', 'g3-pron-ant', 'plEs', 'plIes', 'pron', 'sva', 'homo', 'comp', 'affix', 'conj', 'adv', 'capital', 'plIrr'],
