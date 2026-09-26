@@ -4,7 +4,7 @@
 import { makeRng, buildOptions, uniq, cap, normText, pad } from '../lib/rng.js';
 import { gradeIdx, STORIES_PER_GRADE } from '../data/grades.js';
 import { vocabFor } from '../data/vocab.js';
-import { G3_QUIZ, G3_NOUNS, G3_PLURALS, G3_DAILY, G3_PDF_WORD_ROWS } from '../data/g3ela.js';
+import { G3_QUIZ, G3_NOUNS, G3_PLURALS, G3_DAILY, G3_PDF_WORD_ROWS, G3_FILL_QUESTIONS } from '../data/g3ela.js';
 import { generateStory } from './stories.js';
 import { generateMath, mathNo } from './math.js';
 
@@ -210,7 +210,14 @@ const cloze = (grade, n) => {
 };
 const hash = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; };
 
-export const fillItem = (grade, n) => cloze(grade, n) || cloze(grade, ((n + 1) % STORIES_PER_GRADE) + 1);
+const g3FillItem = (n) => {
+  const r = makeRng(`G3|fill|${n}`);
+  const item = G3_FILL_QUESTIONS[(n - 1) % G3_FILL_QUESTIONS.length];
+  const others = G3_PDF_WORD_ROWS.map((row) => row[0]).filter((w) => w !== item.a);
+  return mc(r, `G3-F${pad(n)}`, item.q, item.a, others, 'fill', item.q.replace('_____', item.a), 4);
+};
+
+export const fillItem = (grade, n) => (grade === 'G3' ? g3FillItem(n) : (cloze(grade, n) || cloze(grade, ((n + 1) % STORIES_PER_GRADE) + 1)));
 export const fillLevel = (grade, level) => Array.from({ length: 10 }, (_, i) => fillItem(grade, (level - 1) * 10 + i + 1)).filter(Boolean);
 export function vocabFill(grade, count = 10, seed = 'vf') {
   return vocabQuiz(grade, count * 3, seed).filter((x) => x.q.includes('_____')).slice(0, count).map((x) => ({ ...x, subject: 'fill' }));

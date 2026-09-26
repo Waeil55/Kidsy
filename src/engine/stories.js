@@ -6,6 +6,7 @@ import { buildOptions, uniq, cap, words } from '../lib/rng.js';
 import { EMO_POS, EMO_NEG, ITEMS, TRAITS } from './pools.js';
 import { lost, skill, share, weather, mistake, META, NARRATIVE_IDS, Q } from './plots1.js';
 import { animal, team, mystery, fact, howto } from './plots2.js';
+import { G3_PDF_WORD_ROWS } from '../data/g3ela.js';
 
 // One story of each kind in every level (slot A..J).
 export const PLOTS = [lost, animal, skill, fact, share, mystery, weather, howto, mistake, team];
@@ -180,6 +181,32 @@ const cache = new Map();
 export const levelOf = (n) => Math.floor((n - 1) / STORIES_PER_LEVEL) + 1;
 export const storyNo = (level, slot) => (level - 1) * STORIES_PER_LEVEL + slot + 1;
 
+function g3ContextSentence(word, hero) {
+  const map = {
+    oppose: `${hero} knew that some might oppose the idea, but explained the benefits patiently.`,
+    snide: `${hero} stayed cheerful and chose to ignore any snide remarks from others.`,
+    heap: `All the supplies were gathered together into a neat heap on the worktable.`,
+    diverse: `The group celebrated having diverse ideas because different viewpoints helped them succeed.`,
+    origin: `They were eager to uncover the origin of the mystery and find where it all began.`,
+    assemble: `Together, the team worked carefully to assemble all the pieces into place.`,
+    grumble: `${hero} did not grumble or complain, even when the chore took extra time.`,
+    calculate: `It was wise to calculate the numbers and plan every step before getting started.`,
+    elegant: `The final creation looked elegant, neat, and truly beautiful.`,
+    privilege: `Everyone agreed it was a special privilege to be chosen for this adventure.`,
+    fragile: `The materials were fragile, so everyone held them gently with both hands.`,
+    research: `They went to the books to research the facts and learn more about the topic.`,
+    defend: `${hero} used clear evidence and good reasons to defend the final choice.`,
+    specific: `They agreed on a specific time and location so nobody would get confused.`,
+    pledge: `Each member made a sincere pledge to protect nature and help one another.`,
+    redundant: `They organized their notes so no words or efforts were redundant.`,
+    gesture: `${hero} made a welcoming gesture with a friendly wave and a bright smile.`,
+    acknowledge: `The teacher stopped to acknowledge their teamwork and praise their effort.`,
+    clutch: `${hero} kept a firm clutch on the handle until everyone arrived safely.`,
+    persevere: `Even when the task was hard, they decided to persevere and finish it together.`,
+  };
+  return map[word] || `${hero} worked hard and learned the true meaning of the word ${word}.`;
+}
+
 export function generateStory(gradeKey, n) {
   if (n < 1 || n > STORIES_PER_GRADE) return null;
   const key = `${gradeKey}|${n}`;
@@ -193,6 +220,20 @@ export function generateStory(gradeKey, n) {
   c.stage = level <= 17 ? 0 : level <= 34 ? 1 : 2;
   const spec = plot.build(c);
   spec.id = plot.id;
+
+  // Grade 3 stories systematically teach the 20 master vocabulary words in context
+  if (g === 3) {
+    const row = G3_PDF_WORD_ROWS[(n - 1) % G3_PDF_WORD_ROWS.length];
+    const hero = spec.facts?.hero || 'The friends';
+    const sent = g3ContextSentence(row[0], hero);
+    spec.paras = [...spec.paras, sent];
+    const wrongDefs = G3_PDF_WORD_ROWS.filter((r) => r[0] !== row[0]).map((r) => cap(r[2]));
+    const wrongWords = G3_PDF_WORD_ROWS.filter((r) => r[0] !== row[0]).map((r) => r[0]);
+    spec.qs = spec.qs || [];
+    spec.qs.push(Q(`In this text, what does the word "${row[0]}" mean?`, cap(row[2]), wrongDefs, 48, 3));
+    spec.qs.push(Q(`Which word from the story completes this sentence? "${sent.replace(new RegExp('\\b' + row[0] + '\\b', 'i'), '_____')}"`, row[0], wrongWords, 49, 3));
+  }
+
   const text = spec.paras.join(' ');
   const questions = buildQuestions(c, spec, text);
   const story = {

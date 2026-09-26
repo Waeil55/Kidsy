@@ -135,7 +135,8 @@ const G3_EXTRA = R([
   ['tidy', 'adjective', 'Neat and in good order', 'neat,orderly', 'messy,untidy', 'Her desk was always tidy.'],
 ]);
 
-const G3 = [...R(G3_PDF_WORD_ROWS), ...G3_EXTRA];
+// Grade 3 vocabulary is strictly aligned to the 20 master target words (from grade3_words.pdf & Teacher Guide)
+const G3 = R(G3_PDF_WORD_ROWS);
 
 const G4 = R([
   ['abundant', 'adjective', 'Existing in large amounts', 'plentiful,ample', 'scarce,rare', 'Fish are abundant in the bay.'],

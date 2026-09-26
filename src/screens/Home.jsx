@@ -1,9 +1,9 @@
 import React from 'react';
-import { LuArrowRight, LuBookOpen, LuCheck, LuFlame, LuGift, LuLock, LuMap, LuMic, LuPalette, LuPlay, LuSparkles, LuStar } from 'react-icons/lu';
-import { useStore, currentLevel, gradeSummary, STICKERS } from '../store/store.js';
+import { LuBookOpen, LuFlame, LuGift, LuMic, LuPalette, LuPlay, LuPuzzle, LuSparkles, LuStar, LuVolume2 } from 'react-icons/lu';
+import { useStore, currentLevel, gradeSummary } from '../store/store.js';
 import { GRADE_BY_KEY, chapterOf } from '../data/grades.js';
 import { Link } from '../ui/router.js';
-import { Bar } from '../ui/ui.jsx';
+import { speak } from '../lib/speech.js';
 
 export default function Home() {
   const { state } = useStore();
@@ -12,46 +12,111 @@ export default function Home() {
   const sum = gradeSummary(state, g.key);
   const d = state.daily.date === new Date().toISOString().slice(0, 10) ? state.daily : { correct: 0, wrong: 0 };
   const chapter = chapterOf(g.key, lv);
-  const mapNodes = [
-    ['/map', <LuBookOpen />, 'Stories', 'done'],
-    ['/practice', <LuSparkles />, 'Word garden', 'done'],
-    ['/words', <LuPalette />, 'Word art', 'current'],
-    ['/practice', <LuMap />, 'Number cove', 'new'],
-    ['/exam', <LuLock />, 'Mystery island', 'locked'],
-  ];
-  const quickActions = [
-    ['/practice', <LuSparkles />, 'Practice', 'pink'],
-    ['/rewards', <LuGift />, 'Stickers', 'orange'],
-    ['/reels', <LuPlay />, 'Break', 'blue'],
-    ['/speaking', <LuMic />, 'Speak', 'mint'],
-  ];
+
+  const sayMascot = () => {
+    speak(`Hi ${state.profile.name}! I am your learning buddy. Ready to have fun and explore today?`, { rate: state.settings.rate });
+  };
 
   return (
-    <div className="home-screen">
-      <section className="home-welcome">
-        <div className="home-avatar">{state.profile.avatar || 'L'}</div>
-        <div className="home-hello"><span>Hi adventurer,</span><b>{state.profile.name}!</b></div>
-        <div className="home-stats"><span><LuFlame /> {state.stats.streak}</span><span><LuStar /> {state.score.toLocaleString()}</span></div>
+    <div className="home-screen-bf">
+      {/* Hanging clubhouse banner & mascot */}
+      <header className="bf-hero-bar">
+        <div className="bf-branch">
+          <span className="bf-leaf l1">🍃</span>
+          <div className="bf-sign">
+            <span>Kidsy</span>
+          </div>
+          <span className="bf-leaf l2">🍃</span>
+        </div>
+
+        <div className="bf-mascot-row">
+          <button className="bf-mascot-avatar" onClick={sayMascot} aria-label="Tap mascot to hear greeting" title="Tap to hear me!">
+            <span className="bf-avatar-emoji">{state.profile.avatar || '🦊'}</span>
+            <span className="bf-mascot-mic"><LuVolume2 size={14} /></span>
+          </button>
+          <div className="bf-mascot-info">
+            <button className="bf-tap-bubble" onClick={sayMascot}>
+              <span>Tap to hear me!</span>
+            </button>
+            <div className="bf-badge-row">
+              <span className="bf-pill-age">For ages {g.age}</span>
+              <span className="bf-streak-pill"><LuFlame /> {state.stats.streak}</span>
+              <span className="bf-score-pill"><LuStar /> {state.score.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Cheerful Question Heading */}
+      <div className="bf-heading-section">
+        <h1 className="bf-title">What do you want to do?</h1>
+      </div>
+
+      {/* 2x2 Chunky Playful Activity Cards (Numbers, Reading, Puzzles, Drawing) */}
+      <section className="bf-activity-grid" aria-label="Main activities">
+        {/* 1. Numbers / Math */}
+        <Link to={`/play/math/${lv}`} className="bf-card bf-orange" aria-label="Numbers and Math">
+          <div className="bf-card-head">
+            <span className="bf-card-title">Numbers</span>
+          </div>
+          <div className="bf-card-art">
+            <span className="bf-toy-numbers" aria-hidden="true">123</span>
+          </div>
+          <span className="bf-card-sub">Math & Counting</span>
+        </Link>
+
+        {/* 2. Reading / Stories */}
+        <Link to={`/map`} className="bf-card bf-blue" aria-label="Reading and Stories">
+          <div className="bf-card-head">
+            <span className="bf-card-title">Reading</span>
+          </div>
+          <div className="bf-card-art">
+            <span className="bf-toy-book" aria-hidden="true">📖</span>
+          </div>
+          <span className="bf-card-sub">Stories & Adventures</span>
+        </Link>
+
+        {/* 3. Puzzles / Practice */}
+        <Link to="/practice" className="bf-card bf-green" aria-label="Puzzles and Practice">
+          <div className="bf-card-head">
+            <span className="bf-card-title">Puzzles</span>
+          </div>
+          <div className="bf-card-art">
+            <span className="bf-toy-puzzle" aria-hidden="true">🧩</span>
+          </div>
+          <span className="bf-card-sub">Brain Games</span>
+        </Link>
+
+        {/* 4. Drawing / Words */}
+        <Link to="/words" className="bf-card bf-purple" aria-label="Words and Flashcards">
+          <div className="bf-card-head">
+            <span className="bf-card-title">Drawing</span>
+          </div>
+          <div className="bf-card-art">
+            <span className="bf-toy-pencil" aria-hidden="true">✏️</span>
+          </div>
+          <span className="bf-card-sub">Words & Flashcards</span>
+        </Link>
       </section>
 
-      <section className="mission-card">
-        <div className="mission-copy"><span>Chapter {lv} · {chapter}</span><h1>Rescue the<br />star whale</h1><Link to={`/level/${lv}`} className="mission-button"><LuPlay size={15} /> Continue</Link></div>
-        <div className="whale-art" aria-hidden="true">🐳<i>✦</i><em>✦</em></div>
+      {/* Compact Secondary Launch Strip: Continue level & daily mystery */}
+      <section className="bf-sub-strip">
+        <Link to={`/level/${lv}`} className="bf-continue-pill" aria-label="Continue current adventure">
+          <span className="bf-play-disc"><LuPlay size={16} /></span>
+          <div className="bf-continue-text">
+            <b>Continue Chapter {lv}</b>
+            <small>{chapter}</small>
+          </div>
+        </Link>
+
+        <Link to="/rewards" className="bf-mystery-pill" aria-label="Daily mystery gift">
+          <span className="bf-gift-icon"><LuGift size={16} /></span>
+          <div className="bf-mystery-text">
+            <b>Daily Mystery Box</b>
+            <small>{d.correct + d.wrong} / 3 done</small>
+          </div>
+        </Link>
       </section>
-
-      <section className="home-section-head"><div><span className="eyebrow">{g.label} adventure</span><h2>Adventure map</h2><small>{Math.min(5, Math.max(3, Math.ceil(sum.cleared / 10)))} of 6 islands explored</small></div><Link to="/map" className="see-all">See all <LuArrowRight /></Link></section>
-      <section className="adventure-map" aria-label="Adventure map">
-        <div className="map-path" aria-hidden="true" />
-        {mapNodes.map(([to, icon, label, kind], index) => <Link key={label} to={to} className={`map-node ${kind}`}><span className="map-disc">{kind === 'locked' ? <LuLock /> : icon}{kind === 'done' && <b><LuCheck /></b>}{kind === 'new' && <small>NEW!</small>}</span><strong>{label}</strong></Link>)}
-      </section>
-
-      <section className="quick-actions">{quickActions.map(([to, icon, label, kind]) => <Link key={label} to={to} className={`quick-action ${kind}`}><span>{icon}</span><b>{label}</b></Link>)}</section>
-
-      <section className="mystery-card"><span className="mystery-icon"><LuGift /></span><div><b>Daily mystery box</b><small>{d.correct + d.wrong} of 3 challenges done · Opens tomorrow</small><div className="mystery-progress"><i style={{ width: `${Math.min(100, ((d.correct + d.wrong) / 3) * 100)}%` }} /></div></div><LuArrowRight className="mystery-arrow" /></section>
-
-      <section className="collection-strip"><div className="home-section-head"><div><span className="eyebrow">Your collection</span><h2>Sticker stash</h2></div><Link to="/rewards" className="see-all">View all <LuArrowRight /></Link></div><div className="sticker-row">{STICKERS.slice(0, 4).map((s) => <div key={s.id} className={`sticker-mini ${state.stickers.includes(s.id) ? '' : 'locked'}`}><span>{s.e}</span><b>{state.stickers.includes(s.id) ? s.name : '???'}</b></div>)}</div></section>
-
-      <div className="home-progress"><span>{sum.cleared}/50 levels cleared</span><Bar pct={(sum.cleared / 50) * 100} /><small>{g.reading}</small></div>
     </div>
   );
 }
