@@ -115,6 +115,16 @@ function fillers(c, text) {
     if (!real) break;
     out.push(Q(wsQ[i], real, fw, 70 + i * 0.01));
   }
+  if (c.g === 0) {
+    const letters = 'ABCDEFGHIJKLMNOPRSTW'.split('');
+    for (let i = 0; i < 4 && uniqWords.length; i++) {
+      const w = uniqWords[(c.k + i * 2) % uniqWords.length];
+      const first = w[0].toUpperCase();
+      const wrong = c.rng.sample(letters.filter((x) => x !== first), 2);
+      out.push(Q(`Which letter does "${w}" start with?`, first, wrong, 71 + i * 0.01));
+    }
+    return out;
+  }
   const sents = sentencesOf(text).filter((x) => words(x).length >= 4 && words(x).length <= 16);
   const ssQ = ['Which sentence is from the text?', 'Which of these sentences did you read?', 'Which sentence appears in the text?', 'Find the sentence from the text.'];
   for (let i = 0; i < 4 && sents.length; i++) {

@@ -29,7 +29,7 @@ export default function IndexScreen() {
         d.stories.push(...allStoryHeaders(k).map((s) => ({ ...s, grade: k })));
         d.math.push(...Array.from({ length: 500 }, (_, i) => generateMath(k, i + 1)).filter(Boolean));
         d.words.push(...vocabFor(k).map((w) => ({ ...w, grade: k })));
-        { const have = new Set(d.words.map((x) => x.w.toLowerCase())); d.words.push(...storyWords(k).filter((x) => !have.has(x.w)).map((x) => ({ w: x.w, def: 'Word from the grade stories. Tap it in a story to explore.', pos: 'story', grade: k }))); }
+        if (k !== 'KG') { const have = new Set(d.words.map((x) => x.w.toLowerCase())); d.words.push(...storyWords(k).filter((x) => !have.has(x.w)).map((x) => ({ w: x.w, def: 'Word from the grade stories. Tap it in a story to explore.', pos: 'story', grade: k }))); }
       }
       setData(d); setBusy(false);
     }, 20);

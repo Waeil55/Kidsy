@@ -32,10 +32,136 @@ function Deck({ cards, speakBack }) {
   );
 }
 
+const KG_ALPHABET = [
+  { letter: 'A', lower: 'a', word: 'Apple', emoji: '🍎', ex: 'A is for Apple' },
+  { letter: 'B', lower: 'b', word: 'Ball', emoji: '⚽', ex: 'B is for Ball' },
+  { letter: 'C', lower: 'c', word: 'Cat', emoji: '🐱', ex: 'C is for Cat' },
+  { letter: 'D', lower: 'd', word: 'Dog', emoji: '🐶', ex: 'D is for Dog' },
+  { letter: 'E', lower: 'e', word: 'Elephant', emoji: '🐘', ex: 'E is for Elephant' },
+  { letter: 'F', lower: 'f', word: 'Fish', emoji: '🐟', ex: 'F is for Fish' },
+  { letter: 'G', lower: 'g', word: 'Grapes', emoji: '🍇', ex: 'G is for Grapes' },
+  { letter: 'H', lower: 'h', word: 'Hat', emoji: '👒', ex: 'H is for Hat' },
+  { letter: 'I', lower: 'i', word: 'Igloo', emoji: '🧊', ex: 'I is for Igloo' },
+  { letter: 'J', lower: 'j', word: 'Jam', emoji: '🍓', ex: 'J is for Jam' },
+  { letter: 'K', lower: 'k', word: 'Kite', emoji: '🪁', ex: 'K is for Kite' },
+  { letter: 'L', lower: 'l', word: 'Lion', emoji: '🦁', ex: 'L is for Lion' },
+  { letter: 'M', lower: 'm', word: 'Moon', emoji: '🌙', ex: 'M is for Moon' },
+  { letter: 'N', lower: 'n', word: 'Nest', emoji: '🪺', ex: 'N is for Nest' },
+  { letter: 'O', lower: 'o', word: 'Owl', emoji: '🦉', ex: 'O is for Owl' },
+  { letter: 'P', lower: 'p', word: 'Pig', emoji: '🐷', ex: 'P is for Pig' },
+  { letter: 'Q', lower: 'q', word: 'Queen', emoji: '👑', ex: 'Q is for Queen' },
+  { letter: 'R', lower: 'r', word: 'Rainbow', emoji: '🌈', ex: 'R is for Rainbow' },
+  { letter: 'S', lower: 's', word: 'Sun', emoji: '☀️', ex: 'S is for Sun' },
+  { letter: 'T', lower: 't', word: 'Tree', emoji: '🌳', ex: 'T is for Tree' },
+  { letter: 'U', lower: 'u', word: 'Umbrella', emoji: '☂️', ex: 'U is for Umbrella' },
+  { letter: 'V', lower: 'v', word: 'Van', emoji: '🚐', ex: 'V is for Van' },
+  { letter: 'W', lower: 'w', word: 'Watermelon', emoji: '🍉', ex: 'W is for Watermelon' },
+  { letter: 'X', lower: 'x', word: 'X-ray', emoji: '🩻', ex: 'X is for X-ray' },
+  { letter: 'Y', lower: 'y', word: 'Yo-yo', emoji: '🪀', ex: 'Y is for Yo-yo' },
+  { letter: 'Z', lower: 'z', word: 'Zebra', emoji: '🦓', ex: 'Z is for Zebra' },
+];
+
+const KG_NUMBERS = [
+  { num: '1', name: 'One', emoji: '🍎', text: '1 Apple' },
+  { num: '2', name: 'Two', emoji: '🍌🍌', text: '2 Bananas' },
+  { num: '3', name: 'Three', emoji: '🍓🍓🍓', text: '3 Berries' },
+  { num: '4', name: 'Four', emoji: '🐟🐟🐟🐟', text: '4 Fish' },
+  { num: '5', name: 'Five', emoji: '⭐⭐⭐⭐⭐', text: '5 Stars' },
+  { num: '6', name: 'Six', emoji: '🐞🐞🐞🐞🐞🐞', text: '6 Ladybugs' },
+  { num: '7', name: 'Seven', emoji: '🌼🌼🌼🌼🌼🌼🌼', text: '7 Flowers' },
+  { num: '8', name: 'Eight', emoji: '🎈🎈🎈🎈🎈🎈🎈🎈', text: '8 Balloons' },
+  { num: '9', name: 'Nine', emoji: '🚗🚗🚗🚗🚗🚗🚗🚗🚗', text: '9 Cars' },
+  { num: '10', name: 'Ten', emoji: '🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟', text: '10 Stars' },
+];
+
+const KG_SHAPES_COLORS = [
+  { title: 'Circle', emoji: '⚪', desc: 'Round like a coin' },
+  { title: 'Triangle', emoji: '🔺', desc: 'Has 3 pointy corners' },
+  { title: 'Square', emoji: '⏹️', desc: 'Has 4 equal sides' },
+  { title: 'Star', emoji: '⭐', desc: 'Shining bright in the sky' },
+  { title: 'Heart', emoji: '❤️', desc: 'Love and kindness' },
+  { title: 'Diamond', emoji: '🔷', desc: 'Pointy top and bottom' },
+  { title: 'Red', emoji: '🔴', desc: 'Red like a shiny apple' },
+  { title: 'Blue', emoji: '🔵', desc: 'Blue like the ocean sky' },
+  { title: 'Green', emoji: '🟢', desc: 'Green like grass and leaves' },
+  { title: 'Yellow', emoji: '🟡', desc: 'Yellow like warm sunshine' },
+  { title: 'Orange', emoji: '🟠', desc: 'Orange like a sweet orange' },
+  { title: 'Purple', emoji: '🟣', desc: 'Purple like sweet grapes' },
+];
+
 export default function Words() {
   const { state } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
-  const [tab, setTab] = useState('bank');
+  const [tab, setTab] = useState(g.key === 'KG' ? 'letters' : 'bank');
+
+  // Dedicated Kindergarten letters, numbers & flashcards view
+  if (g.key === 'KG') {
+    const kgCards = [
+      ...KG_ALPHABET.map((a) => ({ front: `${a.letter} ${a.lower}`, back: `${a.emoji} ${a.word}\n"${a.ex}!"` })),
+      ...KG_NUMBERS.map((n) => ({ front: `${n.num}`, back: `${n.name}\n${n.emoji}` })),
+      ...KG_SHAPES_COLORS.map((s) => ({ front: `${s.emoji}`, back: `${s.title}\n"${s.desc}"` })),
+    ];
+    return (
+      <>
+        <div className="row wrap">
+          <div className="grow col">
+            <h1>🔤 Alphabet &amp; Words · Kindergarten</h1>
+            <p className="muted">Learn letters A to Z, numbers 1 to 10, and fun shapes &amp; colors. Tap 🔊 to hear the sounds!</p>
+          </div>
+          <Link to="/play/letters/1" className="btn">Play games</Link>
+        </div>
+        <Seg value={tab} onChange={setTab} options={[
+          { key: 'letters', label: '🔤 Letters A–Z' },
+          { key: 'numbers', label: '🔢 Numbers 1–10' },
+          { key: 'shapes', label: '🎨 Shapes & Colors' },
+          { key: 'flip', label: `🃏 Flashcards (${kgCards.length})` },
+        ]} />
+
+        {tab === 'letters' && (
+          <div className="grid gauto" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
+            {KG_ALPHABET.map((item) => (
+              <div key={item.letter} className="card col gap8 center" style={{ textAlign: 'center', padding: '20px 16px' }}>
+                <div style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--brand)' }}>{item.letter} {item.lower}</div>
+                <div style={{ fontSize: '2.4rem' }}>{item.emoji}</div>
+                <h3 style={{ fontSize: '1.4rem', margin: 0 }}>{item.word}</h3>
+                <p className="muted tiny" style={{ fontStyle: 'italic' }}>“{item.ex}”</p>
+                <SpeakBtn text={`${item.letter}. ${item.word}. ${item.ex}.`} label="Hear it" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === 'numbers' && (
+          <div className="grid gauto" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
+            {KG_NUMBERS.map((item) => (
+              <div key={item.num} className="card col gap8 center" style={{ textAlign: 'center', padding: '20px 16px' }}>
+                <div style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--brand-2)' }}>{item.num}</div>
+                <div style={{ fontSize: '1.8rem', letterSpacing: 2 }}>{item.emoji}</div>
+                <h3 style={{ fontSize: '1.4rem', margin: 0 }}>{item.name}</h3>
+                <p className="muted tiny">{item.text}</p>
+                <SpeakBtn text={`Number ${item.num}. ${item.name}. ${item.text}.`} label="Count it" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === 'shapes' && (
+          <div className="grid gauto" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
+            {KG_SHAPES_COLORS.map((item) => (
+              <div key={item.title} className="card col gap8 center" style={{ textAlign: 'center', padding: '20px 16px' }}>
+                <div style={{ fontSize: '3rem' }}>{item.emoji}</div>
+                <h3 style={{ fontSize: '1.4rem', margin: 0 }}>{item.title}</h3>
+                <p className="muted tiny">“{item.desc}”</p>
+                <SpeakBtn text={`${item.title}. ${item.desc}.`} label="Hear it" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === 'flip' && <Deck key="kg-all" cards={kgCards} />}
+      </>
+    );
+  }
   const [q, setQ] = useState('');
   const [pos, setPos] = useState('all');
   const [open, setOpen] = useState(null);

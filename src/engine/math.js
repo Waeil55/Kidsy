@@ -70,6 +70,9 @@ const KG = [
   [1, (r) => { const L = r.pick(ALPHA.split('')), w = LETTER_WORDS[L]; const others = Object.entries(LETTER_WORDS).filter(([k]) => k !== L).map(([, v]) => v); return { q: `Which word starts with the letter ${L}?`, ...txt(w, r.shuffle(others).slice(0, 3)), ex: `${w} starts with ${L}.` }; }],
   [2, (r) => { const i = r.int(0, 24), L = ALPHA[i]; return { q: `What letter comes after ${L}?`, ...txt(ALPHA[i + 1], r.shuffle(ALPHA.split('').filter((x) => x !== ALPHA[i + 1])).slice(0, 3)), ex: `After ${L} comes ${ALPHA[i + 1]}.` }; }],
   [2, (r) => { const i = r.int(1, 25), L = ALPHA[i]; return { q: `What letter comes before ${L}?`, ...txt(ALPHA[i - 1], r.shuffle(ALPHA.split('').filter((x) => x !== ALPHA[i - 1])).slice(0, 3)), ex: `Before ${L} comes ${ALPHA[i - 1]}.` }; }],
+  // shapes and colors
+  [1, (r) => { const s = r.pick(SHAPE_PICS); return { q: `What shape is this? ${s[1]}`, ...txt(s[0], r.shuffle(SHAPE_PICS.filter((x) => x[0] !== s[0]).map((x) => x[0])).slice(0, 3)), ex: `This shape is a ${s[0]}.` }; }],
+  [1, (r) => { const c = r.pick(COLORS.filter((x) => ['red', 'blue', 'green', 'yellow', 'orange', 'purple'].includes(x[0]))); return { q: `What color is this? ${c[1]}`, ...txt(c[0], r.shuffle(COLORS.filter((x) => x[0] !== c[0]).map((x) => x[0])).slice(0, 3)), ex: `This color is ${c[0]}.` }; }],
 ];
 
 // ---------------------------------------------------------------- GRADE 1
@@ -246,3 +249,70 @@ export function generateMath(gradeKey, n) {
 }
 export const mathInLevel = (grade, level) => Array.from({ length: MATH_PER_LEVEL }, (_, i) => generateMath(grade, mathNo(level, i)));
 export const allMathHeaders = (grade) => Array.from({ length: STORIES_PER_GRADE }, (_, i) => generateMath(grade, i + 1));
+
+export function kgActivityQuestions(activity, count = 10, seed = 'kg') {
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const salt = makeRng(`kg|${activity}|${seed}|${i}`);
+    let item = null;
+    if (activity === 'letters') {
+      const type = i % 4;
+      if (type === 0) {
+        const L = salt.pick(ALPHA.split(''));
+        const wrong = salt.shuffle(ALPHA.toLowerCase().split('').filter((x) => x !== L.toLowerCase())).slice(0, 2);
+        item = { q: `Which lowercase letter matches "${L}"?`, a: L.toLowerCase(), wrong, ex: `${L} matches ${L.toLowerCase()}.` };
+      } else if (type === 1) {
+        const l = salt.pick(ALPHA.toLowerCase().split(''));
+        const wrong = salt.shuffle(ALPHA.split('').filter((x) => x !== l.toUpperCase())).slice(0, 2);
+        item = { q: `Which UPPERCASE letter matches "${l}"?`, a: l.toUpperCase(), wrong, ex: `${l} matches ${l.toUpperCase()}.` };
+      } else if (type === 2) {
+        const L = salt.pick(ALPHA.split(''));
+        const w = LETTER_WORDS[L];
+        const others = Object.entries(LETTER_WORDS).filter(([k]) => k !== L).map(([, v]) => v);
+        item = { q: `Which word starts with the letter ${L}?`, a: w, wrong: salt.shuffle(others).slice(0, 2), ex: `${w} starts with ${L}.` };
+      } else {
+        const idx = salt.int(0, 24);
+        const L = ALPHA[idx];
+        const next = ALPHA[idx + 1];
+        item = { q: `What letter comes after ${L}?`, a: next, wrong: salt.shuffle(ALPHA.split('').filter((x) => x !== next)).slice(0, 2), ex: `After ${L} comes ${next}.` };
+      }
+    } else if (activity === 'counting') {
+      const n = (i % 10) + 1;
+      const e = salt.pick(FRUITS);
+      const opts = salt.shuffle([n + 1, n - 1, n + 2, n - 2].filter((x) => x >= 1 && x <= 10 && x !== n)).slice(0, 2);
+      item = { q: `How many? ${e.repeat(n)}`, a: String(n), wrong: opts.map(String), ex: `Count each one: ${n}.` };
+    } else if (activity === 'addsub') {
+      const isSub = i % 2 === 1;
+      if (isSub) {
+        const a = salt.int(2, 6);
+        const b = salt.int(1, a - 1);
+        const ans = a - b;
+        const wrong = salt.shuffle([ans + 1, ans - 1, ans + 2, a + b].filter((x) => x >= 0 && x !== ans)).slice(0, 2);
+        item = { q: `${a} − ${b} = ?`, a: String(ans), wrong: wrong.map(String), ex: `${a} take away ${b} is ${ans}.` };
+      } else {
+        const a = salt.int(1, 4);
+        const b = salt.int(1, Math.min(4, 10 - a));
+        const ans = a + b;
+        const wrong = salt.shuffle([ans + 1, ans - 1, Math.abs(a - b) || 1, ans + 2].filter((x) => x >= 1 && x !== ans)).slice(0, 2);
+        item = { q: `${salt.pick(FRUITS).repeat(a)} + ${salt.pick(FRUITS).repeat(b)} = ?`, a: String(ans), wrong: wrong.map(String), ex: `${a} + ${b} = ${ans}.` };
+      }
+    } else if (activity === 'shapes') {
+      const isShape = i % 2 === 0;
+      if (isShape) {
+        const s = salt.pick(SHAPE_PICS);
+        const wrong = salt.shuffle(SHAPE_PICS.filter((x) => x[0] !== s[0]).map((x) => x[0])).slice(0, 2);
+        item = { q: `What shape is this? ${s[1]}`, a: s[0], wrong, ex: `This is a ${s[0]}.` };
+      } else {
+        const c = salt.pick(COLORS.filter((x) => ['red', 'blue', 'green', 'yellow', 'orange', 'purple'].includes(x[0])));
+        const wrong = salt.shuffle(COLORS.filter((x) => x[0] !== c[0]).map((x) => x[0])).slice(0, 2);
+        item = { q: `What color is this? ${c[1]}`, a: c[0], wrong, ex: `This color is ${c[0]}.` };
+      }
+    }
+    if (item) {
+      const { options, answer } = buildOptions(salt, item.a, item.wrong, 3);
+      out.push({ id: `KG-${activity}-${i + 1}`, q: item.q, options, answer, subject: 'math', explain: item.ex });
+    }
+  }
+  return out;
+}
+

@@ -54,49 +54,99 @@ export default function Home() {
 
       {/* 2x2 Chunky Playful Activity Cards (Numbers, Reading, Puzzles, Drawing) */}
       <section className="bf-activity-grid" aria-label="Main activities">
-        {/* 1. Numbers / Math */}
-        <Link to={`/play/math/${lv}`} className="bf-card bf-orange" aria-label="Numbers and Math">
-          <div className="bf-card-head">
-            <span className="bf-card-title">Numbers</span>
-          </div>
-          <div className="bf-card-art">
-            <span className="bf-toy-numbers" aria-hidden="true">123</span>
-          </div>
-          <span className="bf-card-sub">Math & Counting</span>
-        </Link>
+        {g.key === 'KG' ? (
+          <>
+            {/* 1. Alphabet */}
+            <Link to="/words" className="bf-card bf-orange" aria-label="Alphabet Letters A to Z">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Alphabet</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-numbers" aria-hidden="true">ABC</span>
+              </div>
+              <span className="bf-card-sub">Letters A to Z</span>
+            </Link>
 
-        {/* 2. Reading / Stories */}
-        <Link to={`/map`} className="bf-card bf-blue" aria-label="Reading and Stories">
-          <div className="bf-card-head">
-            <span className="bf-card-title">Reading</span>
-          </div>
-          <div className="bf-card-art">
-            <span className="bf-toy-book" aria-hidden="true">📖</span>
-          </div>
-          <span className="bf-card-sub">Stories & Adventures</span>
-        </Link>
+            {/* 2. Numbers 1-10 */}
+            <Link to={`/play/counting/${lv}`} className="bf-card bf-blue" aria-label="Numbers and Counting 1 to 10">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Numbers</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-numbers" aria-hidden="true">123</span>
+              </div>
+              <span className="bf-card-sub">Count 1 to 10</span>
+            </Link>
 
-        {/* 3. Puzzles / Practice */}
-        <Link to="/practice" className="bf-card bf-green" aria-label="Puzzles and Practice">
-          <div className="bf-card-head">
-            <span className="bf-card-title">Puzzles</span>
-          </div>
-          <div className="bf-card-art">
-            <span className="bf-toy-puzzle" aria-hidden="true">🧩</span>
-          </div>
-          <span className="bf-card-sub">Brain Games</span>
-        </Link>
+            {/* 3. Add & Subtract within 10 */}
+            <Link to={`/play/addsub/${lv}`} className="bf-card bf-green" aria-label="Add and Subtract within 10">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Add &amp; Subtract</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-numbers" aria-hidden="true">+ −</span>
+              </div>
+              <span className="bf-card-sub">Easy Math to 10</span>
+            </Link>
 
-        {/* 4. Drawing / Words */}
-        <Link to="/words" className="bf-card bf-purple" aria-label="Words and Flashcards">
-          <div className="bf-card-head">
-            <span className="bf-card-title">Drawing</span>
-          </div>
-          <div className="bf-card-art">
-            <span className="bf-toy-pencil" aria-hidden="true">✏️</span>
-          </div>
-          <span className="bf-card-sub">Words & Flashcards</span>
-        </Link>
+            {/* 4. Shapes & Colors */}
+            <Link to={`/play/shapes/${lv}`} className="bf-card bf-purple" aria-label="Shapes and Colors">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Shapes &amp; Colors</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-puzzle" aria-hidden="true">🎨</span>
+              </div>
+              <span className="bf-card-sub">Fun Shapes &amp; Colors</span>
+            </Link>
+          </>
+        ) : (
+          <>
+            {/* 1. Numbers / Math */}
+            <Link to={`/play/math/${lv}`} className="bf-card bf-orange" aria-label="Numbers and Math">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Numbers</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-numbers" aria-hidden="true">123</span>
+              </div>
+              <span className="bf-card-sub">Math & Counting</span>
+            </Link>
+
+            {/* 2. Reading / Stories */}
+            <Link to={`/map`} className="bf-card bf-blue" aria-label="Reading and Stories">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Reading</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-book" aria-hidden="true">📖</span>
+              </div>
+              <span className="bf-card-sub">Stories & Adventures</span>
+            </Link>
+
+            {/* 3. Puzzles / Practice */}
+            <Link to="/practice" className="bf-card bf-green" aria-label="Puzzles and Practice">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Puzzles</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-puzzle" aria-hidden="true">🧩</span>
+              </div>
+              <span className="bf-card-sub">Brain Games</span>
+            </Link>
+
+            {/* 4. Drawing / Words */}
+            <Link to="/words" className="bf-card bf-purple" aria-label="Words and Flashcards">
+              <div className="bf-card-head">
+                <span className="bf-card-title">Drawing</span>
+              </div>
+              <div className="bf-card-art">
+                <span className="bf-toy-pencil" aria-hidden="true">✏️</span>
+              </div>
+              <span className="bf-card-sub">Words & Flashcards</span>
+            </Link>
+          </>
+        )}
       </section>
 
       {/* Compact Secondary Launch Strip: Continue level & daily mystery */}

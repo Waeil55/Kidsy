@@ -15,11 +15,55 @@ const mc = (r, id, q, a, wrong, subject, explain, n = 4) => {
   return { id, q, options, answer, subject, explain: explain || '' };
 };
 
+// ---------------------------------------------------------------- KINDERGARTEN VOCABULARY & PHONICS
+const KG_VOCAB_ITEMS = [
+  { q: 'Which word starts with letter A?', a: '🍎 Apple', w: ['⚽ Ball', '🐱 Cat', '🐶 Dog'] },
+  { q: 'Which word starts with letter B?', a: '⚽ Ball', w: ['🍎 Apple', '🐘 Elephant', '🐟 Fish'] },
+  { q: 'Which word starts with letter C?', a: '🐱 Cat', w: ['🐶 Dog', '🦁 Lion', '🌙 Moon'] },
+  { q: 'Which word starts with letter D?', a: '🐶 Dog', w: ['🐱 Cat', '🐷 Pig', '☀️ Sun'] },
+  { q: 'Which word starts with letter E?', a: '🐘 Elephant', w: ['🐟 Fish', '🍇 Grapes', '👒 Hat'] },
+  { q: 'Which word starts with letter F?', a: '🐟 Fish', w: ['🦁 Lion', '🪺 Nest', '🦉 Owl'] },
+  { q: 'Which word starts with letter G?', a: '🍇 Grapes', w: ['🍎 Apple', '👑 Queen', '🌈 Rainbow'] },
+  { q: 'Which word starts with letter H?', a: '👒 Hat', w: ['🐱 Cat', '🌳 Tree', '🚐 Van'] },
+  { q: 'Which word starts with letter S?', a: '☀️ Sun', w: ['🌙 Moon', '⭐ Star', '🌳 Tree'] },
+  { q: 'Which word starts with letter M?', a: '🌙 Moon', w: ['☀️ Sun', '🍎 Apple', '⚽ Ball'] },
+  { q: 'Which letter does 🍎 Apple start with?', a: 'A', w: ['B', 'C', 'D'] },
+  { q: 'Which letter does ⚽ Ball start with?', a: 'B', w: ['D', 'P', 'R'] },
+  { q: 'Which letter does 🐱 Cat start with?', a: 'C', w: ['K', 'S', 'T'] },
+  { q: 'Which letter does 🐶 Dog start with?', a: 'D', w: ['B', 'P', 'G'] },
+  { q: 'Which letter does 🐟 Fish start with?', a: 'F', w: ['E', 'L', 'T'] },
+  { q: 'Which letter does ☀️ Sun start with?', a: 'S', w: ['C', 'Z', 'X'] },
+  { q: 'Which animal is BIG?', a: '🐘 Elephant', w: ['🐜 Ant', '🐭 Mouse', '🐞 Ladybug'] },
+  { q: 'Which animal is SMALL?', a: '🐭 Mouse', w: ['🐘 Elephant', '🦒 Giraffe', '🐋 Whale'] },
+  { q: 'Which animal says "Meow"?', a: '🐱 Cat', w: ['🐶 Dog', '🐮 Cow', '🦆 Duck'] },
+  { q: 'Which animal says "Woof"?', a: '🐶 Dog', w: ['🐱 Cat', '🐷 Pig', '🐑 Sheep'] },
+  { q: 'How many stars? ⭐ ⭐', a: '2', w: ['1', '3', '4'] },
+  { q: 'How many apples? 🍎 🍎 🍎', a: '3', w: ['2', '4', '5'] },
+  { q: 'What color is this? 🔴', a: 'Red', w: ['Blue', 'Green', 'Yellow'] },
+  { q: 'What color is this? 🔵', a: 'Blue', w: ['Red', 'Green', 'Orange'] },
+  { q: 'What shape is this? 🔺', a: 'Triangle', w: ['Circle', 'Square', 'Star'] },
+  { q: 'What shape is this? ⚪', a: 'Circle', w: ['Triangle', 'Square', 'Diamond'] },
+  { q: 'Which lowercase letter matches "A"?', a: 'a', w: ['b', 'c', 'd'] },
+  { q: 'Which UPPERCASE letter matches "b"?', a: 'B', w: ['D', 'P', 'R'] },
+];
+
+export function kgVocabQuiz(count = 20, seed = 'v') {
+  const r = makeRng(`KG|vocab|${seed}`);
+  const pool = r.shuffle(KG_VOCAB_ITEMS);
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const item = pool[i % pool.length];
+    out.push(mc(r, `KG-V${pad(i)}`, item.q, item.a, item.w, 'vocab', `${item.a}`, 3));
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------- VOCABULARY
 export function vocabQuiz(grade, count = 20, seed = 'v', extraWords = []) {
+  if (grade === 'KG') return kgVocabQuiz(count, seed);
   const words = [...vocabFor(grade), ...extraWords];
   const r = makeRng(`${grade}|vocab|${seed}`);
-  const n4 = grade === 'KG' || grade === 'G1' ? 3 : 4;
+  const n4 = grade === 'G1' ? 3 : 4;
   // Kindergarten and Grade 1 are not old enough for the words "synonym", "antonym" or "part of
   // speech" — they only get the two simplest question types. Grade 2 gets the same idea, worded
   // in plain English. The technical terms start at Grade 3, where the curriculum teaches them.
@@ -176,6 +220,15 @@ const GRAMMAR_KINDS = {
 };
 
 export function grammarQuiz(grade, count = 20, seed = 'g') {
+  if (grade === 'KG') {
+    const r = makeRng(`KG|grammar|${seed}`);
+    const pairs = [['A', 'a'], ['B', 'b'], ['C', 'c'], ['D', 'd'], ['E', 'e'], ['F', 'f'], ['G', 'g'], ['H', 'h'], ['M', 'm'], ['R', 'r'], ['S', 's'], ['T', 't']];
+    const pool = r.shuffle(pairs);
+    return pool.slice(0, Math.min(count, pool.length)).map(([up, low], i) => {
+      const others = pairs.filter((p) => p[0] !== up).map((p) => p[1]);
+      return mc(r, `KG-G${pad(i)}`, `Which lowercase letter matches "${up}"?`, low, others, 'grammar', `${up} matches ${low}.`, 3);
+    });
+  }
   const g = gradeIdx(grade);
   const kinds = GRAMMAR_KINDS[grade] || GRAMMAR_KINDS.G3;
   const r = makeRng(`${grade}|grammar|${seed}`);
@@ -217,7 +270,47 @@ const g3FillItem = (n) => {
   return mc(r, `G3-F${pad(n)}`, item.q, item.a, others, 'fill', item.q.replace('_____', item.a), 4);
 };
 
-export const fillItem = (grade, n) => (grade === 'G3' ? g3FillItem(n) : (cloze(grade, n) || cloze(grade, ((n + 1) % STORIES_PER_GRADE) + 1)));
+const KG_FILL_PATTERNS = [
+  { q: 'Which letter comes next? A, B, C, ____', a: 'D', w: ['E', 'B', 'M'] },
+  { q: 'Which letter comes next? D, E, F, ____', a: 'G', w: ['H', 'C', 'K'] },
+  { q: 'Which letter comes next? L, M, N, ____', a: 'O', w: ['P', 'Q', 'K'] },
+  { q: 'Which letter comes next? W, X, Y, ____', a: 'Z', w: ['A', 'V', 'T'] },
+  { q: 'What comes next? 1, 2, 3, ____', a: '4', w: ['5', '2', '6'] },
+  { q: 'What comes next? 4, 5, 6, ____', a: '7', w: ['8', '6', '5'] },
+  { q: 'What comes next? 7, 8, 9, ____', a: '10', w: ['6', '8', '11'] },
+  { q: '🍎 Apple starts with the letter: ____', a: 'A', w: ['B', 'C', 'D'] },
+  { q: '⚽ Ball starts with the letter: ____', a: 'B', w: ['D', 'P', 'R'] },
+  { q: '🐱 Cat starts with the letter: ____', a: 'C', w: ['K', 'S', 'T'] },
+  { q: '🐶 Dog starts with the letter: ____', a: 'D', w: ['B', 'P', 'G'] },
+  { q: '🐟 Fish starts with the letter: ____', a: 'F', w: ['E', 'H', 'L'] },
+  { q: '☀️ Sun starts with the letter: ____', a: 'S', w: ['C', 'Z', 'T'] },
+  { q: '1 + 1 = ____', a: '2', w: ['1', '3', '4'] },
+  { q: '2 + 1 = ____', a: '3', w: ['2', '4', '5'] },
+  { q: '2 + 2 = ____', a: '4', w: ['3', '5', '6'] },
+  { q: '3 + 1 = ____', a: '4', w: ['2', '5', '3'] },
+  { q: '4 + 1 = ____', a: '5', w: ['3', '6', '4'] },
+  { q: '3 − 1 = ____', a: '2', w: ['1', '3', '4'] },
+  { q: '4 − 1 = ____', a: '3', w: ['2', '4', '5'] },
+  { q: '5 − 1 = ____', a: '4', w: ['3', '5', '2'] },
+  { q: 'Count the stars: ⭐ ⭐ = ____', a: '2', w: ['1', '3', '4'] },
+  { q: 'Count the stars: ⭐ ⭐ ⭐ = ____', a: '3', w: ['2', '4', '5'] },
+  { q: 'Count the apples: 🍎 🍎 🍎 🍎 = ____', a: '4', w: ['3', '5', '2'] },
+  { q: 'The uppercase letter for "a" is: ____', a: 'A', w: ['B', 'C', 'D'] },
+  { q: 'The uppercase letter for "b" is: ____', a: 'B', w: ['D', 'P', 'C'] },
+  { q: 'The lowercase letter for "D" is: ____', a: 'd', w: ['b', 'p', 'q'] },
+  { q: 'Which shape is round? A ____ is round.', a: 'circle ⚪', w: ['square ⏹️', 'triangle 🔺'] },
+  { q: 'Which shape has 3 corners? A ____', a: 'triangle 🔺', w: ['circle ⚪', 'square ⏹️'] },
+  { q: 'An elephant 🐘 is: ____', a: 'BIG', w: ['TINY', 'LITTLE'] },
+  { q: 'A tiny mouse 🐭 is: ____', a: 'SMALL', w: ['BIG', 'GIANT'] },
+];
+
+export const kgFillItem = (n) => {
+  const r = makeRng(`KG|fill|${n}`);
+  const item = KG_FILL_PATTERNS[(n - 1) % KG_FILL_PATTERNS.length];
+  return mc(r, `KG-F${pad(n)}`, item.q, item.a, item.w, 'fill', `${item.q.replace('____', item.a)}`, 3);
+};
+
+export const fillItem = (grade, n) => (grade === 'KG' ? kgFillItem(n) : grade === 'G3' ? g3FillItem(n) : (cloze(grade, n) || cloze(grade, ((n + 1) % STORIES_PER_GRADE) + 1)));
 export const fillLevel = (grade, level) => Array.from({ length: 10 }, (_, i) => fillItem(grade, (level - 1) * 10 + i + 1)).filter(Boolean);
 export function vocabFill(grade, count = 10, seed = 'vf') {
   return vocabQuiz(grade, count * 3, seed).filter((x) => x.q.includes('_____')).slice(0, count).map((x) => ({ ...x, subject: 'fill' }));
@@ -241,7 +334,7 @@ export const EXAM_SUBJECTS = [
 
 export function buildExam({ grade, size = 20, subjects = ['reading', 'math', 'vocab', 'grammar', 'fill'], maxLevel = 50, minLevel = 1, custom = [], extraWords = [], seed }) {
   const r = makeRng(`${grade}|exam|${seed ?? Date.now()}`);
-  const subs = subjects.filter((s) => s !== 'custom' || custom.length);
+  const subs = grade === 'KG' ? ['math'] : subjects.filter((s) => s !== 'custom' || custom.length);
   const per = Math.max(1, Math.floor(size / subs.length));
   const items = [];
   for (const sub of subs) {
@@ -250,7 +343,7 @@ export function buildExam({ grade, size = 20, subjects = ['reading', 'math', 'vo
       const ns = r.sample(Array.from({ length: (maxLevel - minLevel + 1) * 10 }, (_, i) => (minLevel - 1) * 10 + i + 1), 6);
       list = ns.flatMap((n) => generateStory(grade, n).questions.filter((q) => q.set === 1 || r.chance(0.6)).map((q) => ({ id: `${grade}-S${n}-${q.id}`, q: q.q, options: q.options, answer: q.answer, subject: 'reading', source: generateStory(grade, n).title })));
     } else if (sub === 'math') {
-      list = r.sample(Array.from({ length: (maxLevel - minLevel + 1) * 10 }, (_, i) => (minLevel - 1) * 10 + i + 1), per + 2).map((n) => generateMath(grade, n)).filter(Boolean).map((m) => ({ id: m.id, q: m.q, options: m.options, answer: m.answer, subject: 'math', explain: m.explain }));
+      list = r.sample(Array.from({ length: (maxLevel - minLevel + 1) * 10 }, (_, i) => (minLevel - 1) * 10 + i + 1), per + 4).map((n) => generateMath(grade, n)).filter(Boolean).map((m) => ({ id: m.id, q: m.q, options: m.options, answer: m.answer, subject: 'math', explain: m.explain }));
     } else if (sub === 'vocab') list = vocabQuiz(grade, per + 4, `exam${seed ?? Date.now()}`, extraWords);
     else if (sub === 'grammar') list = grammarQuiz(grade, per + 4, `exam${seed ?? Date.now()}`);
     else if (sub === 'fill') list = r.sample(Array.from({ length: (maxLevel - minLevel + 1) * 10 }, (_, i) => (minLevel - 1) * 10 + i + 1), per + 4).map((n) => fillItem(grade, n)).filter(Boolean);
@@ -258,8 +351,13 @@ export function buildExam({ grade, size = 20, subjects = ['reading', 'math', 'vo
     items.push(...r.shuffle(list).slice(0, per));
   }
   // top up to requested size
-  const pool = r.shuffle(vocabQuiz(grade, 20, 'top').concat(grammarQuiz(grade, 20, 'top')));
-  for (const p of pool) if (items.length < size && !items.some((x) => x.q === p.q)) items.push(p);
+  if (grade === 'KG') {
+    const pool = r.shuffle(Array.from({ length: 40 }, (_, i) => generateMath('KG', ((i * 11) % 500) + 1)).filter(Boolean).map((m) => ({ id: m.id, q: m.q, options: m.options, answer: m.answer, subject: 'math', explain: m.explain })));
+    for (const p of pool) if (items.length < size && !items.some((x) => x.q === p.q)) items.push(p);
+  } else {
+    const pool = r.shuffle(vocabQuiz(grade, 20, 'top').concat(grammarQuiz(grade, 20, 'top')));
+    for (const p of pool) if (items.length < size && !items.some((x) => x.q === p.q)) items.push(p);
+  }
   return r.shuffle(items).slice(0, size).map((x, i) => ({ ...x, id: `${x.id}#${i}` }));
 }
 
