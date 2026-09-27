@@ -66,12 +66,20 @@ export const EXPLAINERS = {
       { big: '🌟', cap: 'Say it clearly and earn a star!' },
     ],
   },
-  break: {
-    emoji: '✨', title: 'How Study break works',
+  cards: {
+    emoji: '🃏', title: 'How Flashcards work',
     steps: [
-      { big: '✨', cap: 'Study break is a fun mini-quiz you can swipe through.' },
-      { big: '👉', cap: 'Swipe, or tap the arrows, to see the next card.' },
-      { big: '🎉', cap: 'Answer for fun — every card is quick and easy!' },
+      { big: '🃏', cap: 'Tap any flashcard to flip it and reveal the answer.' },
+      { big: '🔊', cap: 'Tap Listen to hear the question and answer read out loud.' },
+      { big: '🌟', cap: 'Tap "Got it!" to earn points and master the deck.' },
+    ],
+  },
+  break: {
+    emoji: '🃏', title: 'How Flashcards work',
+    steps: [
+      { big: '🃏', cap: 'Tap any flashcard to flip it and reveal the answer.' },
+      { big: '🔊', cap: 'Tap Listen to hear the question and answer read out loud.' },
+      { big: '🌟', cap: 'Tap "Got it!" to earn points and master the deck.' },
     ],
   },
   points: {

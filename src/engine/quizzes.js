@@ -162,6 +162,16 @@ const CAPS = [
   ['my friend lives in ohio.', 'My friend lives in Ohio.', ['my friend lives in Ohio.', 'My Friend lives in ohio.']], ['on monday we visit grandma.', 'On Monday we visit Grandma.', ['On monday we visit grandma.', 'on Monday we visit Grandma.']],
   ['we read the book charlotte’s web.', 'We read the book Charlotte’s Web.', ['we read the book charlotte’s web.', 'We read the Book charlotte’s web.']], ['mrs. lee lives on oak street.', 'Mrs. Lee lives on Oak Street.', ['mrs. lee lives on oak street.', 'Mrs. lee lives on Oak street.']],
 ];
+const G1_CAPS = [
+  ['the cat is on the bed.', 'The cat is on the bed.', ['the cat is on the bed.', 'the Cat is on the bed.']],
+  ['i see a red bird.', 'I see a red bird.', ['i see a red bird.', 'i See a red bird.']],
+  ['we can play with the ball.', 'We can play with the ball.', ['we can play with the ball.', 'We can Play with the ball.']],
+  ['my dog is big.', 'My dog is big.', ['my dog is big.', 'My Dog is big.']],
+  ['she has a new pet.', 'She has a new pet.', ['she has a new pet.', 'she Has a new pet.']],
+  ['the sun is warm.', 'The sun is warm.', ['the sun is warm.', 'The Sun is warm.']],
+  ['he likes to run fast.', 'He likes to run fast.', ['he likes to run fast.', 'he likes to Run fast.']],
+  ['they go to the park.', 'They go to the park.', ['they go to the park.', 'they Go to the park.']],
+];
 const COMMA = [['We bought apples bananas and grapes.', 'We bought apples, bananas, and grapes.', ['We bought, apples bananas and grapes.', 'We bought apples bananas, and, grapes.']], ['After lunch we played outside.', 'After lunch, we played outside.', ['After, lunch we played outside.', 'After lunch we, played outside.']], ['However the game was not over.', 'However, the game was not over.', ['However the, game was not over.', 'However the game, was not over.']], ['My friend Sam who lives next door is nice.', 'My friend Sam, who lives next door, is nice.', ['My friend Sam who, lives next door is nice.', 'My friend, Sam who lives next door is nice.']]];
 const SVA = [['The dogs ____ in the yard.', 'play', ['plays', 'playing']], ['My brother ____ soccer.', 'plays', ['play', 'playing']], ['The birds ____ every morning.', 'sing', ['sings', 'singing']], ['She ____ to school each day.', 'walks', ['walk', 'walking']], ['The books on the shelf ____ old.', 'are', ['is', 'be']], ['Each of the students ____ a pencil.', 'has', ['have', 'having']], ['Neither of the boys ____ ready.', 'was', ['were', 'are']], ['The team ____ practicing today.', 'is', ['are', 'be']]];
 const AFFIX = [['unhappy', 'not happy', ['very happy', 'happy again']], ['redo', 'do again', ['do not', 'do first']], ['careful', 'full of care', ['without care', 'care again']], ['hopeless', 'without hope', ['full of hope', 'hope again']], ['unlock', 'to open', ['to lock again', 'to lock']], ['preview', 'see before', ['see again', 'see after']], ['helpful', 'full of help', ['without help', 'help again']], ['disagree', 'not agree', ['agree again', 'agree very much']]];
@@ -180,7 +190,7 @@ function gen(r, kind, tier, id) {
     case 'pastReg': { const w = r.pick(PAST.reg); const p = w.endsWith('e') ? w + 'd' : w + 'ed'; return mc(r, id, `Yesterday, I ____ (${w}).`, p, [w, w + 'ing', w + 's'], sub, `Add -ed: ${p}.`); }
     case 'pastIrr': { const [b, p] = r.pick(PAST.irr); return mc(r, id, `Yesterday, we ____ (${b}).`, p, [b + 'ed', b, b + 'ing'], sub, `${b} → ${p} is an irregular past tense.`); }
     case 'isAre': { const s = r.pick([['The dog', 'is'], ['The dogs', 'are'], ['My friends', 'are'], ['My friend', 'is'], ['The birds', 'are'], ['The bird', 'is']]); return mc(r, id, `${s[0]} ____ big.`, s[1], ['is', 'are', 'am'].filter((x) => x !== s[1]).concat(['be']), sub, `Use "${s[1]}" with ${s[0].toLowerCase()}.`, 3); }
-    case 'capital': { const [w, ok, bad] = r.pick(CAPS); return mc(r, id, 'Which sentence is written correctly?', ok, bad, sub, ok); }
+    case 'capital': { const [w, ok, bad] = r.pick(tier === 0 ? G1_CAPS : CAPS); return mc(r, id, 'Which sentence is written correctly?', ok, bad, sub, ok); }
     case 'punct': { const [s, ok, bad] = r.pick(PUNCT); return mc(r, id, `Which mark goes at the end? "${s}____"`, ok, bad, sub, `"${s}${ok}"`, 3); }
     case 'noun': { const t = Math.min(tier, 2); const w = r.pick(NOUNS[t]); return mc(r, id, 'Which word is a noun (a person, place, or thing)?', w, [r.pick(VERBS[t]), r.pick(ADJS[t]), r.pick(ADVS)], sub, `${w} names a person, place, or thing.`); }
     case 'verb': { const t = Math.min(tier, 2); const w = r.pick(VERBS[t]); return mc(r, id, 'Which word is a verb (an action word)?', w, [r.pick(NOUNS[t]), r.pick(ADJS[t]), r.pick(ADVS)], sub, `${w} is an action.`); }
@@ -211,7 +221,7 @@ function gen(r, kind, tier, id) {
 const GRAMMAR_KINDS = {
   // Kindergarten has no grammar at all — noun/verb/adjective and sentence rules start at Grade 1+.
   KG: [],
-  G1: ['aAn', 'plS', 'plEs', 'isAre', 'capital', 'punct', 'noun', 'verb', 'adj', 'pastReg', 'contr', 'homo', 'conj'],
+  G1: ['aAn', 'plS', 'isAre', 'capital', 'punct', 'noun', 'verb'],
   G2: ['plEs', 'plIes', 'plIrr', 'pastReg', 'pastIrr', 'contr', 'homo', 'noun', 'verb', 'adj', 'capital', 'comma', 'comp', 'affix', 'conj'],
   G3: ['g3-pl', 'g3-abs', 'g3-title', 'g3-pron-ant', 'plEs', 'plIes', 'pron', 'sva', 'homo', 'comp', 'affix', 'conj', 'adv', 'capital', 'plIrr'],
   G4: ['prep', 'adv', 'poss', 'homo', 'comma', 'frag', 'runon', 'sva', 'conj', 'fig', 'plVes', 'pastIrr', 'pron'],
@@ -310,7 +320,61 @@ export const kgFillItem = (n) => {
   return mc(r, `KG-F${pad(n)}`, item.q, item.a, item.w, 'fill', `${item.q.replace('____', item.a)}`, 3);
 };
 
-export const fillItem = (grade, n) => (grade === 'KG' ? kgFillItem(n) : grade === 'G3' ? g3FillItem(n) : (cloze(grade, n) || cloze(grade, ((n + 1) % STORIES_PER_GRADE) + 1)));
+const G1_FILL_PATTERNS = [
+  { q: 'The dog can ____ in the park.', a: 'run', w: ['blue', 'and'] },
+  { q: 'I ____ my friendly cat.', a: 'like', w: ['hot', 'am'] },
+  { q: 'We ____ to school each day.', a: 'go', w: ['big', 'in'] },
+  { q: 'She has a bright ____ hat.', a: 'red', w: ['run', 'at'] },
+  { q: 'Can you ____ the little bird?', a: 'see', w: ['is', 'to'] },
+  { q: 'The sun is ____ and bright.', a: 'hot', w: ['jump', 'on'] },
+  { q: 'Look at ____ yellow bus!', a: 'that', w: ['run', 'up'] },
+  { q: 'The green frog can ____ high.', a: 'hop', w: ['cat', 'me'] },
+  { q: 'I have two playful ____.', a: 'cats', w: ['cat', 'cating'] },
+  { q: 'We play with ____ new toys.', a: 'our', w: ['me', 'she'] },
+  { q: 'The school bus is ____.', a: 'yellow', w: ['see', 'he'] },
+  { q: 'A little bird can ____ in the sky.', a: 'fly', w: ['tree', 'in'] },
+  { q: 'Do you ____ sweet red apples?', a: 'like', w: ['look', 'run'] },
+  { q: 'I can ____ my own name.', a: 'read', w: ['ball', 'fast'] },
+  { q: 'Mom and Dad ____ me very much.', a: 'love', w: ['big', 'at'] },
+  { q: 'Put on your warm ____.', a: 'coat', w: ['hot', 'is'] },
+  { q: 'Little fish swim in the ____.', a: 'water', w: ['sun', 'dog'] },
+  { q: 'We sat down to read a ____.', a: 'book', w: ['look', 'red'] },
+  { q: 'The brown bird is in the tall ____.', a: 'tree', w: ['run', 'at'] },
+  { q: 'Come and ____ a game with me!', a: 'play', w: ['ball', 'red'] },
+  { q: 'The children walked to the ____.', a: 'park', w: ['run', 'am'] },
+  { q: 'I see three little ____ in the yard.', a: 'dogs', w: ['dog', 'dogged'] },
+  { q: 'She has a funny ____ pet.', a: 'little', w: ['are', 'on'] },
+  { q: 'The cold milk is in the ____.', a: 'cup', w: ['hop', 'is'] },
+  { q: 'The tired baby is ____.', a: 'asleep', w: ['run', 'we'] },
+  { q: 'We walk together to ____.', a: 'school', w: ['is', 'me'] },
+  { q: 'The soft grass is ____.', a: 'green', w: ['hop', 'am'] },
+  { q: 'Please give me a cup of ____.', a: 'water', w: ['run', 'he'] },
+  { q: 'The loud bell ____ for lunch.', a: 'rang', w: ['dog', 'big'] },
+  { q: 'I will ____ you clean the room.', a: 'help', w: ['cat', 'so'] },
+  { q: 'Where did I put my yellow ____?', a: 'pencil', w: ['hop', 'at'] },
+  { q: 'The kite flies high up in the ____.', a: 'sky', w: ['dog', 'is'] },
+  { q: 'Please open the wooden ____.', a: 'door', w: ['red', 'run'] },
+  { q: 'Always wash your ____ before lunch.', a: 'hands', w: ['hand', 'hat'] },
+  { q: 'The bright star shines at ____.', a: 'night', w: ['hop', 'are'] },
+  { q: 'He kicks the big black and white ____.', a: 'ball', w: ['hat', 'run'] },
+  { q: 'The cute rabbit has long ____.', a: 'ears', w: ['ear', 'earing'] },
+  { q: 'We ate lunch at the kitchen ____.', a: 'table', w: ['walk', 'sun'] },
+  { q: 'She sings a sweet ____.', a: 'song', w: ['see', 'in'] },
+  { q: 'The baby duck likes to ____.', a: 'swim', w: ['red', 'he'] },
+];
+
+export const g1FillItem = (n) => {
+  const r = makeRng(`G1|fill|${n}`);
+  const item = G1_FILL_PATTERNS[(n - 1) % G1_FILL_PATTERNS.length];
+  return mc(r, `G1-F${pad(n)}`, item.q, item.a, item.w, 'fill', item.q.replace('____', item.a), 3);
+};
+
+export const fillItem = (grade, n) => (
+  grade === 'KG' ? kgFillItem(n) :
+  grade === 'G1' ? g1FillItem(n) :
+  grade === 'G3' ? g3FillItem(n) :
+  (cloze(grade, n) || cloze(grade, ((n + 1) % STORIES_PER_GRADE) + 1))
+);
 export const fillLevel = (grade, level) => Array.from({ length: 10 }, (_, i) => fillItem(grade, (level - 1) * 10 + i + 1)).filter(Boolean);
 export function vocabFill(grade, count = 10, seed = 'vf') {
   return vocabQuiz(grade, count * 3, seed).filter((x) => x.q.includes('_____')).slice(0, count).map((x) => ({ ...x, subject: 'fill' }));
