@@ -2,9 +2,12 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { StoreProvider } from './store/store.js';
 import App from './App.jsx';
+import ErrorBoundary from './ui/ErrorBoundary.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StoreProvider><App /></StoreProvider>
+  <ErrorBoundary>
+    <StoreProvider><App /></StoreProvider>
+  </ErrorBoundary>
 );
 
 // Makes the app installable and able to open with no internet connection. register() simply (and

@@ -77,8 +77,9 @@ export default function Reader({ grade, n }) {
   };
 
   const finishNode = (res) => (
-    <div className="row wrap" style={{ justifyContent: 'center' }}>
-      {set === 0 && <button className="btn" onClick={() => { setSet(1); setAttempt(0); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Start set 2 <LuArrowRight /></button>}
+    <div className="row wrap gap8" style={{ justifyContent: 'center', marginTop: 12 }}>
+      {set === 0 && <button className="btn pri" onClick={() => { setSet(1); setAttempt(0); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Start set 2 <LuArrowRight /></button>}
+      {set === 1 && level < 50 && <Link to={`/level/${level + 1}`} className="btn pri" style={{ fontWeight: 800 }}>🚀 Next Level {level + 1} <LuArrowRight /></Link>}
       {set === 1 && n < 500 && <Link to={`/read/${grade}/${n + 1}`} className="btn">Next story <LuArrowRight /></Link>}
       <button className="btn soft" onClick={() => setAttempt(attempt + 1)}><LuRotateCcw /> Try this set again</button>
       <Link to={`/level/${level}`} className="btn ghost"><LuMap /> Level {level}</Link>

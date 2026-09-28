@@ -22,6 +22,7 @@ import FlashcardsScreen from './screens/FlashcardsScreen.jsx';
 import SpeakingLab from './screens/SpeakingLab.jsx';
 import Insights from './screens/Insights.jsx';
 import Study from './screens/Study.jsx';
+import ErrorBoundary from './ui/ErrorBoundary.jsx';
 
 const NAV = [
   ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
@@ -67,7 +68,12 @@ export default function App() {
     case '': page = <Home />; break;
     case 'map': page = <MapScreen />; break;
     case 'level': page = <LevelScreen level={+seg[1] || 1} />; break;
-    case 'read': page = <Reader key={state.gradeKey + seg[2]} grade={state.gradeKey} n={+seg[2] || 1} />; break;
+    case 'read': {
+      const readN = seg[2] !== undefined ? (+seg[2] || 1) : (+seg[1] || 1);
+      const readGrade = (seg[2] !== undefined && GRADES.some((x) => x.key === seg[1])) ? seg[1] : state.gradeKey;
+      page = <Reader key={`${readGrade}-${readN}`} grade={readGrade} n={readN} />;
+      break;
+    }
     case 'practice': page = <PracticeHub />; break;
     case 'play': page = <PlayScreen key={seg.join('/')} kind={seg[1]} level={+seg[2] || 0} />; break;
     case 'words': page = <Words />; break;
@@ -126,7 +132,11 @@ export default function App() {
           <button className={`iconbtn ${state.settings.sounds ? 'on' : ''}`} title={state.settings.sounds ? 'Mute sounds' : 'Sounds are off'} aria-label="Toggle sound effects" onClick={() => dispatch({ type: 'settings', patch: { sounds: !state.settings.sounds } })}>{state.settings.sounds ? <LuBell /> : <LuBellOff />}</button>
           <Link to="/rewards" className={`scorepill ${pop ? 'pop' : ''}`} key={pop} style={{ textDecoration: 'none', color: 'inherit' }} aria-label={`Score ${state.score}`}><i>⭐</i>{state.score}<span className="lbl tiny muted">pts</span></Link>
         </header>
-        <main className="page" key={hash} data-route={key || "home"}>{page}</main>
+        <main className="page" key={hash} data-route={key || "home"}>
+          <ErrorBoundary>
+            {page}
+          </ErrorBoundary>
+        </main>
       </div>
       <nav className="bottom" aria-label="Main">
         {BOTTOM.map(([p, label, Ic]) => <Link key={p} to={p} className={isOn(p) ? 'on' : ''}><Ic />{label}</Link>)}

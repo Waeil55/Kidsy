@@ -82,26 +82,55 @@ export function loadState() {
 }
 
 // ---- progress helpers ----------------------------------------------------------------------
-const gp = (s, g) => s.progress[g] || { stories: {}, math: {}, fill: {}, words: {}, grammar: {} };
+const gp = (s, g) => s.progress[g] || { stories: {}, math: {}, fill: {}, words: {}, grammar: {}, vocab: {}, letters: {}, counting: {}, addsub: {}, shapes: {} };
 export const pct = (c, t) => (t ? Math.round((c / t) * 100) : 0);
 export const starsFor = (p) => (p >= 90 ? 3 : p >= 70 ? 2 : p >= 50 ? 1 : 0);
 
-export function storyRec(s, g, n) { return (s.progress[g] && s.progress[g].stories[n]) || null; }
+export function storyRec(s, g, n) { return (s.progress[g] && s.progress[g].stories?.[n]) || null; }
 export function levelStats(s, g, level) {
   const p = gp(s, g);
   const from = (level - 1) * 10 + 1;
   let stories = 0, storyBest = 0;
-  for (let i = 0; i < 10; i++) { const r = p.stories[from + i]; if (r && r.done) { stories++; storyBest += r.best; } }
-  const m = p.math[level], f = p.fill[level];
+  if (p.stories) {
+    for (let i = 0; i < 10; i++) {
+      const r = p.stories[from + i];
+      if (r && r.done) { stories++; storyBest += r.best; }
+    }
+  }
+  const m = p.math?.[level];
+  const f = p.fill?.[level];
+  const letters = p.letters?.[level];
+  const counting = p.counting?.[level];
+  const addsub = p.addsub?.[level];
+  const shapes = p.shapes?.[level];
+  const vocab = p.vocab?.[level];
+  const grammar = p.grammar?.[level];
+
+  const actScores = [
+    m?.best, f?.best, letters?.best, counting?.best, addsub?.best, shapes?.best, vocab?.best, grammar?.best
+  ].filter((x) => x != null);
+
   const avgStory = stories ? storyBest / stories : 0;
   const parts = [];
   if (stories) parts.push(avgStory);
-  if (m) parts.push(m.best);
-  if (f) parts.push(f.best);
+  parts.push(...actScores);
+
   const avg = parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : 0;
-  const started = stories > 0 || !!m || !!f;
-  const cleared = stories >= 3 || (stories >= 1 && (m && m.best >= 60)) || (m && m.best >= 60 && f && f.best >= 60);
-  return { stories, math: m ? m.best : null, fill: f ? f.best : null, avg: Math.round(avg), stars: started ? starsFor(avg) : 0, started, cleared: !!cleared };
+  const started = stories > 0 || actScores.length > 0;
+  // A level is cleared when at least 1 story is completed, or any activity has >= 50%
+  const hasPassedActivity = actScores.some((sc) => sc >= 50);
+  const cleared = stories >= 1 || hasPassedActivity;
+
+  return {
+    stories,
+    math: m ? m.best : null,
+    fill: f ? f.best : null,
+    activitiesDone: actScores.length,
+    avg: Math.round(avg),
+    stars: started ? starsFor(avg) : 0,
+    started,
+    cleared: !!cleared,
+  };
 }
 export function levelUnlocked(s, g, level) {
   if (level <= 1 || s.settings.openLevels) return true;
@@ -260,12 +289,26 @@ function reducer(s, a) {
       const flags = a.correct === a.total && a.total >= 10 ? { ...(s.flags || {}), perfect: true } : s.flags;
       return withStickers({ ...s, flags, progress: { ...s.progress, [a.grade]: { ...p, stories: { ...p.stories, [a.n]: { sets, best, done: done || rec.done } } } } });
     }
-    case 'set-done': { // { grade, area:'math'|'fill', level, correct, total }
+    case 'set-done': { // { grade, area, level, correct, total }
       const p = gp(s, a.grade);
-      const cur = p[a.area][a.level];
+      const areaObj = p[a.area] || {};
+      const cur = areaObj[a.level];
       const pc = pct(a.correct, a.total);
       const flags = a.correct === a.total && a.total >= 10 ? { ...(s.flags || {}), perfect: true } : s.flags;
-      return withStickers({ ...s, flags, progress: { ...s.progress, [a.grade]: { ...p, [a.area]: { ...p[a.area], [a.level]: { best: Math.max(cur ? cur.best : 0, pc), tries: (cur ? cur.tries : 0) + 1 } } } } });
+      return withStickers({
+        ...s,
+        flags,
+        progress: {
+          ...s.progress,
+          [a.grade]: {
+            ...p,
+            [a.area]: {
+              ...areaObj,
+              [a.level]: { best: Math.max(cur ? cur.best : 0, pc), tries: (cur ? cur.tries : 0) + 1 },
+            },
+          },
+        },
+      });
     }
     case 'flag': return withStickers({ ...s, flags: { ...(s.flags || {}), [a.key]: true } });
     case 'exam': return withStickers({ ...s, exams: [a.exam, ...s.exams].slice(0, 400) });

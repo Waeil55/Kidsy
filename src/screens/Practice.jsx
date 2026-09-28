@@ -21,6 +21,7 @@ export const KG_KINDS = [
   { key: 'counting', label: 'Numbers 1–10', emoji: '🔢', blurb: 'Count objects and discover numbers' },
   { key: 'addsub', label: 'Add & Subtract', emoji: '➕', blurb: 'Simple + and − within 10' },
   { key: 'shapes', label: 'Shapes & Colors', emoji: '🎨', blurb: 'Circles, triangles, stars, and bright colors' },
+  { key: 'math', label: 'Letters & Numbers', emoji: '🔤', blurb: 'Alphabet, counting and simple math' },
 ];
 
 export const kindsFor = (gradeKey) => (gradeKey === 'KG' ? KG_KINDS : KINDS);
@@ -81,11 +82,29 @@ export function PlayScreen({ kind, level }) {
       <Crumb to={`/level/${lv}`}>Level {lv}</Crumb>
       <div className="row wrap"><h1 className="grow">{k.emoji} {k.label}</h1><Seg value={kind} onChange={(x) => go(`/play/${x}/${lv}`)} options={kinds.map((x) => ({ key: x.key, label: x.label }))} /></div>
       <QuizRunner key={`${kind}-${lv}-${attempt}`} items={items} grade={grade} subject={kind} title={`${k.label} · level ${lv}`} onFinish={onFinish}
-        renderFinish={() => (
-          <div className="row wrap" style={{ justifyContent: 'center' }}>
-            {lv < 50 && levelUnlocked(state, grade, lv + 1) && <Link to={`/play/${kind}/${lv + 1}`} className="btn">Level {lv + 1} <LuArrowRight /></Link>}
-            <button className="btn soft" onClick={() => setAttempt(attempt + 1)}><LuRotateCcw /> New questions</button>
-            <Link to={`/level/${lv}`} className="btn ghost">Back to level {lv}</Link>
+        renderFinish={(res) => (
+          <div className="col gap12" style={{ alignItems: 'center', width: '100%', marginTop: 14 }}>
+            {res && res.pct >= 50 && (
+              <div className="card" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', padding: '14px 20px', borderRadius: 16, width: '100%', textAlign: 'center' }}>
+                <b>🎉 Great effort! Level {lv} progress completed!</b>
+              </div>
+            )}
+            <div className="row wrap gap8" style={{ justifyContent: 'center' }}>
+              {lv < 50 && (
+                <Link to={`/level/${lv + 1}`} className="btn pri" style={{ fontWeight: 800 }}>
+                  🚀 Move to Level {lv + 1} <LuArrowRight />
+                </Link>
+              )}
+              {lv < 50 && (
+                <Link to={`/play/${kind}/${lv + 1}`} className="btn">
+                  Play Level {lv + 1} ({k.label}) <LuArrowRight />
+                </Link>
+              )}
+              <button className="btn soft" onClick={() => setAttempt(attempt + 1)}>
+                <LuRotateCcw /> Play this set again
+              </button>
+              <Link to={`/level/${lv}`} className="btn ghost">Back to Level {lv}</Link>
+            </div>
           </div>
         )} />
     </>
