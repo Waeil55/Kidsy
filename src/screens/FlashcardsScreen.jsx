@@ -5,6 +5,7 @@ import { GRADE_BY_KEY } from '../data/grades.js';
 import { vocabFor } from '../data/vocab.js';
 import { speak, stopSpeaking } from '../lib/speech.js';
 import { G3_PDF_WORD_ROWS } from '../data/g3ela.js';
+import { KG_DECODABLE_BOOKS } from '../data/kgDecodable.js';
 import { ExplainBtn } from '../ui/Explainer.jsx';
 import Celebration from '../ui/Celebration.jsx';
 
@@ -64,7 +65,35 @@ function buildKgDecks() {
     { front: '5 - 1 = ?', kicker: 'Take Away', prompt: '🍎🍎🍎🍎 (take away 1)', back: '= 4\nFive minus one is four', speech: 'Five minus one equals four' },
   ];
 
+  const seenCvc = new Set();
+  const cvcCards = [];
+  for (const b of KG_DECODABLE_BOOKS) {
+    for (const w of (b.cvc_words || [])) {
+      const lower = w.toLowerCase();
+      if (!seenCvc.has(lower) && lower.length <= 4) {
+        seenCvc.add(lower);
+        cvcCards.push({
+          front: w,
+          kicker: `Phonics ${b.target_sounds?.[0] || 'CVC'}`,
+          prompt: `Book ${b.id}: ${b.title}`,
+          back: `${w.toUpperCase()}\n\nTarget Sound: ${b.target_sounds?.join(', ')}\nExample: "${b.sentences[0] || w}"`,
+          speech: `${w}. From ${b.title}.`,
+        });
+      }
+    }
+  }
+
+  const decodableCards = KG_DECODABLE_BOOKS.map((b) => ({
+    front: `${b.book_code}\n${b.title} ${b.emoji}`,
+    kicker: `Level ${b.id} Reader`,
+    prompt: 'Tap to read sentences',
+    back: `${b.sentences.join('\n')}\n\nTarget Sound: ${b.target_sounds?.join(', ')}`,
+    speech: `${b.title}. ${b.sentences.join(' ')}`,
+  }));
+
   return [
+    { id: 'cvc', label: `🐱 CVC Phonics Words (${cvcCards.length})`, items: cvcCards },
+    { id: 'readers', label: `📖 Decodable Readers (${decodableCards.length})`, items: decodableCards },
     { id: 'alphabet', label: '🔤 Alphabet', items: alphabet },
     { id: 'numbers', label: '🔢 Numbers', items: numbers },
     { id: 'math', label: '➕ Math + & -', items: math },

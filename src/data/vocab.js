@@ -50,6 +50,18 @@ const KG = R([
   ['circle', 'shape', 'Round circle ⚪', '', '', 'A wheel is a circle.'],
   ['triangle', 'shape', 'Triangle shape 🔺', '', '', 'A slice of pie is a triangle.'],
   ['star', 'shape', 'Bright star ⭐', '', '', 'The star shines bright.'],
+  ['cat', 'phonics', 'A friendly cat 🐱', 'kitty', '', 'The cat sat on the mat.'],
+  ['hat', 'phonics', 'A warm hat 👒', 'cap', '', 'Sam has a tan hat.'],
+  ['mat', 'phonics', 'A soft mat to sit on 🧶', 'rug', '', 'The cat sat on a mat.'],
+  ['sun', 'phonics', 'The bright warm sun ☀️', 'sunshine', '', 'The sun is hot.'],
+  ['dog', 'phonics', 'A playful puppy dog 🐶', 'pup', '', 'The dog can run.'],
+  ['bed', 'phonics', 'A cozy bed to sleep in 🛏️', '', '', 'I sleep in my bed.'],
+  ['pig', 'phonics', 'A little pink pig 🐷', '', '', 'The pig is in the mud.'],
+  ['cup', 'phonics', 'A cup to drink from 🥤', '', '', 'A cup of milk.'],
+  ['fox', 'phonics', 'A clever quick fox 🦊', '', '', 'A fox in a box.'],
+  ['bug', 'phonics', 'A little garden bug 🐞', '', '', 'The bug is on the rug.'],
+  ['pan', 'phonics', 'A cooking pan 🍳', '', '', 'The egg is in the pan.'],
+  ['van', 'phonics', 'A big family van 🚐', '', '', 'We ride in the van.'],
 ]);
 
 const G1 = R([

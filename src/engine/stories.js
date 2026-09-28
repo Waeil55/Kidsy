@@ -7,6 +7,7 @@ import { EMO_POS, EMO_NEG, ITEMS, TRAITS } from './pools.js';
 import { lost, skill, share, weather, mistake, META, NARRATIVE_IDS, Q } from './plots1.js';
 import { animal, team, mystery, fact, howto } from './plots2.js';
 import { G3_PDF_WORD_ROWS } from '../data/g3ela.js';
+import { getKgBook } from '../data/kgDecodable.js';
 
 // One story of each kind in every level (slot A..J).
 export const PLOTS = [lost, animal, skill, fact, share, mystery, weather, howto, mistake, team];
@@ -222,13 +223,173 @@ function g3ContextSentence(word, hero) {
   return map[word] || `${hero} worked hard and learned the true meaning of the word ${word}.`;
 }
 
+function generateKgStory(n, level, slot) {
+  const book = getKgBook(level);
+  const cvcs = book.cvc_words && book.cvc_words.length ? book.cvc_words : ['cat', 'sat', 'mat'];
+  const sights = book.sight_words && book.sight_words.length ? book.sight_words : ['the', 'a', 'and'];
+  const targetSound = book.target_sounds?.[0] || 'short-a';
+  const mainWord = cvcs[0];
+  const secondWord = cvcs[1] || cvcs[0];
+  const thirdWord = cvcs[2] || secondWord;
+  const firstLetter = mainWord[0].toUpperCase();
+  const lastLetter = mainWord[mainWord.length - 1].toUpperCase();
+
+  const title = slot === 0 ? book.title : `${book.title} (Reader ${SLOT_LABELS[slot]})`;
+  const paragraphs = book.sentences;
+  const text = paragraphs.join(' ');
+
+  const wrongSound = targetSound === 'short-a' ? 'short-u' : 'short-a';
+  const wrongLetters = ['B', 'M', 'T', 'S', 'P', 'D', 'R', 'F', 'H', 'L'].filter((l) => l !== firstLetter);
+  const wrongLast = ['T', 'N', 'D', 'P', 'G', 'M', 'S', 'K', 'B'].filter((l) => l !== lastLetter);
+  const wrongSecLetters = ['A', 'B', 'M', 'T', 'S', 'P', 'D', 'R', 'F'].filter((l) => l !== secondWord[0].toUpperCase());
+
+  // 10 Remember / Letter & Sound questions (Set 0: id 1..10)
+  const qSet0 = [
+    {
+      q: 'Who or what is this story about?',
+      options: [`${book.emoji} ${cap(book.theme)}`, '🚀 Big rocket', '🦖 Huge dinosaur'],
+      answer: 0,
+    },
+    {
+      q: `What target phonics sound are we learning in "${book.title}"?`,
+      options: [`Sound: ${targetSound}`, `Sound: ${wrongSound}`, 'Sound: silent-z'],
+      answer: 0,
+    },
+    {
+      q: 'Which 3-letter word is in this book?',
+      options: [mainWord, 'watermelon', 'helicopter'],
+      answer: 0,
+    },
+    {
+      q: `What is the first letter of the word "${mainWord}"?`,
+      options: [firstLetter, wrongLetters[0], wrongLetters[1]],
+      answer: 0,
+    },
+    {
+      q: 'Which word is in our reading list for this book?',
+      options: [secondWord, 'dinosaur', 'alligator'],
+      answer: 0,
+    },
+    {
+      q: 'Which sight word is in this story?',
+      options: [sights[0], 'yesterday', 'tomorrow'],
+      answer: 0,
+    },
+    {
+      q: `What letter does "${secondWord}" start with?`,
+      options: [secondWord[0].toUpperCase(), wrongSecLetters[0], wrongSecLetters[1]],
+      answer: 0,
+    },
+    {
+      q: 'Which book code is this phonics reader?',
+      options: [book.book_code, 'Book 99 - z', 'Book 100 - x'],
+      answer: 0,
+    },
+    {
+      q: 'Which sentence did we read in the book?',
+      options: [paragraphs[0], 'A blue alien flew to Mars.', 'The polar bear drove a racing truck.'],
+      answer: 0,
+    },
+    {
+      q: `Is "${mainWord}" a fun phonics word to read?`,
+      options: ['Yes! 😊', 'No 😢'],
+      answer: 0,
+    },
+  ];
+
+  // 10 Think / Phonics Practice questions (Set 1: id 11..20)
+  const qSet1 = [
+    {
+      q: 'Find another sentence from this book:',
+      options: [paragraphs[1] || paragraphs[0], 'A shark danced on top of the house.', 'The robot baked a huge chocolate pizza.'],
+      answer: 0,
+    },
+    {
+      q: `What is the last letter of the word "${mainWord}"?`,
+      options: [lastLetter, wrongLast[0], wrongLast[1]],
+      answer: 0,
+    },
+    {
+      q: 'Which of these is a sight word we practiced?',
+      options: [sights[1] || sights[0], 'supermarket', 'submarine'],
+      answer: 0,
+    },
+    {
+      q: `How many letters are in the CVC word "${mainWord}"?`,
+      options: [`${mainWord.length} letters`, '1 letter', '12 letters'],
+      answer: 0,
+    },
+    {
+      q: `Find a word with the "${targetSound}" sound:`,
+      options: [mainWord, 'zigzag', 'quantum'],
+      answer: 0,
+    },
+    {
+      q: 'Which sentence is in this story?',
+      options: [paragraphs[paragraphs.length - 1], 'The monster ate a giant cloud.', 'The enchanted castle floated away.'],
+      answer: 0,
+    },
+    {
+      q: `What sound does the letter "${firstLetter}" make?`,
+      options: [`/${firstLetter.toLowerCase()}/`, '/zz/', '/th/'],
+      answer: 0,
+    },
+    {
+      q: `Can you read the word "${mainWord}" out loud?`,
+      options: [`Yes! "${mainWord}" 🗣️`, 'I need more practice'],
+      answer: 0,
+    },
+    {
+      q: `Which word did we read: "${thirdWord}"?`,
+      options: [thirdWord, 'triangle', 'skyscraper'],
+      answer: 0,
+    },
+    {
+      q: `Great job reading Level ${level}! How many stars do you give this story?`,
+      options: ['⭐⭐⭐ Three Stars!', '⭐ One Star', 'No stars'],
+      answer: 0,
+    },
+  ];
+
+  const questions = [
+    ...qSet0.map((q, i) => ({ id: i + 1, q: q.q, options: q.options, answer: q.answer, set: 0 })),
+    ...qSet1.map((q, i) => ({ id: i + 11, q: q.q, options: q.options, answer: q.answer, set: 1 })),
+  ];
+
+  return {
+    id: `KG-S${String(n).padStart(3, '0')}`,
+    n,
+    grade: 'KG',
+    level,
+    slot,
+    letter: SLOT_LABELS[slot],
+    kind: 'phonics',
+    kindLabel: 'Phonics Reader',
+    title,
+    emoji: book.emoji,
+    genre: 'Phonics Story',
+    paragraphs,
+    text,
+    wordCount: words(text).length,
+    questions,
+    book,
+  };
+}
+
 export function generateStory(gradeKey, n) {
   if (n < 1 || n > STORIES_PER_GRADE) return null;
   const key = `${gradeKey}|${n}`;
   if (cache.has(key)) return cache.get(key);
-  const g = gradeIdx(gradeKey);
   const level = levelOf(n);
   const slot = (n - 1) % STORIES_PER_LEVEL;
+
+  if (gradeKey === 'KG') {
+    const story = generateKgStory(n, level, slot);
+    cache.set(key, story);
+    return story;
+  }
+
+  const g = gradeIdx(gradeKey);
   const plot = PLOTS[slot];
   const c = makeCtx(gradeKey, g, n, plot, level - 1);
   c.level = level;
