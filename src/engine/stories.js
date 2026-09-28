@@ -213,6 +213,11 @@ function g3ContextSentence(word, hero) {
     acknowledge: `The teacher stopped to acknowledge their teamwork and praise their effort.`,
     clutch: `${hero} kept a firm clutch on the handle until everyone arrived safely.`,
     persevere: `Even when the task was hard, they decided to persevere and finish it together.`,
+    literal: `${hero} made sure everyone understood the literal meaning of each clue.`,
+    dialogue: `${hero} engaged in a thoughtful dialogue to listen to every friend's point of view.`,
+    rival: `${hero} showed great sportsmanship and greeted their rival warmly before the game.`,
+    passion: `${hero} pursued the project with true passion and gave it their absolute best effort.`,
+    claim: `${hero} gathered solid facts before anyone would claim to know the complete truth.`,
   };
   return map[word] || `${hero} worked hard and learned the true meaning of the word ${word}.`;
 }

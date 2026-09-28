@@ -34,6 +34,12 @@ export const G3_PDF_WORD_ROWS = [
   ['acknowledge', 'verb', 'To recognize', 'recognize, respond', 'ignore, overlook', 'The teacher will acknowledge you when you raise your hand.'],
   ['clutch', 'verb', 'To tightly hold something', 'hold, grasp', 'drop, throw', 'The woman had a firm clutch on her purse.'],
   ['persevere', 'verb', 'To keep working on something even though it is difficult', 'persist, endure', 'quit, stop', 'The math homework is difficult, but I will persevere and finish the assignment.'],
+  // Weekly Vocabulary Words (School Sheet)
+  ['literal', 'adjective', 'Following the usual meaning of words', 'exact, actual', 'figurative, symbolic', 'The word cold has a literal meaning of low temperature.'],
+  ['dialogue', 'noun', 'A conversation between two or more people', 'conversation, talk', 'silence, monologue', 'The two characters had an interesting dialogue in the story.'],
+  ['rival', 'noun', 'Someone who is competing to earn or win something', 'competitor, opponent', 'teammate, partner', 'The team practiced hard to defeat their rival in the game.'],
+  ['passion', 'noun', 'A strong liking for something', 'enthusiasm, love', 'dislike, apathy', 'She has a deep passion for science and art.'],
+  ['claim', 'verb', 'To state as a fact', 'state, declare', 'deny, doubt', 'He will claim that his answer is the correct one.'],
 ];
 
 // Section 1-B
@@ -276,5 +282,15 @@ export const G3_FILL_QUESTIONS = [
   { q: "Always _____ the speaker by looking at them politely.", a: 'acknowledge', pos: 'verb' },
   { q: "The little monkey held a tight _____ to its mother's fur.", a: 'clutch', pos: 'verb' },
   { q: "Even when things get tough, winners _____ until they reach the end.", a: 'persevere', pos: 'verb' },
+  { q: "Take the words in their _____ sense, not as a joke.", a: 'literal', pos: 'adjective' },
+  { q: "The characters had an interesting _____ about the secret map.", a: 'dialogue', pos: 'noun' },
+  { q: "Our soccer team played against their biggest _____.", a: 'rival', pos: 'noun' },
+  { q: "Maya has a great _____ for drawing and painting.", a: 'passion', pos: 'noun' },
+  { q: "Do not _____ something is true unless you have proof.", a: 'claim', pos: 'verb' },
+  { q: "The _____ meaning of a word is its actual, usual definition.", a: 'literal', pos: 'adjective' },
+  { q: "Two friends shared a thoughtful _____ after class.", a: 'dialogue', pos: 'noun' },
+  { q: "Each _____ gave their best effort to win the race.", a: 'rival', pos: 'noun' },
+  { q: "His _____ for reading led him to read every book on the shelf.", a: 'passion', pos: 'noun' },
+  { q: "She will _____ the first place trophy at the award ceremony.", a: 'claim', pos: 'verb' },
 ];
 

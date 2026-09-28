@@ -151,7 +151,7 @@ function buildG3Decks() {
   ];
 
   return [
-    { id: 'merola', label: '🏫 School Vocab (20 Words)', items: merolaWords },
+    { id: 'merola', label: `🏫 School Vocab (${merolaWords.length} Words)`, items: merolaWords },
     { id: 'mult', label: '✖️ Multiplication', items: mult },
     { id: 'div', label: '➗ Division Facts', items: div },
   ];
