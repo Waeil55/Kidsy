@@ -149,6 +149,37 @@ export default function Home() {
         )}
       </section>
 
+      {/* Grade 3 Exclusive: Vocab Talk Buddy Launch Banner */}
+      {g.key === 'G3' && (
+        <section style={{ margin: '8px 0 14px' }}>
+          <Link to="/talk" className="card row wrap" style={{
+            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+            color: '#fff',
+            padding: '16px 20px',
+            borderRadius: 20,
+            textDecoration: 'none',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 12,
+            boxShadow: '0 6px 20px rgba(79, 70, 229, 0.22)'
+          }} aria-label="Vocab Talk with AI Buddy">
+            <div className="row gap12" style={{ alignItems: 'center' }}>
+              <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>🦊🎙️</span>
+              <div>
+                <span className="pill" style={{ background: 'rgba(255,255,255,0.25)', color: '#fff', fontWeight: 800, fontSize: '0.75rem' }}>
+                  G3 EXCLUSIVE · VOICE CONVERSATION
+                </span>
+                <b style={{ display: 'block', fontSize: '1.2rem', color: '#fff', marginTop: 2 }}>Vocab Talk Buddy</b>
+                <small style={{ color: 'rgba(255,255,255,0.92)', fontSize: '0.9rem' }}>Speak and converse with AI about your school words and their meanings!</small>
+              </div>
+            </div>
+            <span className="btn white sm" style={{ fontWeight: 800, whiteSpace: 'nowrap', borderRadius: 14 }}>
+              Talk with Buddy <LuPlay size={14} style={{ marginLeft: 4 }} />
+            </span>
+          </Link>
+        </section>
+      )}
+
       {/* Compact Secondary Launch Strip: Continue level & daily mystery */}
       <section className="bf-sub-strip">
         <Link to={`/level/${lv}`} className="bf-continue-pill" aria-label="Continue current adventure">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LuHouse, LuMap, LuPuzzle, LuLanguages, LuGraduationCap, LuLibrary, LuUpload, LuPenLine, LuTrophy, LuUser, LuMenu, LuVolume2, LuVolumeX, LuBookMarked, LuStar, LuFlame, LuListChecks, LuBell, LuBellOff, LuSparkles, LuMic, LuChartNoAxesCombined, LuNotebookPen, LuLayers } from 'react-icons/lu';
+import { LuHouse, LuMap, LuPuzzle, LuLanguages, LuGraduationCap, LuLibrary, LuUpload, LuPenLine, LuTrophy, LuUser, LuMenu, LuVolume2, LuVolumeX, LuBookMarked, LuStar, LuFlame, LuListChecks, LuBell, LuBellOff, LuSparkles, LuMic, LuChartNoAxesCombined, LuNotebookPen, LuLayers, LuMessageCircle } from 'react-icons/lu';
 import { useStore, THEMES, STICKERS } from './store/store.js';
 import { GRADES, GRADE_BY_KEY } from './data/grades.js';
 import { useHash, parse, Link, go } from './ui/router.js';
@@ -23,10 +23,12 @@ import SpeakingLab from './screens/SpeakingLab.jsx';
 import Insights from './screens/Insights.jsx';
 import Study from './screens/Study.jsx';
 import ErrorBoundary from './ui/ErrorBoundary.jsx';
+import VocabTalk from './screens/VocabTalk.jsx';
 
 const NAV = [
   ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
   ['/exam', 'Exams', LuGraduationCap],
+  ['/talk', 'Vocab Talk', LuMessageCircle, 'G3'],
   ['/merola', 'Merola library', LuBookMarked, 'G3'],
   ['/cards', 'Flashcards', LuLayers],
   ['/speaking', 'Speaking Lab', LuMic],
@@ -58,9 +60,9 @@ export default function App() {
   const rawKey = seg[0] || '';
   // A few pages are locked to one grade and quietly fall back to Home for every other grade —
   // the header should say "Home" then too, not the name of a page the child cannot actually see.
-  const gradeLocked = { g3pack: 'G3', merola: 'G3' };
+  const gradeLocked = { g3pack: 'G3', merola: 'G3', talk: 'G3' };
   const key = gradeLocked[rawKey] && state.gradeKey !== gradeLocked[rawKey] ? '' : rawKey;
-  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Merola weekly words', exam: 'Exams', study: 'Study guides', index: 'Big index', merola: 'Merola library', cards: 'Flashcards', speaking: 'Speaking Lab', insights: 'My progress', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Create & upload', rewards: 'Scores & stickers', me: 'Me & settings' };
+  const titles = { '': 'Home', map: 'Adventure map', level: 'Level', read: 'Story time', practice: 'Practice', play: 'Practice', words: 'Words', g3pack: 'Merola weekly words', exam: 'Exams', study: 'Study guides', index: 'Big index', merola: 'Merola library', cards: 'Flashcards', speaking: 'Speaking Lab', talk: 'Vocab Talk Buddy', insights: 'My progress', upload: 'Upload a lesson', pack: 'My lesson', mystory: 'My story', studio: 'Create & upload', rewards: 'Scores & stickers', me: 'Me & settings' };
   const isOn = (p) => (p === '/' ? key === '' : ('/' + key).startsWith(p) || (p === '/practice' && key === 'play') || (p === '/map' && (key === 'level' || key === 'read')));
 
   let page;
@@ -82,6 +84,7 @@ export default function App() {
     case 'study': page = <Study />; break;
     case 'index': page = <IndexScreen />; break;
     case 'merola': page = state.gradeKey === 'G3' ? <MerolaPack section={seg[1]} index={seg[2] === undefined ? null : (+seg[2] || 0)} /> : <Home />; break;
+    case 'talk': page = state.gradeKey === 'G3' ? <VocabTalk /> : <Home />; break;
     case 'cards':
     case 'reels': page = <FlashcardsScreen />; break;
     case 'speaking': page = <SpeakingLab />; break;
