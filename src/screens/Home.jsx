@@ -180,6 +180,35 @@ export default function Home() {
         </section>
       )}
 
+      {/* Custom Study & Exam Specifications Lab Banner */}
+      <section style={{ margin: '8px 0 14px' }}>
+        <Link to="/custom-lab" className="card row wrap" style={{
+          background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+          color: '#fff',
+          padding: '16px 20px',
+          borderRadius: 20,
+          textDecoration: 'none',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 12,
+          boxShadow: '0 6px 20px rgba(37, 99, 235, 0.22)'
+        }} aria-label="Custom Study and Exam Specifications">
+          <div className="row gap12" style={{ alignItems: 'center' }}>
+            <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>🎛️🔬</span>
+            <div>
+              <span className="pill" style={{ background: 'rgba(255,255,255,0.25)', color: '#fff', fontWeight: 800, fontSize: '0.75rem' }}>
+                TARGETED STUDY &amp; EXAMS
+              </span>
+              <b style={{ display: 'block', fontSize: '1.2rem', color: '#fff', marginTop: 2 }}>Custom Study &amp; Exam Lab</b>
+              <small style={{ color: 'rgba(255,255,255,0.92)', fontSize: '0.9rem' }}>Choose Subtraction only, Division only, custom numbers &amp; tables to study or test!</small>
+            </div>
+          </div>
+          <span className="btn white sm" style={{ fontWeight: 800, whiteSpace: 'nowrap', borderRadius: 14 }}>
+            Open Lab <LuPlay size={14} style={{ marginLeft: 4 }} />
+          </span>
+        </Link>
+      </section>
+
       {/* Compact Secondary Launch Strip: Continue level & daily mystery */}
       <section className="bf-sub-strip">
         <Link to={`/level/${lv}`} className="bf-continue-pill" aria-label="Continue current adventure">

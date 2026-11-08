@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LuPlay } from 'react-icons/lu';
+import { LuPlay, LuSlidersHorizontal } from 'react-icons/lu';
 import { useStore, currentLevel, uid } from '../store/store.js';
 import { GRADE_BY_KEY, SUBJECT_BY_KEY } from '../data/grades.js';
 import { buildExam, EXAM_SUBJECTS, customToItems, g3PdfAll } from '../engine/quizzes.js';
@@ -8,11 +8,13 @@ import { Bar, Seg, Notice } from '../ui/ui.jsx';
 import { ExplainBtn } from '../ui/Explainer.jsx';
 import { Link } from '../ui/router.js';
 import { examLibrary, LIB_TABS } from '../engine/examlib.js';
+import CustomLab from './CustomLab.jsx';
 
 export default function Exam() {
   const { state, dispatch } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
   const examSubjects = g.key === 'KG' ? EXAM_SUBJECTS.filter((s) => s.key === 'math') : EXAM_SUBJECTS;
+  const [mainTab, setMainTab] = useState('spec'); // 'spec' | 'quick' | 'lib'
   const [size, setSize] = useState(20);
   const [subs, setSubs] = useState(g.key === 'KG' ? ['math'] : ['reading', 'math', 'vocab', 'grammar', 'fill']);
   const [maxLevel, setMaxLevel] = useState(Math.max(5, currentLevel(state, g.key)));
@@ -53,28 +55,58 @@ export default function Exam() {
       </>
     );
   }
+
   return (
     <>
-      <div className="row wrap" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}><div className="col"><h1>🎓 Exams</h1><p className="muted">Ready to show what you know? Build your own test, or pick one from the library below.</p></div><ExplainBtn topic="exam" /></div>
-      <div className="card col gap20">
-        <div><h3>How many questions?</h3><Seg value={size} onChange={setSize} options={[10, 20, 30, 50].map((n) => ({ key: n, label: n }))} /></div>
-        <div><h3>What is on the test?</h3>
-          <div className="row wrap" style={{ marginTop: 8 }}>{examSubjects.map((s) => <label key={s.key} className={`check ${subs.includes(s.key) ? '' : 'off'}`} style={{ padding: '8px 14px', cursor: 'pointer' }}><input type="checkbox" checked={subs.includes(s.key)} onChange={() => toggle(s.key)} disabled={s.key === 'custom' && !custom.length} /> {s.label}{s.key === 'custom' ? ` (${custom.length})` : ''}</label>)}</div></div>
-        <label className="f" style={{ maxWidth: 260 }}>Use levels 1 to {maxLevel}<input type="range" min="1" max="50" value={maxLevel} onChange={(e) => setMaxLevel(+e.target.value)} /></label>
-        <div className="row wrap"><button className="btn" disabled={!subs.length} onClick={() => start('mixed')}><LuPlay /> Start exam</button>
-          {g.key === 'G3' && <button className="btn soft" onClick={() => start('g3pdf')}>📘 Grade 3 PDF practice exam (20)</button>}</div>
-      </div>
-      <div className="card col">
-        <div className="row wrap"><h2 className="grow">📚 Exam library · {lib.length} ready-made exams</h2></div>
-        <Seg value={libTab} onChange={setLibTab} options={LIB_TABS.map(([k, l]) => ({ key: k, label: `${l} (${lib.filter((x) => x.tab === k).length})` }))} />
-        <div className="examgrid">
-          {lib.filter((x) => x.tab === libTab).map((ex, i) => { const b = bestOf(ex.name); return (
-            <button key={ex.name} className={`examcard c${i % 5}`} onClick={() => startLib(ex)}>
-              <span className="em">{ex.emoji}</span><b>{ex.name}</b><small>{ex.size} questions · {ex.blurb}</small>
-              {b >= 0 ? <span className="pill ok">Best {b}%</span> : <span className="pill">New</span>}
-            </button>); })}
+      <div className="row wrap" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div className="col">
+          <h1>🎓 Exams & Assessments</h1>
+          <p className="muted">Choose custom specifications (subtraction only, division only, number ranges), take a quick test, or pick from the library.</p>
         </div>
+        <ExplainBtn topic="exam" />
       </div>
+
+      <Seg
+        value={mainTab}
+        onChange={setMainTab}
+        options={[
+          { key: 'spec', label: '🎛️ Custom Specifications' },
+          { key: 'quick', label: '⚡ Quick Mixed Exam' },
+          { key: 'lib', label: `📚 Library (${lib.length})` },
+        ]}
+      />
+
+      {mainTab === 'spec' && (
+        <CustomLab initialMode="exam" />
+      )}
+
+      {mainTab === 'quick' && (
+        <div className="card col gap20">
+          <div><h3>How many questions?</h3><Seg value={size} onChange={setSize} options={[10, 20, 30, 50].map((n) => ({ key: n, label: n }))} /></div>
+          <div><h3>What is on the test?</h3>
+            <div className="row wrap" style={{ marginTop: 8 }}>{examSubjects.map((s) => <label key={s.key} className={`check ${subs.includes(s.key) ? '' : 'off'}`} style={{ padding: '8px 14px', cursor: 'pointer' }}><input type="checkbox" checked={subs.includes(s.key)} onChange={() => toggle(s.key)} disabled={s.key === 'custom' && !custom.length} /> {s.label}{s.key === 'custom' ? ` (${custom.length})` : ''}</label>)}</div></div>
+          <label className="f" style={{ maxWidth: 260 }}>Use levels 1 to {maxLevel}<input type="range" min="1" max="50" value={maxLevel} onChange={(e) => setMaxLevel(+e.target.value)} /></label>
+          <div className="row wrap">
+            <button className="btn pri" disabled={!subs.length} onClick={() => start('mixed')}><LuPlay /> Start Quick Exam</button>
+            {g.key === 'G3' && <button className="btn soft" onClick={() => start('g3pdf')}>📘 Grade 3 PDF practice exam (20)</button>}
+          </div>
+        </div>
+      )}
+
+      {mainTab === 'lib' && (
+        <div className="card col">
+          <div className="row wrap"><h2 className="grow">📚 Exam library · {lib.length} ready-made exams</h2></div>
+          <Seg value={libTab} onChange={setLibTab} options={LIB_TABS.map(([k, l]) => ({ key: k, label: `${l} (${lib.filter((x) => x.tab === k).length})` }))} />
+          <div className="examgrid">
+            {lib.filter((x) => x.tab === libTab).map((ex, i) => { const b = bestOf(ex.name); return (
+              <button key={ex.name} className={`examcard c${i % 5}`} onClick={() => startLib(ex)}>
+                <span className="em">{ex.emoji}</span><b>{ex.name}</b><small>{ex.size} questions · {ex.blurb}</small>
+                {b >= 0 ? <span className="pill ok">Best {b}%</span> : <span className="pill">New</span>}
+              </button>); })}
+          </div>
+        </div>
+      )}
+
       {!custom.length && <Notice>Want your own questions in the exam? Add some in the <Link to="/studio">Studio</Link> or <Link to="/upload">upload a lesson</Link>.</Notice>}
     </>
   );

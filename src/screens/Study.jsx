@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { LuPlay, LuGraduationCap } from 'react-icons/lu';
+import { LuPlay, LuGraduationCap, LuSlidersHorizontal, LuSparkles } from 'react-icons/lu';
 import { useStore, currentLevel } from '../store/store.js';
 import { GRADE_BY_KEY, chapterOf } from '../data/grades.js';
 import { storiesInLevel } from '../engine/stories.js';
@@ -13,12 +13,16 @@ import { SpeakBtn } from '../ui/ui.jsx';
 import { ExplainBtn } from '../ui/Explainer.jsx';
 import WordSheet from '../ui/WordSheet.jsx';
 import { Link } from '../ui/router.js';
+import CustomLab from './CustomLab.jsx';
 
 export default function Study() {
   const { state } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
   const [lv, setLv] = useState(currentLevel(state, g.key));
   const [open, setOpen] = useState(null);
+  const [showCustomLab, setShowCustomLab] = useState(false);
+  const [customLabOp, setCustomLabOp] = useState('sub');
+
   const words = useMemo(() => levelWords(g.key, lv), [g.key, lv]);
   const stories = useMemo(() => storiesInLevel(g.key, lv), [g.key, lv]);
   const math = useMemo(() => mathInLevel(g.key, lv).filter(Boolean).slice(0, 6), [g.key, lv]);
@@ -26,17 +30,110 @@ export default function Study() {
   const vocab = useMemo(() => vocabFor(g.key).slice(((lv - 1) * 3) % 30, ((lv - 1) * 3) % 30 + 4), [g.key, lv]);
   const kgBook = useMemo(() => (g.key === 'KG' ? getKgBook(lv) : null), [g.key, lv]);
   const book = state.wordbook || { learned: [], learning: [] };
+
+  if (showCustomLab) {
+    return (
+      <CustomLab
+        initialMode="study"
+        initialOp={customLabOp}
+        onBack={() => setShowCustomLab(false)}
+      />
+    );
+  }
+
   return (
     <>
       {open && <WordSheet word={open} grade={g.key} rate={state.settings.rate} onClose={() => setOpen(null)} />}
-      <div className="col"><h1>📓 Study guides</h1><p className="muted">A study guide for every level: words to learn, story recaps, math tips and grammar rules. 50 guides for {g.label}.</p></div>
+      <div className="col">
+        <h1>📓 Study Guides & Custom Lab</h1>
+        <p className="muted">Explore level guides, or target specific operations (subtraction only, division only, number ranges) in the Study Lab.</p>
+      </div>
+
+      {/* Featured Custom Study Lab Launcher */}
+      <div
+        className="card row wrap gap12"
+        style={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(99,102,241,0.1) 100%)',
+          border: '2px solid var(--primary)',
+          borderRadius: 16,
+          padding: '16px 20px',
+        }}
+      >
+        <div className="col" style={{ maxWidth: 440 }}>
+          <div className="row gap8" style={{ alignItems: 'center' }}>
+            <span style={{ fontSize: '1.6rem' }}>🔬</span>
+            <b style={{ fontSize: '1.15rem', color: 'var(--primary)' }}>Targeted Study & Specifications Lab</b>
+          </div>
+          <p className="tiny muted" style={{ margin: '4px 0 0 0' }}>
+            Choose exact operations (subtraction only, division only, times tables), set number ranges, and study step-by-step with interactive visual models & hints!
+          </p>
+        </div>
+
+        <div className="row wrap gap8">
+          <button
+            className="btn soft sm"
+            onClick={() => {
+              setCustomLabOp('sub');
+              setShowCustomLab(true);
+            }}
+          >
+            ➖ Study Subtraction
+          </button>
+          <button
+            className="btn soft sm"
+            onClick={() => {
+              setCustomLabOp('div');
+              setShowCustomLab(true);
+            }}
+          >
+            ➗ Study Division
+          </button>
+          <button
+            className="btn soft sm"
+            onClick={() => {
+              setCustomLabOp('mul');
+              setShowCustomLab(true);
+            }}
+          >
+            ✖️ Study Tables
+          </button>
+          <button
+            className="btn pri sm"
+            style={{ fontWeight: 800 }}
+            onClick={() => {
+              setCustomLabOp('sub');
+              setShowCustomLab(true);
+            }}
+          >
+            <LuSlidersHorizontal /> Custom Specifications...
+          </button>
+        </div>
+      </div>
+
       <div className="card row wrap gap8" aria-label={`About ${g.label}`}>
         <span className="pill">Ages {g.age}</span>
         <span className="pill">{g.session}</span>
         <span className="pill">{g.numbers}</span>
       </div>
-      <div className="lvgrid" role="tablist" aria-label="Choose a level">{Array.from({ length: 50 }, (_, i) => i + 1).map((n) => <button key={n} role="tab" aria-selected={n === lv} className={n === lv ? 'on' : ''} onClick={() => setLv(n)}>{n}</button>)}</div>
-      <section className="hero"><span className="pill w">{chapterOf(g.key, lv)}</span><h1>Level {lv} guide</h1><div className="row wrap"><Link to={`/level/${lv}`} className="btn white sm"><LuPlay /> Play the level</Link><Link to="/exam" className="btn white sm"><LuGraduationCap /> Take the level {lv} test</Link></div></section>
+
+      <div className="lvgrid" role="tablist" aria-label="Choose a level">
+        {Array.from({ length: 50 }, (_, i) => i + 1).map((n) => (
+          <button key={n} role="tab" aria-selected={n === lv} className={n === lv ? 'on' : ''} onClick={() => setLv(n)}>
+            {n}
+          </button>
+        ))}
+      </div>
+
+      <section className="hero">
+        <span className="pill w">{chapterOf(g.key, lv)}</span>
+        <h1>Level {lv} guide</h1>
+        <div className="row wrap">
+          <Link to={`/level/${lv}`} className="btn white sm"><LuPlay /> Play the level</Link>
+          <Link to="/exam" className="btn white sm"><LuGraduationCap /> Take the level {lv} test</Link>
+        </div>
+      </section>
 
       {g.key === 'KG' && kgBook && (
         <div className="card" style={{ borderLeft: `6px solid ${kgBook.accent_color || 'var(--primary)'}` }}>
@@ -135,19 +232,77 @@ export default function Study() {
         </div>
       )}
 
-      {g.key !== 'KG' && <div className="card"><h2>🔤 Words to learn</h2><p className="muted tiny">Tap a word to hear it, see meanings and examples, and practise it.</p>
-        <div className="wordcloud" style={{ marginTop: 10 }}>{words.map((w) => <button key={w} className={`wchip ${book.learned.includes(w) ? 'learned' : book.learning.includes(w) ? 'learning' : ''}`} onClick={() => setOpen(w)}>{w}</button>)}</div>
-        {vocab.length > 0 && <div className="col" style={{ marginTop: 12 }}>{vocab.map((v) => <div key={v.w} className="row wrap"><b>{v.w}</b><span className="pill">{v.pos}</span><span className="grow muted">{v.def}</span><SpeakBtn small text={`${v.w}. ${v.def}`} label="Hear it" /></div>)}</div>}
-      </div>}
-      <div className="card"><h2>📖 {g.key === 'KG' ? 'Phonics Readers' : 'Story recaps'}</h2>
-        <div className="examgrid" style={{ marginTop: 10 }}>{stories.map((s, i) => <Link key={s.id} to={`/read/${g.key}/${s.n}`} className={`examcard c${i % 5}`} style={{ textDecoration: 'none' }}><span className="em">{s.emoji}</span><b>{s.title}</b><small>{s.kindLabel} · {s.wordCount} words</small></Link>)}</div>
+      {g.key !== 'KG' && (
+        <div className="card">
+          <h2>🔤 Words to learn</h2>
+          <p className="muted tiny">Tap a word to hear it, see meanings and examples, and practise it.</p>
+          <div className="wordcloud" style={{ marginTop: 10 }}>
+            {words.map((w) => (
+              <button key={w} className={`wchip ${book.learned.includes(w) ? 'learned' : book.learning.includes(w) ? 'learning' : ''}`} onClick={() => setOpen(w)}>
+                {w}
+              </button>
+            ))}
+          </div>
+          {vocab.length > 0 && (
+            <div className="col" style={{ marginTop: 12 }}>
+              {vocab.map((v) => (
+                <div key={v.w} className="row wrap">
+                  <b>{v.w}</b>
+                  <span className="pill">{v.pos}</span>
+                  <span className="grow muted">{v.def}</span>
+                  <SpeakBtn small text={`${v.w}. ${v.def}`} label="Hear it" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="card">
+        <h2>📖 {g.key === 'KG' ? 'Phonics Readers' : 'Story recaps'}</h2>
+        <div className="examgrid" style={{ marginTop: 10 }}>
+          {stories.map((s, i) => (
+            <Link key={s.id} to={`/read/${g.key}/${s.n}`} className={`examcard c${i % 5}`} style={{ textDecoration: 'none' }}>
+              <span className="em">{s.emoji}</span>
+              <b>{s.title}</b>
+              <small>{s.kindLabel} · {s.wordCount} words</small>
+            </Link>
+          ))}
+        </div>
       </div>
-      <div className="card"><div className="row wrap" style={{ justifyContent: 'space-between' }}><h2>{g.key === 'KG' ? '🔤 Letters & numbers' : '🔢 Math corner'}</h2><ExplainBtn topic="math" small /></div><p className="muted tiny">Tap a problem to see how to solve it.</p>
-        <div className="col" style={{ marginTop: 10 }}>{math.map((m) => <details key={m.id} className="reveal"><summary>{m.q}</summary><p><b>Answer: {m.options[m.answer]}</b>{m.explain ? ` — ${m.explain}` : ''}</p></details>)}</div>
+
+      <div className="card">
+        <div className="row wrap" style={{ justifyContent: 'space-between' }}>
+          <h2>{g.key === 'KG' ? '🔤 Letters & numbers' : '🔢 Math corner'}</h2>
+          <ExplainBtn topic="math" small />
+        </div>
+        <p className="muted tiny">Tap a problem to see how to solve it.</p>
+        <div className="col" style={{ marginTop: 10 }}>
+          {math.map((m) => (
+            <details key={m.id} className="reveal">
+              <summary>{m.q}</summary>
+              <p><b>Answer: {m.options[m.answer]}</b>{m.explain ? ` — ${m.explain}` : ''}</p>
+            </details>
+          ))}
+        </div>
       </div>
-      {g.key !== 'KG' && <div className="card"><div className="row wrap" style={{ justifyContent: 'space-between' }}><h2>✏️ Grammar power</h2><ExplainBtn topic="grammar" small /></div>
-        <div className="col" style={{ marginTop: 10 }}>{grammar.map((q) => <details key={q.id} className="reveal"><summary>{q.q}</summary><p><b>Answer: {q.options[q.answer]}</b>{q.explain ? ` — ${q.explain}` : ''}</p></details>)}</div>
-      </div>}
+
+      {g.key !== 'KG' && (
+        <div className="card">
+          <div className="row wrap" style={{ justifyContent: 'space-between' }}>
+            <h2>✏️ Grammar power</h2>
+            <ExplainBtn topic="grammar" small />
+          </div>
+          <div className="col" style={{ marginTop: 10 }}>
+            {grammar.map((q) => (
+              <details key={q.id} className="reveal">
+                <summary>{q.q}</summary>
+                <p><b>Answer: {q.options[q.answer]}</b>{q.explain ? ` — ${q.explain}` : ''}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }

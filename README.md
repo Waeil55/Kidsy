@@ -23,6 +23,7 @@ No Vite or webpack: the build is a small esbuild script in `scripts/build.mjs`.
 | Story generator (500 per grade, 20 questions, 2 sets of 10) | `src/engine/stories.js`, `plots1.js`, `plots2.js`, `kit.js` |
 | Math generator (500 per grade, 50 levels) | `src/engine/math.js` |
 | Vocabulary, grammar, fill-in-the-blank, exams | `src/engine/quizzes.js`, `src/data/vocab.js` |
+| Custom Study & Exam Lab (operations, number ranges, tables, curriculum levels, guided hints and visual models) | `src/engine/specBuilder.js`, `src/screens/CustomLab.jsx`, `src/ui/StudyLabRunner.jsx` |
 | Grade 3 ELA PDF, word for word | `src/data/g3ela.js`, `src/screens/G3Pack.jsx` |
 | Upload a lesson (PDF, .docx, .txt, .csv, paste) | `src/engine/extract.js`, `src/screens/Upload.jsx` |
 | Studio (make your own cards, words, questions, math, fill-ins, stories) | `src/screens/Studio.jsx` |

@@ -42,6 +42,17 @@ export function PracticeHub() {
       <div className="grid g2">
         {kinds.map((k) => <div key={k.key} className="tile-explain"><Link to={`/play/${k.key}/${lv}`} className="tile t2"><span className="ico">{k.emoji}</span><b>{k.label}</b><span>{k.blurb}</span></Link><ExplainBtn topic={k.key} small /></div>)}
       </div>
+      <div className="card row wrap gap12" style={{ justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(99,102,241,0.08) 100%)', border: '2px solid var(--primary)', borderRadius: 14, padding: '14px 18px' }}>
+        <div className="col">
+          <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--primary)' }}>
+            🎛️ Want Subtraction only, Division only, or custom number ranges?
+          </div>
+          <div className="tiny muted">
+            Set exact operations, numbers (e.g. 1 to 20, 10 to 100), times tables, and levels in the Custom Lab!
+          </div>
+        </div>
+        <Link to="/custom-lab" className="btn pri sm">Open Custom Lab <LuArrowRight /></Link>
+      </div>
       <Notice>Looking for stories? Open the <Link to="/map">Adventure map</Link>. Want a <Link to="/study">Study guide</Link>, an <Link to="/exam">Exam</Link>, or the <Link to="/index">Big index</Link>?</Notice>
     </>
   );
