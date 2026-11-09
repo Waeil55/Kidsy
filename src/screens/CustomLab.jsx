@@ -28,7 +28,7 @@ export const KG_OPERATIONS = [
   { key: 'kg_shapes', label: 'Shapes & Colors', emoji: '🎨', blurb: 'Recognize shapes and colors' },
 ];
 
-export default function CustomLab({ initialMode = 'study', initialOp = 'sub', onBack }) {
+export default function CustomLab({ initialMode = 'study', initialOp = 'auto', onBack }) {
   const { state, dispatch } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
   const defaultMin = g.key === 'KG' ? 0 : 1;
@@ -36,7 +36,7 @@ export default function CustomLab({ initialMode = 'study', initialOp = 'sub', on
 
   // Specifications state
   const [mode, setMode] = useState(initialMode); // 'study' | 'exam'
-  const [operation, setOperation] = useState(g.key === 'KG' ? 'kg_counting' : initialOp);
+  const [operation, setOperation] = useState(initialOp === 'auto' ? (g.key === 'KG' ? 'kg_counting' : 'sub') : initialOp);
   const [rangePreset, setRangePreset] = useState(`${defaultMin}-${defaultMax}`);
   const [minNum, setMinNum] = useState(defaultMin);
   const [maxNum, setMaxNum] = useState(defaultMax);

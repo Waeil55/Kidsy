@@ -77,7 +77,7 @@ export default function Exam() {
       />
 
       {mainTab === 'spec' && (
-        <CustomLab initialMode="exam" />
+        <CustomLab initialMode="exam" initialOp={g.key === 'KG' ? 'kg_counting' : 'sub'} />
       )}
 
       {mainTab === 'quick' && (

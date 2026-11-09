@@ -76,6 +76,10 @@ body{background:
 .stat-pill.points { background: linear-gradient(135deg, #ffc933, #ff9642); color: #fff; }
 .flashcards-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
 .flashcards-tabs::-webkit-scrollbar { display: none; }
+.header-lab-link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex: none; padding: 9px 13px; border-radius: 999px; background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; font-weight: 900; font-size: .82rem; text-decoration: none; white-space: nowrap; box-shadow: 0 3px 0 #1d4ed8; }
+.header-lab-link svg { width: 18px; height: 18px; }
+.header-lab-link:hover { filter: brightness(1.06); transform: translateY(-1px); }
+@media (max-width: 560px) { .header-lab-link { width: 40px; height: 40px; padding: 0; border-radius: 14px; } .header-lab-link span { display: none; } }
 .tab-btn { background: rgba(255, 255, 255, 0.7); border: 2px solid transparent; padding: 8px 16px; border-radius: 99px; font-weight: 800; font-size: 0.88rem; color: var(--ink); cursor: pointer; white-space: nowrap; transition: all 0.2s; box-shadow: 0 3px 0 rgba(0,0,0,0.06); }
 .tab-btn:hover { background: #fff; transform: translateY(-1px); }
 .tab-btn.active { background: linear-gradient(135deg, var(--pc1, #3fb0f5), var(--pc2, #7a8cf5)); color: #fff; box-shadow: 0 4px 0 var(--pcd, #2b6fc0); }
@@ -579,4 +583,3 @@ html, body, .app, .main {
   border-radius: 24px !important;
   box-shadow: 0 8px 0 rgba(2, 132, 199, 0.08), 0 16px 28px rgba(2, 132, 199, 0.06) !important;
 }
-

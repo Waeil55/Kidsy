@@ -27,7 +27,7 @@ import VocabTalk from './screens/VocabTalk.jsx';
 import CustomLab from './screens/CustomLab.jsx';
 
 const NAV = [
-  ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/words', 'Words', LuLanguages],
+  ['/', 'Home', LuHouse], ['/map', 'Adventure map', LuMap], ['/practice', 'Practice', LuPuzzle], ['/study', 'Study guides', LuNotebookPen], ['/words', 'Words', LuLanguages],
   ['/custom-lab', 'Custom Lab', LuSlidersHorizontal],
   ['/exam', 'Exams', LuGraduationCap],
   ['/talk', 'Vocab Talk', LuMessageCircle, 'G3'],
@@ -37,7 +37,7 @@ const NAV = [
   ['/insights', 'My progress', LuChartNoAxesCombined],
   ['/studio', 'Create & upload', LuPenLine], ['/rewards', 'Scores & stickers', LuTrophy], ['/me', 'Me & settings', LuUser],
 ];
-const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/cards', 'Cards', LuLayers], ['/practice', 'Practice', LuPuzzle], ['/rewards', 'Rewards', LuTrophy]];
+const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/study', 'Study', LuNotebookPen], ['/custom-lab', 'Study/Exam', LuSlidersHorizontal], ['/practice', 'Practice', LuPuzzle], ['/rewards', 'Rewards', LuTrophy]];
 
 export default function App() {
   const { state, dispatch } = useStore();
@@ -83,7 +83,7 @@ export default function App() {
     case 'words': page = <Words />; break;
     case 'g3pack': page = state.gradeKey === 'G3' ? <G3Pack tab={seg[1]} /> : <Home />; break;
     case 'exam': page = <Exam />; break;
-    case 'custom-lab': page = <CustomLab />; break;
+    case 'custom-lab': page = <CustomLab initialOp={seg[1] || (g.key === 'KG' ? 'kg_counting' : 'sub')} />; break;
     case 'study': page = <Study />; break;
     case 'index': page = <IndexScreen />; break;
     case 'merola': page = state.gradeKey === 'G3' ? <MerolaPack section={seg[1]} index={seg[2] === undefined ? null : (+seg[2] || 0)} /> : <Home />; break;
@@ -133,6 +133,7 @@ export default function App() {
         <header className="top">
           <button className="iconbtn burger" onClick={() => setOpen(true)} aria-label="Open menu"><LuMenu /></button>
           <h2 className="grow">{key === '' ? `Hi, ${state.profile.name}!` : (titles[key] || 'Kidsy')} <span className="pill" style={{ marginLeft: 8, verticalAlign: 'middle' }}>{g.emoji} {g.short}</span></h2>
+          <Link to="/custom-lab" className="header-lab-link" title="Custom Study and Exam Specifications" aria-label="Custom Study and Exam Specifications"><LuSlidersHorizontal /><span>Study &amp; Exam</span></Link>
           <span className="streakpill" title="Day streak"><LuFlame />{state.stats.streak}</span>
           <button className={`iconbtn ${state.settings.autoRead ? 'on' : ''}`} title="Read questions to me automatically" aria-label="Toggle automatic read-aloud" onClick={() => dispatch({ type: 'settings', patch: { autoRead: !state.settings.autoRead } })}><LuVolume2 /></button>
           <button className={`iconbtn ${state.settings.sounds ? 'on' : ''}`} title={state.settings.sounds ? 'Mute sounds' : 'Sounds are off'} aria-label="Toggle sound effects" onClick={() => dispatch({ type: 'settings', patch: { sounds: !state.settings.sounds } })}>{state.settings.sounds ? <LuBell /> : <LuBellOff />}</button>

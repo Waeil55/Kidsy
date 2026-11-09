@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { LuArrowRight, LuRotateCcw } from 'react-icons/lu';
+import { LuArrowRight, LuRotateCcw, LuSlidersHorizontal } from 'react-icons/lu';
 import { useStore, levelUnlocked, currentLevel } from '../store/store.js';
 import { GRADE_BY_KEY } from '../data/grades.js';
 import { mathInLevel, mathNo, kgActivityQuestions } from '../engine/math.js';
@@ -66,6 +66,9 @@ export function PlayScreen({ kind, level }) {
   const kinds = kindsFor(grade);
   const k = kinds.find((x) => x.key === kind) || kinds[0];
   const extraWords = state.custom.words.filter((w) => w.grade === grade);
+  const customOp = grade === 'KG'
+    ? ({ letters: 'kg_letters', counting: 'kg_counting', addsub: 'mixed_math', shapes: 'kg_shapes' }[kind] || 'sub')
+    : ({ math: 'mixed_math', fill: 'fill', vocab: 'vocab', grammar: 'grammar' }[kind] || 'sub');
 
   const items = useMemo(() => {
     if (grade === 'KG') {
@@ -91,7 +94,7 @@ export function PlayScreen({ kind, level }) {
   return (
     <>
       <Crumb to={`/level/${lv}`}>Level {lv}</Crumb>
-      <div className="row wrap"><h1 className="grow">{k.emoji} {k.label}</h1><Seg value={kind} onChange={(x) => go(`/play/${x}/${lv}`)} options={kinds.map((x) => ({ key: x.key, label: x.label }))} /></div>
+      <div className="row wrap"><h1 className="grow">{k.emoji} {k.label}</h1><Link to={`/custom-lab/${customOp}`} className="btn soft sm"><LuSlidersHorizontal /> Customize this practice</Link><Seg value={kind} onChange={(x) => go(`/play/${x}/${lv}`)} options={kinds.map((x) => ({ key: x.key, label: x.label }))} /></div>
       <QuizRunner key={`${kind}-${lv}-${attempt}`} items={items} grade={grade} subject={kind} title={`${k.label} · level ${lv}`} onFinish={onFinish}
         renderFinish={(res) => (
           <div className="col gap12" style={{ alignItems: 'center', width: '100%', marginTop: 14 }}>
