@@ -3,11 +3,22 @@
 // (this page, its script and stylesheet, the icons) is enough for the whole app to work offline.
 // Anything else — the AI voice, dictionary lookups, translations — is fetched fresh and simply
 // falls back to a quieter mode when there is no connection, the same way it already does today.
-const VERSION = 'kidsy-1794182408151';
+const VERSION = 'kidsy-1794182568693';
 const SHELL = ['./', './index.html', './app.css', './app.js', './pdf-worker.js', './manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(VERSION).then(async (cache) => {
+      const shell = await Promise.all(SHELL.map(async (path) => {
+        const request = new Request(new URL(path, self.registration.scope), { cache: 'reload' });
+        const response = await fetch(request);
+        if (!response.ok) throw new Error(`Failed to cache app shell: ${path} (${response.status})`);
+        return [request, response];
+      }));
+      await Promise.all(shell.map(([request, response]) => cache.put(request, response)));
+      return self.skipWaiting();
+    })
+  );
 });
 
 self.addEventListener('activate', (e) => {

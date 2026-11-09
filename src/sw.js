@@ -7,7 +7,18 @@ const VERSION = 'kidsy-__BUILD__';
 const SHELL = ['./', './index.html', './app.css', './app.js', './pdf-worker.js', './manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(VERSION).then(async (cache) => {
+      const shell = await Promise.all(SHELL.map(async (path) => {
+        const request = new Request(new URL(path, self.registration.scope), { cache: 'reload' });
+        const response = await fetch(request);
+        if (!response.ok) throw new Error(`Failed to cache app shell: ${path} (${response.status})`);
+        return [request, response];
+      }));
+      await Promise.all(shell.map(([request, response]) => cache.put(request, response)));
+      return self.skipWaiting();
+    })
+  );
 });
 
 self.addEventListener('activate', (e) => {
