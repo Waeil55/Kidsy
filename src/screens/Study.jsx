@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { LuPlay, LuGraduationCap, LuSlidersHorizontal, LuSparkles } from 'react-icons/lu';
+import { LuPlay, LuGraduationCap } from 'react-icons/lu';
 import { useStore, currentLevel } from '../store/store.js';
 import { GRADE_BY_KEY, chapterOf } from '../data/grades.js';
 import { storiesInLevel } from '../engine/stories.js';
@@ -13,15 +13,12 @@ import { SpeakBtn } from '../ui/ui.jsx';
 import { ExplainBtn } from '../ui/Explainer.jsx';
 import WordSheet from '../ui/WordSheet.jsx';
 import { Link } from '../ui/router.js';
-import CustomLab from './CustomLab.jsx';
 
 export default function Study() {
   const { state } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
   const [lv, setLv] = useState(currentLevel(state, g.key));
   const [open, setOpen] = useState(null);
-  const [showCustomLab, setShowCustomLab] = useState(false);
-  const [customLabOp, setCustomLabOp] = useState('sub');
 
   const words = useMemo(() => levelWords(g.key, lv), [g.key, lv]);
   const stories = useMemo(() => storiesInLevel(g.key, lv), [g.key, lv]);
@@ -31,86 +28,10 @@ export default function Study() {
   const kgBook = useMemo(() => (g.key === 'KG' ? getKgBook(lv) : null), [g.key, lv]);
   const book = state.wordbook || { learned: [], learning: [] };
 
-  if (showCustomLab) {
-    return (
-      <CustomLab
-        initialMode="study"
-        initialOp={customLabOp}
-        onBack={() => setShowCustomLab(false)}
-      />
-    );
-  }
-
   return (
     <>
       {open && <WordSheet word={open} grade={g.key} rate={state.settings.rate} onClose={() => setOpen(null)} />}
-      <div className="col">
-        <h1>📓 Study Guides & Custom Lab</h1>
-        <p className="muted">Explore level guides, or target specific operations (subtraction only, division only, number ranges) in the Study Lab.</p>
-      </div>
-
-      {/* Featured Custom Study Lab Launcher */}
-      <div
-        className="card row wrap gap12"
-        style={{
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(99,102,241,0.1) 100%)',
-          border: '2px solid var(--primary)',
-          borderRadius: 16,
-          padding: '16px 20px',
-        }}
-      >
-        <div className="col" style={{ maxWidth: 440 }}>
-          <div className="row gap8" style={{ alignItems: 'center' }}>
-            <span style={{ fontSize: '1.6rem' }}>🔬</span>
-            <b style={{ fontSize: '1.15rem', color: 'var(--primary)' }}>Targeted Study & Specifications Lab</b>
-          </div>
-          <p className="tiny muted" style={{ margin: '4px 0 0 0' }}>
-            Choose exact operations (subtraction only, division only, times tables), set number ranges, and study step-by-step with interactive visual models & hints!
-          </p>
-        </div>
-
-        <div className="row wrap gap8">
-          <button
-            className="btn soft sm"
-            onClick={() => {
-              setCustomLabOp('sub');
-              setShowCustomLab(true);
-            }}
-          >
-            ➖ Study Subtraction
-          </button>
-          <button
-            className="btn soft sm"
-            onClick={() => {
-              setCustomLabOp('div');
-              setShowCustomLab(true);
-            }}
-          >
-            ➗ Study Division
-          </button>
-          <button
-            className="btn soft sm"
-            onClick={() => {
-              setCustomLabOp('mul');
-              setShowCustomLab(true);
-            }}
-          >
-            ✖️ Study Tables
-          </button>
-          <button
-            className="btn pri sm"
-            style={{ fontWeight: 800 }}
-            onClick={() => {
-              setCustomLabOp('sub');
-              setShowCustomLab(true);
-            }}
-          >
-            <LuSlidersHorizontal /> Custom Specifications...
-          </button>
-        </div>
-      </div>
+      <div className="col"><h1>📓 Study guides</h1><p className="muted">A study guide for every level: words to learn, story recaps, math tips and grammar rules. 50 guides for {g.label}.</p></div>
 
       <div className="card row wrap gap8" aria-label={`About ${g.label}`}>
         <span className="pill">Ages {g.age}</span>

@@ -37,7 +37,7 @@ const NAV = [
   ['/insights', 'My progress', LuChartNoAxesCombined],
   ['/studio', 'Create & upload', LuPenLine], ['/rewards', 'Scores & stickers', LuTrophy], ['/me', 'Me & settings', LuUser],
 ];
-const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/study', 'Study', LuNotebookPen], ['/custom-lab', 'Study/Exam', LuSlidersHorizontal], ['/practice', 'Practice', LuPuzzle], ['/rewards', 'Rewards', LuTrophy]];
+const BOTTOM = [['/', 'Home', LuHouse], ['/map', 'Map', LuMap], ['/study', 'Study', LuNotebookPen], ['/practice', 'Practice', LuPuzzle], ['/rewards', 'Rewards', LuTrophy]];
 
 export default function App() {
   const { state, dispatch } = useStore();
@@ -133,7 +133,6 @@ export default function App() {
         <header className="top">
           <button className="iconbtn burger" onClick={() => setOpen(true)} aria-label="Open menu"><LuMenu /></button>
           <h2 className="grow">{key === '' ? `Hi, ${state.profile.name}!` : (titles[key] || 'Kidsy')} <span className="pill" style={{ marginLeft: 8, verticalAlign: 'middle' }}>{g.emoji} {g.short}</span></h2>
-          <Link to="/custom-lab" className="header-lab-link" title="Custom Study and Exam Specifications" aria-label="Custom Study and Exam Specifications"><LuSlidersHorizontal /><span>Study &amp; Exam</span></Link>
           <span className="streakpill" title="Day streak"><LuFlame />{state.stats.streak}</span>
           <button className={`iconbtn ${state.settings.autoRead ? 'on' : ''}`} title="Read questions to me automatically" aria-label="Toggle automatic read-aloud" onClick={() => dispatch({ type: 'settings', patch: { autoRead: !state.settings.autoRead } })}><LuVolume2 /></button>
           <button className={`iconbtn ${state.settings.sounds ? 'on' : ''}`} title={state.settings.sounds ? 'Mute sounds' : 'Sounds are off'} aria-label="Toggle sound effects" onClick={() => dispatch({ type: 'settings', patch: { sounds: !state.settings.sounds } })}>{state.settings.sounds ? <LuBell /> : <LuBellOff />}</button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LuPlay, LuSlidersHorizontal } from 'react-icons/lu';
+import { LuPlay } from 'react-icons/lu';
 import { useStore, currentLevel, uid } from '../store/store.js';
 import { GRADE_BY_KEY, SUBJECT_BY_KEY } from '../data/grades.js';
 import { buildExam, EXAM_SUBJECTS, customToItems, g3PdfAll } from '../engine/quizzes.js';
@@ -8,13 +8,12 @@ import { Bar, Seg, Notice } from '../ui/ui.jsx';
 import { ExplainBtn } from '../ui/Explainer.jsx';
 import { Link } from '../ui/router.js';
 import { examLibrary, LIB_TABS } from '../engine/examlib.js';
-import CustomLab from './CustomLab.jsx';
 
 export default function Exam() {
   const { state, dispatch } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
   const examSubjects = g.key === 'KG' ? EXAM_SUBJECTS.filter((s) => s.key === 'math') : EXAM_SUBJECTS;
-  const [mainTab, setMainTab] = useState('spec'); // 'spec' | 'quick' | 'lib'
+  const [mainTab, setMainTab] = useState('quick'); // 'quick' | 'lib'
   const [size, setSize] = useState(20);
   const [subs, setSubs] = useState(g.key === 'KG' ? ['math'] : ['reading', 'math', 'vocab', 'grammar', 'fill']);
   const [maxLevel, setMaxLevel] = useState(Math.max(5, currentLevel(state, g.key)));
@@ -60,8 +59,8 @@ export default function Exam() {
     <>
       <div className="row wrap" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div className="col">
-          <h1>🎓 Exams & Assessments</h1>
-          <p className="muted">Choose custom specifications (subtraction only, division only, number ranges), take a quick test, or pick from the library.</p>
+          <h1>🎓 Exams</h1>
+          <p className="muted">Take a quick mixed test, or pick one from the library. For a custom exam, use the <Link to="/custom-lab">Custom Lab</Link>.</p>
         </div>
         <ExplainBtn topic="exam" />
       </div>
@@ -70,15 +69,10 @@ export default function Exam() {
         value={mainTab}
         onChange={setMainTab}
         options={[
-          { key: 'spec', label: '🎛️ Custom Specifications' },
           { key: 'quick', label: '⚡ Quick Mixed Exam' },
           { key: 'lib', label: `📚 Library (${lib.length})` },
         ]}
       />
-
-      {mainTab === 'spec' && (
-        <CustomLab initialMode="exam" initialOp={g.key === 'KG' ? 'kg_counting' : 'sub'} />
-      )}
 
       {mainTab === 'quick' && (
         <div className="card col gap20">
