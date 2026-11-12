@@ -40,6 +40,18 @@ export const G3_PDF_WORD_ROWS = [
   ['rival', 'noun', 'Someone who is competing to earn or win something', 'competitor, opponent', 'teammate, partner', 'The team practiced hard to defeat their rival in the game.'],
   ['passion', 'noun', 'A strong liking for something', 'enthusiasm, love', 'dislike, apathy', 'She has a deep passion for science and art.'],
   ['claim', 'verb', 'To state as a fact', 'state, declare', 'deny, doubt', 'He will claim that his answer is the correct one.'],
+  // Week One — Teacher Guide
+  ['gradually', 'adverb', 'Moving or changing very slowly', 'slowly, slightly', 'fast, quickly', 'We will gradually learn our multiplication facts during the school year.'],
+  ['merchant', 'noun', 'Someone who sells goods to earn money', 'salesperson, clerk', 'customer, buyer', 'She will give the store merchant the money and he will place her groceries in a bag.'],
+  ['essential', 'adjective', 'Something that is very important', 'necessary, required', 'unnecessary, unimportant', 'It is essential that you put your name at the top of your homework.'],
+  ['fortunate', 'adjective', 'Having good luck', 'lucky, favorable, blessed', 'unlucky, unfavorable', 'He was fortunate that his mom brought his lunch when he forgot it.'],
+  ['immense', 'adjective', 'Very great in size or amount', 'large, gigantic', 'small, tiny', 'An immense crowd gathered to watch the parade.'],
+  // Week Two — Teacher Guide
+  ['lob', 'verb', 'To throw', 'throw, toss', 'catch, hold', 'The pitcher will lob the ball to the first baseman for the out.'],
+  ['tremble', 'verb', 'To shake uncontrollably', 'shake, shiver', 'freeze, still', 'He began to tremble as he walked into the haunted house.'],
+  ['skeptic', 'noun', 'Someone who is slow to believe something', 'doubter, unbeliever', 'believer, follower', 'I have always been a skeptic when it comes to the fortunes in fortune cookies.'],
+  ['propose', 'verb', 'To make a suggestion or share an idea', 'suggest, recommend', 'demand, order', 'I propose that we order pizza since you are too tired to cook dinner.'],
+  ['inflate', 'verb', 'To fill with air or gas', 'expand, fill', 'deflate, shrink', 'Dad will inflate the balloons before the party.'],
 ];
 
 // Section 1-B
