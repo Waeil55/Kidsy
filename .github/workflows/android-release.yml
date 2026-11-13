@@ -1,0 +1,71 @@
+name: Android build
+
+# Run it by hand: GitHub -> Actions -> "Android build" -> Run workflow.
+# Always produces a test APK you can install on a phone.
+# With these repository secrets it also produces the signed .aab for Google Play:
+#   ANDROID_KEYSTORE_BASE64   base64 of your upload keystore (.jks)
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Build web app and copy into Android project
+        run: |
+          npm ci
+          npm run build
+          npx cap sync android
+
+      - name: Test APK (debug, installable)
+        working-directory: android
+        env:
+          APP_BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kidsy-android-test-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Signed Play Store bundle (.aab)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          APP_BUILD_NUMBER: ${{ github.run_number }}
+        working-directory: android
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then echo "No keystore secret: skipping the signed Play Store bundle."; exit 0; fi
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/upload.jks"
+          ./gradlew bundleRelease --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('android/app/build/outputs/bundle/release/*.aab') != '' }}
+        with:
+          name: kidsy-android-play-bundle
+          path: android/app/build/outputs/bundle/release/app-release.aab

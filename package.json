@@ -10,6 +10,7 @@
     "serve": "node scripts/serve.mjs",
     "test": "node scripts/selftest.mjs",
     "icons": "node scripts/make-icons.mjs",
+    "app:assets": "node scripts/make-app-assets.mjs && npx capacitor-assets generate --ios --android --iconBackgroundColor #2f9bec --splashBackgroundColor #2f9bec",
     "app:sync": "node scripts/build.mjs && npx cap sync",
     "app:android": "npm run app:sync && npx cap open android",
     "app:ios": "npm run app:sync && npx cap open ios"
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@capacitor/android": "^7.6.10",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^7.6.10",
     "@capacitor/ios": "^7.6.10",
     "esbuild": "^0.27.0",
