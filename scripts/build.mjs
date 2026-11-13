@@ -36,6 +36,8 @@ async function buildAll() {
     for (const f of fs.readdirSync(iconsSrc)) fs.copyFileSync(path.join(iconsSrc, f), path.join(dist, 'icons', f));
   }
   fs.copyFileSync(path.join(root, 'public/manifest.webmanifest'), path.join(dist, 'manifest.webmanifest'));
+  // Store listing pages (privacy policy and support), linked from the App Store / Play listings.
+  for (const page of ['privacy.html', 'support.html']) fs.copyFileSync(path.join(root, 'public', page), path.join(dist, page));
   const swSrc = fs.readFileSync(path.join(root, 'src/sw.js'), 'utf8').replace('__BUILD__', String(Date.now()));
   fs.writeFileSync(path.join(dist, 'sw.js'), swSrc);
 
