@@ -605,3 +605,7 @@ html, body, .app, .main {
 .wk-card-sa { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .wk-card-sa span { background: var(--soft); border-radius: 12px; padding: 6px 10px; font-size: .9rem; }
 .wk-card-sa small { display: block; color: var(--ink3); font-weight: 800; font-size: .7rem; text-transform: uppercase; }
+.lab-step { display: flex; align-items: center; gap: 10px; margin: 0; }
+.lab-step span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--grad); color: #fff; font-size: .9rem; flex: none; }
+.lab-emoji { flex: none; font-size: 1.25rem; width: 24px; text-align: center; }
+.lab .mat-list { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }

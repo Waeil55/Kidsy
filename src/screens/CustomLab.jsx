@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LuPlay, LuGraduationCap, LuSparkles, LuRotateCcw, LuSlidersHorizontal } from 'react-icons/lu';
+import { LuPlay, LuSparkles, LuRotateCcw } from 'react-icons/lu';
 import { useStore, currentLevel, uid } from '../store/store.js';
 import { GRADE_BY_KEY } from '../data/grades.js';
 import { buildSpecifiedSession } from '../engine/specBuilder.js';
@@ -41,8 +41,8 @@ export default function CustomLab({ initialMode = 'study', initialOp = 'auto', o
   const [minNum, setMinNum] = useState(defaultMin);
   const [maxNum, setMaxNum] = useState(defaultMax);
   const [table, setTable] = useState(0); // 0 = all / random, 1..12 = specific table
-  const [levelMin, setLevelMin] = useState(1);
-  const [levelMax, setLevelMax] = useState(Math.max(5, currentLevel(state, g.key)));
+  const levelMin = 1;
+  const levelMax = Math.max(5, currentLevel(state, g.key));
   const [count, setCount] = useState(10);
   const [running, setRunning] = useState(null); // { items, mode, title }
 
@@ -59,15 +59,6 @@ export default function CustomLab({ initialMode = 'study', initialOp = 'auto', o
   const ops = g.key === 'KG' ? KG_OPERATIONS : OPERATIONS;
   const invalidDivisionRange = operation === 'div' && table > 0
     && Math.ceil(Math.max(1, minNum) / table) > Math.floor(maxNum / table);
-
-  // Quick 1-tap presets
-  const handleQuickPreset = (p) => {
-    if (p.op) setOperation(p.op);
-    if (p.preset) applyPreset(p.preset);
-    if (p.table !== undefined) setTable(p.table);
-    if (p.mode) setMode(p.mode);
-    if (p.count) setCount(p.count);
-  };
 
   const startSession = (sessionMode = mode) => {
     if (invalidDivisionRange) return;
@@ -173,277 +164,69 @@ export default function CustomLab({ initialMode = 'study', initialOp = 'auto', o
     );
   }
 
-  // Builder View
+  // Builder view: four short steps and one start bar.
+  // The icon already shows the sign, so "Subtraction (−)" is shown as "Subtraction".
+  const shortLabel = (label) => label.replace(/ \([^)]*\)$/, '');
+  const RANGE_OPTIONS = g.key === 'KG' ? ['0-10'] : ['0-10', '1-20', '1-50', '10-100', '100-1000'];
+  const usesRange = ['sub', 'add', 'div', 'mixed_math', 'word_problems'].includes(operation);
+  const usesTable = ['mul', 'div'].includes(operation);
+  const current = ops.find((o) => o.key === operation) || ops[0];
   return (
-    <div className="col gap20">
-      {/* Screen Title */}
-      <div className="row wrap gap12" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div className="col">
-          <div className="row gap8" style={{ alignItems: 'center' }}>
-            <h1>🎛️ Custom practice</h1>
-          </div>
-          <p className="muted" style={{ margin: '4px 0 0 0' }}>
-            Pick exactly what to practise: one operation, a number range, a times table.
-          </p>
-        </div>
-        {onBack && (
-          <button className="btn ghost sm" onClick={onBack}>
-            Back
-          </button>
-        )}
+    <div className="col gap16 lab">
+      <div className="row" style={{ alignItems: 'flex-start' }}>
+        <div className="col grow"><h1>🎛️ Custom practice</h1><p className="muted" style={{ margin: 0 }}>Choose exactly what to practise.</p></div>
+        {onBack && <button className="btn ghost sm" onClick={onBack}>Back</button>}
       </div>
 
-      {/* 1. Mode Switcher (Study vs Exam); hidden when the lab is used for practice only */}
-      {!studyOnly && (
-      <div className="card col gap12" style={{ borderLeft: '6px solid var(--primary)' }}>
-        <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>1. Choose Mode: Study or Exam?</div>
-        <div className="row wrap gap12">
-          <button
-            className={mode === 'study' ? 'btn pri grow' : 'btn ghost grow'}
-            style={{ padding: '14px 20px', borderRadius: 14 }}
-            onClick={() => setMode('study')}
-          >
-            <div className="row gap8" style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '1.4rem' }}>🔬</span>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 800 }}>Study Lab Mode</div>
-                <div className="tiny" style={{ opacity: 0.85 }}>Hints, visual aids, audio read-aloud & steps</div>
-              </div>
-            </div>
-          </button>
-
-          <button
-            className={mode === 'exam' ? 'btn pri grow' : 'btn ghost grow'}
-            style={{ padding: '14px 20px', borderRadius: 14 }}
-            onClick={() => setMode('exam')}
-          >
-            <div className="row gap8" style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '1.4rem' }}>🎓</span>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 800 }}>Exam Test Mode</div>
-                <div className="tiny" style={{ opacity: 0.85 }}>Test questions, score grading & review</div>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
-      )}
-
-      {/* 2. Quick Presets */}
-      <div className="card col gap12">
-        <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>⚡ Quick 1-Tap Presets</div>
-        <div className="row wrap gap8">
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'sub', preset: '1-20' })}>
-            ➖ Subtraction Only (1–20)
-          </button>
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'sub', preset: '10-100' })}>
-            ➖ 2-Digit Subtraction (10–100)
-          </button>
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'div', table: 0, preset: '1-50' })}>
-            ➗ Division Facts (1–12)
-          </button>
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'div', table: 7 })}>
-            ➗ Table of 7 Division
-          </button>
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'mul', table: 0 })}>
-            ✖️ Times Tables (1–12)
-          </button>
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'add', preset: '1-20' })}>
-            ➕ Addition Within 20
-          </button>
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'add', preset: '10-100' })}>
-            ➕ Addition Within 100
-          </button>
-          {g.key === 'G3' && (
-            <button className="btn soft sm" style={{ background: '#e0e7ff', color: '#4338ca', fontWeight: 700 }} onClick={() => handleQuickPreset({ op: 'vocab', count: 25 })}>
-              🏫 G3 School Vocab (25 Words)
+      <section className="card col gap12">
+        <h3 className="lab-step"><span>1</span> What?</h3>
+        <div className="mat-list">
+          {ops.map((o) => (
+            <button key={o.key} type="button" role="radio" aria-checked={operation === o.key} className={`mat-item ${operation === o.key ? 'on' : ''}`}
+              onClick={() => { setOperation(o.key); if (!['div', 'mul'].includes(o.key)) setTable(0); }}>
+              <span className="lab-emoji" aria-hidden="true">{o.emoji}</span>
+              <span className="mat-label">{shortLabel(o.label)}</span>
             </button>
-          )}
-          <button className="btn soft sm" onClick={() => handleQuickPreset({ op: 'word_problems' })}>
-            📖 Word Problems Only
-          </button>
+          ))}
         </div>
-      </div>
+      </section>
 
-      {/* 3. Pick Specific Operation / Subject */}
-      <div className="card col gap12">
-        <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>2. Pick What to Practice (Operation or Subject)</div>
-        <div className="grid g2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-          {ops.map((o) => {
-            const isSel = operation === o.key;
-            return (
-              <button
-                key={o.key}
-                className={isSel ? 'tile t1' : 'tile t2'}
-                style={{
-                  border: isSel ? '2px solid var(--primary)' : '1px solid var(--border)',
-                  background: isSel ? 'rgba(59, 130, 246, 0.08)' : 'var(--card-bg, #fff)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-                onClick={() => {
-                  setOperation(o.key);
-                  if (!['div', 'mul'].includes(o.key)) setTable(0);
-                }}
-              >
-                <span className="ico">{o.emoji}</span>
-                <b style={{ color: isSel ? 'var(--primary)' : 'inherit' }}>{o.label}</b>
-                <span className="tiny muted">{o.blurb}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 4. Number Range Specifications (When Math) */}
-      {['sub', 'add', 'div', 'mixed_math', 'word_problems'].includes(operation) && (
-        <div className="card col gap12">
-          <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>3. From What Number to What Number?</div>
-          <div className="row wrap gap8">
-            {['0-10', '1-20', '1-50', '10-100', '100-1000', 'custom'].map((p) => (
-              <button
-                key={p}
-                className={rangePreset === p ? 'btn pri sm' : 'btn ghost sm'}
-                onClick={() => applyPreset(p)}
-              >
-                {p === 'custom' ? 'Custom Range ⚙️' : p}
-              </button>
-            ))}
-          </div>
-
-          <div className="row wrap gap16" style={{ alignItems: 'center', marginTop: 6 }}>
-            <label className="f" style={{ maxWidth: 160 }}>
-              From (Min Number)
-              <input
-                type="number"
-                min="0"
-                max="999"
-                value={minNum}
-                onChange={(e) => {
-                  setRangePreset('custom');
-                  const next = Math.max(0, Math.min(999, Number(e.target.value) || 0));
-                  setMinNum(next);
-                  if (next >= maxNum) setMaxNum(next + 1);
-                }}
-              />
-            </label>
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: 16 }}>➔</span>
-            <label className="f" style={{ maxWidth: 160 }}>
-              To (Max Number)
-              <input
-                type="number"
-                min={minNum + 1}
-                max="1000"
-                value={maxNum}
-                onChange={(e) => {
-                  setRangePreset('custom');
-                  setMaxNum(Math.max(minNum + 1, Math.min(1000, Number(e.target.value) || minNum + 1)));
-                }}
-              />
-            </label>
-          </div>
-          <span className="tiny muted">
-            Use numbers from {minNum} to {maxNum}{operation === 'div' ? ' for the dividend' : ' in the problems'}.
-          </span>
-          {invalidDivisionRange && (
-            <div className="tiny" role="alert" style={{ color: 'var(--bad, #b91c1c)', fontWeight: 700 }}>
-              The {table} table has no dividend between {minNum} and {maxNum}. Choose a wider range or another table.
+      {usesRange && (
+        <section className="card col gap12">
+          <h3 className="lab-step"><span>2</span> Numbers</h3>
+          <Seg value={rangePreset} onChange={(p) => (p === 'custom' ? setRangePreset('custom') : applyPreset(p))}
+            options={[...RANGE_OPTIONS.map((p) => ({ key: p, label: p.replace('-', '–') })), { key: 'custom', label: 'Other' }]} />
+          {rangePreset === 'custom' && (
+            <div className="row gap12" style={{ alignItems: 'flex-end' }}>
+              <label className="f" style={{ maxWidth: 130 }}>From
+                <input type="number" min="0" max="999" value={minNum} onChange={(e) => { const n = Math.max(0, Math.min(999, Number(e.target.value) || 0)); setMinNum(n); if (n >= maxNum) setMaxNum(n + 1); }} />
+              </label>
+              <label className="f" style={{ maxWidth: 130 }}>To
+                <input type="number" min={minNum + 1} max="1000" value={maxNum} onChange={(e) => setMaxNum(Math.max(minNum + 1, Math.min(1000, Number(e.target.value) || minNum + 1)))} />
+              </label>
             </div>
           )}
-        </div>
+          {invalidDivisionRange && <div className="tiny" role="alert" style={{ color: 'var(--bad, #b91c1c)', fontWeight: 700 }}>The {table} table has no number between {minNum} and {maxNum}. Pick a wider range or another table.</div>}
+        </section>
       )}
 
-      {/* 5. Times Table / Division Table Selector (When Mul or Div) */}
-      {['mul', 'div'].includes(operation) && (
-        <div className="card col gap12">
-          <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>
-            3. Choose {operation === 'div' ? 'Division' : 'Multiplication'} Table
-          </div>
-          <div className="row wrap gap8">
-            <button
-              className={table === 0 ? 'btn pri sm' : 'btn ghost sm'}
-              onClick={() => setTable(0)}
-            >
-              All Tables (1–12)
-            </button>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((t) => (
-              <button
-                key={t}
-                className={table === t ? 'btn pri sm' : 'btn ghost sm'}
-                style={{ minWidth: 42 }}
-                onClick={() => setTable(t)}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-          <span className="tiny muted">
-            {table === 0
-              ? 'Questions will cover all facts from 1 to 12.'
-              : `Focusing exclusively on ${operation === 'div' ? 'dividing by' : 'multiplying with'} ${table}!`}
-          </span>
-        </div>
+      {usesTable && (
+        <section className="card col gap12">
+          <h3 className="lab-step"><span>{usesRange ? 3 : 2}</span> Times table</h3>
+          <Seg value={table} onChange={setTable} options={[{ key: 0, label: 'All' }, ...Array.from({ length: 12 }, (_, i) => ({ key: i + 1, label: String(i + 1) }))]} />
+        </section>
       )}
 
-      {/* 6. Level Range & Question Count */}
-      <div className="card col gap16">
-        <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>4. Session Size & Level Range</div>
-        <div className="row wrap gap16" style={{ alignItems: 'center' }}>
-          <div>
-            <div className="tiny" style={{ fontWeight: 700, marginBottom: 4 }}>How many questions?</div>
-            <Seg
-              value={count}
-              onChange={setCount}
-              options={[5, 10, 15, 20, 25, 30].map((n) => ({ key: n, label: `${n} Qs` }))}
-            />
-          </div>
+      <section className="card col gap12">
+        <h3 className="lab-step"><span>{1 + 1 + (usesRange ? 1 : 0) + (usesTable ? 1 : 0)}</span> How many questions?</h3>
+        <Seg value={count} onChange={setCount} options={[5, 10, 20, 30].map((n) => ({ key: n, label: String(n) }))} />
+      </section>
 
-          <div className="row wrap gap12">
-            <label className="f" style={{ maxWidth: 220 }}>
-              From level {levelMin}
-              <input
-                type="range"
-                min="1"
-                max={levelMax}
-                value={levelMin}
-                onChange={(e) => setLevelMin(+e.target.value)}
-              />
-            </label>
-            <label className="f" style={{ maxWidth: 220 }}>
-              To level {levelMax}
-              <input
-                type="range"
-                min={levelMin}
-                max="50"
-                value={levelMax}
-                onChange={(e) => setLevelMax(+e.target.value)}
-              />
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* 7. Big Launch Banner */}
-      <div className="card row wrap gap12" style={{ justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(99,102,241,0.1) 100%)', border: '2px solid var(--primary)' }}>
-        <div className="col">
-          <h3 style={{ margin: 0, color: 'var(--primary)' }}>
-            Ready with your specifications!
-          </h3>
-          <p className="tiny muted" style={{ margin: '4px 0 0 0' }}>
-            {mode === 'study' ? '🔬 Study Lab Mode with hints & visual aids' : '🎓 Exam Test Mode with score tracking'}
-          </p>
-        </div>
-
-        <div className="row wrap gap8">
-          <button
-            className="btn pri"
-            style={{ padding: '12px 24px', fontSize: '1.1rem', fontWeight: 800 }}
-            disabled={invalidDivisionRange}
-            onClick={() => startSession()}
-          >
-            {mode === 'study' ? <><LuSparkles /> Start Study Lab</> : <><LuPlay /> Start Custom Exam</>}
-          </button>
-        </div>
+      <div className="exam-start">
+        <span className="muted">{count} × {shortLabel(current.label)}{usesTable && table ? ` · table of ${table}` : ''}{usesRange ? ` · ${minNum}–${maxNum}` : ''}</span>
+        <button className="btn pri" disabled={invalidDivisionRange} onClick={() => startSession()}>
+          {mode === 'study' ? <><LuSparkles /> Start</> : <><LuPlay /> Start exam</>}
+        </button>
       </div>
     </div>
   );
