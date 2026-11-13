@@ -28,7 +28,7 @@ export const KG_OPERATIONS = [
   { key: 'kg_shapes', label: 'Shapes & Colors', emoji: '🎨', blurb: 'Recognize shapes and colors' },
 ];
 
-export default function CustomLab({ initialMode = 'study', initialOp = 'auto', onBack }) {
+export default function CustomLab({ initialMode = 'study', initialOp = 'auto', onBack, studyOnly = false }) {
   const { state, dispatch } = useStore();
   const g = GRADE_BY_KEY[state.gradeKey];
   const defaultMin = g.key === 'KG' ? 0 : 1;
@@ -180,11 +180,10 @@ export default function CustomLab({ initialMode = 'study', initialOp = 'auto', o
       <div className="row wrap gap12" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div className="col">
           <div className="row gap8" style={{ alignItems: 'center' }}>
-            <span style={{ fontSize: '2rem' }}>🎛️</span>
-            <h1>Custom Study & Exam Specifications</h1>
+            <h1>🎛️ Custom practice</h1>
           </div>
           <p className="muted" style={{ margin: '4px 0 0 0' }}>
-            Customize your learning: pick <b>subtraction only</b>, <b>division only</b>, exact number ranges, times tables, and grade levels!
+            Pick exactly what to practise: one operation, a number range, a times table.
           </p>
         </div>
         {onBack && (
@@ -194,7 +193,8 @@ export default function CustomLab({ initialMode = 'study', initialOp = 'auto', o
         )}
       </div>
 
-      {/* 1. Mode Switcher (Study vs Exam) */}
+      {/* 1. Mode Switcher (Study vs Exam); hidden when the lab is used for practice only */}
+      {!studyOnly && (
       <div className="card col gap12" style={{ borderLeft: '6px solid var(--primary)' }}>
         <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>1. Choose Mode: Study or Exam?</div>
         <div className="row wrap gap12">
@@ -227,6 +227,7 @@ export default function CustomLab({ initialMode = 'study', initialOp = 'auto', o
           </button>
         </div>
       </div>
+      )}
 
       {/* 2. Quick Presets */}
       <div className="card col gap12">

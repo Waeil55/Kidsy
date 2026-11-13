@@ -10,7 +10,7 @@ const SUBJECTS = [
   ['vocab', 'Words', '🔤', '#ff9d42', '/words'],
   ['math', 'Math', '🔢', '#73cf55', '/practice'],
   ['grammar', 'Grammar', '✏️', '#f47778', '/practice'],
-  ['speaking', 'Speaking', '🎙️', '#9a78e8', '/speaking'],
+  ['fill', 'Fill in the blank', '🧩', '#9a78e8', '/practice'],
 ];
 
 export default function Insights() {

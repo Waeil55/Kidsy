@@ -40,8 +40,6 @@ export default function Home() {
             </button>
             <div className="bf-badge-row">
               <span className="bf-pill-age">For ages {g.age}</span>
-              <span className="bf-streak-pill"><LuFlame /> {state.stats.streak}</span>
-              <span className="bf-score-pill"><LuStar /> {state.score.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -52,7 +50,7 @@ export default function Home() {
         <h1 className="bf-title">What do you want to do?</h1>
       </div>
 
-      {/* 2x2 Chunky Playful Activity Cards (Numbers, Reading, Puzzles, Drawing) */}
+      {/* 2x2 activity cards */}
       <section className="bf-activity-grid" aria-label="Main activities">
         {g.key === 'KG' ? (
           <>
@@ -102,83 +100,35 @@ export default function Home() {
           </>
         ) : (
           <>
-            {/* 1. Numbers / Math */}
-            <Link to={`/play/math/${lv}`} className="bf-card bf-orange" aria-label="Numbers and Math">
-              <div className="bf-card-head">
-                <span className="bf-card-title">Numbers</span>
-              </div>
-              <div className="bf-card-art">
-                <span className="bf-toy-numbers" aria-hidden="true">123</span>
-              </div>
-              <span className="bf-card-sub">Math & Counting</span>
+            <Link to="/map" className="bf-card bf-orange" aria-label="Learn">
+              <div className="bf-card-head"><span className="bf-card-title">Learn</span></div>
+              <div className="bf-card-art"><span className="bf-toy-book" aria-hidden="true">📖</span></div>
+              <span className="bf-card-sub">Stories & levels</span>
             </Link>
-
-            {/* 2. Reading / Stories */}
-            <Link to={`/map`} className="bf-card bf-blue" aria-label="Reading and Stories">
-              <div className="bf-card-head">
-                <span className="bf-card-title">Reading</span>
-              </div>
-              <div className="bf-card-art">
-                <span className="bf-toy-book" aria-hidden="true">📖</span>
-              </div>
-              <span className="bf-card-sub">Stories & Adventures</span>
+            <Link to="/practice" className="bf-card bf-blue" aria-label="Practice">
+              <div className="bf-card-head"><span className="bf-card-title">Practice</span></div>
+              <div className="bf-card-art"><span className="bf-toy-book" aria-hidden="true">🧩</span></div>
+              <span className="bf-card-sub">Math & word games</span>
             </Link>
-
-            {/* 3. Puzzles / Practice */}
-            <Link to="/practice" className="bf-card bf-green" aria-label="Puzzles and Practice">
-              <div className="bf-card-head">
-                <span className="bf-card-title">Puzzles</span>
-              </div>
-              <div className="bf-card-art">
-                <span className="bf-toy-puzzle" aria-hidden="true">🧩</span>
-              </div>
-              <span className="bf-card-sub">Brain Games</span>
+            <Link to="/exam" className="bf-card bf-green" aria-label="Exams">
+              <div className="bf-card-head"><span className="bf-card-title">Exams</span></div>
+              <div className="bf-card-art"><span className="bf-toy-book" aria-hidden="true">🎓</span></div>
+              <span className="bf-card-sub">Pick your material</span>
             </Link>
-
-            {/* 4. Drawing / Words */}
-            <Link to="/words" className="bf-card bf-purple" aria-label="Words and Flashcards">
-              <div className="bf-card-head">
-                <span className="bf-card-title">Drawing</span>
-              </div>
-              <div className="bf-card-art">
-                <span className="bf-toy-pencil" aria-hidden="true">✏️</span>
-              </div>
-              <span className="bf-card-sub">Words & Flashcards</span>
-            </Link>
+            {g.key === 'G3'
+              ? <Link to="/g3pack" className="bf-card bf-purple" aria-label="Merola weekly words">
+                  <div className="bf-card-head"><span className="bf-card-title">Merola</span></div>
+                  <div className="bf-card-art"><span className="bf-toy-book" aria-hidden="true">📚</span></div>
+                  <span className="bf-card-sub">Weekly words</span>
+                </Link>
+              : <Link to="/words" className="bf-card bf-purple" aria-label="Words">
+                  <div className="bf-card-head"><span className="bf-card-title">Words</span></div>
+                  <div className="bf-card-art"><span className="bf-toy-book" aria-hidden="true">🔤</span></div>
+                  <span className="bf-card-sub">Word lists & cards</span>
+                </Link>}
           </>
         )}
       </section>
-
-      {/* Grade 3 Exclusive: Vocab Talk Buddy Launch Banner */}
-      {g.key === 'G3' && (
-        <section style={{ margin: '8px 0 14px' }}>
-          <Link to="/talk" className="card row wrap" style={{
-            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-            color: '#fff',
-            padding: '16px 20px',
-            borderRadius: 20,
-            textDecoration: 'none',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 12,
-            boxShadow: '0 6px 20px rgba(79, 70, 229, 0.22)'
-          }} aria-label="Vocab Talk with AI Buddy">
-            <div className="row gap12" style={{ alignItems: 'center' }}>
-              <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>🦊🎙️</span>
-              <div>
-                <span className="pill" style={{ background: 'rgba(255,255,255,0.25)', color: '#fff', fontWeight: 800, fontSize: '0.75rem' }}>
-                  G3 EXCLUSIVE · VOICE CONVERSATION
-                </span>
-                <b style={{ display: 'block', fontSize: '1.2rem', color: '#fff', marginTop: 2 }}>Vocab Talk Buddy</b>
-                <small style={{ color: 'rgba(255,255,255,0.92)', fontSize: '0.9rem' }}>Speak and converse with AI about your school words and their meanings!</small>
-              </div>
-            </div>
-            <span className="btn white sm" style={{ fontWeight: 800, whiteSpace: 'nowrap', borderRadius: 14 }}>
-              Talk with Buddy <LuPlay size={14} style={{ marginLeft: 4 }} />
-            </span>
-          </Link>
-        </section>
-      )}
 
       {/* Compact Secondary Launch Strip: Continue level & daily mystery */}
       <section className="bf-sub-strip">

@@ -4,7 +4,7 @@
 // Anything else — the AI voice, dictionary lookups, translations — is fetched fresh and simply
 // falls back to a quieter mode when there is no connection, the same way it already does today.
 const VERSION = 'kidsy-__BUILD__';
-const SHELL = ['./', './index.html', './app.css', './app.js', './pdf-worker.js', './manifest.webmanifest'];
+const SHELL = ['./', './index.html', './app.css', './app.js', './manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(

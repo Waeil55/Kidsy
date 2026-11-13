@@ -11,15 +11,6 @@ const dist = path.join(root, 'dist');
 const watch = process.argv.includes('--watch');
 fs.mkdirSync(dist, { recursive: true });
 
-// pdf.js worker is embedded as text so PDF reading works offline and from file://
-function workerText() {
-  const candidates = [
-    path.join(root, 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
-  ];
-  for (const c of candidates) if (fs.existsSync(c)) return fs.readFileSync(c, 'utf8');
-  return '';
-}
-
 async function buildAll() {
   const t0 = Date.now();
   const res = await esbuild.build({
@@ -33,10 +24,9 @@ async function buildAll() {
   });
   const css = await esbuild.transform(fs.readFileSync(path.join(root, 'src/styles.css'), 'utf8') + fs.readFileSync(path.join(root, 'src/v2.css'), 'utf8') + fs.readFileSync(path.join(root, 'src/v3.css'), 'utf8'), { loader: 'css', minify: !watch });
   fs.writeFileSync(path.join(dist, 'app.css'), css.code);
-  const wt = workerText();
-  fs.writeFileSync(path.join(dist, 'pdf-worker.js'), `window.__KIDSY_PDF_WORKER__=${JSON.stringify(wt)};`);
+  fs.rmSync(path.join(dist, 'pdf-worker.js'), { force: true });
   const tpl = fs.readFileSync(path.join(root, 'src/index.html'), 'utf8');
-  fs.writeFileSync(path.join(dist, 'index.html'), tpl.replace('<!--CSS-->', () => '<link rel="stylesheet" href="app.css">').replace('<!--JS-->', () => '<script src="pdf-worker.js"></script><script src="app.js"></script>'));
+  fs.writeFileSync(path.join(dist, 'index.html'), tpl.replace('<!--CSS-->', () => '<link rel="stylesheet" href="app.css">').replace('<!--JS-->', () => '<script src="app.js"></script>'));
 
   // PWA: icons, manifest, and a service worker stamped with a fresh version each build so
   // every deploy updates the cache instead of a visitor being stuck on an old copy.
@@ -50,13 +40,13 @@ async function buildAll() {
   fs.writeFileSync(path.join(dist, 'sw.js'), swSrc);
 
   // Keep the repository root deployable for GitHub Pages configured from main/.
-  for (const file of ['index.html', 'app.js', 'app.css', 'pdf-worker.js', 'manifest.webmanifest', 'sw.js']) fs.copyFileSync(path.join(dist, file), path.join(root, file));
+  for (const file of ['index.html', 'app.js', 'app.css', 'manifest.webmanifest', 'sw.js']) fs.copyFileSync(path.join(dist, file), path.join(root, file));
   if (fs.existsSync(path.join(dist, 'icons'))) {
     fs.mkdirSync(path.join(root, 'icons'), { recursive: true });
     for (const f of fs.readdirSync(path.join(dist, 'icons'))) fs.copyFileSync(path.join(dist, 'icons', f), path.join(root, 'icons', f));
   }
   const js = fs.readFileSync(path.join(dist, 'app.js'), 'utf8').replace(/<\/script/g, '<\\/script');
-  fs.writeFileSync(path.join(dist, 'kidsy-standalone.html'), tpl.replace('<!--CSS-->', () => `<style>${css.code}</style>`).replace('<!--JS-->', () => `<script>window.__KIDSY_PDF_WORKER__=${JSON.stringify(wt).replace(/<\/script/g, '<\\/script')};</script><script>${js}</script>`));
+  fs.writeFileSync(path.join(dist, 'kidsy-standalone.html'), tpl.replace('<!--CSS-->', () => `<style>${css.code}</style>`).replace('<!--JS-->', () => `<script>${js}</script>`));
   const kb = (f) => (fs.statSync(path.join(dist, f)).size / 1024).toFixed(0) + ' KB';
   console.log(`built in ${Date.now() - t0}ms  app.js ${kb('app.js')}  app.css ${kb('app.css')}  standalone ${kb('kidsy-standalone.html')}`);
   return res;

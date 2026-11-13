@@ -306,3 +306,17 @@ export const G3_FILL_QUESTIONS = [
   { q: "She will _____ the first place trophy at the award ceremony.", a: 'claim', pos: 'verb' },
 ];
 
+
+// Merola weekly word lists. Each week names its words from G3_PDF_WORD_ROWS;
+// every word not listed in a week belongs to the original Weeks 5-6 word bank.
+const WEEK_WORDS = {
+  w1: ['gradually', 'merchant', 'essential', 'fortunate', 'immense'],
+  w2: ['lob', 'tremble', 'skeptic', 'propose', 'inflate'],
+};
+const listedWords = new Set(Object.values(WEEK_WORDS).flat());
+const rowsFor = (words) => words.map((w) => G3_PDF_WORD_ROWS.find((r) => r[0] === w)).filter(Boolean);
+export const G3_WORD_WEEKS = [
+  { key: 'w1', label: 'Week 1', rows: rowsFor(WEEK_WORDS.w1) },
+  { key: 'w2', label: 'Week 2', rows: rowsFor(WEEK_WORDS.w2) },
+  { key: 'w56', label: 'Weeks 5–6 word bank', rows: G3_PDF_WORD_ROWS.filter((r) => !listedWords.has(r[0])) },
+];

@@ -64,4 +64,26 @@ const advancedSubtraction = buildSpecifiedSession({
 assert.ok(easySubtraction.every((item) => item.q.includes(' = ?')), 'early levels should use direct arithmetic questions');
 assert.ok(advancedSubtraction.some((item) => item.q.includes('had')), 'advanced levels should include word problems');
 console.log('Custom Study/Exam specifications OK');
+
+// Material exam: questions come only from the ticked material, with the requested size.
+{
+  const { buildMaterialExam, examMaterials } = await import('../src/engine/examBuilder.js');
+  const { G3_WORD_WEEKS } = await import('../src/data/g3ela.js');
+  const week1 = G3_WORD_WEEKS.find((w) => w.key === 'w1').rows.map((r) => r[0]);
+  assert.equal(week1.length, 5, 'week 1 should have 5 words');
+  const exam = buildMaterialExam({ grade: 'G3', selected: ['week:w1'], size: 15, seed: 't' });
+  assert.equal(exam.length, 15, 'week 1 exam should have 15 questions');
+  assert.ok(exam.every((q) => week1.includes(q.word)), 'week 1 exam must only test week 1 words');
+  for (const grade of ['KG', 'G1', 'G3', 'G6']) {
+    for (const m of examMaterials(grade, 0).flatMap((g) => g.items)) {
+      const items = buildMaterialExam({ grade, selected: [m.key], size: 10, seed: 's' });
+      assert.ok(items.length >= 5, `${grade} ${m.key} built only ${items.length} questions`);
+      assert.ok(items.every((q) => q.options ? q.answer >= 0 && q.answer < q.options.length : true), `${grade} ${m.key} has a bad answer index`);
+    }
+  }
+  const mixed = buildMaterialExam({ grade: 'G3', selected: ['math:sub', 'week:w2', 'merola:opp'], size: 20, minNum: 1, maxNum: 20, seed: 'm' });
+  assert.equal(mixed.length, 20);
+  assert.deepEqual([...new Set(mixed.map((q) => q.material))].sort(), ['Opposites', 'Subtraction (−)', 'Week 2']);
+  console.log('Material exam builder OK');
+}
 process.exit(bad ? 1 : 0);

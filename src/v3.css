@@ -579,3 +579,29 @@ html, body, .app, .main {
   border-radius: 24px !important;
   box-shadow: 0 8px 0 rgba(2, 132, 199, 0.08), 0 16px 28px rgba(2, 132, 199, 0.06) !important;
 }
+
+/* ---- Clean layout: section tabs, exam material picker, weekly word cards ---- */
+.subtabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 4px; margin-bottom: 4px; }
+.subtabs::-webkit-scrollbar { display: none; }
+.subtabs a { flex: none; padding: 9px 16px; border-radius: 99px; font-weight: 800; text-decoration: none; color: var(--ink2); background: var(--soft); white-space: nowrap; }
+.subtabs a.on { background: var(--grad); color: #fff; }
+.mat-group { display: flex; flex-direction: column; gap: 10px; }
+.mat-head { justify-content: space-between; }
+.mat-head h3 { margin: 0; }
+.mat-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.mat-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; border: 2px solid var(--line); background: #fff; font: inherit; font-weight: 700; color: var(--ink); text-align: left; cursor: pointer; min-height: 52px; }
+.mat-item small { margin-left: auto; color: var(--ink3); font-weight: 700; }
+.mat-item.on { border-color: var(--a); background: color-mix(in srgb, var(--a) 9%, #fff); }
+.mat-box { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--ink3); display: grid; place-items: center; color: #fff; }
+.mat-item.on .mat-box { background: var(--a); border-color: var(--a); }
+.exam-start { position: sticky; bottom: 84px; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 16px; border-radius: 20px; background: #fff; border: 2px solid var(--line); box-shadow: 0 8px 24px rgba(41, 35, 72, .12); }
+@media (min-width: 901px) { .exam-start { bottom: 16px; } }
+.exam-run-title { font-size: 1.3rem; overflow-wrap: anywhere; }
+.week-pick { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.wk-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.wk-card { display: flex; flex-direction: column; gap: 6px; }
+.wk-card-w { font-size: 1.35rem; font-family: var(--display); }
+.wk-card-def { margin: 0; font-weight: 700; }
+.wk-card-sa { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.wk-card-sa span { background: var(--soft); border-radius: 12px; padding: 6px 10px; font-size: .9rem; }
+.wk-card-sa small { display: block; color: var(--ink3); font-weight: 800; font-size: .7rem; text-transform: uppercase; }

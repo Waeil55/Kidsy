@@ -42,7 +42,6 @@ export function PracticeHub() {
       <div className="grid g2">
         {kinds.map((k) => <div key={k.key} className="tile-explain"><Link to={`/play/${k.key}/${lv}`} className="tile t2"><span className="ico">{k.emoji}</span><b>{k.label}</b><span>{k.blurb}</span></Link><ExplainBtn topic={k.key} small /></div>)}
       </div>
-      <Notice>Looking for stories? Open the <Link to="/map">Adventure map</Link>. Want a <Link to="/study">Study guide</Link>, an <Link to="/exam">Exam</Link>, or the <Link to="/index">Big index</Link>?</Notice>
     </>
   );
 }

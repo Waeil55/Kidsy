@@ -13,7 +13,7 @@ function Deck({ cards, speakBack }) {
   const [i, setI] = useState(0);
   const [flip, setFlip] = useState(false);
   const [order, setOrder] = useState(() => cards.map((_, k) => k));
-  if (!cards.length) return <Empty e="🃏" title="No cards yet">Make some in the <Link to="/studio">Studio</Link> or upload a lesson.</Empty>;
+  if (!cards.length) return <Empty e="🃏" title="No cards yet">There are no cards here yet.</Empty>;
   const c = cards[order[i % order.length]];
   const go = (d) => { setFlip(false); setI((i + d + order.length) % order.length); };
   return (
