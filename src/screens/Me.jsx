@@ -4,6 +4,9 @@ import { useStore, THEMES, AVATARS, exportBackup, parseBackup, listProfiles } fr
 import { GRADES } from '../data/grades.js';
 import { micSupported, ttsSupported, speak, ONLINE_VOICES } from '../lib/speech.js';
 import { Modal, Notice, toast } from '../ui/ui.jsx';
+import { usePremium } from '../engine/premium.js';
+import { RestoreButton } from './Paywall.jsx';
+import { Link } from '../ui/router.js';
 
 const Toggle = ({ on, onChange, label, hint }) => (
   <label className="row" style={{ cursor: 'pointer', padding: '8px 0' }}>
@@ -14,6 +17,7 @@ const Toggle = ({ on, onChange, label, hint }) => (
 
 export default function Me() {
   const { state, dispatch } = useStore();
+  const premium = usePremium();
   const fileRef = useRef(null);
   const [err, setErr] = useState('');
   const [wipe, setWipe] = useState(false);
@@ -75,6 +79,15 @@ export default function Me() {
           {!micSupported() && <Notice kind="warn">This browser cannot listen. Chrome, Edge and Safari can. Everything else still works with taps.</Notice>}
         </div>
       </section>
+      {premium.native && (
+        <section className="card col">
+          <h3>Kidsy Full</h3>
+          {premium.unlocked
+            ? <p className="muted">Unlocked. Thank you! Exams, Merola weekly words and Custom practice are open.</p>
+            : <p className="muted">Exams, Merola weekly words and Custom practice unlock with one purchase ({premium.price}). <Link to="/exam">See what's included</Link></p>}
+          <div className="row wrap"><RestoreButton className="btn soft sm" /></div>
+        </section>
+      )}
       <section className="card col">
         <h3>My content</h3>
         <p className="muted">{c.packs.length} saved lessons · {c.words.length} words · {c.flashcards.length} flashcards · {c.qa.length} questions · {c.math.length} math · {c.fill.length} fill-ins · {c.stories.length} stories</p>

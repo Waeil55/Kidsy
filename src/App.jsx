@@ -21,6 +21,8 @@ import Study from './screens/Study.jsx';
 import ErrorBoundary from './ui/ErrorBoundary.jsx';
 import VocabTalk from './screens/VocabTalk.jsx';
 import CustomLab from './screens/CustomLab.jsx';
+import Paywall from './screens/Paywall.jsx';
+import { initPremium, isLocked, usePremium } from './engine/premium.js';
 
 // Six sections. Each section groups a few pages under one small tab bar; the old page URLs
 // keep working so saved links and in-app links still open the right page.
@@ -48,6 +50,8 @@ export default function App() {
   useEffect(() => { document.documentElement.dataset.theme = state.theme; document.body.classList.toggle('big', state.settings.bigText); }, [state.theme, state.settings.bigText]);
   useEffect(() => { setVoiceConfig(state.settings); }, [state.settings.voiceMode, state.settings.accent, state.settings.onlineVoice]);
   useEffect(() => { setOpen(false); }, [hash]);
+  usePremium(); // re-render when Kidsy Full is unlocked
+  useEffect(() => { initPremium(); }, []);
   useEffect(() => { setPop((p) => p + 1); }, [state.score]);
   useEffect(() => {
     if (state.newStickers && state.newStickers.length) {
@@ -91,6 +95,7 @@ export default function App() {
     case 'me': page = <Me />; break;
     default: page = <Home />;
   }
+  if (isLocked(key)) page = <Paywall page={key} />;
 
   return (
     <div className="app">

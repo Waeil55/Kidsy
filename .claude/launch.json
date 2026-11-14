@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "kidsy", "runtimeExecutable": "npm", "runtimeArgs": ["run", "serve"], "port": 5173 }
+    { "name": "kidsy", "runtimeExecutable": "npm", "runtimeArgs": ["run", "serve"], "port": 5174 }
   ]
 }
