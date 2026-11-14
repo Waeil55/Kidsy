@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { LuLockKeyhole, LuCheck, LuRotateCcw } from 'react-icons/lu';
-import { usePremium, buyFull, restoreFull, makeGrownUpQuestion, LOCKED_PAGES } from '../engine/premium.js';
+import { LuLockKeyhole, LuCheck, LuRotateCcw, LuSettings } from 'react-icons/lu';
+import { usePremium, subscribe, restoreFull, manageSubscription, makeGrownUpQuestion, LOCKED_PAGES, PLANS, TRIAL_DAYS, TERMS_URL, PRIVACY_URL } from '../engine/premium.js';
 import { Modal, toast, confetti } from '../ui/ui.jsx';
 
-// Asks a grown-up a sum a child is unlikely to solve before any purchase or restore runs.
+// Asks a grown-up a sum a child is unlikely to solve before any purchase, restore or store page.
 export function GrownUpGate({ onPass, onClose }) {
   const [q, setQ] = useState(() => makeGrownUpQuestion());
   const [typed, setTyped] = useState('');
@@ -30,32 +30,41 @@ export function GrownUpGate({ onPass, onClose }) {
   );
 }
 
-// Restore button for the paywall and Me page; runs behind the grown-up check.
+// Runs an action behind the grown-up check.
+function useGated() {
+  const [pending, setPending] = useState(null);
+  const gate = pending && <GrownUpGate onPass={() => { const f = pending; setPending(null); f(); }} onClose={() => setPending(null)} />;
+  return [(fn) => setPending(() => fn), gate];
+}
+
 export function RestoreButton({ className = 'btn ghost' }) {
-  const [gate, setGate] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [ask, gate] = useGated();
   const run = async () => {
-    setGate(false); setBusy(true);
+    setBusy(true);
     const ok = await restoreFull();
     setBusy(false);
-    toast(ok ? 'Kidsy Full restored' : 'No Kidsy Full purchase was found on this account', ok ? '✅' : 'ℹ️');
+    toast(ok ? 'Kidsy Full restored' : 'No active Kidsy Full subscription was found on this account', ok ? '✅' : 'ℹ️');
   };
-  return (
-    <>
-      <button className={className} disabled={busy} onClick={() => setGate(true)}><LuRotateCcw /> {busy ? 'Checking…' : 'Restore purchase'}</button>
-      {gate && <GrownUpGate onPass={run} onClose={() => setGate(false)} />}
-    </>
-  );
+  return <><button className={className} disabled={busy} onClick={() => ask(run)}><LuRotateCcw /> {busy ? 'Checking…' : 'Restore purchase'}</button>{gate}</>;
+}
+
+export function ManageButton({ className = 'btn ghost' }) {
+  const [ask, gate] = useGated();
+  const run = async () => { if (!(await manageSubscription())) toast('Open your App Store or Google Play account to manage subscriptions', 'ℹ️'); };
+  return <><button className={className} onClick={() => ask(run)}><LuSettings /> Manage or cancel subscription</button>{gate}</>;
 }
 
 export default function Paywall({ page }) {
-  const { price } = usePremium();
-  const [gate, setGate] = useState(false);
+  const { priceOf, platform } = usePremium();
+  const [plan, setPlan] = useState(PLANS[0]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  const [ask, gate] = useGated();
+  const store = platform === 'android' ? 'Google Play' : 'Apple ID';
   const buy = async () => {
-    setGate(false); setBusy(true); setErr('');
-    const r = await buyFull();
+    setBusy(true); setErr('');
+    const r = await subscribe(plan);
     setBusy(false);
     if (r === 'ok') { confetti(); toast('Thank you! Everything is unlocked', '🎉'); }
     else if (r === 'error') setErr('The purchase did not go through. Please try again.');
@@ -66,17 +75,31 @@ export default function Paywall({ page }) {
       <section className="card pw-card">
         <div className="pw-lock"><LuLockKeyhole /></div>
         <h1>{name} is part of Kidsy Full</h1>
-        <p className="muted">Stories, levels and games stay free. One purchase unlocks the rest, for every child on this device.</p>
+        <p className="muted">Stories, levels and games stay free. Kidsy Full unlocks the rest for every child on this device.</p>
         <ul className="pw-list">
           {Object.values(LOCKED_PAGES).map((x) => <li key={x}><LuCheck /> {x}</li>)}
-          <li><LuCheck /> No ads and no subscription. Pay once, keep it forever.</li>
+          <li><LuCheck /> No ads. Cancel any time.</li>
         </ul>
-        <button className="btn pw-buy" disabled={busy} onClick={() => setGate(true)}>{busy ? 'Opening the store…' : `Unlock for ${price}`}</button>
+        <div className="pw-plans" role="radiogroup" aria-label="Choose a plan">
+          {PLANS.map((p) => (
+            <button key={p.id} role="radio" aria-checked={plan.id === p.id} className={`pw-plan ${plan.id === p.id ? 'on' : ''}`} onClick={() => setPlan(p)}>
+              <b>{p.label}</b>
+              <span className="pw-price">{priceOf(p)}<small> / {p.per}</small></span>
+              {p.note && <span className="pw-note">{p.note}</span>}
+            </button>
+          ))}
+        </div>
+        <button className="btn pw-buy" disabled={busy} onClick={() => ask(buy)}>{busy ? 'Opening the store…' : `Start ${TRIAL_DAYS}-day free trial`}</button>
+        <p className="tiny muted pw-terms">
+          Free for {TRIAL_DAYS} days, then {priceOf(plan)} per {plan.per}. Payment is charged to your {store} account when the trial ends.
+          The subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period.
+          You can manage or cancel it in your account settings. Any unused part of the free trial ends when you subscribe.
+        </p>
         {err && <div className="tiny" role="alert">{err}</div>}
-        <RestoreButton />
-        <p className="tiny muted">Ask a grown-up to unlock. Purchases are handled by the App Store or Google Play.</p>
+        <div className="row wrap" style={{ justifyContent: 'center' }}><RestoreButton /></div>
+        <p className="tiny"><a href={TERMS_URL} target="_blank" rel="noreferrer">Terms of Use</a> · <a href={PRIVACY_URL} target="_blank" rel="noreferrer">Privacy Policy</a></p>
       </section>
-      {gate && <GrownUpGate onPass={buy} onClose={() => setGate(false)} />}
+      {gate}
     </div>
   );
 }

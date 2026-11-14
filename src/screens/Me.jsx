@@ -4,8 +4,8 @@ import { useStore, THEMES, AVATARS, exportBackup, parseBackup, listProfiles } fr
 import { GRADES } from '../data/grades.js';
 import { micSupported, ttsSupported, speak, ONLINE_VOICES } from '../lib/speech.js';
 import { Modal, Notice, toast } from '../ui/ui.jsx';
-import { usePremium } from '../engine/premium.js';
-import { RestoreButton } from './Paywall.jsx';
+import { usePremium, PLANS } from '../engine/premium.js';
+import { RestoreButton, ManageButton } from './Paywall.jsx';
 import { Link } from '../ui/router.js';
 
 const Toggle = ({ on, onChange, label, hint }) => (
@@ -83,9 +83,9 @@ export default function Me() {
         <section className="card col">
           <h3>Kidsy Full</h3>
           {premium.unlocked
-            ? <p className="muted">Unlocked. Thank you! Exams, Merola weekly words and Custom practice are open.</p>
-            : <p className="muted">Exams, Merola weekly words and Custom practice unlock with one purchase ({premium.price}). <Link to="/exam">See what's included</Link></p>}
-          <div className="row wrap"><RestoreButton className="btn soft sm" /></div>
+            ? <p className="muted">Subscribed. Thank you! Exams, Merola weekly words and Custom practice are open.</p>
+            : <p className="muted">Exams, Merola weekly words and Custom practice open with a Kidsy Full subscription ({premium.priceOf(PLANS[1])} a month or {premium.priceOf(PLANS[0])} a year, 7 days free). <Link to="/exam">See plans</Link></p>}
+          <div className="row wrap"><RestoreButton className="btn soft sm" />{premium.unlocked && <ManageButton className="btn soft sm" />}</div>
         </section>
       )}
       <section className="card col">

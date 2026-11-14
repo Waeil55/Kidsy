@@ -622,3 +622,9 @@ html, body, .app, .main {
 .pw-buy{width:100%;max-width:400px;justify-content:center;font-size:1.15rem;padding:16px 20px}
 .gate-q{display:flex;flex-direction:column;gap:8px;font-weight:800;font-size:1.25rem}
 .gate-q input{font-size:1.4rem;padding:12px 14px;border-radius:14px;border:2px solid var(--line);text-align:center;background:var(--card);color:var(--ink)}
+.pw-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;width:100%;max-width:400px}
+.pw-plan{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border-radius:16px;border:3px solid var(--line);background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.pw-plan.on{border-color:var(--a);box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.pw-price{font-size:1.25rem;font-weight:900}.pw-price small{font-size:.8rem;font-weight:700;opacity:.75}
+.pw-note{font-size:.78rem;font-weight:800;color:var(--ok,#22a35a)}
+.pw-terms{max-width:440px;line-height:1.45}
