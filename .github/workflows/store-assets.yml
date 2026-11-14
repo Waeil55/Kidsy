@@ -1,0 +1,51 @@
+name: App Store screenshots and review contact
+
+# Uploads store/screenshots/*.png to the iOS version being prepared in App Store Connect,
+# and optionally sets the App Review contact. Uses the same API key secrets as the iOS build.
+on:
+  workflow_dispatch:
+    inputs:
+      screenshots:
+        description: Upload screenshots (replaces the ones there)
+        type: boolean
+        default: true
+      review_first_name:
+        description: App Review contact first name (optional)
+        required: false
+      review_last_name:
+        description: App Review contact last name (optional)
+        required: false
+      review_phone:
+        description: App Review contact phone, with country code (optional)
+        required: false
+      review_email:
+        description: App Review contact email (optional)
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install "pyjwt[crypto]==2.9.0"
+      - name: Upload to App Store Connect
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APP_ID: '6834567599'
+          DO_SCREENSHOTS: ${{ inputs.screenshots }}
+          REVIEW_FIRST_NAME: ${{ inputs.review_first_name }}
+          REVIEW_LAST_NAME: ${{ inputs.review_last_name }}
+          REVIEW_PHONE: ${{ inputs.review_phone }}
+          REVIEW_EMAIL: ${{ inputs.review_email }}
+        run: |
+          export ASC_KEY_PATH="$RUNNER_TEMP/key.p8"
+          printf '%s\n' "$ASC_KEY_P8" > "$ASC_KEY_PATH"
+          python scripts/asc_store_assets.py
